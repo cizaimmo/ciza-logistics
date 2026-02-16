@@ -40,10 +40,18 @@ body {
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:18px;
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
 .logo img {
   height:48px;
+  display:block;
 }
 
 .nav-menu {
@@ -72,11 +80,137 @@ body {
 }
 
 /* =========================
+   HAMBURGER (MOBILE)
+========================= */
+.hamburger {
+  display:none;
+  width:44px;
+  height:44px;
+  border:1px solid rgba(255,255,255,0.20);
+  background:transparent;
+  border-radius:8px;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+}
+
+.hamburger span {
+  width:20px;
+  height:2px;
+  background:#fff;
+  display:block;
+  position:relative;
+}
+
+.hamburger span::before,
+.hamburger span::after {
+  content:"";
+  width:20px;
+  height:2px;
+  background:#fff;
+  position:absolute;
+  left:0;
+}
+
+.hamburger span::before { top:-6px; }
+.hamburger span::after  { top:6px; }
+
+.mobile-menu-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.25s ease;
+  z-index:1100;
+}
+
+.mobile-menu {
+  position:fixed;
+  top:0;
+  right:0;
+  height:100%;
+  width:min(340px, 86vw);
+  background:#0b0b0b;
+  transform:translateX(100%);
+  transition:transform 0.25s ease;
+  z-index:1200;
+  padding:18px;
+  border-left:1px solid rgba(212,175,55,0.25);
+}
+
+.mobile-menu-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.mobile-menu-header img {
+  height:34px;
+}
+
+.mobile-close {
+  width:40px;
+  height:40px;
+  border:1px solid rgba(255,255,255,0.20);
+  background:transparent;
+  color:#fff;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.mobile-links {
+  padding-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.mobile-links a {
+  text-decoration:none;
+  color:#fff;
+  padding:12px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:13px;
+}
+
+.mobile-links a:hover {
+  background:rgba(212,175,55,0.12);
+  color:#D4AF37;
+}
+
+.mobile-links .mobile-cta {
+  background:#D4AF37;
+  color:#000;
+  font-weight:bold;
+}
+
+.mobile-links .mobile-cta:hover {
+  background:#caa532;
+  color:#000;
+}
+
+.menu-open .mobile-menu-overlay {
+  opacity:1;
+  pointer-events:auto;
+}
+
+.menu-open .mobile-menu {
+  transform:translateX(0);
+}
+
+/* =========================
    HERO
 ========================= */
 .hero {
   height:100vh;
-  background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png') center/cover no-repeat;
+  background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/c05aeae6cd362ff32bceb5edfbbfd3aba4c464e7/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png') center/cover no-repeat;
   position:relative;
   display:flex;
   align-items:center;
@@ -85,27 +219,56 @@ body {
 .hero-overlay {
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.75);
+  background:linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.62));
   display:flex;
   align-items:center;
 }
 
 .hero-content {
   color:#fff;
-  max-width:700px;
+  max-width:720px;
+  padding-top:60px;
 }
 
 .hero h1 {
   font-size:60px;
   font-weight:700;
-  margin-bottom:20px;
+  margin-bottom:18px;
   letter-spacing:2px;
+  line-height:1.05;
 }
 
 .hero p {
   font-size:20px;
-  margin-bottom:40px;
-  color:#ccc;
+  margin-bottom:34px;
+  color:#d9d9d9;
+}
+
+.hero-badges {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.badge {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+  letter-spacing:0.6px;
+  text-transform:uppercase;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.10);
+  color:#fff;
+}
+
+.badge.gold {
+  border-color:rgba(212,175,55,0.40);
+  background:rgba(212,175,55,0.12);
+  color:#D4AF37;
 }
 
 /* =========================
@@ -117,9 +280,10 @@ body {
   padding:14px 30px;
   text-decoration:none;
   font-weight:bold;
-  border-radius:4px;
+  border-radius:10px;
   margin-right:15px;
   display:inline-block;
+  border:1px solid rgba(0,0,0,0.15);
 }
 
 .btn-secondary {
@@ -127,9 +291,10 @@ body {
   color:#D4AF37;
   padding:14px 30px;
   text-decoration:none;
-  border-radius:4px;
+  border-radius:10px;
   margin-right:15px;
   display:inline-block;
+  background:rgba(0,0,0,0.18);
 }
 
 .btn-outline {
@@ -137,8 +302,9 @@ body {
   color:#fff;
   padding:14px 30px;
   text-decoration:none;
-  border-radius:4px;
+  border-radius:10px;
   display:inline-block;
+  background:rgba(0,0,0,0.10);
 }
 
 /* =========================
@@ -183,12 +349,14 @@ body {
   padding:40px;
   border:1px solid #eee;
   background:#fff;
+  border-radius:16px;
 }
 
 .step {
   padding:30px;
   border-left:3px solid #D4AF37;
   background:#f9f9f9;
+  border-radius:16px;
 }
 
 /* =========================
@@ -203,6 +371,7 @@ body {
   width:300px;
   border:1px solid #ccc;
   margin-right:10px;
+  border-radius:10px;
 }
 
 /* =========================
@@ -223,6 +392,7 @@ body {
 .footer-logo {
   height:40px;
   margin-bottom:20px;
+  display:block;
 }
 
 .footer a {
@@ -245,6 +415,20 @@ body {
 }
 
 /* =========================
+   SCROLL ANIMATIONS
+========================= */
+.reveal {
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.show {
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 @media (max-width:900px) {
@@ -257,16 +441,103 @@ body {
   }
 }
 
+/* =========================
+   MOBILE PREMIUM
+========================= */
+@media (max-width:768px){
+
+  .main-header{
+    padding:14px 0;
+  }
+
+  .logo img{
+    height:34px;
+  }
+
+  .nav-menu{
+    display:none;
+  }
+
+  .hamburger{
+    display:flex;
+  }
+
+  .hero{
+    height:auto;
+    min-height:100vh;
+    padding-top:84px;
+    background-position: 70% center;
+  }
+
+  .hero-overlay{
+    padding:60px 0 70px 0;
+  }
+
+  .hero-content{
+    padding-top:30px;
+  }
+
+  .hero h1{
+    font-size:38px;
+    line-height:1.1;
+    letter-spacing:1px;
+  }
+
+  .hero p{
+    font-size:16px;
+    margin-bottom:22px;
+    color:#e5e5e5;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline{
+    display:block;
+    width:100%;
+    margin:0 0 14px 0;
+    text-align:center;
+  }
+
+  .tracking-box input{
+    width:100%;
+    margin:0 0 12px 0;
+  }
+
+  .section{
+    padding:65px 0;
+  }
+
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- MOBILE MENU -->
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/dcc418797cf5d0db17de88005d3b941e21eff962/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" alt="Ciza Logistics">
+    <button class="mobile-close" id="mobileClose" aria-label="Fermer">✕</button>
+  </div>
+
+  <div class="mobile-links">
+    <a href="#services" class="mobileLink">Services</a>
+    <a href="#infrastructure" class="mobileLink">Infrastructure</a>
+    <a href="#how" class="mobileLink">Fonctionnement</a>
+    <a href="tracking.html" class="mobile-cta">Suivi</a>
+    <a href="create.html" class="mobileLink">Créer un envoi</a>
+    <a href="enterprise.html" class="mobileLink">Entreprise</a>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="main-header">
   <div class="container header-container">
     <div class="logo">
-      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" alt="Ciza Logistics">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/dcc418797cf5d0db17de88005d3b941e21eff962/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" alt="Ciza Logistics">
     </div>
 
     <nav class="nav-menu">
@@ -275,13 +546,24 @@ body {
       <a href="#how">Fonctionnement</a>
       <a href="tracking.html" class="btn-track">Suivi</a>
     </nav>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span>
+    </button>
   </div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-overlay">
-    <div class="container hero-content">
+    <div class="container hero-content reveal">
+      <div class="hero-badges">
+        <span class="badge gold">Burundi • National</span>
+        <span class="badge">Parcel</span>
+        <span class="badge">Freight</span>
+        <span class="badge">Tracking</span>
+      </div>
+
       <h1>CIZA LOGISTICS</h1>
       <p>Livraison & Transport National au Burundi 🇧🇮</p>
 
@@ -294,7 +576,7 @@ body {
 
 <!-- SERVICES -->
 <section id="services" class="section">
-  <div class="container">
+  <div class="container reveal">
     <h2>Nos Solutions</h2>
     <div class="grid-2">
       <div class="card">
@@ -311,7 +593,7 @@ body {
 
 <!-- INFRASTRUCTURE -->
 <section id="infrastructure" class="section dark">
-  <div class="container">
+  <div class="container reveal">
     <h2>Infrastructure Nationale</h2>
     <p>
       Couverture des 18 provinces du Burundi.
@@ -323,7 +605,7 @@ body {
 
 <!-- COMMENT CA MARCHE -->
 <section id="how" class="section">
-  <div class="container">
+  <div class="container reveal">
     <h2>Comment ça marche</h2>
     <div class="grid-3">
       <div class="step">
@@ -344,7 +626,7 @@ body {
 
 <!-- TRACKING -->
 <section class="section light">
-  <div class="container tracking-box">
+  <div class="container tracking-box reveal">
     <h2>Suivi Rapide</h2>
     <input type="text" placeholder="Entrer votre numéro de suivi">
     <a href="tracking.html" class="btn-primary">Suivre</a>
@@ -353,7 +635,7 @@ body {
 
 <!-- ENTERPRISE -->
 <section class="section dark">
-  <div class="container">
+  <div class="container reveal">
     <h2>Solutions Entreprises</h2>
     <p>Portail B2B, gestion en masse, facturation, SLA dédié et intégration logistique.</p>
     <a href="enterprise.html" class="btn-primary">Accès Entreprise</a>
@@ -362,10 +644,10 @@ body {
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="container footer-grid">
+  <div class="container footer-grid reveal">
 
     <div>
-      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" class="footer-logo">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/dcc418797cf5d0db17de88005d3b941e21eff962/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" class="footer-logo" alt="Logo">
       <p>Division Logistique de Ciza Group.</p>
     </div>
 
@@ -394,6 +676,75 @@ body {
     © 2026 Ciza Logistics – Tous droits réservés
   </div>
 </footer>
+
+<script>
+/* =========================
+   HAMBURGER MENU
+========================= */
+(function(){
+  var body = document.body;
+  var btn = document.getElementById('hamburgerBtn');
+  var overlay = document.getElementById('mobileOverlay');
+  var menu = document.getElementById('mobileMenu');
+  var closeBtn = document.getElementById('mobileClose');
+  var links = document.querySelectorAll('.mobileLink');
+
+  function openMenu(){
+    body.classList.add('menu-open');
+  }
+
+  function closeMenu(){
+    body.classList.remove('menu-open');
+  }
+
+  btn.addEventListener('click', openMenu);
+  overlay.addEventListener('click', closeMenu);
+  closeBtn.addEventListener('click', closeMenu);
+
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      closeMenu();
+    });
+  });
+})();
+
+/* =========================
+   SMOOTH SCROLL
+========================= */
+(function(){
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor){
+    anchor.addEventListener('click', function(e){
+      var href = this.getAttribute('href');
+      if(!href || href === '#') return;
+      var target = document.querySelector(href);
+      if(!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+
+/* =========================
+   REVEAL ON SCROLL
+========================= */
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(el){ el.classList.add('show'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('show');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
 
 </body>
 </html>
