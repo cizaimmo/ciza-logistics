@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIZA LOGISTICS | Livraison & Transport National</title>
+
+<style>
+
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#ffffff;
+  color:#111;
+  line-height:1.6;
+}
+
+.container{
+  width:90%;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* ================= HEADER ================= */
+
+.main-header{
+  position:fixed;
+  width:100%;
+  padding:26px 0;
+  background:rgba(0,0,0,0.98);
+  z-index:1000;
+}
+
+.header-container{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo img{
+  height:85px;
+  transition:0.3s ease;
+}
+
+.logo img:hover{
+  transform:scale(1.05);
+}
+
+.nav-menu{
+  display:flex;
+  gap:30px;
+  align-items:center;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:#fff;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.nav-menu a:hover{
+  color:#D4AF37;
+}
+
+.btn-track{
+  border:1px solid #D4AF37;
+  padding:8px 18px;
+  border-radius:4px;
+  color:#D4AF37;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  height:100vh;
+  background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/c05aeae6cd362ff32bceb5edfbbfd3aba4c464e7/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png') center/cover no-repeat;
+  display:flex;
+  align-items:center;
+  padding-top:120px;
+}
+
+.hero-overlay{
+  width:100%;
+  background:linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.62));
+  padding:80px 0;
+}
+
+.hero-content{
+  color:#fff;
+  max-width:720px;
+}
+
+.hero h1{
+  font-size:60px;
+  margin-bottom:20px;
+}
+
+.hero p{
+  font-size:20px;
+  margin-bottom:30px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn-primary{
+  background:#D4AF37;
+  color:#000;
+  padding:14px 30px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  display:inline-block;
+  margin-right:15px;
+}
+
+.btn-secondary{
+  border:1px solid #D4AF37;
+  color:#D4AF37;
+  padding:14px 30px;
+  border-radius:10px;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.btn-outline{
+  border:1px solid #fff;
+  color:#fff;
+  padding:14px 30px;
+  border-radius:10px;
+  text-decoration:none;
+  display:inline-block;
+}
+
+/* ================= SECTIONS ================= */
+
+.section{
+  padding:100px 0;
+}
+
+.section h2{
+  font-size:32px;
+  margin-bottom:40px;
+}
+
+.dark{
+  background:#000;
+  color:#fff;
+}
+
+.light{
+  background:#f5f5f5;
+}
+
+/* ================= GRID ================= */
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+}
+
+.grid-3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:40px;
+}
+
+/* ================= CARDS ================= */
+
+.card{
+  padding:40px;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.08);
+  transition:0.3s ease;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 35px 70px rgba(0,0,0,0.12);
+}
+
+.step{
+  padding:30px;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.07);
+  border-left:3px solid #D4AF37;
+}
+
+/* ================= PROVINCES ================= */
+
+.province-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:30px;
+}
+
+.province-grid span{
+  background:rgba(255,255,255,0.08);
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  background:#000;
+  color:#fff;
+  padding:80px 0 40px;
+}
+
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+}
+
+.footer-logo{
+  height:60px;
+}
+
+.footer-bottom{
+  text-align:center;
+  margin-top:40px;
+  font-size:13px;
+  color:#888;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+  .logo img{
+    height:65px;
+  }
+
+  .grid-2,.grid-3,.footer-grid,.province-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    height:auto;
+    background-position:center 30%;
+    padding-top:160px;
+  }
+
+  .hero h1{
+    font-size:38px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+</div>
+
+<nav class="nav-menu">
+<a href="#services">Services</a>
+<a href="#infrastructure">Infrastructure</a>
+<a href="#how">Fonctionnement</a>
+<a href="tracking.html" class="btn-track">Suivi</a>
+</nav>
+</div>
+</header>
+
+<section class="hero">
+<div class="hero-overlay">
+<div class="container hero-content">
+<h1>CIZA LOGISTICS</h1>
+<p>Livraison & Transport National au Burundi 🇧🇮</p>
+<a href="create.html" class="btn-primary">📦 Créer un envoi</a>
+<a href="create.html" class="btn-secondary">🚛 Transport marchandises</a>
+<a href="tracking.html" class="btn-outline">🔎 Suivre un colis</a>
+</div>
+</div>
+</section>
+
+<section id="services" class="section">
+<div class="container">
+<h2>Nos Solutions</h2>
+<div class="grid-2">
+<div class="card">
+<h3>Ciza Parcel</h3>
+<p>Livraison express nationale avec suivi sécurisé et preuve numérique.</p>
+</div>
+<div class="card">
+<h3>Ciza Freight</h3>
+<p>Transport marchandises inter-provincial pour entreprises et commerces.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="infrastructure" class="section dark">
+<div class="container">
+<h2>Couverture Nationale – 18 Provinces</h2>
+
+<div class="province-grid">
+<span>Bubanza</span>
+<span>Bujumbura Mairie</span>
+<span>Bujumbura Rural</span>
+<span>Bururi</span>
+<span>Cankuzo</span>
+<span>Cibitoke</span>
+<span>Gitega</span>
+<span>Karuzi</span>
+<span>Kayanza</span>
+<span>Kirundo</span>
+<span>Makamba</span>
+<span>Muramvya</span>
+<span>Muyinga</span>
+<span>Mwaro</span>
+<span>Ngozi</span>
+<span>Rumonge</span>
+<span>Rutana</span>
+<span>Ruyigi</span>
+</div>
+
+</div>
+</section>
+
+<footer class="footer">
+<div class="container footer-grid">
+
+<div>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo">
+<p>Division Logistique de Ciza Group.</p>
+</div>
+
+<div>
+<h4>Entreprise</h4>
+<p>À propos</p>
+<p>Entreprise</p>
+</div>
+
+<div>
+<h4>Légal</h4>
+<p>Confidentialité</p>
+<p>Conditions Générales</p>
+</div>
+
+<div>
+<h4>Contact</h4>
+<p>contact@cizalogistics.bi</p>
+<p>Burundi</p>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 Ciza Logistics – Tous droits réservés
+</div>
+</footer>
+
+</body>
+</html>
