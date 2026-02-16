@@ -1,22 +1,278 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>CIZA LOGISTICS | Livraison & Transport National</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIZA LOGISTICS | Livraison & Transport National</title>
+
+<style>
+
+/* =========================
+   RESET
+========================= */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background:#ffffff;
+  color:#111;
+  line-height:1.6;
+}
+
+.container {
+  width:90%;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+.main-header {
+  position:fixed;
+  width:100%;
+  padding:18px 0;
+  background:rgba(0,0,0,0.95);
+  z-index:1000;
+}
+
+.header-container {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo img {
+  height:48px;
+}
+
+.nav-menu {
+  display:flex;
+  gap:30px;
+  align-items:center;
+}
+
+.nav-menu a {
+  text-decoration:none;
+  color:#fff;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.nav-menu a:hover {
+  color:#D4AF37;
+}
+
+.btn-track {
+  border:1px solid #D4AF37;
+  padding:8px 18px;
+  border-radius:4px;
+  color:#D4AF37;
+}
+
+/* =========================
+   HERO
+========================= */
+.hero {
+  height:100vh;
+  background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png') center/cover no-repeat;
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.hero-overlay {
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  align-items:center;
+}
+
+.hero-content {
+  color:#fff;
+  max-width:700px;
+}
+
+.hero h1 {
+  font-size:60px;
+  font-weight:700;
+  margin-bottom:20px;
+  letter-spacing:2px;
+}
+
+.hero p {
+  font-size:20px;
+  margin-bottom:40px;
+  color:#ccc;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-primary {
+  background:#D4AF37;
+  color:#000;
+  padding:14px 30px;
+  text-decoration:none;
+  font-weight:bold;
+  border-radius:4px;
+  margin-right:15px;
+  display:inline-block;
+}
+
+.btn-secondary {
+  border:1px solid #D4AF37;
+  color:#D4AF37;
+  padding:14px 30px;
+  text-decoration:none;
+  border-radius:4px;
+  margin-right:15px;
+  display:inline-block;
+}
+
+.btn-outline {
+  border:1px solid #fff;
+  color:#fff;
+  padding:14px 30px;
+  text-decoration:none;
+  border-radius:4px;
+  display:inline-block;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+.section {
+  padding:100px 0;
+}
+
+.section h2 {
+  font-size:32px;
+  margin-bottom:40px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.dark {
+  background:#000;
+  color:#fff;
+}
+
+.light {
+  background:#f5f5f5;
+}
+
+/* =========================
+   GRID
+========================= */
+.grid-2 {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+}
+
+.grid-3 {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:40px;
+}
+
+.card {
+  padding:40px;
+  border:1px solid #eee;
+  background:#fff;
+}
+
+.step {
+  padding:30px;
+  border-left:3px solid #D4AF37;
+  background:#f9f9f9;
+}
+
+/* =========================
+   TRACKING
+========================= */
+.tracking-box {
+  text-align:center;
+}
+
+.tracking-box input {
+  padding:12px;
+  width:300px;
+  border:1px solid #ccc;
+  margin-right:10px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer {
+  background:#000;
+  color:#fff;
+  padding:80px 0 40px;
+}
+
+.footer-grid {
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+}
+
+.footer-logo {
+  height:40px;
+  margin-bottom:20px;
+}
+
+.footer a {
+  display:block;
+  text-decoration:none;
+  color:#ccc;
+  margin-bottom:8px;
+  font-size:14px;
+}
+
+.footer a:hover {
+  color:#D4AF37;
+}
+
+.footer-bottom {
+  text-align:center;
+  margin-top:40px;
+  font-size:13px;
+  color:#888;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width:900px) {
+  .grid-2, .grid-3, .footer-grid {
+    grid-template-columns:1fr;
+  }
+
+  .hero h1 {
+    font-size:42px;
+  }
+}
+
+</style>
 </head>
+
 <body>
 
 <!-- HEADER -->
 <header class="main-header">
   <div class="container header-container">
     <div class="logo">
-      <img src="assets/logo/ciza-logistics-logo.png" alt="Ciza Logistics">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" alt="Ciza Logistics">
     </div>
+
     <nav class="nav-menu">
       <a href="#services">Services</a>
       <a href="#infrastructure">Infrastructure</a>
-      <a href="#enterprise">Entreprise</a>
+      <a href="#how">Fonctionnement</a>
       <a href="tracking.html" class="btn-track">Suivi</a>
     </nav>
   </div>
@@ -29,11 +285,9 @@
       <h1>CIZA LOGISTICS</h1>
       <p>Livraison & Transport National au Burundi 🇧🇮</p>
 
-      <div class="hero-buttons">
-        <a href="create.html" class="btn-primary">📦 Créer un envoi</a>
-        <a href="create.html" class="btn-secondary">🚛 Transport marchandises</a>
-        <a href="tracking.html" class="btn-outline">🔎 Suivre un colis</a>
-      </div>
+      <a href="create.html" class="btn-primary">📦 Créer un envoi</a>
+      <a href="create.html" class="btn-secondary">🚛 Transport marchandises</a>
+      <a href="tracking.html" class="btn-outline">🔎 Suivre un colis</a>
     </div>
   </div>
 </section>
@@ -42,13 +296,11 @@
 <section id="services" class="section">
   <div class="container">
     <h2>Nos Solutions</h2>
-
     <div class="grid-2">
       <div class="card">
         <h3>📦 Ciza Parcel</h3>
-        <p>Livraison express nationale avec tracking sécurisé et preuve de livraison.</p>
+        <p>Livraison express nationale avec suivi sécurisé et preuve numérique.</p>
       </div>
-
       <div class="card">
         <h3>🚛 Ciza Freight</h3>
         <p>Transport marchandises inter-provincial pour entreprises et commerces.</p>
@@ -64,35 +316,82 @@
     <p>
       Couverture des 18 provinces du Burundi.
       Flotte interne et partenaires certifiés.
-      Système sécurisé de suivi et validation.
+      Système sécurisé de validation et traçabilité.
     </p>
   </div>
 </section>
 
-<!-- TRACKING RAPIDE -->
-<section class="section">
+<!-- COMMENT CA MARCHE -->
+<section id="how" class="section">
+  <div class="container">
+    <h2>Comment ça marche</h2>
+    <div class="grid-3">
+      <div class="step">
+        <h4>1. Créer</h4>
+        <p>Enregistrez votre envoi en ligne en quelques minutes.</p>
+      </div>
+      <div class="step">
+        <h4>2. Transporter</h4>
+        <p>Notre réseau national assure la prise en charge sécurisée.</p>
+      </div>
+      <div class="step">
+        <h4>3. Livrer</h4>
+        <p>Signature numérique et confirmation officielle de réception.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACKING -->
+<section class="section light">
   <div class="container tracking-box">
     <h2>Suivi Rapide</h2>
-    <input type="text" placeholder="Entrer numéro de suivi">
+    <input type="text" placeholder="Entrer votre numéro de suivi">
     <a href="tracking.html" class="btn-primary">Suivre</a>
   </div>
 </section>
 
 <!-- ENTERPRISE -->
-<section id="enterprise" class="section dark">
+<section class="section dark">
   <div class="container">
     <h2>Solutions Entreprises</h2>
-    <p>
-      Portail B2B, gestion en masse, facturation et SLA dédié.
-    </p>
+    <p>Portail B2B, gestion en masse, facturation, SLA dédié et intégration logistique.</p>
     <a href="enterprise.html" class="btn-primary">Accès Entreprise</a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="container">
-    <p>© 2026 Ciza Logistics – Division de Ciza Group</p>
+  <div class="container footer-grid">
+
+    <div>
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/C471F21C-0BB9-4EAE-9327-45CFD82EAA81.png" class="footer-logo">
+      <p>Division Logistique de Ciza Group.</p>
+    </div>
+
+    <div>
+      <h4>Entreprise</h4>
+      <a href="about.html">À propos</a>
+      <a href="enterprise.html">Entreprise</a>
+      <a href="partner.html">Devenir partenaire</a>
+    </div>
+
+    <div>
+      <h4>Légal</h4>
+      <a href="privacy.html">Confidentialité</a>
+      <a href="terms.html">Conditions Générales</a>
+    </div>
+
+    <div>
+      <h4>Contact</h4>
+      <a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
+      <p>Burundi</p>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 Ciza Logistics – Tous droits réservés
   </div>
 </footer>
 
