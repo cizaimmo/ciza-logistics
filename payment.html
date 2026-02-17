@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Paiement | Ciza Logistics</title>
+<meta name="description" content="Paiement sécurisé Ciza Logistics via Lumicash, Ecocash ou eNoti.">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f4f6f9;
+color:#111;
+}
+.container{
+width:92%;
+max-width:1100px;
+margin:auto;
+}
+
+/* HEADER */
+.main-header{
+position:fixed;
+width:100%;
+background:#000;
+padding:22px 0;
+z-index:1000;
+}
+.header-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.logo img{height:80px;}
+.nav-menu{
+display:flex;
+gap:24px;
+}
+.nav-menu a{
+color:#fff;
+text-decoration:none;
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+.nav-menu a:hover{color:#D4AF37;}
+
+/* SECTION */
+.section{
+padding:180px 0 100px;
+}
+
+.payment-box{
+background:#fff;
+padding:50px;
+border-radius:22px;
+box-shadow:0 40px 100px rgba(0,0,0,0.08);
+border:1px solid rgba(212,175,55,0.2);
+}
+
+.badge{
+display:inline-block;
+padding:6px 14px;
+border-radius:999px;
+border:1px solid #D4AF37;
+color:#D4AF37;
+font-size:12px;
+letter-spacing:1px;
+margin-bottom:20px;
+}
+
+h1{
+font-size:32px;
+margin-bottom:30px;
+}
+
+.total-box{
+background:#000;
+color:#fff;
+padding:25px;
+border-radius:16px;
+text-align:center;
+margin-bottom:40px;
+}
+.total-box span{
+font-size:26px;
+font-weight:bold;
+}
+
+.payment-method{
+display:flex;
+flex-direction:column;
+gap:18px;
+margin-bottom:30px;
+}
+
+.method-card{
+border:1px solid rgba(0,0,0,0.08);
+padding:18px;
+border-radius:14px;
+cursor:pointer;
+transition:0.3s;
+background:#fafafa;
+}
+
+.method-card:hover{
+border:1px solid #D4AF37;
+background:#fff;
+}
+
+.method-card input{
+margin-right:10px;
+}
+
+input[type="text"]{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:1px solid rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+.btn{
+display:inline-block;
+padding:16px 40px;
+border-radius:14px;
+text-decoration:none;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-primary{
+background:#D4AF37;
+color:#000;
+border:none;
+}
+
+.btn-secondary{
+border:1px solid #000;
+color:#000;
+margin-right:15px;
+}
+
+.secure-note{
+margin-top:30px;
+font-size:13px;
+color:#777;
+text-align:center;
+}
+
+.footer{
+margin-top:80px;
+padding:40px 0;
+text-align:center;
+color:#777;
+font-size:13px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.payment-box{padding:30px;}
+}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+<nav class="nav-menu">
+<a href="index.html">Accueil</a>
+<a href="tracking.html">Suivi</a>
+<a href="enterprise.html">Entreprise</a>
+</nav>
+</div>
+</header>
+
+<section class="section">
+<div class="container">
+
+<div class="payment-box">
+
+<div class="badge">Paiement sécurisé</div>
+
+<h1>Finaliser votre paiement</h1>
+
+<div class="total-box">
+Montant à payer<br><br>
+<span>18 000 BIF</span>
+</div>
+
+<div class="payment-method">
+
+<label class="method-card">
+<input type="radio" name="payment" value="lumicash">
+Lumicash
+</label>
+
+<label class="method-card">
+<input type="radio" name="payment" value="ecocash">
+Ecocash
+</label>
+
+<label class="method-card">
+<input type="radio" name="payment" value="enoti">
+eNoti
+</label>
+
+<label class="method-card">
+<input type="radio" name="payment" value="cod">
+Paiement à la livraison
+</label>
+
+</div>
+
+<input type="text" placeholder="Numéro Mobile Money (si applicable)">
+
+<div style="text-align:center;">
+<a href="confirmation.html" class="btn btn-secondary">Retour</a>
+<button class="btn btn-primary" onclick="generateTracking()">
+Confirmer & Générer Tracking
+</button>
+</div>
+
+<div class="secure-note">
+Transaction protégée – Ciza Logistics Secure Payment Gateway
+</div>
+
+</div>
+
+</div>
+</section>
+
+<footer class="footer">
+© 2026 Ciza Logistics – Paiement sécurisé
+</footer>
+
+<script>
+function generateTracking(){
+window.location.href = "tracking-success.html";
+}
+</script>
+
+</body>
+</html>
