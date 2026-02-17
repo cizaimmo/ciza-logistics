@@ -14,7 +14,7 @@ html{scroll-behavior:smooth;}
 body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
 .container{width:92%;max-width:1200px;margin:auto;}
 
-/* ===== HEADER ===== */
+/* HEADER */
 .main-header{
 position:fixed;width:100%;background:rgba(0,0,0,0.98);
 padding:28px 0;z-index:1000;
@@ -24,7 +24,7 @@ display:flex;justify-content:space-between;align-items:center;gap:18px;
 }
 .logo img{height:110px;display:block;}
 
-.nav-menu{display:flex;gap:28px;align-items:center;}
+.nav-menu{display:flex;gap:24px;align-items:center;}
 .nav-menu a{
 text-decoration:none;color:#fff;text-transform:uppercase;
 font-size:13px;letter-spacing:1px;white-space:nowrap;
@@ -71,62 +71,67 @@ text-decoration:none;color:#fff;padding:12px;border-radius:14px;
 background:rgba(255,255,255,0.05);text-transform:uppercase;font-size:12px;
 }
 .mobile-links a:hover{background:rgba(212,175,55,0.12);color:#D4AF37;}
-
 .menu-open .mobile-menu-overlay{opacity:1;pointer-events:auto;}
 .menu-open .mobile-menu{transform:translateX(0);}
 
-/* ===== HERO ===== */
+/* HERO */
 .hero{
 height:100vh;
 background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/91cbea8b2aed94d2ea69ceffcee1e0b096e2ca0b/entreprise-hero.png') center/cover no-repeat;
 display:flex;align-items:center;padding-top:200px;
 }
 .hero-overlay{
-width:100%;background:linear-gradient(180deg,rgba(0,0,0,0.82),rgba(0,0,0,0.60));
+width:100%;background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.60));
 padding:90px 0;
 }
 .hero-content{
-color:#fff;max-width:780px;padding:26px;border-radius:22px;
-background:rgba(0,0,0,0.22);
-border:1px solid rgba(255,255,255,0.10);
-box-shadow:0 30px 90px rgba(0,0,0,0.45);
+color:#fff;max-width:820px;padding:28px;border-radius:22px;
+background:rgba(0,0,0,0.25);
+border:1px solid rgba(255,255,255,0.12);
+box-shadow:0 40px 100px rgba(0,0,0,0.5);
+}
+.hero-badge{
+display:inline-block;margin-bottom:15px;
+padding:6px 14px;border-radius:999px;
+border:1px solid rgba(212,175,55,0.5);
+color:#D4AF37;font-size:12px;letter-spacing:1px;text-transform:uppercase;
 }
 .hero h1{font-size:54px;margin-bottom:14px;}
-.hero p{font-size:20px;margin-bottom:22px;color:#e7e7e7;}
+.hero p{font-size:20px;margin-bottom:24px;color:#e7e7e7;}
 
 .btn{
 display:inline-block;padding:15px 30px;border-radius:16px;
-text-decoration:none;margin:10px 10px 0 0;
-cursor:pointer;
+text-decoration:none;margin:10px 10px 0 0;cursor:pointer;
 }
 .btn-primary{background:#D4AF37;color:#000;font-weight:900;}
 .btn-outline{border:1px solid #fff;color:#fff;}
+.btn-dark{border:1px solid #D4AF37;color:#D4AF37;}
 
-/* ===== SECTIONS ===== */
 .section{padding:110px 0;}
 .section h2{text-align:center;margin-bottom:50px;font-size:32px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:28px;}
 
 .card{
 background:#fff;padding:40px;border-radius:22px;
 box-shadow:0 30px 70px rgba(0,0,0,0.10);
 transition:0.25s;
+text-align:center;
 }
 .card:hover{transform:translateY(-6px);box-shadow:0 40px 90px rgba(0,0,0,0.14);}
 
 .dark{background:#000;color:#fff;}
 .dark .card{background:#111;color:#fff;border:1px solid rgba(212,175,55,0.20);}
 
-/* Reveal */
 .reveal{opacity:0;transform:translateY(30px);transition:0.6s;}
 .reveal.show{opacity:1;transform:translateY(0);}
 
-/* ===== FORM ===== */
+/* FORM */
 .form-box{
 background:#111;color:#fff;padding:40px;border-radius:22px;
 box-shadow:0 30px 90px rgba(0,0,0,0.45);
 }
-.form-box input,.form-box textarea{
+.form-box input,.form-box select,.form-box textarea{
 width:100%;padding:14px;margin-bottom:16px;
 border-radius:14px;border:none;
 }
@@ -150,7 +155,7 @@ opacity:0;transform:scaleX(0.7);transition:0.8s;
 .logo img{height:78px;}
 .nav-menu{display:none;}
 .hamburger{display:flex;}
-.grid-3,.footer-grid{grid-template-columns:1fr;}
+.grid-3,.grid-4,.footer-grid{grid-template-columns:1fr;}
 .hero{height:auto;padding-top:210px;}
 .hero h1{font-size:34px;}
 .btn{display:block;width:100%;text-align:center;}
@@ -165,10 +170,10 @@ opacity:0;transform:scaleX(0.7);transition:0.8s;
 <div class="mobile-menu">
 <div class="mobile-links">
 <a href="index.html">Accueil</a>
-<a href="#enterprise">Entreprise</a>
-<a href="#form">Contact</a>
 <a href="create.html">Créer un envoi</a>
 <a href="tracking.html">Suivre un colis</a>
+<a href="#enterprise">Entreprise</a>
+<a href="#form">Contact</a>
 </div>
 </div>
 
@@ -180,6 +185,8 @@ opacity:0;transform:scaleX(0.7);transition:0.8s;
 
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
+<a href="create.html">Créer un envoi</a>
+<a href="tracking.html">Suivi colis</a>
 <a href="#enterprise">Entreprise</a>
 <a href="#form" class="btn-track">Contact</a>
 
@@ -197,38 +204,63 @@ opacity:0;transform:scaleX(0.7);transition:0.8s;
 <div class="hero-overlay">
 <div class="container">
 <div class="hero-content reveal">
+<div class="hero-badge">National B2B Infrastructure</div>
 <h1 data-fr="Enterprise Division" data-en="Enterprise Division">Enterprise Division</h1>
-<p data-fr="Solutions logistiques dédiées aux entreprises et institutions au Burundi."
-data-en="Logistics solutions dedicated to enterprises and institutions in Burundi.">
-Solutions logistiques dédiées aux entreprises et institutions au Burundi.
+<p data-fr="Infrastructure logistique nationale conçue pour les entreprises, institutions et partenaires stratégiques au Burundi."
+data-en="National logistics infrastructure built for enterprises, institutions and strategic partners in Burundi.">
+Infrastructure logistique nationale conçue pour les entreprises, institutions et partenaires stratégiques au Burundi.
 </p>
-<a href="#form" class="btn btn-primary" data-fr="Ouvrir un compte entreprise" data-en="Open Enterprise Account">Ouvrir un compte entreprise</a>
-<a href="#form" class="btn btn-outline" data-fr="Demander consultation" data-en="Request Consultation">Demander consultation</a>
+<a href="tracking.html" class="btn btn-dark">Suivi colis</a>
+<a href="#form" class="btn btn-primary">Ouvrir un compte</a>
 </div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 class="reveal">Performance & Coordination</h2>
+<div class="grid-4">
+<div class="card reveal"><h3>18</h3><p>Provinces couvertes</p></div>
+<div class="card reveal"><h3>24h</h3><p>Coordination nationale</p></div>
+<div class="card reveal"><h3>99%</h3><p>Confirmation livraison</p></div>
+<div class="card reveal"><h3>B2B</h3><p>Canal dédié entreprises</p></div>
 </div>
 </div>
 </section>
 
 <section id="enterprise" class="section dark">
 <div class="container">
-<h2 class="reveal" data-fr="Solutions B2B" data-en="B2B Solutions">Solutions B2B</h2>
+<h2 class="reveal">SLA & Conformité</h2>
 <div class="grid-3">
-<div class="card reveal"><h3 data-fr="Gestion Multi-Envois" data-en="Multi-Shipment Management">Gestion Multi-Envois</h3></div>
-<div class="card reveal"><h3 data-fr="Suivi Centralisé" data-en="Centralized Tracking">Suivi Centralisé</h3></div>
-<div class="card reveal"><h3 data-fr="Accords de Service" data-en="Service Agreements">Accords de Service</h3></div>
+<div class="card reveal"><h3>Traçabilité</h3></div>
+<div class="card reveal"><h3>Archivage</h3></div>
+<div class="card reveal"><h3>Protocoles SLA</h3></div>
 </div>
 </div>
 </section>
 
 <section id="form" class="section">
 <div class="container reveal">
-<h2 data-fr="Demande Entreprise" data-en="Enterprise Request">Demande Entreprise</h2>
+<h2>Demande Enterprise</h2>
 <div class="form-box">
 <input type="text" placeholder="Nom entreprise" required>
 <input type="text" placeholder="Responsable" required>
 <input type="email" placeholder="Email professionnel" required>
+<select>
+<option>Type organisation</option>
+<option>Entreprise privée</option>
+<option>Institution publique</option>
+<option>ONG</option>
+</select>
+<select>
+<option>Volume mensuel estimé</option>
+<option>0-50</option>
+<option>50-200</option>
+<option>200+</option>
+</select>
 <textarea rows="4" placeholder="Description besoins"></textarea>
-<button class="btn btn-primary" onclick="submitForm()" data-fr="Envoyer la demande" data-en="Submit Request">Envoyer la demande</button>
+<button class="btn btn-primary" onclick="submitForm()">Envoyer la demande</button>
 <div class="success-msg" id="successMsg">Demande envoyée avec succès.</div>
 </div>
 </div>
@@ -267,36 +299,17 @@ document.body.classList.add('menu-open');
 document.getElementById('overlay').onclick=function(){
 document.body.classList.remove('menu-open');
 };
-
 function submitForm(){
 document.getElementById('successMsg').style.display='block';
 }
-
 const observer=new IntersectionObserver(entries=>{
 entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show');});
 });
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-
 const divider=document.getElementById('divider');
 new IntersectionObserver(entries=>{
 entries.forEach(e=>{if(e.isIntersecting)divider.classList.add('show');});
 }).observe(divider);
-
-const frBtn=document.getElementById('frBtn');
-const enBtn=document.getElementById('enBtn');
-
-function setLang(lang){
-document.documentElement.lang=lang;
-document.querySelectorAll('[data-fr]').forEach(el=>{
-el.textContent=(lang==='fr')?el.getAttribute('data-fr'):el.getAttribute('data-en');
-});
-frBtn.classList.toggle('active',lang==='fr');
-enBtn.classList.toggle('active',lang==='en');
-localStorage.setItem('ciza_lang',lang);
-}
-frBtn.onclick=()=>setLang('fr');
-enBtn.onclick=()=>setLang('en');
-setLang(localStorage.getItem('ciza_lang')||'fr');
 </script>
 
 </body>
