@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Confirmation | Ciza Logistics</title>
+<meta name="description" content="Confirmation de votre demande d’envoi Ciza Logistics.">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f6f7f9;
+color:#111;
+}
+.container{
+width:92%;
+max-width:1100px;
+margin:auto;
+}
+
+/* HEADER */
+.main-header{
+position:fixed;
+width:100%;
+background:#000;
+padding:22px 0;
+z-index:1000;
+}
+.header-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.logo img{height:80px;}
+.nav-menu{
+display:flex;
+gap:24px;
+}
+.nav-menu a{
+color:#fff;
+text-decoration:none;
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+.nav-menu a:hover{color:#D4AF37;}
+
+/* SECTION */
+.section{
+padding:180px 0 100px;
+}
+
+.confirmation-box{
+background:#fff;
+padding:50px;
+border-radius:22px;
+box-shadow:0 40px 100px rgba(0,0,0,0.08);
+border:1px solid rgba(212,175,55,0.2);
+}
+
+.badge{
+display:inline-block;
+padding:6px 14px;
+border-radius:999px;
+border:1px solid #D4AF37;
+color:#D4AF37;
+font-size:12px;
+letter-spacing:1px;
+margin-bottom:20px;
+}
+
+h1{
+font-size:34px;
+margin-bottom:30px;
+}
+
+.summary-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+margin-bottom:40px;
+}
+
+.card{
+background:#fafafa;
+padding:25px;
+border-radius:16px;
+border:1px solid rgba(0,0,0,0.05);
+}
+
+.card h3{
+margin-bottom:15px;
+font-size:16px;
+color:#D4AF37;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+
+.total-box{
+background:#000;
+color:#fff;
+padding:30px;
+border-radius:18px;
+text-align:center;
+margin-bottom:30px;
+}
+
+.total-box span{
+font-size:28px;
+font-weight:bold;
+}
+
+.btn{
+display:inline-block;
+padding:16px 40px;
+border-radius:14px;
+text-decoration:none;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-primary{
+background:#D4AF37;
+color:#000;
+}
+
+.btn-secondary{
+border:1px solid #000;
+color:#000;
+margin-right:15px;
+}
+
+.footer{
+margin-top:80px;
+padding:40px 0;
+text-align:center;
+color:#777;
+font-size:13px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.summary-grid{grid-template-columns:1fr;}
+.confirmation-box{padding:30px;}
+}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+<nav class="nav-menu">
+<a href="index.html">Accueil</a>
+<a href="tracking.html">Suivi</a>
+<a href="enterprise.html">Entreprise</a>
+</nav>
+</div>
+</header>
+
+<section class="section">
+<div class="container">
+
+<div class="confirmation-box">
+
+<div class="badge">Résumé de votre envoi</div>
+
+<h1>Confirmation avant paiement</h1>
+
+<div class="summary-grid">
+
+<div class="card">
+<h3>Expéditeur</h3>
+<p>Nom : Client Test</p>
+<p>Téléphone : +257 79 00 00 00</p>
+<p>Ville départ : Bujumbura</p>
+</div>
+
+<div class="card">
+<h3>Destinataire</h3>
+<p>Ville destination : Gitega</p>
+<p>Type : Colis standard</p>
+<p>Poids estimé : 3 kg</p>
+</div>
+
+</div>
+
+<div class="total-box">
+Montant estimé<br><br>
+<span>18 000 BIF</span>
+</div>
+
+<div style="text-align:center;">
+<a href="parcel.html" class="btn btn-secondary">Modifier</a>
+<a href="payment.html" class="btn btn-primary">Procéder au paiement</a>
+</div>
+
+</div>
+
+</div>
+</section>
+
+<footer class="footer">
+© 2026 Ciza Logistics – Confirmation sécurisée
+</footer>
+
+</body>
+</html>
