@@ -280,7 +280,61 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
   color:#D4AF37;
   background:rgba(212,175,55,0.10);
 }
+.service-card{
+text-decoration:none;
+color:inherit;
+position:relative;
+overflow:hidden;
+transition:0.35s;
+}
 
+.service-card::after{
+content:"";
+position:absolute;
+bottom:0;
+left:0;
+width:0%;
+height:3px;
+background:#D4AF37;
+transition:0.4s;
+}
+
+.service-card:hover{
+transform:translateY(-8px);
+box-shadow:0 50px 120px rgba(0,0,0,0.15);
+}
+
+.service-card:hover::after{
+width:100%;
+}
+
+.card-inner{
+display:flex;
+flex-direction:column;
+height:100%;
+}
+
+.learn-more{
+margin-top:auto;
+font-size:13px;
+letter-spacing:1px;
+color:#D4AF37;
+transition:0.3s;
+}
+
+.service-card:hover .learn-more{
+transform:translateX(6px);
+}
+
+.tag{
+display:inline-block;
+margin-top:15px;
+font-size:12px;
+padding:4px 10px;
+border-radius:999px;
+background:rgba(212,175,55,0.15);
+color:#D4AF37;
+}
 /* Process */
 .process-step{
   background:#fff;
@@ -470,7 +524,7 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
   </div>
 </section>
 
-  <!-- SERVICES -->
+<!-- SERVICES -->
 <section id="services" class="section">
   <div class="container">
     <h2 data-fr="Nos Solutions" data-en="Our Solutions">Nos Solutions</h2>
@@ -483,180 +537,63 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
     <div class="grid-3">
 
       <!-- CIZA PARCEL -->
-      <a href="create.html" class="card" style="text-decoration:none;color:inherit;">
-        <h3 data-fr="📦 Ciza Parcel" data-en="📦 Ciza Parcel">📦 Ciza Parcel</h3>
-        <p data-fr="Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé."
-           data-en="Nationwide delivery with tracking, delivery confirmation, and standardized service protocol.">
-          Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé.
-        </p>
-        <span class="tag" data-fr="Livraison" data-en="Delivery">Livraison</span>
+      <a href="create.html" class="card service-card">
+        <div class="card-inner">
+          <h3 data-fr="📦 Ciza Parcel" data-en="📦 Ciza Parcel">📦 Ciza Parcel</h3>
+          <p data-fr="Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé."
+             data-en="Nationwide delivery with tracking, delivery confirmation, and standardized service protocol.">
+            Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé.
+          </p>
+          <span class="tag" data-fr="Livraison" data-en="Delivery">Livraison</span>
+
+          <div class="learn-more"
+               data-fr="En savoir plus →"
+               data-en="Learn more →">
+            En savoir plus →
+          </div>
+        </div>
       </a>
 
       <!-- CIZA FREIGHT -->
-      <a href="create.html?type=freight" class="card" style="text-decoration:none;color:inherit;">
-        <h3 data-fr="🚛 Ciza Freight" data-en="🚛 Ciza Freight">🚛 Ciza Freight</h3>
-        <p data-fr="Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement."
-           data-en="Inter-provincial freight transport for businesses, commerce, and supply chains.">
-          Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement.
-        </p>
-        <span class="tag" data-fr="Marchandises" data-en="Freight">Marchandises</span>
+      <a href="create.html?type=freight" class="card service-card">
+        <div class="card-inner">
+          <h3 data-fr="🚛 Ciza Freight" data-en="🚛 Ciza Freight">🚛 Ciza Freight</h3>
+          <p data-fr="Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement."
+             data-en="Inter-provincial freight transport for businesses, commerce, and supply chains.">
+            Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement.
+          </p>
+          <span class="tag" data-fr="Marchandises" data-en="Freight">Marchandises</span>
+
+          <div class="learn-more"
+               data-fr="En savoir plus →"
+               data-en="Learn more →">
+            En savoir plus →
+          </div>
+        </div>
       </a>
 
       <!-- SOLUTIONS ENTREPRISES -->
-      <a href="enterprise.html" class="card" style="text-decoration:none;color:inherit;">
-        <h3 data-fr="🏢 Solutions Entreprises" data-en="🏢 Enterprise Solutions">🏢 Solutions Entreprises</h3>
-        <p data-fr="Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel."
-           data-en="Dedicated channel, bulk shipments, centralized tracking, and operational support.">
-          Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel.
-        </p>
-        <span class="tag" data-fr="B2B" data-en="B2B">B2B</span>
+      <a href="enterprise.html" class="card service-card">
+        <div class="card-inner">
+          <h3 data-fr="🏢 Solutions Entreprises" data-en="🏢 Enterprise Solutions">🏢 Solutions Entreprises</h3>
+          <p data-fr="Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel."
+             data-en="Dedicated channel, bulk shipments, centralized tracking, and operational support.">
+            Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel.
+          </p>
+          <span class="tag" data-fr="B2B" data-en="B2B">B2B</span>
+
+          <div class="learn-more"
+               data-fr="En savoir plus →"
+               data-en="Learn more →">
+            En savoir plus →
+          </div>
+        </div>
       </a>
 
     </div>
   </div>
 </section>
-
-<!-- INFRASTRUCTURE -->
-<section id="infrastructure" class="section dark">
-  <div class="container">
-    <h2 data-fr="Infrastructure Nationale" data-en="National Infrastructure">Infrastructure Nationale</h2>
-    <p class="section-sub"
-       data-fr="Un réseau structuré couvrant l’ensemble du Burundi, conçu pour assurer la continuité du service, la coordination provinciale et la qualité opérationnelle."
-       data-en="A structured network covering Burundi, designed for service continuity, provincial coordination, and operational quality.">
-      Un réseau structuré couvrant l’ensemble du Burundi, conçu pour assurer la continuité du service, la coordination provinciale et la qualité opérationnelle.
-    </p>
-
-    <div class="grid-3">
-      <div class="card dark-card">
-        <h3 data-fr="Réseau Provincial" data-en="Provincial Network">Réseau Provincial</h3>
-        <p data-fr="Couverture des 18 provinces avec organisation par zones et circuits de distribution."
-           data-en="Coverage of 18 provinces with zone-based organization and distribution routes.">
-          Couverture des 18 provinces avec organisation par zones et circuits de distribution.
-        </p>
-        <span class="tag">18</span>
-      </div>
-
-      <div class="card dark-card">
-        <h3 data-fr="Coordination & Traçabilité" data-en="Coordination & Traceability">Coordination & Traçabilité</h3>
-        <p data-fr="Un protocole de suivi et de validation pour chaque étape, du dépôt à la livraison."
-           data-en="A tracking and validation protocol at every step from pickup to delivery.">
-          Un protocole de suivi et de validation pour chaque étape, du dépôt à la livraison.
-        </p>
-        <span class="tag" data-fr="Suivi" data-en="Tracking">Suivi</span>
-      </div>
-
-      <div class="card dark-card">
-        <h3 data-fr="Preuve de Service" data-en="Proof of Service">Preuve de Service</h3>
-        <p data-fr="Confirmation de réception, enregistrement des statuts et archivage des preuves de livraison."
-           data-en="Delivery confirmation, status records, and archiving of proof of delivery.">
-          Confirmation de réception, enregistrement des statuts et archivage des preuves de livraison.
-        </p>
-        <span class="tag" data-fr="POD" data-en="POD">POD</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS (DETAILED B) -->
-<section id="process" class="section">
-  <div class="container">
-    <h2 data-fr="Processus Opérationnel National" data-en="National Operating Process">Processus Opérationnel National</h2>
-    <p class="section-sub"
-       data-fr="Un processus structuré garantissant la traçabilité, la qualité de service et la conformité à chaque étape."
-       data-en="A structured process ensuring traceability, service quality, and compliance at every step.">
-      Un processus structuré garantissant la traçabilité, la qualité de service et la conformité à chaque étape.
-    </p>
-
-    <div class="grid-3">
-      <div class="process-step">
-        <h4 data-fr="1. Enregistrement" data-en="1. Registration">1. Enregistrement</h4>
-        <p data-fr="Création de l’envoi via portail client ou canal entreprise, avec vérification des informations essentielles."
-           data-en="Shipment creation via customer portal or enterprise channel, with verification of essential details.">
-          Création de l’envoi via portail client ou canal entreprise, avec vérification des informations essentielles.
-        </p>
-      </div>
-
-      <div class="process-step">
-        <h4 data-fr="2. Validation & Attribution" data-en="2. Validation & Assignment">2. Validation & Attribution</h4>
-        <p data-fr="Affectation au circuit provincial approprié et désignation d’un responsable opérationnel."
-           data-en="Assignment to the appropriate provincial route and designation of an operational owner.">
-          Affectation au circuit provincial approprié et désignation d’un responsable opérationnel.
-        </p>
-      </div>
-
-      <div class="process-step">
-        <h4 data-fr="3. Prise en charge" data-en="3. Pickup">3. Prise en charge</h4>
-        <p data-fr="Réception et intégration de l’envoi dans le réseau, avec enregistrement des statuts de service."
-           data-en="Reception and onboarding into the network with service status records.">
-          Réception et intégration de l’envoi dans le réseau, avec enregistrement des statuts de service.
-        </p>
-      </div>
-
-      <div class="process-step">
-        <h4 data-fr="4. Transit inter-provincial" data-en="4. Inter-provincial Transit">4. Transit inter-provincial</h4>
-        <p data-fr="Acheminement via circuits opérationnels et coordination entre zones pour continuité du service."
-           data-en="Routing through operational circuits with zone coordination for service continuity.">
-          Acheminement via circuits opérationnels et coordination entre zones pour continuité du service.
-        </p>
-      </div>
-
-      <div class="process-step">
-        <h4 data-fr="5. Livraison officielle" data-en="5. Official Delivery">5. Livraison officielle</h4>
-        <p data-fr="Remise au destinataire avec confirmation formelle de réception et clôture du statut de livraison."
-           data-en="Handover to the recipient with formal confirmation and delivery status closure.">
-          Remise au destinataire avec confirmation formelle de réception et clôture du statut de livraison.
-        </p>
-      </div>
-
-      <div class="process-step">
-        <h4 data-fr="6. Confirmation & archivage" data-en="6. Confirmation & Archiving">6. Confirmation & archivage</h4>
-        <p data-fr="Archivage des preuves et consolidation des informations pour suivi, qualité et conformité."
-           data-en="Archiving of proofs and consolidation of records for tracking, quality, and compliance.">
-          Archivage des preuves et consolidation des informations pour suivi, qualité et conformité.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ENTERPRISE -->
-<section id="enterprise" class="section dark">
-  <div class="container">
-    <h2 data-fr="Entreprises & Institutions" data-en="Enterprises & Institutions">Entreprises & Institutions</h2>
-    <p class="section-sub"
-       data-fr="Un canal dédié pour les organisations : coordination, suivi centralisé, volumes et accompagnement opérationnel."
-       data-en="A dedicated channel for organizations: coordination, centralized tracking, volumes, and operational support.">
-      Un canal dédié pour les organisations : coordination, suivi centralisé, volumes et accompagnement opérationnel.
-    </p>
-
-    <div class="grid-2">
-      <div class="card dark-card">
-        <h3 data-fr="Portail Entreprise" data-en="Enterprise Portal">Portail Entreprise</h3>
-        <p data-fr="Gestion multi-envois, états consolidés, reporting et organisation par équipes."
-           data-en="Bulk shipments, consolidated statuses, reporting, and team-based organization.">
-          Gestion multi-envois, états consolidés, reporting et organisation par équipes.
-        </p>
-        <span class="tag" data-fr="B2B" data-en="B2B">B2B</span>
-      </div>
-
-      <div class="card dark-card">
-        <h3 data-fr="Accords de Service" data-en="Service Agreements">Accords de Service</h3>
-        <p data-fr="Cadre opérationnel clair, engagements de qualité et suivi dédié pour partenaires stratégiques."
-           data-en="Clear operational framework, quality commitments, and dedicated support for strategic partners.">
-          Cadre opérationnel clair, engagements de qualité et suivi dédié pour partenaires stratégiques.
-        </p>
-        <span class="tag" data-fr="SLA" data-en="SLA">SLA</span>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin-top:28px;">
-      <a href="enterprise.html" class="btn btn-primary"
-         data-fr="Demander un compte entreprise"
-         data-en="Request an enterprise account">Demander un compte entreprise</a>
-    </div>
-  </div>
-</section>
-
+  
 <!-- PROVINCES -->
 <section id="provinces" class="section">
   <div class="container">
