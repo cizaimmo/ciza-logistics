@@ -4,175 +4,237 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Solutions Entreprises | Ciza Logistics</title>
-<meta name="description" content="Solutions logistiques dédiées aux entreprises et institutions au Burundi. Infrastructure nationale, coordination structurée et service premium.">
-
+<title>Ciza Logistics – Enterprise Division | Solutions Entreprises & Institutions</title>
+<meta name="description" content="Solutions logistiques dédiées aux entreprises et institutions au Burundi. Infrastructure nationale, coordination B2B et traçabilité sécurisée.">
 <link rel="canonical" href="https://cizalogistics.africa/enterprise.html">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
 .container{width:92%;max-width:1200px;margin:auto;}
 
-/* HEADER */
-.main-header{position:fixed;width:100%;background:#000;padding:28px 0;z-index:1000;}
-.header-container{display:flex;justify-content:space-between;align-items:center;}
-.logo img{height:110px;}
-.nav-menu{display:flex;gap:28px;align-items:center;}
-.nav-menu a{text-decoration:none;color:#fff;text-transform:uppercase;font-size:13px;}
-.nav-menu a:hover{color:#D4AF37;}
-.btn-track{border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;color:#D4AF37;text-decoration:none;}
+/* ===== HEADER ===== */
+.main-header{
+position:fixed;width:100%;background:rgba(0,0,0,0.98);
+padding:28px 0;z-index:1000;
+}
+.header-container{
+display:flex;justify-content:space-between;align-items:center;gap:18px;
+}
+.logo img{height:110px;display:block;}
 
-/* HAMBURGER */
-.hamburger{display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,0.2);background:transparent;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;}
+.nav-menu{display:flex;gap:28px;align-items:center;}
+.nav-menu a{
+text-decoration:none;color:#fff;text-transform:uppercase;
+font-size:13px;letter-spacing:1px;white-space:nowrap;
+}
+.nav-menu a:hover{color:#D4AF37;}
+
+.btn-track{
+border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;
+color:#D4AF37;text-decoration:none;text-transform:uppercase;font-size:12px;
+}
+
+.lang-switch{
+border:1px solid rgba(212,175,55,0.7);
+padding:7px 14px;border-radius:999px;color:#fff;
+background:rgba(255,255,255,0.04);cursor:pointer;
+}
+.lang-switch span{font-size:12px;text-transform:uppercase;}
+.lang-switch span.active{color:#D4AF37;font-weight:700;}
+
+.hamburger{
+display:none;width:44px;height:44px;border:1px solid rgba(255,255,255,0.18);
+background:transparent;border-radius:14px;cursor:pointer;
+align-items:center;justify-content:center;
+}
 .hamburger span{width:20px;height:2px;background:#fff;position:relative;display:block;}
-.hamburger span::before,.hamburger span::after{content:"";position:absolute;left:0;width:20px;height:2px;background:#fff;}
+.hamburger span::before,.hamburger span::after{
+content:"";width:20px;height:2px;background:#fff;position:absolute;left:0;}
 .hamburger span::before{top:-6px;}
 .hamburger span::after{top:6px;}
 
-.mobile-menu{position:fixed;top:0;right:0;width:85%;max-width:320px;height:100%;background:#000;transform:translateX(100%);transition:0.3s ease;padding:40px;z-index:2000;}
-.mobile-menu a{display:block;color:#fff;text-decoration:none;margin-bottom:24px;text-transform:uppercase;}
-.mobile-menu a:hover{color:#D4AF37;}
+.mobile-menu-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.72);
+opacity:0;pointer-events:none;transition:0.25s;z-index:1100;
+}
+.mobile-menu{
+position:fixed;top:0;right:0;height:100%;
+width:min(360px,88vw);background:#0b0b0b;
+transform:translateX(100%);transition:0.25s;z-index:1200;
+padding:20px;border-left:1px solid rgba(212,175,55,0.25);
+}
+.mobile-links{display:flex;flex-direction:column;gap:12px;margin-top:30px;}
+.mobile-links a{
+text-decoration:none;color:#fff;padding:12px;border-radius:14px;
+background:rgba(255,255,255,0.05);text-transform:uppercase;font-size:12px;
+}
+.mobile-links a:hover{background:rgba(212,175,55,0.12);color:#D4AF37;}
+
+.menu-open .mobile-menu-overlay{opacity:1;pointer-events:auto;}
 .menu-open .mobile-menu{transform:translateX(0);}
 
-/* HERO */
-.hero{height:75vh;background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/91cbea8b2aed94d2ea69ceffcee1e0b096e2ca0b/entreprise-hero.png') center/cover no-repeat;display:flex;align-items:center;padding-top:180px;}
-.hero-overlay{width:100%;background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.65));padding:90px 0;}
-.hero-content{color:#fff;max-width:780px;}
-.hero h1{font-size:48px;margin-bottom:18px;}
-.hero p{font-size:18px;margin-bottom:24px;color:#e7e7e7;}
+/* ===== HERO ===== */
+.hero{
+height:100vh;
+background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/91cbea8b2aed94d2ea69ceffcee1e0b096e2ca0b/entreprise-hero.png') center/cover no-repeat;
+display:flex;align-items:center;padding-top:200px;
+}
+.hero-overlay{
+width:100%;background:linear-gradient(180deg,rgba(0,0,0,0.82),rgba(0,0,0,0.60));
+padding:90px 0;
+}
+.hero-content{
+color:#fff;max-width:780px;padding:26px;border-radius:22px;
+background:rgba(0,0,0,0.22);
+border:1px solid rgba(255,255,255,0.10);
+box-shadow:0 30px 90px rgba(0,0,0,0.45);
+}
+.hero h1{font-size:54px;margin-bottom:14px;}
+.hero p{font-size:20px;margin-bottom:22px;color:#e7e7e7;}
 
-.btn{display:inline-block;padding:14px 28px;border-radius:16px;text-decoration:none;margin:8px 10px 0 0;}
+.btn{
+display:inline-block;padding:15px 30px;border-radius:16px;
+text-decoration:none;margin:10px 10px 0 0;
+cursor:pointer;
+}
 .btn-primary{background:#D4AF37;color:#000;font-weight:900;}
 .btn-outline{border:1px solid #fff;color:#fff;}
 
-/* SECTIONS */
+/* ===== SECTIONS ===== */
 .section{padding:110px 0;}
-.section h2{text-align:center;margin-bottom:50px;font-size:30px;}
+.section h2{text-align:center;margin-bottom:50px;font-size:32px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;}
 
-/* CARDS */
 .card{
-  background:#fff;
-  padding:36px;
-  border-radius:22px;
-  box-shadow:0 30px 70px rgba(0,0,0,0.08);
-  transition:all 0.4s ease;
+background:#fff;padding:40px;border-radius:22px;
+box-shadow:0 30px 70px rgba(0,0,0,0.10);
+transition:0.25s;
 }
-.card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 45px 90px rgba(0,0,0,0.15);
-}
+.card:hover{transform:translateY(-6px);box-shadow:0 40px 90px rgba(0,0,0,0.14);}
 
-/* DARK SECTION */
 .dark{background:#000;color:#fff;}
-.dark .card{background:#111;color:#fff;border:1px solid rgba(212,175,55,0.2);}
-.dark .card p{color:#d9d9d9;}
+.dark .card{background:#111;color:#fff;border:1px solid rgba(212,175,55,0.20);}
 
-/* FORM */
+/* Reveal */
+.reveal{opacity:0;transform:translateY(30px);transition:0.6s;}
+.reveal.show{opacity:1;transform:translateY(0);}
+
+/* ===== FORM ===== */
 .form-box{
-  max-width:700px;
-  margin:auto;
-  background:#111;
-  padding:40px;
-  border-radius:22px;
-  color:#fff;
+background:#111;color:#fff;padding:40px;border-radius:22px;
+box-shadow:0 30px 90px rgba(0,0,0,0.45);
 }
 .form-box input,.form-box textarea{
-  width:100%;
-  padding:12px;
-  margin-bottom:16px;
-  border-radius:12px;
-  border:none;
+width:100%;padding:14px;margin-bottom:16px;
+border-radius:14px;border:none;
 }
-.form-box button{
-  background:#D4AF37;
-  border:none;
-  padding:14px 26px;
-  border-radius:14px;
-  font-weight:bold;
-  cursor:pointer;
-}
+.success-msg{display:none;color:#D4AF37;margin-top:10px;font-weight:bold;}
 
-/* DIVIDER */
 .footer-divider{
-  width:100%;
-  height:4px;
-  background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
+width:100%;height:4px;
+background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
+opacity:0;transform:scaleX(0.7);transition:0.8s;
 }
+.footer-divider.show{opacity:1;transform:scaleX(1);}
 
-/* FOOTER PREMIUM */
 .footer{background:#000;color:#fff;padding:80px 0 40px;}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:34px;}
 .footer-logo{height:85px;margin-bottom:16px;}
-.footer a{display:block;text-decoration:none;color:#ccc;margin-bottom:8px;font-size:14px;}
+.footer a{display:block;text-decoration:none;color:#cfcfcf;margin:8px 0;}
 .footer a:hover{color:#D4AF37;}
 .footer-bottom{text-align:center;margin-top:40px;color:#888;font-size:13px;}
 
-/* RESPONSIVE */
 @media(max-width:900px){
-  .nav-menu{display:none;}
-  .hamburger{display:flex;}
-  .hero{height:auto;padding-top:220px;}
-  .hero h1{font-size:32px;}
-  .grid-3,.footer-grid{grid-template-columns:1fr;}
-  .btn{display:block;width:100%;text-align:center;}
+.logo img{height:78px;}
+.nav-menu{display:none;}
+.hamburger{display:flex;}
+.grid-3,.footer-grid{grid-template-columns:1fr;}
+.hero{height:auto;padding-top:210px;}
+.hero h1{font-size:34px;}
+.btn{display:block;width:100%;text-align:center;}
+.section{padding:75px 0;}
 }
 </style>
 </head>
 
 <body>
 
+<div class="mobile-menu-overlay" id="overlay"></div>
+<div class="mobile-menu">
+<div class="mobile-links">
+<a href="index.html">Accueil</a>
+<a href="#enterprise">Entreprise</a>
+<a href="#form">Contact</a>
+<a href="create.html">Créer un envoi</a>
+<a href="tracking.html">Suivre un colis</a>
+</div>
+</div>
+
 <header class="main-header">
 <div class="container header-container">
-
 <div class="logo">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 </div>
 
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
-<a href="enterprise.html">Entreprise</a>
-<a href="tracking.html">Suivi</a>
-<a href="create.html" class="btn-track">Créer</a>
+<a href="#enterprise">Entreprise</a>
+<a href="#form" class="btn-track">Contact</a>
+
+<div class="lang-switch">
+<span id="frBtn" class="active">FR</span> | 
+<span id="enBtn">EN</span>
+</div>
 </nav>
 
-<button class="hamburger" id="menuBtn"><span></span></button>
-
+<button class="hamburger" id="hamburgerBtn"><span></span></button>
 </div>
 </header>
 
-<div class="mobile-menu" id="mobileMenu">
-<a href="index.html">Accueil</a>
-<a href="enterprise.html">Entreprise</a>
-<a href="tracking.html">Suivi</a>
-<a href="create.html">Créer</a>
-<a href="#form">Compte B2B</a>
-</div>
-
 <section class="hero">
 <div class="hero-overlay">
-<div class="container hero-content">
-<h1>Solutions Logistiques Entreprises</h1>
-<p>Infrastructure nationale dédiée aux organisations, coordination structurée et service premium.</p>
-<a href="#form" class="btn btn-primary">Demander une consultation</a>
-<a href="#form" class="btn btn-outline">Ouvrir un compte B2B</a>
-</div>
-</div>
-</section>
-
-<section class="section">
 <div class="container">
-<h2>Pourquoi Ciza Logistics</h2>
-<div class="grid-3">
-<div class="card"><h3>Infrastructure Nationale</h3><p>Couverture complète des 18 provinces.</p></div>
-<div class="card"><h3>Service Prioritaire</h3><p>Canal dédié entreprises et institutions.</p></div>
-<div class="card"><h3>Coordination Structurée</h3><p>Organisation adaptée aux volumes importants.</p></div>
+<div class="hero-content reveal">
+<h1 data-fr="Enterprise Division" data-en="Enterprise Division">Enterprise Division</h1>
+<p data-fr="Solutions logistiques dédiées aux entreprises et institutions au Burundi."
+data-en="Logistics solutions dedicated to enterprises and institutions in Burundi.">
+Solutions logistiques dédiées aux entreprises et institutions au Burundi.
+</p>
+<a href="#form" class="btn btn-primary" data-fr="Ouvrir un compte entreprise" data-en="Open Enterprise Account">Ouvrir un compte entreprise</a>
+<a href="#form" class="btn btn-outline" data-fr="Demander consultation" data-en="Request Consultation">Demander consultation</a>
+</div>
 </div>
 </div>
 </section>
 
-<div class="footer-divider"></div>
+<section id="enterprise" class="section dark">
+<div class="container">
+<h2 class="reveal" data-fr="Solutions B2B" data-en="B2B Solutions">Solutions B2B</h2>
+<div class="grid-3">
+<div class="card reveal"><h3 data-fr="Gestion Multi-Envois" data-en="Multi-Shipment Management">Gestion Multi-Envois</h3></div>
+<div class="card reveal"><h3 data-fr="Suivi Centralisé" data-en="Centralized Tracking">Suivi Centralisé</h3></div>
+<div class="card reveal"><h3 data-fr="Accords de Service" data-en="Service Agreements">Accords de Service</h3></div>
+</div>
+</div>
+</section>
+
+<section id="form" class="section">
+<div class="container reveal">
+<h2 data-fr="Demande Entreprise" data-en="Enterprise Request">Demande Entreprise</h2>
+<div class="form-box">
+<input type="text" placeholder="Nom entreprise" required>
+<input type="text" placeholder="Responsable" required>
+<input type="email" placeholder="Email professionnel" required>
+<textarea rows="4" placeholder="Description besoins"></textarea>
+<button class="btn btn-primary" onclick="submitForm()" data-fr="Envoyer la demande" data-en="Submit Request">Envoyer la demande</button>
+<div class="success-msg" id="successMsg">Demande envoyée avec succès.</div>
+</div>
+</div>
+</section>
+
+<div class="footer-divider" id="divider"></div>
 
 <footer class="footer">
 <div class="container footer-grid">
@@ -182,31 +244,59 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
 </div>
 <div>
 <h4>Entreprise</h4>
-<a href="enterprise.html">Solutions B2B</a>
-<a href="#form">Ouvrir un compte</a>
-</div>
-<div>
-<h4>Services</h4>
-<a href="create.html">Créer un envoi</a>
-<a href="tracking.html">Suivre un colis</a>
+<a href="enterprise.html">Accès Entreprise</a>
+<a href="index.html">Accueil</a>
 </div>
 <div>
 <h4>Légal</h4>
-<a href="#">Confidentialité</a>
-<a href="#">Conditions Générales</a>
+<a href="privacy.html">Confidentialité</a>
+<a href="terms.html">Conditions Générales</a>
 </div>
 <div>
 <h4>Contact</h4>
 <a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
-<p>Burundi</p>
 </div>
 </div>
 <div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
 </footer>
 
 <script>
-const btn=document.getElementById("menuBtn");
-btn.addEventListener("click",()=>{document.body.classList.toggle("menu-open");});
+document.getElementById('hamburgerBtn').onclick=function(){
+document.body.classList.add('menu-open');
+};
+document.getElementById('overlay').onclick=function(){
+document.body.classList.remove('menu-open');
+};
+
+function submitForm(){
+document.getElementById('successMsg').style.display='block';
+}
+
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show');});
+});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+const divider=document.getElementById('divider');
+new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting)divider.classList.add('show');});
+}).observe(divider);
+
+const frBtn=document.getElementById('frBtn');
+const enBtn=document.getElementById('enBtn');
+
+function setLang(lang){
+document.documentElement.lang=lang;
+document.querySelectorAll('[data-fr]').forEach(el=>{
+el.textContent=(lang==='fr')?el.getAttribute('data-fr'):el.getAttribute('data-en');
+});
+frBtn.classList.toggle('active',lang==='fr');
+enBtn.classList.toggle('active',lang==='en');
+localStorage.setItem('ciza_lang',lang);
+}
+frBtn.onclick=()=>setLang('fr');
+enBtn.onclick=()=>setLang('en');
+setLang(localStorage.getItem('ciza_lang')||'fr');
 </script>
 
 </body>
