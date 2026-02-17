@@ -13,7 +13,7 @@ html{scroll-behavior:smooth;}
 body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
 .container{width:92%;max-width:1200px;margin:auto;}
 
-/* HEADER (identique index) */
+/* HEADER */
 .main-header{
 position:fixed;width:100%;background:rgba(0,0,0,0.98);
 padding:28px 0;z-index:1000;
@@ -34,14 +34,6 @@ font-size:13px;letter-spacing:1px;white-space:nowrap;
 border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;
 color:#D4AF37;text-decoration:none;text-transform:uppercase;font-size:12px;
 }
-
-.lang-switch{
-border:1px solid rgba(212,175,55,0.7);
-padding:7px 14px;border-radius:999px;color:#fff;
-background:rgba(255,255,255,0.04);cursor:pointer;
-}
-.lang-switch span{font-size:12px;text-transform:uppercase;}
-.lang-switch span.active{color:#D4AF37;font-weight:700;}
 
 .hamburger{
 display:none;width:44px;height:44px;border:1px solid rgba(255,255,255,0.18);
@@ -100,7 +92,7 @@ text-decoration:none;margin:10px 10px 0 0;cursor:pointer;
 .btn-outline{border:1px solid #fff;color:#fff;}
 
 .section{padding:110px 0;}
-.section h2{text-align:center;margin-bottom:50px;font-size:32px;}
+.section h2{text-align:center;margin-bottom:40px;font-size:32px;}
 
 .form-box{
 background:#111;color:#fff;padding:40px;border-radius:22px;
@@ -111,7 +103,14 @@ width:100%;padding:14px;margin-bottom:16px;
 border-radius:14px;border:none;
 }
 
-/* FOOTER (identique index) */
+.support-box{
+margin-top:25px;
+font-size:14px;
+color:#D4AF37;
+text-align:center;
+}
+
+/* FOOTER */
 .footer-divider{
 width:100%;height:4px;
 background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
@@ -139,6 +138,15 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 
 <body>
 
+<div class="mobile-menu-overlay" id="overlay"></div>
+<div class="mobile-menu">
+<div class="mobile-links">
+<a href="index.html">Accueil</a>
+<a href="tracking.html">Suivi colis</a>
+<a href="enterprise.html">Entreprise</a>
+</div>
+</div>
+
 <header class="main-header">
 <div class="container header-container">
 <div class="logo">
@@ -152,7 +160,7 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <a href="#form" class="btn-track">Contact</a>
 </nav>
 
-<button class="hamburger"><span></span></button>
+<button class="hamburger" id="hamburgerBtn"><span></span></button>
 </div>
 </header>
 
@@ -173,16 +181,38 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <div class="container">
 <h2>Créer un envoi</h2>
 <div class="form-box">
+
+<select id="packageType">
+<option value="">Type d’envoi</option>
+<option value="enveloppe">Enveloppe</option>
+<option value="boite">Boîte</option>
+<option value="bidon">Bidon</option>
+</select>
+
+<div id="extraFields"></div>
+
 <input type="text" placeholder="Nom expéditeur">
 <input type="text" placeholder="Téléphone">
 <input type="text" placeholder="Ville départ">
 <input type="text" placeholder="Ville destination">
+
 <select>
 <option>Mode de paiement</option>
-<option>Mobile Money</option>
+<option>Lumicash</option>
+<option>EcoCash</option>
+<option>eNoti</option>
 <option>Paiement à la livraison</option>
 </select>
-<button class="btn btn-primary">Continuer vers paiement</button>
+
+<button class="btn btn-primary" onclick="goToConfirmation()">
+Continuer vers confirmation
+</button>
+
+<div class="support-box">
+Support : +257 79 94 50 07 <br>
+infos@cizalogistics.bi
+</div>
+
 </div>
 </div>
 </section>
@@ -212,6 +242,49 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 </div>
 <div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
 </footer>
+
+<script>
+document.getElementById('hamburgerBtn').onclick=function(){
+document.body.classList.add('menu-open');
+};
+document.getElementById('overlay').onclick=function(){
+document.body.classList.remove('menu-open');
+};
+
+const packageType = document.getElementById("packageType");
+const extraFields = document.getElementById("extraFields");
+
+packageType.addEventListener("change", function(){
+if(this.value==="enveloppe"){
+extraFields.innerHTML=`<input type="text" placeholder="Dimensions (ex: A4)">`;
+}
+else if(this.value==="boite"){
+extraFields.innerHTML=`
+<input type="text" placeholder="Longueur (cm)">
+<input type="text" placeholder="Largeur (cm)">
+<input type="text" placeholder="Hauteur (cm)">
+<input type="text" placeholder="Poids (kg)">
+`;
+}
+else if(this.value==="bidon"){
+extraFields.innerHTML=`
+<select>
+<option>Capacité</option>
+<option>10L</option>
+<option>20L</option>
+</select>
+<input type="number" placeholder="Quantité totale">
+`;
+}
+else{
+extraFields.innerHTML="";
+}
+});
+
+function goToConfirmation(){
+window.location.href="confirmation.html?type=parcel";
+}
+</script>
 
 </body>
 </html>
