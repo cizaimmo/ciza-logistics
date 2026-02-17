@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Solutions Entreprises | Ciza Logistics</title>
-<meta name="description" content="Solutions logistiques dédiées aux entreprises et institutions au Burundi. Infrastructure nationale, SLA, coordination multi-sites.">
+<meta name="description" content="Solutions logistiques dédiées aux entreprises et institutions au Burundi. Infrastructure nationale, coordination structurée et service premium.">
 
 <link rel="canonical" href="https://cizalogistics.africa/enterprise.html">
 
@@ -23,25 +23,24 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
 .nav-menu a:hover{color:#D4AF37;}
 .btn-track{border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;color:#D4AF37;text-decoration:none;}
 
+/* HAMBURGER */
+.hamburger{display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,0.2);background:transparent;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;}
+.hamburger span{width:20px;height:2px;background:#fff;position:relative;display:block;}
+.hamburger span::before,.hamburger span::after{content:"";position:absolute;left:0;width:20px;height:2px;background:#fff;}
+.hamburger span::before{top:-6px;}
+.hamburger span::after{top:6px;}
+
+.mobile-menu{position:fixed;top:0;right:0;width:85%;max-width:320px;height:100%;background:#000;transform:translateX(100%);transition:0.3s ease;padding:40px;z-index:2000;}
+.mobile-menu a{display:block;color:#fff;text-decoration:none;margin-bottom:24px;text-transform:uppercase;}
+.mobile-menu a:hover{color:#D4AF37;}
+.menu-open .mobile-menu{transform:translateX(0);}
+
 /* HERO */
-.hero{
-  height:70vh;
-  background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/91cbea8b2aed94d2ea69ceffcee1e0b096e2ca0b/entreprise-hero.png') center/cover no-repeat;
-  display:flex;
-  align-items:center;
-  padding-top:180px;
-}
-.hero-overlay{
-  width:100%;
-  background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.65));
-  padding:70px 0;
-}
-.hero-content{
-  color:#fff;
-  max-width:780px;
-}
-.hero h1{font-size:46px;margin-bottom:18px;}
-.hero p{font-size:18px;margin-bottom:22px;color:#e7e7e7;}
+.hero{height:75vh;background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/91cbea8b2aed94d2ea69ceffcee1e0b096e2ca0b/entreprise-hero.png') center/cover no-repeat;display:flex;align-items:center;padding-top:180px;}
+.hero-overlay{width:100%;background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.65));padding:90px 0;}
+.hero-content{color:#fff;max-width:780px;}
+.hero h1{font-size:48px;margin-bottom:18px;}
+.hero p{font-size:18px;margin-bottom:24px;color:#e7e7e7;}
 
 .btn{display:inline-block;padding:14px 28px;border-radius:16px;text-decoration:none;margin:8px 10px 0 0;}
 .btn-primary{background:#D4AF37;color:#000;font-weight:900;}
@@ -51,13 +50,21 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
 .section{padding:110px 0;}
 .section h2{text-align:center;margin-bottom:50px;font-size:30px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;}
+
+/* CARDS */
 .card{
   background:#fff;
   padding:36px;
   border-radius:22px;
-  box-shadow:0 30px 70px rgba(0,0,0,0.1);
+  box-shadow:0 30px 70px rgba(0,0,0,0.08);
+  transition:all 0.4s ease;
 }
-.card h3{margin-bottom:12px;}
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 45px 90px rgba(0,0,0,0.15);
+}
+
+/* DARK SECTION */
 .dark{background:#000;color:#fff;}
 .dark .card{background:#111;color:#fff;border:1px solid rgba(212,175,55,0.2);}
 .dark .card p{color:#d9d9d9;}
@@ -92,23 +99,23 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
   width:100%;
   height:4px;
   background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
-  opacity:0;
-  transform:scaleX(0.7);
-  transition:all 0.8s ease;
 }
-.footer-divider.show{opacity:1;transform:scaleX(1);}
 
-/* FOOTER */
+/* FOOTER PREMIUM */
 .footer{background:#000;color:#fff;padding:80px 0 40px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;}
 .footer-logo{height:85px;margin-bottom:16px;}
+.footer a{display:block;text-decoration:none;color:#ccc;margin-bottom:8px;font-size:14px;}
+.footer a:hover{color:#D4AF37;}
 .footer-bottom{text-align:center;margin-top:40px;color:#888;font-size:13px;}
 
 /* RESPONSIVE */
 @media(max-width:900px){
   .nav-menu{display:none;}
+  .hamburger{display:flex;}
   .hero{height:auto;padding-top:220px;}
   .hero h1{font-size:32px;}
-  .grid-3{grid-template-columns:1fr;}
+  .grid-3,.footer-grid{grid-template-columns:1fr;}
   .btn{display:block;width:100%;text-align:center;}
 }
 </style>
@@ -118,23 +125,36 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
 
 <header class="main-header">
 <div class="container header-container">
+
 <div class="logo">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
 </div>
+
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
 <a href="enterprise.html">Entreprise</a>
 <a href="tracking.html">Suivi</a>
 <a href="create.html" class="btn-track">Créer</a>
 </nav>
+
+<button class="hamburger" id="menuBtn"><span></span></button>
+
 </div>
 </header>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="index.html">Accueil</a>
+<a href="enterprise.html">Entreprise</a>
+<a href="tracking.html">Suivi</a>
+<a href="create.html">Créer</a>
+<a href="#form">Compte B2B</a>
+</div>
 
 <section class="hero">
 <div class="hero-overlay">
 <div class="container hero-content">
 <h1>Solutions Logistiques Entreprises</h1>
-<p>Infrastructure nationale dédiée aux organisations, avec coordination, volumes et engagement de service.</p>
+<p>Infrastructure nationale dédiée aux organisations, coordination structurée et service premium.</p>
 <a href="#form" class="btn btn-primary">Demander une consultation</a>
 <a href="#form" class="btn btn-outline">Ouvrir un compte B2B</a>
 </div>
@@ -145,75 +165,48 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-heig
 <div class="container">
 <h2>Pourquoi Ciza Logistics</h2>
 <div class="grid-3">
-<div class="card">
-<h3>Infrastructure Nationale</h3>
-<p>Couverture des 18 provinces avec coordination opérationnelle structurée.</p>
-</div>
-<div class="card">
-<h3>SLA & Engagement</h3>
-<p>Cadre clair de qualité de service pour entreprises et institutions.</p>
-</div>
-<div class="card">
-<h3>Gestion Multi-sites</h3>
-<p>Organisation adaptée aux groupes, distributeurs et réseaux commerciaux.</p>
-</div>
+<div class="card"><h3>Infrastructure Nationale</h3><p>Couverture complète des 18 provinces.</p></div>
+<div class="card"><h3>Service Prioritaire</h3><p>Canal dédié entreprises et institutions.</p></div>
+<div class="card"><h3>Coordination Structurée</h3><p>Organisation adaptée aux volumes importants.</p></div>
 </div>
 </div>
 </section>
 
-<section class="section dark">
-<div class="container">
-<h2>Intégration & Coordination</h2>
-<div class="grid-3">
-<div class="card">
-<h3>Coordination dédiée</h3>
-<p>Un canal spécifique pour partenaires stratégiques.</p>
-</div>
-<div class="card">
-<h3>Reporting</h3>
-<p>Suivi consolidé des envois et états opérationnels.</p>
-</div>
-<div class="card">
-<h3>Support prioritaire</h3>
-<p>Accompagnement et résolution rapide des demandes.</p>
-</div>
-</div>
-</div>
-</section>
-
-<section id="form" class="section">
-<div class="container">
-<h2>Demande Entreprise</h2>
-<div class="form-box">
-<input type="text" placeholder="Nom de l'entreprise">
-<input type="text" placeholder="Responsable">
-<input type="email" placeholder="Email professionnel">
-<textarea rows="4" placeholder="Description des besoins"></textarea>
-<button>Envoyer la demande</button>
-</div>
-</div>
-</section>
-
-<div class="footer-divider" id="divider"></div>
+<div class="footer-divider"></div>
 
 <footer class="footer">
-<div class="container">
+<div class="container footer-grid">
+<div>
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo">
 <p>Division Logistique de Ciza Group.</p>
 </div>
-<div class="footer-bottom">
-© 2026 Ciza Logistics – Tous droits réservés
+<div>
+<h4>Entreprise</h4>
+<a href="enterprise.html">Solutions B2B</a>
+<a href="#form">Ouvrir un compte</a>
 </div>
+<div>
+<h4>Services</h4>
+<a href="create.html">Créer un envoi</a>
+<a href="tracking.html">Suivre un colis</a>
+</div>
+<div>
+<h4>Légal</h4>
+<a href="#">Confidentialité</a>
+<a href="#">Conditions Générales</a>
+</div>
+<div>
+<h4>Contact</h4>
+<a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
+<p>Burundi</p>
+</div>
+</div>
+<div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
 </footer>
 
 <script>
-const divider=document.getElementById('divider');
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){divider.classList.add('show');}
-  });
-},{threshold:0.4});
-obs.observe(divider);
+const btn=document.getElementById("menuBtn");
+btn.addEventListener("click",()=>{document.body.classList.toggle("menu-open");});
 </script>
 
 </body>
