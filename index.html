@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ciza Logistics – Livraison & Transport National au Burundi | Infrastructure Logistique Digitale</title>
-
-<meta name="description" content="Ciza Logistics est une infrastructure nationale de transport et logistique au Burundi. Livraison inter-provinciale, solutions entreprises, traçabilité numérique et signature électronique sécurisée.">
+<title>Ciza Logistics – Livraison & Transport National au Burundi | Solutions Entreprises & Institutions</title>
+<meta name="description" content="Ciza Logistics déploie une infrastructure nationale de transport et de distribution au Burundi. Couverture des 18 provinces, solutions entreprises & institutions, traçabilité et preuve de livraison.">
 
 <link rel="canonical" href="https://cizalogistics.africa/">
 
 <meta property="og:title" content="Ciza Logistics – Infrastructure Logistique Nationale">
-<meta property="og:description" content="Transport et distribution digitale au Burundi. Solutions B2B, couverture nationale et traçabilité sécurisée.">
+<meta property="og:description" content="Transport et distribution au Burundi. Couverture nationale, solutions entreprises & institutions, traçabilité et preuve de livraison.">
 <meta property="og:image" content="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/main/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cizalogistics.africa/">
@@ -26,7 +25,7 @@
   "name": "Ciza Logistics",
   "url": "https://cizalogistics.africa",
   "logo": "https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png",
-  "description": "Infrastructure nationale de transport et distribution digitale au Burundi.",
+  "description": "Infrastructure nationale de transport et de distribution au Burundi.",
   "areaServed": "Burundi"
 }
 </script>
@@ -36,245 +35,895 @@
 body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
 .container{width:92%;max-width:1200px;margin:auto;}
 
-.main-header{position:fixed;width:100%;background:#000;padding:30px 0;z-index:1000;}
-.header-container{display:flex;justify-content:space-between;align-items:center;}
-.logo img{height:110px;}
-.nav-menu{display:flex;gap:35px;align-items:center;}
-.nav-menu a{text-decoration:none;color:#fff;text-transform:uppercase;font-size:14px;}
+/* ================= HEADER ================= */
+.main-header{
+  position:fixed;
+  width:100%;
+  background:rgba(0,0,0,0.98);
+  padding:28px 0;
+  z-index:1000;
+}
+.header-container{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+}
+.logo img{height:110px;display:block;}
+
+.nav-menu{
+  display:flex;
+  gap:28px;
+  align-items:center;
+}
+.nav-menu a{
+  text-decoration:none;
+  color:#fff;
+  text-transform:uppercase;
+  font-size:13px;
+  letter-spacing:1px;
+  white-space:nowrap;
+}
 .nav-menu a:hover{color:#D4AF37;}
 
-.lang-switch{
+.btn-track{
   border:1px solid #D4AF37;
-  padding:6px 14px;
-  border-radius:20px;
+  padding:9px 16px;
+  border-radius:12px;
+  color:#D4AF37;
+  text-decoration:none;
+  text-transform:uppercase;
+  font-size:12px;
+  letter-spacing:1px;
+}
+
+/* Lang switch premium */
+.lang-switch{
+  border:1px solid rgba(212,175,55,0.7);
+  padding:7px 14px;
+  border-radius:999px;
   color:#fff;
   cursor:pointer;
+  user-select:none;
+  background:rgba(255,255,255,0.04);
 }
-.lang-switch span.active{color:#D4AF37;font-weight:bold;}
+.lang-switch span{
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.lang-switch span.active{
+  color:#D4AF37;
+  font-weight:700;
+}
 
+/* Hamburger */
+.hamburger{
+  display:none;
+  width:44px;
+  height:44px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:transparent;
+  border-radius:14px;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+}
+.hamburger span{
+  width:20px;height:2px;background:#fff;display:block;position:relative;
+}
+.hamburger span::before,
+.hamburger span::after{
+  content:"";width:20px;height:2px;background:#fff;position:absolute;left:0;
+}
+.hamburger span::before{top:-6px;}
+.hamburger span::after{top:6px;}
+
+.mobile-menu-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.72);
+  opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:1100;
+}
+.mobile-menu{
+  position:fixed;top:0;right:0;height:100%;
+  width:min(360px, 88vw);
+  background:#0b0b0b;
+  transform:translateX(100%);
+  transition:transform 0.25s ease;
+  z-index:1200;
+  padding:18px;
+  border-left:1px solid rgba(212,175,55,0.25);
+}
+.mobile-menu-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.mobile-menu-header img{height:42px;display:block;}
+.mobile-close{
+  width:42px;height:42px;border:1px solid rgba(255,255,255,0.20);
+  background:transparent;color:#fff;border-radius:14px;cursor:pointer;font-size:18px;
+}
+.mobile-links{
+  padding-top:18px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.mobile-links a{
+  text-decoration:none;color:#fff;
+  padding:12px 12px;border-radius:14px;
+  background:rgba(255,255,255,0.05);
+  text-transform:uppercase;letter-spacing:1px;font-size:12px;
+}
+.mobile-links a:hover{background:rgba(212,175,55,0.12);color:#D4AF37;}
+.mobile-links .mobile-cta{
+  background:#D4AF37;color:#000;font-weight:800;
+}
+.mobile-links .mobile-cta:hover{background:#caa532;color:#000;}
+
+.mobile-lang{
+  margin-top:16px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:16px;
+  display:flex;
+  justify-content:flex-start;
+}
+.mobile-lang .lang-switch{display:inline-flex;gap:8px;}
+
+.menu-open .mobile-menu-overlay{opacity:1;pointer-events:auto;}
+.menu-open .mobile-menu{transform:translateX(0);}
+
+/* ================= HERO ================= */
 .hero{
   height:100vh;
   background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/c05aeae6cd362ff32bceb5edfbbfd3aba4c464e7/4E044D37-A1C9-4487-9E30-D8FDA93B099A.png') center/cover no-repeat;
+  position:relative;
   display:flex;
   align-items:center;
-  padding-top:200px;
+  padding-top:200px; /* leave room for fixed header */
 }
 .hero-overlay{
   width:100%;
-  background:linear-gradient(180deg,rgba(0,0,0,0.80),rgba(0,0,0,0.60));
+  background:linear-gradient(180deg,rgba(0,0,0,0.82),rgba(0,0,0,0.60));
   padding:90px 0;
 }
-.hero-content{color:#fff;max-width:750px;}
-.hero h1{font-size:56px;margin-bottom:20px;}
-.hero p{font-size:20px;margin-bottom:30px;}
+.hero-content{
+  color:#fff;
+  max-width:780px;
+  padding:26px 26px;
+  border-radius:22px;
+  background:rgba(0,0,0,0.22);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow:0 30px 90px rgba(0,0,0,0.45); /* ombre maîtrisée */
+  backdrop-filter: blur(4px);
+}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:999px;
+  font-size:12px;letter-spacing:0.6px;text-transform:uppercase;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.10);
+  color:#fff;
+}
+.badge.gold{
+  border-color:rgba(212,175,55,0.40);
+  background:rgba(212,175,55,0.12);
+  color:#D4AF37;
+}
+.hero h1{font-size:56px;margin-bottom:14px;letter-spacing:1px;line-height:1.05;}
+.hero p{font-size:20px;margin-bottom:22px;color:#e7e7e7;}
 
 .btn{
   display:inline-block;
   padding:15px 30px;
-  border-radius:14px;
+  border-radius:16px;
   text-decoration:none;
-  margin:8px 10px 0 0;
+  margin:10px 10px 0 0;
+  letter-spacing:0.3px;
 }
-.btn-primary{background:#D4AF37;color:#000;font-weight:bold;}
-.btn-outline{border:1px solid #fff;color:#fff;}
+.btn-primary{background:#D4AF37;color:#000;font-weight:900;}
+.btn-secondary{
+  border:1px solid #D4AF37;color:#D4AF37;
+  background:rgba(0,0,0,0.18);
+}
+.btn-outline{
+  border:1px solid rgba(255,255,255,0.9);
+  color:#fff;background:rgba(0,0,0,0.10);
+}
 
+/* ================= SECTIONS ================= */
 .section{padding:110px 0;}
-.section h2{text-align:center;margin-bottom:50px;font-size:32px;}
+.section h2{text-align:center;margin-bottom:50px;font-size:32px;letter-spacing:0.6px;}
+.section-sub{
+  text-align:center;
+  max-width:880px;
+  margin:0 auto 44px auto;
+  color:#444;
+  font-size:16px;
+}
+.dark{background:#000;color:#fff;}
+.dark .section-sub{color:#d7d7d7;}
 
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;}
+/* ================= CARDS / GRIDS ================= */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:34px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;}
+
 .card{
   background:#fff;
   padding:40px;
-  border-radius:20px;
-  box-shadow:0 30px 70px rgba(0,0,0,0.08);
+  border-radius:22px;
+  box-shadow:0 30px 70px rgba(0,0,0,0.10);
+  border:1px solid rgba(0,0,0,0.06);
+  transition:transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 40px 90px rgba(0,0,0,0.14);
+}
+.card h3{margin-bottom:10px;}
+.card p{color:#333;}
+
+.card.dark-card{
+  background:#0f0f0f;
+  color:#fff;
+  border:1px solid rgba(212,175,55,0.20);
+  box-shadow:0 28px 80px rgba(0,0,0,0.45);
+}
+.card.dark-card p{color:#d9d9d9;}
+.card .tag{
+  display:inline-block;
+  margin-top:14px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+  border:1px solid rgba(212,175,55,0.35);
+  color:#D4AF37;
+  background:rgba(212,175,55,0.10);
 }
 
+/* Process */
 .process-step{
   background:#fff;
   padding:30px;
-  border-radius:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.07);
+  border-radius:22px;
+  box-shadow:0 22px 70px rgba(0,0,0,0.09);
+  border:1px solid rgba(0,0,0,0.06);
 }
-.process-step h4{color:#D4AF37;margin-bottom:12px;}
+.process-step h4{color:#D4AF37;margin-bottom:10px;}
+.process-step p{color:#333;}
 
-.province-wrapper{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;}
+/* Provinces */
+.province-wrapper{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;}
 .province-card{
-  background:#111;color:#fff;padding:30px;border-radius:20px;
+  background:#111;
+  color:#fff;
+  padding:30px;
+  border-radius:22px;
+  box-shadow:0 28px 80px rgba(0,0,0,0.42);
+  border:1px solid rgba(212,175,55,0.18);
 }
-.province-card h4{color:#D4AF37;margin-bottom:15px;}
-.province-card ul{list-style:none;line-height:1.9;}
+.province-card h4{color:#D4AF37;margin-bottom:14px;letter-spacing:0.6px;}
+.province-card ul{list-style:none;line-height:2.0;}
+.province-card li{padding:3px 0;border-bottom:1px dashed rgba(255,255,255,0.10);}
+.province-card li:last-child{border-bottom:none;}
 
+/* Contact box */
+.contact-box{
+  background:#0f0f0f;
+  color:#fff;
+  border-radius:22px;
+  padding:34px;
+  border:1px solid rgba(212,175,55,0.20);
+  box-shadow:0 28px 80px rgba(0,0,0,0.45);
+}
+.contact-box a{color:#D4AF37;text-decoration:none;}
+.contact-box a:hover{text-decoration:underline;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:18px;}
+.contact-item{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:16px;
+}
+
+/* Divider + footer */
 .footer-divider{
-  width:100%;height:4px;
+  width:100%;
+  height:4px;
   background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
-  opacity:0;transform:scaleX(0.7);transition:all 0.8s ease;
+  opacity:0;
+  transform:scaleX(0.7);
+  transition:all 0.8s ease;
 }
 .footer-divider.show{opacity:1;transform:scaleX(1);}
 
-.footer{background:#000;color:#fff;padding:80px 0 40px;}
-.footer-logo{height:85px;margin-bottom:20px;}
-.footer-bottom{text-align:center;margin-top:40px;color:#888;font-size:13px;}
+.footer{
+  background:#000;color:#fff;padding:80px 0 40px;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:34px;
+}
+.footer-logo{height:85px;margin-bottom:16px;display:block;}
+.footer p{color:#d0d0d0;}
+.footer a{display:block;text-decoration:none;color:#cfcfcf;margin:8px 0;font-size:14px;}
+.footer a:hover{color:#D4AF37;}
+.footer h4{margin-bottom:10px;}
+.footer-bottom{text-align:center;margin-top:42px;color:#888;font-size:13px;}
 
+/* ================= RESPONSIVE ================= */
 @media(max-width:900px){
+  .logo img{height:78px;}
   .nav-menu{display:none;}
-  .hero{height:auto;padding-top:240px;background-position:center 35%;}
+  .hamburger{display:flex;}
+
+  .hero{
+    height:auto;
+    min-height:100vh;
+    padding-top:210px;
+    background-position:center 35%;
+  }
+  .hero-overlay{padding:60px 0 70px 0;}
+  .hero-content{
+    padding:22px 18px;
+    border-radius:20px;
+  }
   .hero h1{font-size:36px;}
-  .grid-3,.province-wrapper{grid-template-columns:1fr;}
-  .btn{display:block;width:100%;text-align:center;}
+  .hero p{font-size:16px;}
+
+  .grid-2,.grid-3,.province-wrapper,.footer-grid,.contact-grid{grid-template-columns:1fr;}
+  .btn{display:block;width:100%;text-align:center;margin:12px 0 0 0;}
+  .section{padding:75px 0;}
+}
+
+@media(max-width:420px){
+  .logo img{height:70px;}
+  .hero{padding-top:200px;background-position:center 40%;}
 }
 </style>
 </head>
 
 <body>
 
+<!-- MOBILE MENU -->
+<div class="mobile-menu-overlay" id="mobileOverlay"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+    <button class="mobile-close" id="mobileClose" aria-label="Fermer">✕</button>
+  </div>
+
+  <div class="mobile-links">
+    <a href="#services" class="mobileLink" data-fr="Services" data-en="Services">Services</a>
+    <a href="#infrastructure" class="mobileLink" data-fr="Infrastructure" data-en="Infrastructure">Infrastructure</a>
+    <a href="#process" class="mobileLink" data-fr="Processus" data-en="Operations">Processus</a>
+    <a href="#provinces" class="mobileLink" data-fr="Provinces" data-en="Provinces">Provinces</a>
+    <a href="#enterprise" class="mobileLink" data-fr="Entreprises" data-en="Enterprise">Entreprises</a>
+    <a href="#security" class="mobileLink" data-fr="Conformité" data-en="Compliance">Conformité</a>
+    <a href="#about" class="mobileLink" data-fr="À propos" data-en="About">À propos</a>
+    <a href="#contact" class="mobile-cta mobileLink" data-fr="Contact" data-en="Contact">Contact</a>
+
+    <a href="create.html" class="mobileLink" data-fr="Créer un envoi" data-en="Create a shipment">Créer un envoi</a>
+    <a href="tracking.html" class="mobileLink" data-fr="Suivre un colis" data-en="Track a parcel">Suivre un colis</a>
+  </div>
+
+  <div class="mobile-lang">
+    <div class="lang-switch" id="mobileLangSwitch">
+      <span id="mFrBtn" class="active">FR</span> | <span id="mEnBtn">EN</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
 <header class="main-header">
-<div class="container header-container">
-<div class="logo">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
-</div>
-<nav class="nav-menu">
-<a href="#process">Processus</a>
-<a href="#provinces">Provinces</a>
-<a href="#about">À propos</a>
-<div class="lang-switch">
-<span id="frBtn" class="active">FR</span> | <span id="enBtn">EN</span>
-</div>
-</nav>
-</div>
+  <div class="container header-container">
+    <div class="logo">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+    </div>
+
+    <nav class="nav-menu">
+      <a href="#services" data-fr="Services" data-en="Services">Services</a>
+      <a href="#infrastructure" data-fr="Infrastructure" data-en="Infrastructure">Infrastructure</a>
+      <a href="#process" data-fr="Processus" data-en="Operations">Processus</a>
+      <a href="#provinces" data-fr="Provinces" data-en="Provinces">Provinces</a>
+      <a href="#enterprise" data-fr="Entreprises" data-en="Enterprise">Entreprises</a>
+      <a href="#about" data-fr="À propos" data-en="About">À propos</a>
+      <a href="#contact" class="btn-track" data-fr="Contact" data-en="Contact">Contact</a>
+
+      <div class="lang-switch" id="desktopLangSwitch">
+        <span id="frBtn" class="active">FR</span> | <span id="enBtn">EN</span>
+      </div>
+    </nav>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span>
+    </button>
+  </div>
 </header>
 
+<!-- HERO -->
 <section class="hero">
-<div class="hero-overlay">
-<div class="container hero-content">
-<h1 data-fr="CIZA LOGISTICS" data-en="CIZA LOGISTICS">CIZA LOGISTICS</h1>
-<p data-fr="Infrastructure nationale de transport & distribution digitale au Burundi."
-   data-en="National digital transport & distribution infrastructure in Burundi.">
-Infrastructure nationale de transport & distribution digitale au Burundi.
-</p>
-<a href="#" class="btn btn-primary">Créer un envoi</a>
-<a href="#" class="btn btn-outline">Suivre un colis</a>
-</div>
-</div>
+  <div class="hero-overlay">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badges">
+          <span class="badge gold" data-fr="Burundi • National" data-en="Burundi • National">Burundi • National</span>
+          <span class="badge" data-fr="Parcel" data-en="Parcel">Parcel</span>
+          <span class="badge" data-fr="Freight" data-en="Freight">Freight</span>
+          <span class="badge" data-fr="Tracking" data-en="Tracking">Tracking</span>
+        </div>
+
+        <h1 data-fr="CIZA LOGISTICS" data-en="CIZA LOGISTICS">CIZA LOGISTICS</h1>
+
+        <p data-fr="Infrastructure nationale de transport et de distribution au Burundi, conçue pour les entreprises, les institutions et le commerce."
+           data-en="National transport and distribution infrastructure in Burundi, built for enterprises, institutions, and commerce.">
+          Infrastructure nationale de transport et de distribution au Burundi, conçue pour les entreprises, les institutions et le commerce.
+        </p>
+
+        <a href="create.html" class="btn btn-primary" data-fr="📦 Créer un envoi" data-en="📦 Create a shipment">📦 Créer un envoi</a>
+        <a href="create.html" class="btn btn-secondary" data-fr="🚛 Transport marchandises" data-en="🚛 Freight transport">🚛 Transport marchandises</a>
+        <a href="tracking.html" class="btn btn-outline" data-fr="🔎 Suivre un colis" data-en="🔎 Track a parcel">🔎 Suivre un colis</a>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- SERVICES -->
+<section id="services" class="section">
+  <div class="container">
+    <h2 data-fr="Nos Solutions" data-en="Our Solutions">Nos Solutions</h2>
+    <p class="section-sub"
+       data-fr="Des services structurés pour la livraison, le transport de marchandises et l’accompagnement des entreprises à l’échelle nationale."
+       data-en="Structured services for parcel delivery, freight transport, and enterprise support nationwide.">
+      Des services structurés pour la livraison, le transport de marchandises et l’accompagnement des entreprises à l’échelle nationale.
+    </p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3 data-fr="📦 Ciza Parcel" data-en="📦 Ciza Parcel">📦 Ciza Parcel</h3>
+        <p data-fr="Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé."
+           data-en="Nationwide delivery with tracking, delivery confirmation, and standardized service protocol.">
+          Livraison nationale avec suivi, confirmation de réception et protocole de service standardisé.
+        </p>
+        <span class="tag" data-fr="Livraison" data-en="Delivery">Livraison</span>
+      </div>
+
+      <div class="card">
+        <h3 data-fr="🚛 Ciza Freight" data-en="🚛 Ciza Freight">🚛 Ciza Freight</h3>
+        <p data-fr="Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement."
+           data-en="Inter-provincial freight transport for businesses, commerce, and supply chains.">
+          Transport inter-provincial de marchandises pour entreprises, commerces et chaînes d’approvisionnement.
+        </p>
+        <span class="tag" data-fr="Marchandises" data-en="Freight">Marchandises</span>
+      </div>
+
+      <div class="card">
+        <h3 data-fr="🏢 Solutions Entreprises" data-en="🏢 Enterprise Solutions">🏢 Solutions Entreprises</h3>
+        <p data-fr="Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel."
+           data-en="Dedicated channel, bulk shipments, centralized tracking, and operational support.">
+          Canal dédié, gestion multi-envois, suivi centralisé et accompagnement opérationnel.
+        </p>
+        <span class="tag" data-fr="B2B" data-en="B2B">B2B</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFRASTRUCTURE -->
+<section id="infrastructure" class="section dark">
+  <div class="container">
+    <h2 data-fr="Infrastructure Nationale" data-en="National Infrastructure">Infrastructure Nationale</h2>
+    <p class="section-sub"
+       data-fr="Un réseau structuré couvrant l’ensemble du Burundi, conçu pour assurer la continuité du service, la coordination provinciale et la qualité opérationnelle."
+       data-en="A structured network covering Burundi, designed for service continuity, provincial coordination, and operational quality.">
+      Un réseau structuré couvrant l’ensemble du Burundi, conçu pour assurer la continuité du service, la coordination provinciale et la qualité opérationnelle.
+    </p>
+
+    <div class="grid-3">
+      <div class="card dark-card">
+        <h3 data-fr="Réseau Provincial" data-en="Provincial Network">Réseau Provincial</h3>
+        <p data-fr="Couverture des 18 provinces avec organisation par zones et circuits de distribution."
+           data-en="Coverage of 18 provinces with zone-based organization and distribution routes.">
+          Couverture des 18 provinces avec organisation par zones et circuits de distribution.
+        </p>
+        <span class="tag">18</span>
+      </div>
+
+      <div class="card dark-card">
+        <h3 data-fr="Coordination & Traçabilité" data-en="Coordination & Traceability">Coordination & Traçabilité</h3>
+        <p data-fr="Un protocole de suivi et de validation pour chaque étape, du dépôt à la livraison."
+           data-en="A tracking and validation protocol at every step from pickup to delivery.">
+          Un protocole de suivi et de validation pour chaque étape, du dépôt à la livraison.
+        </p>
+        <span class="tag" data-fr="Suivi" data-en="Tracking">Suivi</span>
+      </div>
+
+      <div class="card dark-card">
+        <h3 data-fr="Preuve de Service" data-en="Proof of Service">Preuve de Service</h3>
+        <p data-fr="Confirmation de réception, enregistrement des statuts et archivage des preuves de livraison."
+           data-en="Delivery confirmation, status records, and archiving of proof of delivery.">
+          Confirmation de réception, enregistrement des statuts et archivage des preuves de livraison.
+        </p>
+        <span class="tag" data-fr="POD" data-en="POD">POD</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS (DETAILED B) -->
 <section id="process" class="section">
-<div class="container">
-<h2>Processus Opérationnel National</h2>
-<div class="grid-3">
+  <div class="container">
+    <h2 data-fr="Processus Opérationnel National" data-en="National Operating Process">Processus Opérationnel National</h2>
+    <p class="section-sub"
+       data-fr="Un processus structuré garantissant la traçabilité, la qualité de service et la conformité à chaque étape."
+       data-en="A structured process ensuring traceability, service quality, and compliance at every step.">
+      Un processus structuré garantissant la traçabilité, la qualité de service et la conformité à chaque étape.
+    </p>
 
-<div class="process-step">
-<h4>1. Enregistrement Digital</h4>
-<p>Chaque envoi est enregistré via notre système sécurisé garantissant la traçabilité initiale.</p>
-</div>
+    <div class="grid-3">
+      <div class="process-step">
+        <h4 data-fr="1. Enregistrement" data-en="1. Registration">1. Enregistrement</h4>
+        <p data-fr="Création de l’envoi via portail client ou canal entreprise, avec vérification des informations essentielles."
+           data-en="Shipment creation via customer portal or enterprise channel, with verification of essential details.">
+          Création de l’envoi via portail client ou canal entreprise, avec vérification des informations essentielles.
+        </p>
+      </div>
 
-<div class="process-step">
-<h4>2. Validation Provinciale</h4>
-<p>Attribution au centre provincial compétent et désignation d’un responsable.</p>
-</div>
+      <div class="process-step">
+        <h4 data-fr="2. Validation & Attribution" data-en="2. Validation & Assignment">2. Validation & Attribution</h4>
+        <p data-fr="Affectation au circuit provincial approprié et désignation d’un responsable opérationnel."
+           data-en="Assignment to the appropriate provincial route and designation of an operational owner.">
+          Affectation au circuit provincial approprié et désignation d’un responsable opérationnel.
+        </p>
+      </div>
 
-<div class="process-step">
-<h4>3. Prise en Charge</h4>
-<p>Intégration physique et numérique dans le réseau logistique structuré.</p>
-</div>
+      <div class="process-step">
+        <h4 data-fr="3. Prise en charge" data-en="3. Pickup">3. Prise en charge</h4>
+        <p data-fr="Réception et intégration de l’envoi dans le réseau, avec enregistrement des statuts de service."
+           data-en="Reception and onboarding into the network with service status records.">
+          Réception et intégration de l’envoi dans le réseau, avec enregistrement des statuts de service.
+        </p>
+      </div>
 
-<div class="process-step">
-<h4>4. Transit Inter-provincial</h4>
-<p>Transport sécurisé entre hubs régionaux.</p>
-</div>
+      <div class="process-step">
+        <h4 data-fr="4. Transit inter-provincial" data-en="4. Inter-provincial Transit">4. Transit inter-provincial</h4>
+        <p data-fr="Acheminement via circuits opérationnels et coordination entre zones pour continuité du service."
+           data-en="Routing through operational circuits with zone coordination for service continuity.">
+          Acheminement via circuits opérationnels et coordination entre zones pour continuité du service.
+        </p>
+      </div>
 
-<div class="process-step">
-<h4>5. Livraison Officielle</h4>
-<p>Remise au destinataire avec validation formelle.</p>
-</div>
+      <div class="process-step">
+        <h4 data-fr="5. Livraison officielle" data-en="5. Official Delivery">5. Livraison officielle</h4>
+        <p data-fr="Remise au destinataire avec confirmation formelle de réception et clôture du statut de livraison."
+           data-en="Handover to the recipient with formal confirmation and delivery status closure.">
+          Remise au destinataire avec confirmation formelle de réception et clôture du statut de livraison.
+        </p>
+      </div>
 
-<div class="process-step">
-<h4>6. Archivage Numérique</h4>
-<p>Clôture et conservation sécurisée des données d’expédition.</p>
-</div>
-
-</div>
-</div>
+      <div class="process-step">
+        <h4 data-fr="6. Confirmation & archivage" data-en="6. Confirmation & Archiving">6. Confirmation & archivage</h4>
+        <p data-fr="Archivage des preuves et consolidation des informations pour suivi, qualité et conformité."
+           data-en="Archiving of proofs and consolidation of records for tracking, quality, and compliance.">
+          Archivage des preuves et consolidation des informations pour suivi, qualité et conformité.
+        </p>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- ENTERPRISE -->
+<section id="enterprise" class="section dark">
+  <div class="container">
+    <h2 data-fr="Entreprises & Institutions" data-en="Enterprises & Institutions">Entreprises & Institutions</h2>
+    <p class="section-sub"
+       data-fr="Un canal dédié pour les organisations : coordination, suivi centralisé, volumes et accompagnement opérationnel."
+       data-en="A dedicated channel for organizations: coordination, centralized tracking, volumes, and operational support.">
+      Un canal dédié pour les organisations : coordination, suivi centralisé, volumes et accompagnement opérationnel.
+    </p>
+
+    <div class="grid-2">
+      <div class="card dark-card">
+        <h3 data-fr="Portail Entreprise" data-en="Enterprise Portal">Portail Entreprise</h3>
+        <p data-fr="Gestion multi-envois, états consolidés, reporting et organisation par équipes."
+           data-en="Bulk shipments, consolidated statuses, reporting, and team-based organization.">
+          Gestion multi-envois, états consolidés, reporting et organisation par équipes.
+        </p>
+        <span class="tag" data-fr="B2B" data-en="B2B">B2B</span>
+      </div>
+
+      <div class="card dark-card">
+        <h3 data-fr="Accords de Service" data-en="Service Agreements">Accords de Service</h3>
+        <p data-fr="Cadre opérationnel clair, engagements de qualité et suivi dédié pour partenaires stratégiques."
+           data-en="Clear operational framework, quality commitments, and dedicated support for strategic partners.">
+          Cadre opérationnel clair, engagements de qualité et suivi dédié pour partenaires stratégiques.
+        </p>
+        <span class="tag" data-fr="SLA" data-en="SLA">SLA</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="enterprise.html" class="btn btn-primary"
+         data-fr="Demander un compte entreprise"
+         data-en="Request an enterprise account">Demander un compte entreprise</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROVINCES -->
 <section id="provinces" class="section">
-<div class="container">
-<h2>Couverture Nationale – 18 Provinces</h2>
+  <div class="container">
+    <h2 data-fr="Couverture Nationale – 18 Provinces" data-en="National Coverage – 18 Provinces">Couverture Nationale – 18 Provinces</h2>
+    <p class="section-sub"
+       data-fr="Organisation par zones pour une lisibilité opérationnelle et une couverture complète du territoire."
+       data-en="Zone-based organization for operational clarity and full nationwide coverage.">
+      Organisation par zones pour une lisibilité opérationnelle et une couverture complète du territoire.
+    </p>
 
-<div class="province-wrapper">
+    <div class="province-wrapper">
+      <div class="province-card">
+        <h4 data-fr="Ouest" data-en="West">Ouest</h4>
+        <ul>
+          <li>Bujumbura Mairie</li>
+          <li>Bujumbura Rural</li>
+          <li>Bubanza</li>
+          <li>Cibitoke</li>
+          <li>Rumonge</li>
+          <li>Makamba</li>
+        </ul>
+      </div>
 
-<div class="province-card">
-<h4>Ouest</h4>
-<ul>
-<li>Bujumbura Mairie</li>
-<li>Bujumbura Rural</li>
-<li>Bubanza</li>
-<li>Cibitoke</li>
-<li>Rumonge</li>
-<li>Makamba</li>
-</ul>
-</div>
+      <div class="province-card">
+        <h4 data-fr="Centre" data-en="Central">Centre</h4>
+        <ul>
+          <li>Gitega</li>
+          <li>Muramvya</li>
+          <li>Mwaro</li>
+          <li>Karuzi</li>
+          <li>Kayanza</li>
+          <li>Ngozi</li>
+        </ul>
+      </div>
 
-<div class="province-card">
-<h4>Centre</h4>
-<ul>
-<li>Gitega</li>
-<li>Muramvya</li>
-<li>Mwaro</li>
-<li>Karuzi</li>
-<li>Kayanza</li>
-<li>Ngozi</li>
-</ul>
-</div>
-
-<div class="province-card">
-<h4>Est & Sud</h4>
-<ul>
-<li>Cankuzo</li>
-<li>Ruyigi</li>
-<li>Rutana</li>
-<li>Muyinga</li>
-<li>Kirundo</li>
-<li>Bururi</li>
-</ul>
-</div>
-
-</div>
-</div>
+      <div class="province-card">
+        <h4 data-fr="Est & Sud" data-en="East & South">Est & Sud</h4>
+        <ul>
+          <li>Cankuzo</li>
+          <li>Ruyigi</li>
+          <li>Rutana</li>
+          <li>Muyinga</li>
+          <li>Kirundo</li>
+          <li>Bururi</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- SECURITY / COMPLIANCE -->
+<section id="security" class="section dark">
+  <div class="container">
+    <h2 data-fr="Sécurité & Conformité" data-en="Security & Compliance">Sécurité & Conformité</h2>
+    <p class="section-sub"
+       data-fr="Des pratiques opérationnelles conçues pour protéger les envois, assurer la qualité et renforcer la confiance des entreprises et des institutions."
+       data-en="Operational practices designed to protect shipments, ensure quality, and strengthen trust for enterprises and institutions.">
+      Des pratiques opérationnelles conçues pour protéger les envois, assurer la qualité et renforcer la confiance des entreprises et des institutions.
+    </p>
+
+    <div class="grid-3">
+      <div class="card dark-card">
+        <h3 data-fr="Traçabilité" data-en="Traceability">Traçabilité</h3>
+        <p data-fr="Suivi des statuts et contrôle des étapes clés, du dépôt à la livraison."
+           data-en="Status tracking and control of key milestones from pickup to delivery.">
+          Suivi des statuts et contrôle des étapes clés, du dépôt à la livraison.
+        </p>
+      </div>
+
+      <div class="card dark-card">
+        <h3 data-fr="Preuve de livraison" data-en="Proof of Delivery">Preuve de livraison</h3>
+        <p data-fr="Confirmation de réception et archivage des preuves pour renforcement de la confiance."
+           data-en="Delivery confirmation and proof archiving to strengthen trust.">
+          Confirmation de réception et archivage des preuves pour renforcement de la confiance.
+        </p>
+      </div>
+
+      <div class="card dark-card">
+        <h3 data-fr="Qualité de service" data-en="Service Quality">Qualité de service</h3>
+        <p data-fr="Protocole opérationnel clair, cohérent et amélioration continue."
+           data-en="Clear operational protocol, consistency, and continuous improvement.">
+          Protocole opérationnel clair, cohérent et amélioration continue.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT + REGIONAL VISION -->
+<section id="about" class="section">
+  <div class="container">
+    <h2 data-fr="À propos & Vision" data-en="About & Vision">À propos & Vision</h2>
+    <p class="section-sub"
+       data-fr="Ciza Logistics est la division transport & logistique de Ciza Group, avec une mission nationale et une ambition régionale progressive."
+       data-en="Ciza Logistics is the transport & logistics division of Ciza Group, with a national mission and a progressive regional ambition.">
+      Ciza Logistics est la division transport & logistique de Ciza Group, avec une mission nationale et une ambition régionale progressive.
+    </p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 data-fr="Mission nationale" data-en="National mission">Mission nationale</h3>
+        <p data-fr="Renforcer la distribution et la mobilité des biens au Burundi, au service du commerce, des entreprises et des institutions."
+           data-en="Strengthen distribution and goods mobility in Burundi, serving commerce, enterprises, and institutions.">
+          Renforcer la distribution et la mobilité des biens au Burundi, au service du commerce, des entreprises et des institutions.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 data-fr="Vision régionale (.africa)" data-en="Regional vision (.africa)">Vision régionale (.africa)</h3>
+        <p data-fr="Préparer une expansion maîtrisée en Afrique de l’Est, avec un modèle opérationnel reproductible et des partenariats structurés."
+           data-en="Prepare a controlled expansion in East Africa with a replicable operating model and structured partnerships.">
+          Préparer une expansion maîtrisée en Afrique de l’Est, avec un modèle opérationnel reproductible et des partenariats structurés.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section dark">
+  <div class="container">
+    <h2 data-fr="Contact" data-en="Contact">Contact</h2>
+    <p class="section-sub"
+       data-fr="Pour les entreprises, institutions et partenaires : contactez Ciza Logistics via les canaux officiels."
+       data-en="For enterprises, institutions, and partners: contact Ciza Logistics through official channels.">
+      Pour les entreprises, institutions et partenaires : contactez Ciza Logistics via les canaux officiels.
+    </p>
+
+    <div class="contact-box">
+      <strong data-fr="Canal officiel" data-en="Official channel">Canal officiel</strong>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div style="color:#D4AF37;font-weight:800;margin-bottom:6px;" data-fr="Email" data-en="Email">Email</div>
+          <div><a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a></div>
+        </div>
+        <div class="contact-item">
+          <div style="color:#D4AF37;font-weight:800;margin-bottom:6px;" data-fr="Zone" data-en="Region">Zone</div>
+          <div data-fr="Burundi (National)" data-en="Burundi (National)">Burundi (National)</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <a href="tracking.html" class="btn btn-outline" data-fr="🔎 Accéder au suivi" data-en="🔎 Open tracking">🔎 Accéder au suivi</a>
+        <a href="enterprise.html" class="btn btn-primary" data-fr="🏢 Accès Entreprise" data-en="🏢 Enterprise access">🏢 Accès Entreprise</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOLD DIVIDER (animated) -->
 <div class="footer-divider" id="divider"></div>
 
+<!-- FOOTER (institutionnel) -->
 <footer class="footer">
-<div class="container">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo">
-<p>© 2026 Ciza Logistics – Tous droits réservés</p>
-</div>
+  <div class="container footer-grid">
+    <div>
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo" alt="Ciza Logistics">
+      <p data-fr="Division Logistique de Ciza Group. Infrastructure nationale de transport & distribution au Burundi."
+         data-en="Logistics division of Ciza Group. National transport & distribution infrastructure in Burundi.">
+        Division Logistique de Ciza Group. Infrastructure nationale de transport & distribution au Burundi.
+      </p>
+    </div>
+
+    <div>
+      <h4 data-fr="Entreprise" data-en="Enterprise">Entreprise</h4>
+      <a href="enterprise.html" data-fr="Accès Entreprise" data-en="Enterprise access">Accès Entreprise</a>
+      <a href="partner.html" data-fr="Devenir partenaire" data-en="Become a partner">Devenir partenaire</a>
+      <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
+    </div>
+
+    <div>
+      <h4 data-fr="Légal" data-en="Legal">Légal</h4>
+      <a href="privacy.html" data-fr="Confidentialité" data-en="Privacy">Confidentialité</a>
+      <a href="terms.html" data-fr="Conditions Générales (CUG)" data-en="Terms & Conditions">Conditions Générales (CUG)</a>
+    </div>
+
+    <div>
+      <h4 data-fr="Contact" data-en="Contact">Contact</h4>
+      <a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
+      <a href="tracking.html" data-fr="Suivi" data-en="Tracking">Suivi</a>
+      <a href="create.html" data-fr="Créer un envoi" data-en="Create a shipment">Créer un envoi</a>
+      <p style="margin-top:10px;color:#9a9a9a;" data-fr="Burundi" data-en="Burundi">Burundi</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 Ciza Logistics – Tous droits réservés
+  </div>
 </footer>
 
 <script>
-document.getElementById('frBtn').onclick=function(){
-  document.querySelectorAll('[data-fr]').forEach(el=>{
-    el.innerText=el.getAttribute('data-fr');
-  });
-  frBtn.classList.add('active');
-  enBtn.classList.remove('active');
-};
+/* ================= HAMBURGER MENU ================= */
+(function(){
+  var body=document.body;
+  var btn=document.getElementById('hamburgerBtn');
+  var overlay=document.getElementById('mobileOverlay');
+  var menu=document.getElementById('mobileMenu');
+  var closeBtn=document.getElementById('mobileClose');
+  var links=document.querySelectorAll('.mobileLink');
 
-document.getElementById('enBtn').onclick=function(){
-  document.querySelectorAll('[data-en]').forEach(el=>{
-    el.innerText=el.getAttribute('data-en');
-  });
-  enBtn.classList.add('active');
-  frBtn.classList.remove('active');
-};
+  function openMenu(){ body.classList.add('menu-open'); }
+  function closeMenu(){ body.classList.remove('menu-open'); }
 
-const divider=document.getElementById('divider');
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){divider.classList.add('show');}
-  });
-},{threshold:0.4});
-obs.observe(divider);
+  btn.addEventListener('click', openMenu);
+  overlay.addEventListener('click', closeMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  links.forEach(function(a){ a.addEventListener('click', closeMenu); });
+})();
+
+/* ================= LANGUAGE SWITCH (FR/EN) ================= */
+(function(){
+  var frBtn=document.getElementById('frBtn');
+  var enBtn=document.getElementById('enBtn');
+  var mFrBtn=document.getElementById('mFrBtn');
+  var mEnBtn=document.getElementById('mEnBtn');
+
+  function setLang(lang){
+    if(lang==='fr'){
+      document.documentElement.lang='fr';
+      document.querySelectorAll('[data-fr]').forEach(function(el){ el.textContent=el.getAttribute('data-fr'); });
+      if(frBtn){ frBtn.classList.add('active'); }
+      if(enBtn){ enBtn.classList.remove('active'); }
+      if(mFrBtn){ mFrBtn.classList.add('active'); }
+      if(mEnBtn){ mEnBtn.classList.remove('active'); }
+      try{ localStorage.setItem('ciza_lang','fr'); }catch(e){}
+    }else{
+      document.documentElement.lang='en';
+      document.querySelectorAll('[data-en]').forEach(function(el){ el.textContent=el.getAttribute('data-en'); });
+      if(enBtn){ enBtn.classList.add('active'); }
+      if(frBtn){ frBtn.classList.remove('active'); }
+      if(mEnBtn){ mEnBtn.classList.add('active'); }
+      if(mFrBtn){ mFrBtn.classList.remove('active'); }
+      try{ localStorage.setItem('ciza_lang','en'); }catch(e){}
+    }
+  }
+
+  if(frBtn) frBtn.addEventListener('click', function(){ setLang('fr'); });
+  if(enBtn) enBtn.addEventListener('click', function(){ setLang('en'); });
+  if(mFrBtn) mFrBtn.addEventListener('click', function(){ setLang('fr'); });
+  if(mEnBtn) mEnBtn.addEventListener('click', function(){ setLang('en'); });
+
+  var urlLang=(new URLSearchParams(window.location.search)).get('lang');
+  var saved=null;
+  try{ saved=localStorage.getItem('ciza_lang'); }catch(e){}
+
+  if(urlLang==='en'){ setLang('en'); }
+  else if(urlLang==='fr'){ setLang('fr'); }
+  else if(saved==='en'){ setLang('en'); }
+  else{ setLang('fr'); }
+})();
+
+/* ================= FOOTER DIVIDER REVEAL ================= */
+(function(){
+  var divider=document.getElementById('divider');
+  if(!divider) return;
+
+  if(!('IntersectionObserver' in window)){
+    divider.classList.add('show');
+    return;
+  }
+
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        divider.classList.add('show');
+        obs.unobserve(divider);
+      }
+    });
+  },{threshold:0.4});
+
+  obs.observe(divider);
+})();
 </script>
 
 </body>
