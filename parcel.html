@@ -22,47 +22,16 @@ padding:28px 0;z-index:1000;
 display:flex;justify-content:space-between;align-items:center;gap:18px;
 }
 .logo img{height:110px;display:block;}
-
 .nav-menu{display:flex;gap:24px;align-items:center;}
 .nav-menu a{
 text-decoration:none;color:#fff;text-transform:uppercase;
 font-size:13px;letter-spacing:1px;white-space:nowrap;
 }
 .nav-menu a:hover{color:#D4AF37;}
-
 .btn-track{
 border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;
 color:#D4AF37;text-decoration:none;text-transform:uppercase;font-size:12px;
 }
-
-.hamburger{
-display:none;width:44px;height:44px;border:1px solid rgba(255,255,255,0.18);
-background:transparent;border-radius:14px;cursor:pointer;
-align-items:center;justify-content:center;
-}
-.hamburger span{width:20px;height:2px;background:#fff;position:relative;display:block;}
-.hamburger span::before,.hamburger span::after{
-content:"";width:20px;height:2px;background:#fff;position:absolute;left:0;}
-.hamburger span::before{top:-6px;}
-.hamburger span::after{top:6px;}
-
-.mobile-menu-overlay{
-position:fixed;inset:0;background:rgba(0,0,0,0.72);
-opacity:0;pointer-events:none;transition:0.25s;z-index:1100;
-}
-.mobile-menu{
-position:fixed;top:0;right:0;height:100%;
-width:min(360px,88vw);background:#0b0b0b;
-transform:translateX(100%);transition:0.25s;z-index:1200;
-padding:20px;border-left:1px solid rgba(212,175,55,0.25);
-}
-.mobile-links{display:flex;flex-direction:column;gap:12px;margin-top:30px;}
-.mobile-links a{
-text-decoration:none;color:#fff;padding:12px;border-radius:14px;
-background:rgba(255,255,255,0.05);text-transform:uppercase;font-size:12px;
-}
-.menu-open .mobile-menu-overlay{opacity:1;pointer-events:auto;}
-.menu-open .mobile-menu{transform:translateX(0);}
 
 /* HERO */
 .hero{
@@ -102,26 +71,14 @@ box-shadow:0 30px 90px rgba(0,0,0,0.45);
 width:100%;padding:14px;margin-bottom:16px;
 border-radius:14px;border:none;
 }
-
-.error{
-color:#ff4d4d;
-font-size:14px;
-margin-bottom:15px;
-}
-
-.support-box{
-margin-top:25px;
-font-size:14px;
-color:#D4AF37;
-text-align:center;
-}
+.error{color:#ff4d4d;font-size:14px;margin-bottom:15px;}
+.support-box{margin-top:25px;font-size:14px;color:#D4AF37;text-align:center;}
 
 /* FOOTER */
 .footer-divider{
 width:100%;height:4px;
 background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
 }
-
 .footer{background:#000;color:#fff;padding:80px 0 40px;}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:34px;}
 .footer-logo{height:85px;margin-bottom:16px;}
@@ -132,12 +89,11 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 @media(max-width:900px){
 .logo img{height:78px;}
 .nav-menu{display:none;}
-.hamburger{display:flex;}
-.footer-grid{grid-template-columns:1fr;}
 .hero{height:auto;padding-top:210px;}
 .hero h1{font-size:34px;}
 .btn{display:block;width:100%;text-align:center;}
 .section{padding:75px 0;}
+.footer-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -149,7 +105,6 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <div class="logo">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 </div>
-
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
 <a href="tracking.html">Suivi colis</a>
@@ -186,8 +141,6 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <option value="bidon">Bidon</option>
 </select>
 
-<div id="extraFields"></div>
-
 <input type="text" id="sender" placeholder="Nom expéditeur">
 <input type="text" id="phone" placeholder="Téléphone">
 <input type="text" id="origin" placeholder="Ville départ">
@@ -214,33 +167,88 @@ infos@cizalogistics.bi
 </div>
 </section>
 
-<script>
+<div class="footer-divider"></div>
+
+<footer class="footer">
+<div class="container footer-grid">
+<div>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo">
+<p>Division Logistique de Ciza Group.</p>
+</div>
+<div>
+<h4>Entreprise</h4>
+<a href="enterprise.html">Accès Entreprise</a>
+<a href="index.html">Accueil</a>
+</div>
+<div>
+<h4>Légal</h4>
+<a href="#">Confidentialité</a>
+<a href="#">Conditions</a>
+</div>
+<div>
+<h4>Contact</h4>
+<a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
+</div>
+</div>
+<div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
+</footer>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 function generateTracking(){
-const random = Math.random().toString(36).substring(2,10).toUpperCase();
-return "CZB-" + random;
+const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let result="CL-BI";
+for(let i=0;i<8;i++){
+result+=chars.charAt(Math.floor(Math.random()*chars.length));
+}
+return result;
 }
 
-function goToConfirmation(){
+window.goToConfirmation=async function(){
 
-const sender = document.getElementById("sender").value.trim();
-const phone = document.getElementById("phone").value.trim();
-const origin = document.getElementById("origin").value.trim();
-const destination = document.getElementById("destination").value.trim();
-const payment = document.getElementById("payment").value;
-const type = document.getElementById("packageType").value;
+const sender=document.getElementById("sender").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const origin=document.getElementById("origin").value.trim();
+const destination=document.getElementById("destination").value.trim();
+const payment=document.getElementById("payment").value;
+const type=document.getElementById("packageType").value;
 
-if(!sender || !phone || !origin || !destination || !payment || !type){
-document.getElementById("errorMsg").innerText = "Veuillez remplir tous les champs obligatoires.";
+if(!sender||!phone||!origin||!destination||!payment||!type){
+document.getElementById("errorMsg").innerText="Veuillez remplir tous les champs obligatoires.";
 return;
 }
 
-const trackingId = generateTracking();
+const trackingId=generateTracking();
 
-window.location.href = "confirmation.html?service=parcel&tracking=" + trackingId;
+await addDoc(collection(db,"shipments"),{
+trackingCode:trackingId,
+senderName:sender,
+senderPhone:phone,
+fromCity:origin,
+toCity:destination,
+paymentMethod:payment,
+type:"parcel",
+status:"pending",
+createdAt:serverTimestamp()
+});
 
+window.location.href="confirmation.html?tracking="+trackingId;
 }
-
 </script>
 
 </body>
