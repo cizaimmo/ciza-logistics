@@ -3,147 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Confirmation | Ciza Logistics</title>
-<meta name="description" content="Confirmation de votre demande d’envoi Ciza Logistics.">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{
-font-family:Arial,Helvetica,sans-serif;
-background:#f6f7f9;
-color:#111;
-}
-.container{
-width:92%;
-max-width:1100px;
-margin:auto;
-}
+body{font-family:Arial,Helvetica,sans-serif;background:#0a0a0a;color:#fff;}
+.container{width:92%;max-width:1100px;margin:auto;}
+html{scroll-behavior:smooth;}
 
-/* HEADER */
+/* HEADER IDENTIQUE INDEX */
 .main-header{
-position:fixed;
-width:100%;
-background:#000;
-padding:22px 0;
-z-index:1000;
+position:fixed;width:100%;background:#000;
+padding:26px 0;z-index:1000;
 }
 .header-container{
-display:flex;
-justify-content:space-between;
-align-items:center;
+display:flex;justify-content:space-between;align-items:center;
 }
-.logo img{height:80px;}
-.nav-menu{
-display:flex;
-gap:24px;
-}
+.logo img{height:90px;}
+.nav-menu{display:flex;gap:22px;align-items:center;}
 .nav-menu a{
-color:#fff;
-text-decoration:none;
-font-size:13px;
-text-transform:uppercase;
-letter-spacing:1px;
+color:#fff;text-decoration:none;text-transform:uppercase;
+font-size:13px;letter-spacing:1px;
 }
 .nav-menu a:hover{color:#D4AF37;}
-
-/* SECTION */
-.section{
-padding:180px 0 100px;
-}
-
-.confirmation-box{
-background:#fff;
-padding:50px;
-border-radius:22px;
-box-shadow:0 40px 100px rgba(0,0,0,0.08);
-border:1px solid rgba(212,175,55,0.2);
-}
-
-.badge{
-display:inline-block;
-padding:6px 14px;
-border-radius:999px;
+.btn-outline{
 border:1px solid #D4AF37;
-color:#D4AF37;
-font-size:12px;
-letter-spacing:1px;
-margin-bottom:20px;
+padding:8px 14px;border-radius:12px;
+color:#D4AF37;text-decoration:none;font-size:12px;
 }
 
-h1{
-font-size:34px;
-margin-bottom:30px;
-}
-
-.summary-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:30px;
-margin-bottom:40px;
-}
-
-.card{
-background:#fafafa;
-padding:25px;
-border-radius:16px;
-border:1px solid rgba(0,0,0,0.05);
-}
-
-.card h3{
-margin-bottom:15px;
-font-size:16px;
-color:#D4AF37;
-text-transform:uppercase;
-letter-spacing:1px;
-}
-
-.total-box{
-background:#000;
-color:#fff;
-padding:30px;
-border-radius:18px;
+/* HERO CONFIRMATION */
+.hero{
+padding-top:180px;
+padding-bottom:80px;
 text-align:center;
-margin-bottom:30px;
+}
+.tracking-box{
+background:#111;
+padding:40px;
+border-radius:20px;
+box-shadow:0 0 40px rgba(212,175,55,0.2);
+border:1px solid rgba(212,175,55,0.3);
 }
 
-.total-box span{
+.tracking-code{
 font-size:28px;
-font-weight:bold;
+letter-spacing:3px;
+color:#D4AF37;
+margin-bottom:15px;
+text-shadow:0 0 15px rgba(212,175,55,0.5);
 }
 
-.btn{
-display:inline-block;
-padding:16px 40px;
-border-radius:14px;
-text-decoration:none;
-font-weight:bold;
-cursor:pointer;
+.status{
+margin-top:10px;
+font-size:16px;
+color:#ccc;
 }
 
-.btn-primary{
+.copy-btn{
+margin-top:15px;
 background:#D4AF37;
-color:#000;
+border:none;
+padding:10px 20px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
 }
 
-.btn-secondary{
-border:1px solid #000;
-color:#000;
-margin-right:15px;
+/* TIMELINE */
+.timeline{
+margin-top:50px;
+display:flex;
+justify-content:space-between;
+position:relative;
+}
+
+.timeline::before{
+content:"";
+position:absolute;
+top:15px;left:0;right:0;
+height:3px;background:#333;
+z-index:0;
+}
+
+.step{
+text-align:center;
+position:relative;
+z-index:1;
+width:25%;
+}
+
+.circle{
+width:30px;height:30px;
+border-radius:50%;
+background:#333;
+margin:auto;
+margin-bottom:10px;
+}
+
+.active .circle{
+background:#D4AF37;
+box-shadow:0 0 15px rgba(212,175,55,0.7);
+}
+
+.step p{
+font-size:12px;color:#aaa;
+}
+
+.active p{color:#D4AF37;font-weight:bold;}
+
+.error-box{
+text-align:center;
+padding:200px 20px;
 }
 
 .footer{
-margin-top:80px;
-padding:40px 0;
-text-align:center;
-color:#777;
-font-size:13px;
-}
-
-/* RESPONSIVE */
-@media(max-width:900px){
-.summary-grid{grid-template-columns:1fr;}
-.confirmation-box{padding:30px;}
+background:#000;color:#777;
+padding:40px 0;text-align:center;
+margin-top:100px;
 }
 </style>
 </head>
@@ -157,57 +134,100 @@ font-size:13px;
 </div>
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
-<a href="tracking.html">Suivi</a>
+<a href="tracking.html">Suivi colis</a>
+<a href="parcel.html">Parcel</a>
 <a href="enterprise.html">Entreprise</a>
+<a href="login.html">Connexion</a>
+<a href="signup.html" class="btn-outline">Créer un compte</a>
 </nav>
 </div>
 </header>
 
-<section class="section">
-<div class="container">
-
-<div class="confirmation-box">
-
-<div class="badge">Résumé de votre envoi</div>
-
-<h1>Confirmation avant paiement</h1>
-
-<div class="summary-grid">
-
-<div class="card">
-<h3>Expéditeur</h3>
-<p>Nom : Client Test</p>
-<p>Téléphone : +257 79 00 00 00</p>
-<p>Ville départ : Bujumbura</p>
-</div>
-
-<div class="card">
-<h3>Destinataire</h3>
-<p>Ville destination : Gitega</p>
-<p>Type : Colis standard</p>
-<p>Poids estimé : 3 kg</p>
-</div>
-
-</div>
-
-<div class="total-box">
-Montant estimé<br><br>
-<span>18 000 BIF</span>
-</div>
-
-<div style="text-align:center;">
-<a href="parcel.html" class="btn btn-secondary">Modifier</a>
-<a href="payment.html" class="btn btn-primary">Procéder au paiement</a>
-</div>
-
-</div>
-
-</div>
-</section>
+<div id="content"></div>
 
 <footer class="footer">
-© 2026 Ciza Logistics – Confirmation sécurisée
+© 2026 Ciza Logistics – Tous droits réservés
 </footer>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const tracking = params.get("tracking");
+
+const content = document.getElementById("content");
+
+if(!tracking){
+content.innerHTML = `<div class="error-box"><h2>Code tracking invalide</h2></div>`;
+}else{
+
+const q = query(collection(db,"shipments"), where("trackingCode","==",tracking));
+const snapshot = await getDocs(q);
+
+if(snapshot.empty){
+content.innerHTML = `<div class="error-box"><h2>Code tracking introuvable</h2></div>`;
+}else{
+
+let data = snapshot.docs[0].data();
+let status = data.status;
+
+let step1="", step2="", step3="", step4="";
+
+if(status==="pending"){step1="active";}
+if(status==="validated"){step1="active";step2="active";}
+if(status==="in_transit"){step1="active";step2="active";step3="active";}
+if(status==="delivered"){step1="active";step2="active";step3="active";step4="active";}
+
+content.innerHTML = `
+<section class="hero">
+<div class="container">
+<div class="tracking-box">
+<div class="tracking-code">${tracking}</div>
+<button class="copy-btn" onclick="navigator.clipboard.writeText('${tracking}')">Copier</button>
+<div class="status">Statut : ${status}</div>
+
+<div class="timeline">
+<div class="step ${step1}">
+<div class="circle"></div>
+<p>Créé</p>
+</div>
+<div class="step ${step2}">
+<div class="circle"></div>
+<p>Confirmé</p>
+</div>
+<div class="step ${step3}">
+<div class="circle"></div>
+<p>En transit</p>
+</div>
+<div class="step ${step4}">
+<div class="circle"></div>
+<p>Livré</p>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+`;
+}
+
+}
+
+</script>
 
 </body>
 </html>
