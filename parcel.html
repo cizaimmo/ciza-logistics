@@ -14,260 +14,195 @@ html{scroll-behavior:smooth;}
 /* HEADER */
 .main-header{
 position:fixed;width:100%;background:rgba(0,0,0,0.98);
-padding:26px 0;z-index:1000;
+padding:22px 0;z-index:1000;
 }
-.header-container{
-display:flex;justify-content:space-between;align-items:center;
-}
-.logo img{height:90px;}
+.header-container{display:flex;justify-content:space-between;align-items:center;}
+.logo img{height:78px;}
+
 .nav-menu{display:flex;gap:22px;align-items:center;}
 .nav-menu a{
 color:#fff;text-decoration:none;text-transform:uppercase;
 font-size:13px;letter-spacing:1px;
 }
 .nav-menu a:hover{color:#D4AF37;}
-
 .btn-outline{
 border:1px solid #D4AF37;
 padding:8px 14px;border-radius:12px;
 color:#D4AF37;text-decoration:none;font-size:12px;
 }
 
-/* MOBILE MENU PREMIUM (index-like) */
+/* MOBILE MENU PREMIUM */
 .hamburger{
 display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,0.2);
 background:transparent;border-radius:12px;cursor:pointer;
-align-items:center;justify-content:center;
-z-index:3000;
+align-items:center;justify-content:center;z-index:3000;
 }
-.hamburger span,
-.hamburger span:before,
-.hamburger span:after{
-width:18px;height:2px;background:#fff;display:block;position:relative;
-content:"";
+.hamburger span,.hamburger span:before,.hamburger span:after{
+width:18px;height:2px;background:#fff;display:block;position:relative;content:"";
 }
 .hamburger span:before{position:absolute;top:-6px;}
 .hamburger span:after{position:absolute;top:6px;}
 
 .mobile-overlay{
-position:fixed;inset:0;background:rgba(0,0,0,0.65);
+position:fixed;inset:0;background:rgba(0,0,0,0.70);
 opacity:0;pointer-events:none;transition:0.3s;z-index:1999;
 }
-
 .mobile-menu{
 position:fixed;top:0;right:0;height:100%;
-width:min(360px,88vw);background:#0b0b0b;
+width:280px;background:#000;
 transform:translateX(100%);
-transition:0.3s;padding:22px 20px;z-index:2000;
+transition:0.3s;padding:50px 25px;z-index:2000;
 border-left:1px solid rgba(212,175,55,0.25);
 }
 .mobile-menu a{
 display:block;color:#fff;text-decoration:none;
-margin:10px 0;text-transform:uppercase;font-size:12px;
-padding:12px;border-radius:14px;background:rgba(255,255,255,0.05);
+margin-bottom:20px;text-transform:uppercase;
+padding:12px 14px;border-radius:14px;
+background:rgba(255,255,255,0.06);
 }
-.mobile-menu a:hover{background:rgba(212,175,55,0.12);color:#D4AF37;}
+.mobile-menu a:hover{color:#D4AF37;}
 .menu-open .mobile-menu{transform:translateX(0);}
 .menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
 
 /* HERO */
 .hero{
-height:100vh;
+min-height:70vh;
 background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/a9a34fb65e97e401a401f0472ac58dd5ca5acc54/ciza-percel.png') center/cover no-repeat;
-display:flex;align-items:center;padding-top:180px;
+display:flex;align-items:flex-end;padding-top:140px;
 }
 .hero-overlay{
-background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.6));
-width:100%;padding:80px 0;
+background:linear-gradient(180deg,rgba(0,0,0,0.80),rgba(0,0,0,0.55));
+width:100%;padding:70px 0;
 }
-.hero-content{color:#fff;max-width:780px;}
-.hero h1{font-size:48px;margin-bottom:12px;}
-.hero p{color:#ddd;margin-bottom:18px;}
-.hero-meta{
-margin-bottom:18px;font-size:13px;letter-spacing:1px;color:#D4AF37;
-}
+.hero-content{color:#fff;max-width:820px;}
+.hero h1{font-size:44px;margin-bottom:10px;}
+.hero p{color:#e7e7e7;margin-bottom:18px;line-height:1.6;}
+
 .btn{
-display:inline-block;padding:14px 28px;border-radius:14px;
+display:inline-block;padding:14px 26px;border-radius:14px;
 text-decoration:none;margin-right:10px;
 }
-.btn-primary{background:#D4AF37;color:#000;font-weight:bold;}
+.btn-primary{background:#D4AF37;color:#000;font-weight:900;}
 .btn-dark{border:1px solid #fff;color:#fff;}
 
-/* SECTIONS */
-.section{padding:90px 0;}
-.section-title{
-font-size:28px;margin:0 0 10px 0;
-}
-.section-sub{
-color:#555;margin:0 0 28px 0;line-height:1.7;
-}
+/* FORM SECTION */
+.section{padding:70px 0;}
+.section h2{font-size:28px;margin-bottom:18px;text-align:left;}
 
-/* PROCESS (DHL-style) */
-.process-grid{
-display:grid;grid-template-columns:repeat(4,1fr);
-gap:18px;
-}
-.process-card{
-background:#fff;border-radius:18px;
-border:1px solid rgba(212,175,55,0.22);
-box-shadow:0 18px 50px rgba(0,0,0,0.07);
-padding:20px;
-transition:0.35s;
-}
-.process-card:hover{
-transform:translateY(-6px);
-box-shadow:0 28px 70px rgba(212,175,55,0.18);
-}
-.process-step{
-font-size:12px;letter-spacing:1px;text-transform:uppercase;
-color:#D4AF37;margin-bottom:10px;
-}
-.process-card h3{margin:0 0 8px 0;font-size:16px;}
-.process-card p{margin:0;color:#5b5b5b;font-size:13px;line-height:1.6;}
-
-/* FORM (FedEx/DHL clean) */
 .form-shell{
-background:#fff;
-border:1px solid rgba(0,0,0,0.08);
-border-radius:22px;
-box-shadow:0 22px 70px rgba(0,0,0,0.10);
-overflow:hidden;
+background:#0f0f10;
+border-radius:26px;
+padding:26px;
+box-shadow:0 30px 90px rgba(0,0,0,0.25);
+border:1px solid rgba(212,175,55,0.18);
+color:#fff;
 }
-.form-topbar{
-padding:20px 22px;
-background:linear-gradient(90deg,rgba(212,175,55,0.10),rgba(212,175,55,0.02));
-border-bottom:1px solid rgba(0,0,0,0.06);
-display:flex;align-items:center;justify-content:space-between;gap:12px;
-}
-.form-badge{
-display:inline-flex;align-items:center;gap:10px;
-font-size:12px;letter-spacing:1px;text-transform:uppercase;
-color:#000;
-}
-.form-badge span{
-display:inline-block;padding:6px 12px;border-radius:999px;
-border:1px solid rgba(212,175,55,0.45);
-color:#D4AF37;background:#fff;
-}
-.form-content{padding:22px;}
 
-.error{color:#d93025;margin:0 0 14px 0;font-size:14px;min-height:18px;}
-
-.grid-2{
+.grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:16px;
+gap:18px;
 }
 
-.field{
-display:flex;flex-direction:column;
-gap:8px;
+.block{
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:18px;
+padding:18px;
 }
-.label{
+
+.block-title{
 font-size:12px;letter-spacing:1px;text-transform:uppercase;
-color:#333;
+color:#cfcfcf;margin-bottom:10px;
 }
-.input, .select{
+
+label{
+display:block;
+font-size:12px;
+color:#bfbfbf;
+margin:10px 0 6px;
+text-transform:uppercase;
+letter-spacing:0.6px;
+}
+
+input,select,textarea{
 width:100%;
 padding:14px 14px;
 border-radius:14px;
-border:1px solid rgba(0,0,0,0.10);
+border:1px solid rgba(255,255,255,0.10);
+background:rgba(0,0,0,0.35);
+color:#fff;
 outline:none;
-background:#fff;
-color:#111;
 }
-.input:focus, .select:focus{
-border-color:rgba(212,175,55,0.65);
-box-shadow:0 0 0 4px rgba(212,175,55,0.12);
+textarea{min-height:92px;resize:none;}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.55);}
+
+.row-2{grid-column:1/-1;}
+
+.small-note{
+font-size:12px;color:rgba(255,255,255,0.70);
+margin-top:8px;line-height:1.5;
 }
 
-.inline-note{
-font-size:12px;color:#666;line-height:1.5;margin-top:2px;
+.error{
+color:#ff6b6b;
+font-size:13px;
+margin:0 0 12px 0;
 }
 
-.extra-wrap{
-margin-top:10px;
-padding:14px;
-border-radius:16px;
-border:1px solid rgba(212,175,55,0.20);
-background:rgba(212,175,55,0.06);
-display:none;
-animation:fadeUp 0.25s ease both;
-}
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(8px);}
-to{opacity:1;transform:translateY(0);}
+.summary{
+background:rgba(212,175,55,0.10);
+border:1px solid rgba(212,175,55,0.22);
+color:#f6e7b5;
+padding:14px 14px;border-radius:14px;
+font-size:13px;
 }
 
 .actions{
-margin-top:18px;
-display:flex;gap:12px;flex-wrap:wrap;
+display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;
 }
-.btn-wide{
-border:none;
-background:#D4AF37;color:#000;font-weight:900;
-padding:15px 18px;border-radius:14px;
-cursor:pointer;flex:1;min-width:220px;
-transition:0.25s;
-}
-.btn-wide:hover{transform:translateY(-1px);filter:brightness(0.98);}
-.btn-soft{
-border:1px solid rgba(0,0,0,0.12);
-background:#fff;color:#111;font-weight:700;
-padding:15px 18px;border-radius:14px;
-cursor:pointer;flex:1;min-width:220px;
-}
-
-.support-box{
-margin-top:18px;
-padding:14px;
-border-radius:16px;
-border:1px solid rgba(212,175,55,0.22);
-background:#0b0b0b;color:#D4AF37;
+.action-btn{
+flex:1;
+min-width:220px;
 text-align:center;
+padding:14px 18px;border-radius:16px;
+text-decoration:none;
+cursor:pointer;
+border:none;
+font-weight:900;
 }
-.support-box a{color:#D4AF37;text-decoration:none;}
-.support-box a:hover{text-decoration:underline;}
+.action-primary{background:#D4AF37;color:#000;}
+.action-secondary{background:rgba(255,255,255,0.10);color:#fff;border:1px solid rgba(255,255,255,0.18);}
 
-/* NON DANGEROUS MATERIALS */
-.safety{
-background:#fff;
-border-radius:22px;
-border:1px solid rgba(0,0,0,0.08);
-box-shadow:0 18px 60px rgba(0,0,0,0.07);
-padding:22px;
-}
-.safety h3{margin:0 0 8px 0;font-size:18px;}
-.safety p{margin:0;color:#555;line-height:1.7;}
-.safety-list{
-margin-top:14px;
-display:grid;grid-template-columns:1fr 1fr;
-gap:10px;
-}
-.safety-item{
-padding:12px 14px;border-radius:16px;
-border:1px solid rgba(212,175,55,0.20);
-background:rgba(212,175,55,0.06);
-color:#333;font-size:13px;line-height:1.6;
+.support{
+margin-top:18px;
+text-align:center;
+color:#D4AF37;
+font-size:13px;
 }
 
-/* FOOTER */
+.checkbox-line{
+display:flex;gap:10px;align-items:flex-start;
+padding:12px;border-radius:14px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.08);
+margin-top:12px;
+}
+.checkbox-line input{width:18px;height:18px;margin-top:2px;}
+.checkbox-line span{font-size:13px;color:rgba(255,255,255,0.82);line-height:1.45;}
+
 .footer{
-background:#000;color:#fff;padding:50px 0;text-align:center;
-margin-top:70px;
+background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:60px;
 }
 
 /* MOBILE */
-@media(max-width:1000px){
-.process-grid{grid-template-columns:1fr 1fr;}
-}
 @media(max-width:900px){
 .nav-menu{display:none;}
 .hamburger{display:flex;}
-.hero{height:auto;}
-.hero h1{font-size:32px;}
-.grid-2{grid-template-columns:1fr;}
-.safety-list{grid-template-columns:1fr;}
+.hero h1{font-size:30px;}
+.grid{grid-template-columns:1fr;}
+.actions{flex-direction:column;}
+.action-btn{min-width:100%;}
 }
 </style>
 </head>
@@ -275,7 +210,6 @@ margin-top:70px;
 <body>
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
-
 <div class="mobile-menu" id="mobileMenu">
 <a href="index.html" onclick="closeMenu()">Accueil</a>
 <a href="tracking.html" onclick="closeMenu()">Suivi colis</a>
@@ -298,9 +232,7 @@ margin-top:70px;
 <a href="signup.html" class="btn-outline">Créer un compte</a>
 </nav>
 
-<button class="hamburger" onclick="toggleMenu()">
-<span></span>
-</button>
+<button class="hamburger" onclick="toggleMenu()"><span></span></button>
 </div>
 </header>
 
@@ -308,9 +240,8 @@ margin-top:70px;
 <div class="hero-overlay">
 <div class="container">
 <div class="hero-content">
-<div class="hero-meta">National Coverage • Confirmation Premium • Signature à la réception</div>
 <h1>Ciza Parcel</h1>
-<p>Livraison nationale sécurisée avec suivi temps réel.</p>
+<p>Créer un envoi en quelques secondes. Suivi sécurisé et confirmation claire.</p>
 <a href="#form" class="btn btn-primary">Créer un envoi</a>
 <a href="tracking.html" class="btn btn-dark">Suivre un colis</a>
 </div>
@@ -318,158 +249,122 @@ margin-top:70px;
 </div>
 </section>
 
-<!-- PROCESS DHL/FedEx STYLE -->
-<section class="section">
-<div class="container">
-<h2 class="section-title">Processus Parcel</h2>
-<p class="section-sub">Un flux professionnel inspiré des standards internationaux, adapté au Burundi et à l’Afrique de l’Est.</p>
-
-<div class="process-grid">
-<div class="process-card">
-<div class="process-step">Étape 1</div>
-<h3>Création d’envoi</h3>
-<p>Saisie des informations, type de colis, origine, destination et mode de paiement.</p>
-</div>
-<div class="process-card">
-<div class="process-step">Étape 2</div>
-<h3>Confirmation premium</h3>
-<p>Résumé complet + génération du numéro de tracking (format <b>CL-BI-XXXXXXXX</b>).</p>
-</div>
-<div class="process-card">
-<div class="process-step">Étape 3</div>
-<h3>Paiement sécurisé</h3>
-<p>Paiement (Lumicash / EcoCash / eNoti) ou paiement à la livraison selon le choix.</p>
-</div>
-<div class="process-card">
-<div class="process-step">Étape 4</div>
-<h3>Transport & signature</h3>
-<p>Prise en charge, suivi et preuve de réception (signature / validation à la remise).</p>
-</div>
-</div>
-
-</div>
-</section>
-
 <section id="form" class="section">
 <div class="container">
-<h2 class="section-title">Créer un envoi</h2>
-<p class="section-sub">Interface “double colonne” (desktop) comme DHL / FedEx, avec champs guidés et validation.</p>
+<h2>Créer un envoi</h2>
 
 <div class="form-shell">
-<div class="form-topbar">
-<div class="form-badge">Service <span>Parcel</span></div>
-<div style="font-size:12px;color:#444;letter-spacing:1px;text-transform:uppercase;">Burundi 🇧🇮 / Rwanda 🇷🇼</div>
-</div>
-
-<div class="form-content">
 
 <div id="errorMsg" class="error"></div>
 
-<div class="grid-2">
+<div class="grid">
 
-<div class="field">
-<div class="label">Pays</div>
-<select id="country" class="select">
+<!-- SERVICE / ROUTE -->
+<div class="block">
+<div class="block-title">Route</div>
+
+<label for="country">Pays</label>
+<select id="country">
 <option value="">Choisir le pays</option>
 <option value="BI">🇧🇮 Burundi</option>
 <option value="RW">🇷🇼 Rwanda</option>
 </select>
-<div class="inline-note">Le choix du pays adapte les provinces et le préfixe téléphone.</div>
-</div>
 
-<div class="field">
-<div class="label">Téléphone (format numérique)</div>
-<input type="tel" id="phone" class="input" placeholder="+257XXXXXXXX" inputmode="numeric" autocomplete="tel">
-<div class="inline-note">Aucune lettre acceptée. Le préfixe est défini automatiquement.</div>
-</div>
-
-<div class="field">
-<div class="label">Province / Ville départ</div>
-<select id="origin" class="select">
-<option value="">Ville départ</option>
+<label for="origin">Province / Ville départ</label>
+<select id="origin">
+<option value="">Sélectionner</option>
 </select>
-</div>
 
-<div class="field">
-<div class="label">Province / Ville destination</div>
-<select id="destination" class="select">
-<option value="">Ville destination</option>
+<label for="destination">Province / Ville destination</label>
+<select id="destination">
+<option value="">Sélectionner</option>
 </select>
+
+<label for="payment">Mode de paiement</label>
+<select id="payment">
+<option value="">Sélectionner</option>
+<option value="Lumicash">Lumicash</option>
+<option value="EcoCash">EcoCash</option>
+<option value="eNoti">eNoti</option>
+<option value="COD">Paiement à la livraison</option>
+</select>
+
 </div>
 
-<div class="field">
-<div class="label">Type d’envoi</div>
-<select id="packageType" class="select">
-<option value="">Type d’envoi</option>
+<!-- CONTACT -->
+<div class="block">
+<div class="block-title">Contacts</div>
+
+<label for="sender">Nom expéditeur</label>
+<input type="text" id="sender" placeholder="Ex: Ciza Logi">
+
+<label for="phone">Téléphone (numérique)</label>
+<input type="tel" id="phone" inputmode="numeric" placeholder="+257XXXXXXXX" autocomplete="tel">
+
+<label for="receiver">Nom destinataire</label>
+<input type="text" id="receiver" placeholder="Ex: Client / Boutique">
+
+<label for="receiverPhone">Téléphone destinataire (numérique)</label>
+<input type="tel" id="receiverPhone" inputmode="numeric" placeholder="+257XXXXXXXX" autocomplete="tel">
+<div class="small-note">Le préfixe s’adapte automatiquement au pays. Aucune lettre acceptée.</div>
+</div>
+
+<!-- COLIS -->
+<div class="block row-2">
+<div class="block-title">Colis</div>
+
+<div class="grid">
+<div>
+<label for="packageType">Type d’envoi</label>
+<select id="packageType">
+<option value="">Sélectionner</option>
 <option value="enveloppe">Enveloppe</option>
 <option value="boite">Boîte</option>
 <option value="bidon">Bidon</option>
 </select>
 </div>
 
-<div class="field">
-<div class="label">Nom expéditeur</div>
-<input type="text" id="sender" class="input" placeholder="Nom expéditeur" autocomplete="name">
+<div>
+<label for="declaredValue">Valeur déclarée (BIF/RWF)</label>
+<input type="number" id="declaredValue" inputmode="numeric" placeholder="Ex: 50000">
 </div>
 
-<div class="field">
-<div class="label">Mode de paiement</div>
-<select id="payment" class="select">
-<option value="">Mode de paiement</option>
-<option value="Lumicash">Lumicash</option>
-<option value="EcoCash">EcoCash</option>
-<option value="eNoti">eNoti</option>
-<option value="Paiement à la livraison">Paiement à la livraison</option>
-</select>
-<div class="inline-note">Le paiement est exécuté après l’écran de confirmation.</div>
+<div id="extraFields" class="row-2"></div>
+
+<div>
+<label for="content">Contenu (description courte)</label>
+<input type="text" id="content" placeholder="Ex: documents, accessoires, denrées...">
 </div>
 
-<div class="field">
-<div class="label">Résumé (auto)</div>
-<input type="text" id="summaryAuto" class="input" placeholder="Choisissez le pays, origine, destination..." readonly>
-<div class="inline-note">Un résumé s’affiche pour une confirmation ultra claire.</div>
+<div>
+<label for="notes">Instructions (optionnel)</label>
+<input type="text" id="notes" placeholder="Ex: fragile, appeler avant...">
 </div>
+</div>
+
+<div class="checkbox-line">
+<input type="checkbox" id="nonDangerous">
+<span><strong>Matières non dangereuses</strong> : je confirme que cet envoi ne contient pas de produits interdits ou dangereux.</span>
+</div>
+
+<label style="margin-top:14px;">Résumé</label>
+<div class="summary" id="summaryText">Sélectionne le pays, les villes, le type d’envoi…</div>
 
 </div>
 
-<!-- EXTRA FIELDS (animated) -->
-<div class="extra-wrap" id="extraWrap">
-<div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#000;margin-bottom:10px;">
-Détails du colis
-</div>
-<div class="grid-2" id="extraFields"></div>
 </div>
 
 <div class="actions">
-<button class="btn-wide" onclick="submitForm()">Continuer vers confirmation</button>
-<button class="btn-soft" onclick="window.location.href='tracking.html'">Aller au suivi</button>
+<button class="action-btn action-primary" onclick="submitForm()">Continuer vers confirmation</button>
+<a class="action-btn action-secondary" href="tracking.html">Aller au suivi</a>
 </div>
 
-<div class="support-box">
-Support :
-<a href="tel:+25779945007">+257 79 94 50 07</a> <br>
-<a href="mailto:infos@cizalogistics.bi">infos@cizalogistics.bi</a>
+<div class="support">
+Support : +257 79 94 50 07 • infos@cizalogistics.bi
 </div>
 
 </div>
-</div>
 
-</div>
-</section>
-
-<!-- NON DANGEROUS MATERIALS -->
-<section class="section" style="padding-top:0;">
-<div class="container">
-<div class="safety">
-<h3>Matières non dangereuses</h3>
-<p>Pour des raisons de sécurité, Ciza Parcel accepte uniquement des envois non dangereux. Toute expédition suspecte peut être refusée lors de la prise en charge.</p>
-<div class="safety-list">
-<div class="safety-item">✅ Documents, enveloppes, papiers, contrats</div>
-<div class="safety-item">✅ Boîtes standards (objets non fragiles / fragiles emballés)</div>
-<div class="safety-item">✅ Bidons (10L / 20L) uniquement si contenu autorisé et bien scellé</div>
-<div class="safety-item">⛔ Interdit : explosifs, carburants, produits chimiques, armes</div>
-</div>
-</div>
 </div>
 </section>
 
@@ -477,8 +372,8 @@ Support :
 © 2026 Ciza Logistics | Division de Ciza Group – Tous droits réservés
 </footer>
 
+<!-- FIREBASE + LOGIQUE -->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -494,233 +389,221 @@ appId: "1:751524585771:web:6720db623a0ef70f56e56e"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const provincesBI=["Bujumbura","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge","Bujumbura Rural"];
+/* Provinces/regions */
+const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
 const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
 
-const countryEl = document.getElementById("country");
-const originEl = document.getElementById("origin");
-const destEl = document.getElementById("destination");
-const phoneEl = document.getElementById("phone");
-const packageTypeEl = document.getElementById("packageType");
-const extraWrap = document.getElementById("extraWrap");
-const extraFields = document.getElementById("extraFields");
-const summaryAuto = document.getElementById("summaryAuto");
+const countryEl=document.getElementById("country");
+const originEl=document.getElementById("origin");
+const destEl=document.getElementById("destination");
+const phoneEl=document.getElementById("phone");
+const receiverPhoneEl=document.getElementById("receiverPhone");
+const typeEl=document.getElementById("packageType");
+const extraFields=document.getElementById("extraFields");
+const summaryText=document.getElementById("summaryText");
 
-function setSummary(){
-const c = countryEl.value;
-const o = originEl.value;
-const d = destEl.value;
-const t = packageTypeEl.value;
-let countryName = c==="BI" ? "Burundi" : (c==="RW" ? "Rwanda" : "");
-let typeName = t ? t : "";
-summaryAuto.value = (countryName && o && d) ? (countryName+" • "+o+" → "+d+(typeName?(" • "+typeName):"")) : "Choisissez le pays, origine, destination...";
-}
-
-function fillCities(list){
-originEl.innerHTML = '<option value="">Ville départ</option>';
-destEl.innerHTML = '<option value="">Ville destination</option>';
+/* Helpers */
+function setCities(list){
+originEl.innerHTML='<option value="">Sélectionner</option>';
+destEl.innerHTML='<option value="">Sélectionner</option>';
 list.forEach(p=>{
-originEl.innerHTML += `<option value="${p}">${p}</option>`;
-destEl.innerHTML += `<option value="${p}">${p}</option>`;
+originEl.innerHTML+=`<option value="${p}">${p}</option>`;
+destEl.innerHTML+=`<option value="${p}">${p}</option>`;
 });
 }
 
-countryEl.addEventListener("change",function(){
-let list = this.value==="BI" ? provincesBI : (this.value==="RW" ? provincesRW : []);
-fillCities(list);
-
-phoneEl.value = this.value==="BI" ? "+257" : (this.value==="RW" ? "+250" : "");
-setSummary();
-});
-
-originEl.addEventListener("change", setSummary);
-destEl.addEventListener("change", setSummary);
-packageTypeEl.addEventListener("change", setSummary);
-
-phoneEl.addEventListener("input", function(){
-let prefix = countryEl.value==="RW" ? "+250" : "+257";
-if(!countryEl.value){prefix="+";}
-let v = this.value || "";
-v = v.replace(/[^\d+]/g,""); 
-if(prefix!=="+" && !v.startsWith(prefix)){
-v = prefix + v.replace(/\D/g,"").replace(/^(\d+)/,""); 
-}
-if(prefix!=="+" ){
-let after = v.slice(prefix.length).replace(/\D/g,"");
-v = prefix + after;
-}
-this.value = v;
-});
-
-packageTypeEl.addEventListener("change",function(){
-const v = this.value;
-
-if(!v){
-extraFields.innerHTML="";
-extraWrap.style.display="none";
-return;
+function enforceNumericPhone(input){
+let v=input.value || "";
+v=v.replace(/[^\d+]/g,"");
+if(v.indexOf("+")>0){v=v.replace(/\+/g,"");}
+input.value=v;
 }
 
-extraWrap.style.display="block";
-
-if(v==="boite"){
-extraFields.innerHTML=`
-<div class="field"><div class="label">Longueur (cm)</div><input id="boxL" class="input" inputmode="numeric" placeholder="Ex: 30"></div>
-<div class="field"><div class="label">Largeur (cm)</div><input id="boxW" class="input" inputmode="numeric" placeholder="Ex: 20"></div>
-<div class="field"><div class="label">Hauteur (cm)</div><input id="boxH" class="input" inputmode="numeric" placeholder="Ex: 15"></div>
-<div class="field"><div class="label">Poids (kg)</div><input id="boxKg" class="input" inputmode="decimal" placeholder="Ex: 2.5"></div>
-`;
+function applyPrefix(country){
+const prefix = country==="BI" ? "+257" : "+250";
+if(phoneEl.value.trim()==="" || phoneEl.value.startsWith("+")){
+phoneEl.value=prefix;
 }
-else if(v==="bidon"){
-extraFields.innerHTML=`
-<div class="field"><div class="label">Capacité</div>
-<select id="canLiters" class="select">
-<option value="">Choisir</option>
-<option value="10L">10L</option>
-<option value="20L">20L</option>
-</select>
-</div>
-<div class="field"><div class="label">Quantité totale</div><input id="canQty" class="input" inputmode="numeric" placeholder="Ex: 3"></div>
-`;
+if(receiverPhoneEl.value.trim()==="" || receiverPhoneEl.value.startsWith("+")){
+receiverPhoneEl.value=prefix;
 }
-else if(v==="enveloppe"){
-extraFields.innerHTML=`
-<div class="field"><div class="label">Format</div>
-<select id="envFormat" class="select">
-<option value="">Choisir</option>
-<option value="A4">A4</option>
-<option value="A3">A3</option>
-<option value="Autre">Autre</option>
-</select>
-</div>
-<div class="field"><div class="label">Dimensions approximatives</div><input id="envDim" class="input" placeholder="Ex: 30cm x 21cm"></div>
-`;
 }
-});
 
 function generateTracking(country){
 const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 let result="CL-"+country+"-";
-for(let i=0;i<8;i++){
-result+=chars.charAt(Math.floor(Math.random()*chars.length));
-}
+for(let i=0;i<8;i++){result+=chars.charAt(Math.floor(Math.random()*chars.length));}
 return result;
 }
 
-function getExtraPayload(type){
-let payload = {};
+function updateSummary(){
+const country=countryEl.value;
+const origin=originEl.value;
+const dest=destEl.value;
+const type=typeEl.value;
+let cLabel = country==="BI" ? "Burundi" : (country==="RW" ? "Rwanda" : "—");
+summaryText.innerText = (country && origin && dest && type)
+? `${cLabel} • ${origin} → ${dest} • ${type}`
+: "Sélectionne le pays, les villes, le type d’envoi…";
+}
+
+/* Events */
+countryEl.addEventListener("change",function(){
+if(this.value==="BI"){setCities(provincesBI);applyPrefix("BI");}
+else if(this.value==="RW"){setCities(provincesRW);applyPrefix("RW");}
+else{setCities([]);phoneEl.value="";receiverPhoneEl.value="";}
+updateSummary();
+});
+
+[originEl,destEl,typeEl].forEach(el=>el.addEventListener("change",updateSummary));
+
+phoneEl.addEventListener("input",()=>enforceNumericPhone(phoneEl));
+receiverPhoneEl.addEventListener("input",()=>enforceNumericPhone(receiverPhoneEl));
+
+typeEl.addEventListener("change",function(){
+if(this.value==="boite"){
+extraFields.innerHTML=`
+<div class="grid">
+<div>
+<label>Longueur (cm)</label>
+<input id="len" type="number" inputmode="numeric" placeholder="Ex: 30">
+</div>
+<div>
+<label>Largeur (cm)</label>
+<input id="wid" type="number" inputmode="numeric" placeholder="Ex: 20">
+</div>
+<div>
+<label>Hauteur (cm)</label>
+<input id="hei" type="number" inputmode="numeric" placeholder="Ex: 15">
+</div>
+<div>
+<label>Poids (kg)</label>
+<input id="wei" type="number" inputmode="decimal" placeholder="Ex: 2.5">
+</div>
+</div>`;
+}
+else if(this.value==="bidon"){
+extraFields.innerHTML=`
+<div class="grid">
+<div>
+<label>Capacité</label>
+<select id="cap">
+<option value="">Sélectionner</option>
+<option value="10L">10L</option>
+<option value="20L">20L</option>
+<option value="50L">50L</option>
+</select>
+</div>
+<div>
+<label>Quantité totale</label>
+<input id="qty" type="number" inputmode="numeric" placeholder="Ex: 5">
+</div>
+</div>`;
+}
+else if(this.value==="enveloppe"){
+extraFields.innerHTML=`
+<div class="grid">
+<div>
+<label>Format / dimensions</label>
+<input id="env" type="text" placeholder="Ex: A4 / A5 / 30x20 cm">
+</div>
+<div>
+<label>Poids estimé (kg)</label>
+<input id="wei2" type="number" inputmode="decimal" placeholder="Ex: 0.5">
+</div>
+</div>`;
+}
+else{
+extraFields.innerHTML="";
+}
+updateSummary();
+});
+
+window.submitForm=async function(){
+document.getElementById("errorMsg").innerText="";
+
+const country=countryEl.value;
+const sender=document.getElementById("sender").value.trim();
+const phone=phoneEl.value.trim();
+const receiver=document.getElementById("receiver").value.trim();
+const receiverPhone=receiverPhoneEl.value.trim();
+const origin=originEl.value;
+const destination=destEl.value;
+const payment=document.getElementById("payment").value;
+const type=typeEl.value;
+const declaredValue=document.getElementById("declaredValue").value;
+const content=document.getElementById("content").value.trim();
+const notes=document.getElementById("notes").value.trim();
+const nonDangerous=document.getElementById("nonDangerous").checked;
+
+if(!country||!sender||!phone||!receiver||!receiverPhone||!origin||!destination||!payment||!type||!nonDangerous){
+document.getElementById("errorMsg").innerText="Veuillez compléter tous les champs obligatoires (et confirmer matières non dangereuses).";
+return;
+}
+
+/* Extra validation per type */
+let details={};
 if(type==="boite"){
-payload = {
-boxL: (document.getElementById("boxL")?.value || "").trim(),
-boxW: (document.getElementById("boxW")?.value || "").trim(),
-boxH: (document.getElementById("boxH")?.value || "").trim(),
-boxKg: (document.getElementById("boxKg")?.value || "").trim()
-};
-}
-else if(type==="bidon"){
-payload = {
-canLiters: (document.getElementById("canLiters")?.value || "").trim(),
-canQty: (document.getElementById("canQty")?.value || "").trim()
-};
-}
-else if(type==="enveloppe"){
-payload = {
-envFormat: (document.getElementById("envFormat")?.value || "").trim(),
-envDim: (document.getElementById("envDim")?.value || "").trim()
-};
-}
-return payload;
-}
-
-window.submitForm = async function(){
-const err = document.getElementById("errorMsg");
-err.innerText = "";
-
-const country = countryEl.value;
-const sender = (document.getElementById("sender").value || "").trim();
-const phone = (phoneEl.value || "").trim();
-const origin = originEl.value;
-const destination = destEl.value;
-const payment = document.getElementById("payment").value;
-const type = packageTypeEl.value;
-
-if(!country || !sender || !phone || !origin || !destination || !payment || !type){
-err.innerText="Veuillez remplir tous les champs obligatoires.";
+const len=document.getElementById("len")?.value;
+const wid=document.getElementById("wid")?.value;
+const hei=document.getElementById("hei")?.value;
+const wei=document.getElementById("wei")?.value;
+if(!len||!wid||!hei||!wei){
+document.getElementById("errorMsg").innerText="Veuillez compléter les dimensions et le poids de la boîte.";
 return;
 }
-if(origin===destination){
-err.innerText="La ville de départ et la ville de destination ne peuvent pas être identiques.";
-return;
-}
-if(country==="BI" && !phone.startsWith("+257")){
-err.innerText="Téléphone invalide pour le Burundi. Préfixe attendu: +257";
-return;
-}
-if(country==="RW" && !phone.startsWith("+250")){
-err.innerText="Téléphone invalide pour le Rwanda. Préfixe attendu: +250";
-return;
-}
-if(phone.replace(/\D/g,"").length < (country==="BI" ? 11 : 12)){
-err.innerText="Veuillez saisir un numéro de téléphone complet.";
-return;
-}
-
-const extra = getExtraPayload(type);
-
-if(type==="boite"){
-if(!extra.boxL || !extra.boxW || !extra.boxH || !extra.boxKg){
-err.innerText="Veuillez renseigner les dimensions et le poids de la boîte.";
-return;
-}
+details={lengthCm:Number(len),widthCm:Number(wid),heightCm:Number(hei),weightKg:Number(wei)};
 }
 if(type==="bidon"){
-if(!extra.canLiters || !extra.canQty){
-err.innerText="Veuillez renseigner la capacité et la quantité du bidon.";
+const cap=document.getElementById("cap")?.value;
+const qty=document.getElementById("qty")?.value;
+if(!cap||!qty){
+document.getElementById("errorMsg").innerText="Veuillez compléter la capacité et la quantité du bidon.";
 return;
 }
+details={capacity:cap,quantity:Number(qty)};
 }
 if(type==="enveloppe"){
-if(!extra.envFormat){
-err.innerText="Veuillez sélectionner le format de l’enveloppe.";
+const env=document.getElementById("env")?.value?.trim();
+const wei2=document.getElementById("wei2")?.value;
+if(!env||!wei2){
+document.getElementById("errorMsg").innerText="Veuillez compléter le format et le poids estimé de l’enveloppe.";
 return;
 }
+details={format:env,weightKg:Number(wei2)};
 }
 
-const tracking = generateTracking(country);
+const tracking=generateTracking(country);
 
 await addDoc(collection(db,"shipments"),{
 trackingCode:tracking,
 service:"parcel",
-country,
-sender,
-phone,
-origin,
-destination,
-payment,
+country:country,
+senderName:sender,
+senderPhone:phone,
+receiverName:receiver,
+receiverPhone:receiverPhone,
+fromCity:origin,
+toCity:destination,
+paymentMethod:payment,
 packageType:type,
-extra,
+declaredValue: declaredValue ? Number(declaredValue) : null,
+content: content || null,
+notes: notes || null,
+nonDangerous:true,
+details:details,
 status:"pending",
 createdAt:serverTimestamp()
 });
 
 window.location.href="confirmation.html?tracking="+encodeURIComponent(tracking);
-};
-
+}
 </script>
 
 <script>
-function toggleMenu(){
-document.body.classList.toggle("menu-open");
-document.body.style.overflow = document.body.classList.contains("menu-open") ? "hidden" : "";
-}
-function closeMenu(){
-document.body.classList.remove("menu-open");
-document.body.style.overflow = "";
-}
+function toggleMenu(){document.body.classList.toggle("menu-open");}
+function closeMenu(){document.body.classList.remove("menu-open");}
 document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
-document.addEventListener("keydown",function(e){
-if(e.key==="Escape"){closeMenu();}
-});
 </script>
 
 </body>
