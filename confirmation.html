@@ -3,154 +3,199 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmation | Ciza Logistics</title>
+<title>Confirmation | Ciza Parcel</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,Helvetica,sans-serif;background:#0a0a0a;color:#fff;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;color:#111;}
 .container{width:92%;max-width:1100px;margin:auto;}
 html{scroll-behavior:smooth;}
 
-/* HEADER IDENTIQUE INDEX */
+/* HEADER */
 .main-header{
 position:fixed;width:100%;background:#000;
-padding:26px 0;z-index:1000;
+padding:22px 0;z-index:1000;
 }
 .header-container{
 display:flex;justify-content:space-between;align-items:center;
 }
-.logo img{height:90px;}
+.logo img{height:75px;}
+
 .nav-menu{display:flex;gap:22px;align-items:center;}
 .nav-menu a{
 color:#fff;text-decoration:none;text-transform:uppercase;
 font-size:13px;letter-spacing:1px;
 }
 .nav-menu a:hover{color:#D4AF37;}
+
 .btn-outline{
 border:1px solid #D4AF37;
 padding:8px 14px;border-radius:12px;
 color:#D4AF37;text-decoration:none;font-size:12px;
 }
 
-/* HERO CONFIRMATION */
-.hero{
-padding-top:180px;
-padding-bottom:80px;
-text-align:center;
+/* MOBILE */
+.hamburger{
+display:none;width:40px;height:40px;border:1px solid rgba(255,255,255,0.3);
+background:transparent;border-radius:12px;cursor:pointer;
+align-items:center;justify-content:center;
 }
-.tracking-box{
-background:#111;
-padding:40px;
-border-radius:20px;
-box-shadow:0 0 40px rgba(212,175,55,0.2);
-border:1px solid rgba(212,175,55,0.3);
+.hamburger span,
+.hamburger span:before,
+.hamburger span:after{
+width:18px;height:2px;background:#fff;display:block;position:relative;
+content:"";
+}
+.hamburger span:before{position:absolute;top:-6px;}
+.hamburger span:after{position:absolute;top:6px;}
+
+.mobile-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.7);
+opacity:0;pointer-events:none;transition:0.3s;z-index:1999;
+}
+.mobile-menu{
+position:fixed;top:0;right:0;height:100%;
+width:280px;background:#000;
+transform:translateX(100%);
+transition:0.3s;padding:50px 25px;z-index:2000;
+}
+.mobile-menu a{
+display:block;color:#fff;text-decoration:none;
+margin-bottom:25px;text-transform:uppercase;
+}
+.menu-open .mobile-menu{transform:translateX(0);}
+.menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
+
+/* SECTION */
+.section{
+padding:140px 0 80px;
+}
+
+.card{
+background:#fff;
+border-radius:24px;
+padding:50px;
+box-shadow:0 30px 90px rgba(0,0,0,0.08);
 }
 
 .tracking-code{
 font-size:28px;
-letter-spacing:3px;
-color:#D4AF37;
-margin-bottom:15px;
-text-shadow:0 0 15px rgba(212,175,55,0.5);
-}
-
-.status{
-margin-top:10px;
-font-size:16px;
-color:#ccc;
-}
-
-.copy-btn{
-margin-top:15px;
-background:#D4AF37;
-border:none;
-padding:10px 20px;
-border-radius:12px;
-cursor:pointer;
 font-weight:bold;
-}
-
-/* TIMELINE */
-.timeline{
-margin-top:50px;
-display:flex;
-justify-content:space-between;
-position:relative;
-}
-
-.timeline::before{
-content:"";
-position:absolute;
-top:15px;left:0;right:0;
-height:3px;background:#333;
-z-index:0;
-}
-
-.step{
-text-align:center;
-position:relative;
-z-index:1;
-width:25%;
-}
-
-.circle{
-width:30px;height:30px;
-border-radius:50%;
-background:#333;
-margin:auto;
 margin-bottom:10px;
 }
 
-.active .circle{
-background:#D4AF37;
-box-shadow:0 0 15px rgba(212,175,55,0.7);
+.status-badge{
+display:inline-block;
+padding:6px 14px;
+border-radius:30px;
+font-size:13px;
+font-weight:bold;
 }
 
-.step p{
-font-size:12px;color:#aaa;
+.pending{background:#fff4e5;color:#c67c00;}
+.validated{background:#e8f5e9;color:#2e7d32;}
+.inTransit{background:#e3f2fd;color:#1565c0;}
+.delivered{background:#e0f2f1;color:#00695c;}
+
+.timeline{
+margin-top:40px;
+border-left:2px solid #ddd;
+padding-left:20px;
 }
 
-.active p{color:#D4AF37;font-weight:bold;}
+.timeline-step{
+margin-bottom:25px;
+}
 
-.error-box{
-text-align:center;
-padding:200px 20px;
+.timeline-step h4{
+margin-bottom:5px;
 }
 
 .footer{
-background:#000;color:#777;
-padding:40px 0;text-align:center;
-margin-top:100px;
+background:#000;color:#fff;
+padding:40px 0;text-align:center;margin-top:80px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.nav-menu{display:none;}
+.hamburger{display:flex;}
+.card{padding:30px;}
+.tracking-code{font-size:22px;}
 }
 </style>
 </head>
 
 <body>
 
+<div class="mobile-overlay" onclick="closeMenu()"></div>
+<div class="mobile-menu">
+<a href="index.html" onclick="closeMenu()">Accueil</a>
+<a href="tracking.html" onclick="closeMenu()">Suivi colis</a>
+<a href="enterprise.html" onclick="closeMenu()">Entreprise</a>
+<a href="login.html" onclick="closeMenu()">Connexion</a>
+<a href="signup.html" onclick="closeMenu()">Créer un compte</a>
+</div>
+
 <header class="main-header">
 <div class="container header-container">
 <div class="logo">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 </div>
+
 <nav class="nav-menu">
 <a href="index.html">Accueil</a>
 <a href="tracking.html">Suivi colis</a>
-<a href="parcel.html">Parcel</a>
 <a href="enterprise.html">Entreprise</a>
 <a href="login.html">Connexion</a>
 <a href="signup.html" class="btn-outline">Créer un compte</a>
 </nav>
+
+<button class="hamburger" onclick="toggleMenu()"><span></span></button>
 </div>
 </header>
 
-<div id="content"></div>
+<section class="section">
+<div class="container">
+<div class="card">
+
+<div class="tracking-code" id="trackingCode">Chargement...</div>
+<div id="statusBadge" class="status-badge pending">Statut</div>
+
+<div style="margin-top:20px;">
+<p><strong>Expéditeur :</strong> <span id="senderName"></span></p>
+<p><strong>De :</strong> <span id="fromCity"></span></p>
+<p><strong>Vers :</strong> <span id="toCity"></span></p>
+</div>
+
+<div class="timeline">
+<div class="timeline-step">
+<h4>Demande enregistrée</h4>
+<p>Votre envoi est en attente de validation.</p>
+</div>
+<div class="timeline-step">
+<h4>Prise en charge</h4>
+<p>Collecte par un agent Ciza Logistics.</p>
+</div>
+<div class="timeline-step">
+<h4>En transit</h4>
+<p>Transport vers destination.</p>
+</div>
+<div class="timeline-step">
+<h4>Livraison</h4>
+<p>Signature à réception.</p>
+</div>
+</div>
+
+</div>
+</div>
+</section>
 
 <footer class="footer">
 © 2026 Ciza Logistics – Tous droits réservés
 </footer>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -169,64 +214,32 @@ const db = getFirestore(app);
 const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
 
-const content = document.getElementById("content");
-
-if(!tracking){
-content.innerHTML = `<div class="error-box"><h2>Code tracking invalide</h2></div>`;
-}else{
+if(tracking){
+document.getElementById("trackingCode").innerText = tracking;
 
 const q = query(collection(db,"shipments"), where("trackingCode","==",tracking));
 const snapshot = await getDocs(q);
 
-if(snapshot.empty){
-content.innerHTML = `<div class="error-box"><h2>Code tracking introuvable</h2></div>`;
-}else{
+if(!snapshot.empty){
+const data = snapshot.docs[0].data();
+document.getElementById("senderName").innerText = data.sender;
+document.getElementById("fromCity").innerText = data.origin;
+document.getElementById("toCity").innerText = data.destination;
 
-let data = snapshot.docs[0].data();
-let status = data.status;
+let badge = document.getElementById("statusBadge");
+badge.innerText = data.status.toUpperCase();
 
-let step1="", step2="", step3="", step4="";
-
-if(status==="pending"){step1="active";}
-if(status==="validated"){step1="active";step2="active";}
-if(status==="in_transit"){step1="active";step2="active";step3="active";}
-if(status==="delivered"){step1="active";step2="active";step3="active";step4="active";}
-
-content.innerHTML = `
-<section class="hero">
-<div class="container">
-<div class="tracking-box">
-<div class="tracking-code">${tracking}</div>
-<button class="copy-btn" onclick="navigator.clipboard.writeText('${tracking}')">Copier</button>
-<div class="status">Statut : ${status}</div>
-
-<div class="timeline">
-<div class="step ${step1}">
-<div class="circle"></div>
-<p>Créé</p>
-</div>
-<div class="step ${step2}">
-<div class="circle"></div>
-<p>Confirmé</p>
-</div>
-<div class="step ${step3}">
-<div class="circle"></div>
-<p>En transit</p>
-</div>
-<div class="step ${step4}">
-<div class="circle"></div>
-<p>Livré</p>
-</div>
-</div>
-
-</div>
-</div>
-</section>
-`;
+if(data.status==="pending"){badge.className="status-badge pending";}
+if(data.status==="validated"){badge.className="status-badge validated";}
+if(data.status==="in_transit"){badge.className="status-badge inTransit";}
+if(data.status==="delivered"){badge.className="status-badge delivered";}
 }
-
 }
+</script>
 
+<script>
+function toggleMenu(){document.body.classList.toggle("menu-open");}
+function closeMenu(){document.body.classList.remove("menu-open");}
 </script>
 
 </body>
