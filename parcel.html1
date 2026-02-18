@@ -3,148 +3,285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Ciza Parcel | Livraison Nationale</title>
-<meta name="description" content="Service de livraison nationale Ciza Parcel avec suivi, confirmation et paiement sécurisé.">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
+body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;}
 .container{width:92%;max-width:1200px;margin:auto;}
+html{scroll-behavior:smooth;}
 
 /* HEADER */
 .main-header{
 position:fixed;width:100%;background:rgba(0,0,0,0.98);
-padding:28px 0;z-index:1000;
+padding:26px 0;z-index:1000;
 }
 .header-container{
-display:flex;justify-content:space-between;align-items:center;gap:18px;
+display:flex;justify-content:space-between;align-items:center;
 }
-.logo img{height:110px;display:block;}
-
-.nav-menu{display:flex;gap:24px;align-items:center;}
+.logo img{height:90px;}
+.nav-menu{display:flex;gap:22px;align-items:center;}
 .nav-menu a{
-text-decoration:none;color:#fff;text-transform:uppercase;
-font-size:13px;letter-spacing:1px;white-space:nowrap;
+color:#fff;text-decoration:none;text-transform:uppercase;
+font-size:13px;letter-spacing:1px;
 }
 .nav-menu a:hover{color:#D4AF37;}
 
-.btn-track{
-border:1px solid #D4AF37;padding:9px 16px;border-radius:12px;
-color:#D4AF37;text-decoration:none;text-transform:uppercase;font-size:12px;
+.btn-outline{
+border:1px solid #D4AF37;
+padding:8px 14px;border-radius:12px;
+color:#D4AF37;text-decoration:none;font-size:12px;
 }
 
+/* MOBILE MENU PREMIUM (index-like) */
 .hamburger{
-display:none;width:44px;height:44px;border:1px solid rgba(255,255,255,0.18);
-background:transparent;border-radius:14px;cursor:pointer;
+display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,0.2);
+background:transparent;border-radius:12px;cursor:pointer;
 align-items:center;justify-content:center;
+z-index:3000;
 }
-.hamburger span{width:20px;height:2px;background:#fff;position:relative;display:block;}
-.hamburger span::before,.hamburger span::after{
-content:"";width:20px;height:2px;background:#fff;position:absolute;left:0;}
-.hamburger span::before{top:-6px;}
-.hamburger span::after{top:6px;}
+.hamburger span,
+.hamburger span:before,
+.hamburger span:after{
+width:18px;height:2px;background:#fff;display:block;position:relative;
+content:"";
+}
+.hamburger span:before{position:absolute;top:-6px;}
+.hamburger span:after{position:absolute;top:6px;}
 
-.mobile-menu-overlay{
-position:fixed;inset:0;background:rgba(0,0,0,0.72);
-opacity:0;pointer-events:none;transition:0.25s;z-index:1100;
+.mobile-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.65);
+opacity:0;pointer-events:none;transition:0.3s;z-index:1999;
 }
+
 .mobile-menu{
 position:fixed;top:0;right:0;height:100%;
 width:min(360px,88vw);background:#0b0b0b;
-transform:translateX(100%);transition:0.25s;z-index:1200;
-padding:20px;border-left:1px solid rgba(212,175,55,0.25);
+transform:translateX(100%);
+transition:0.3s;padding:22px 20px;z-index:2000;
+border-left:1px solid rgba(212,175,55,0.25);
 }
-.mobile-links{display:flex;flex-direction:column;gap:12px;margin-top:30px;}
-.mobile-links a{
-text-decoration:none;color:#fff;padding:12px;border-radius:14px;
-background:rgba(255,255,255,0.05);text-transform:uppercase;font-size:12px;
+.mobile-menu a{
+display:block;color:#fff;text-decoration:none;
+margin:10px 0;text-transform:uppercase;font-size:12px;
+padding:12px;border-radius:14px;background:rgba(255,255,255,0.05);
 }
-.menu-open .mobile-menu-overlay{opacity:1;pointer-events:auto;}
+.mobile-menu a:hover{background:rgba(212,175,55,0.12);color:#D4AF37;}
 .menu-open .mobile-menu{transform:translateX(0);}
+.menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
 
 /* HERO */
 .hero{
 height:100vh;
 background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/a9a34fb65e97e401a401f0472ac58dd5ca5acc54/ciza-percel.png') center/cover no-repeat;
-display:flex;align-items:center;padding-top:200px;
+display:flex;align-items:center;padding-top:180px;
 }
 .hero-overlay{
-width:100%;
-background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.60));
-padding:90px 0;
+background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.6));
+width:100%;padding:80px 0;
 }
-.hero-content{
-color:#fff;max-width:820px;padding:28px;border-radius:22px;
-background:rgba(0,0,0,0.25);
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:0 40px 100px rgba(0,0,0,0.5);
+.hero-content{color:#fff;max-width:780px;}
+.hero h1{font-size:48px;margin-bottom:12px;}
+.hero p{color:#ddd;margin-bottom:18px;}
+.hero-meta{
+margin-bottom:18px;font-size:13px;letter-spacing:1px;color:#D4AF37;
 }
-.hero h1{font-size:54px;margin-bottom:14px;}
-.hero p{font-size:20px;margin-bottom:24px;color:#e7e7e7;}
-
 .btn{
-display:inline-block;padding:15px 30px;border-radius:16px;
-text-decoration:none;margin:10px 10px 0 0;cursor:pointer;
+display:inline-block;padding:14px 28px;border-radius:14px;
+text-decoration:none;margin-right:10px;
 }
-.btn-primary{background:#D4AF37;color:#000;font-weight:900;}
-.btn-outline{border:1px solid #fff;color:#fff;}
+.btn-primary{background:#D4AF37;color:#000;font-weight:bold;}
+.btn-dark{border:1px solid #fff;color:#fff;}
 
-.section{padding:110px 0;}
-.section h2{text-align:center;margin-bottom:40px;font-size:32px;}
-
-.form-box{
-background:#111;color:#fff;padding:40px;border-radius:22px;
-box-shadow:0 30px 90px rgba(0,0,0,0.45);
+/* SECTIONS */
+.section{padding:90px 0;}
+.section-title{
+font-size:28px;margin:0 0 10px 0;
 }
-.form-box input,.form-box select{
-width:100%;padding:14px;margin-bottom:16px;
-border-radius:14px;border:none;
+.section-sub{
+color:#555;margin:0 0 28px 0;line-height:1.7;
+}
+
+/* PROCESS (DHL-style) */
+.process-grid{
+display:grid;grid-template-columns:repeat(4,1fr);
+gap:18px;
+}
+.process-card{
+background:#fff;border-radius:18px;
+border:1px solid rgba(212,175,55,0.22);
+box-shadow:0 18px 50px rgba(0,0,0,0.07);
+padding:20px;
+transition:0.35s;
+}
+.process-card:hover{
+transform:translateY(-6px);
+box-shadow:0 28px 70px rgba(212,175,55,0.18);
+}
+.process-step{
+font-size:12px;letter-spacing:1px;text-transform:uppercase;
+color:#D4AF37;margin-bottom:10px;
+}
+.process-card h3{margin:0 0 8px 0;font-size:16px;}
+.process-card p{margin:0;color:#5b5b5b;font-size:13px;line-height:1.6;}
+
+/* FORM (FedEx/DHL clean) */
+.form-shell{
+background:#fff;
+border:1px solid rgba(0,0,0,0.08);
+border-radius:22px;
+box-shadow:0 22px 70px rgba(0,0,0,0.10);
+overflow:hidden;
+}
+.form-topbar{
+padding:20px 22px;
+background:linear-gradient(90deg,rgba(212,175,55,0.10),rgba(212,175,55,0.02));
+border-bottom:1px solid rgba(0,0,0,0.06);
+display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.form-badge{
+display:inline-flex;align-items:center;gap:10px;
+font-size:12px;letter-spacing:1px;text-transform:uppercase;
+color:#000;
+}
+.form-badge span{
+display:inline-block;padding:6px 12px;border-radius:999px;
+border:1px solid rgba(212,175,55,0.45);
+color:#D4AF37;background:#fff;
+}
+.form-content{padding:22px;}
+
+.error{color:#d93025;margin:0 0 14px 0;font-size:14px;min-height:18px;}
+
+.grid-2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.field{
+display:flex;flex-direction:column;
+gap:8px;
+}
+.label{
+font-size:12px;letter-spacing:1px;text-transform:uppercase;
+color:#333;
+}
+.input, .select{
+width:100%;
+padding:14px 14px;
+border-radius:14px;
+border:1px solid rgba(0,0,0,0.10);
+outline:none;
+background:#fff;
+color:#111;
+}
+.input:focus, .select:focus{
+border-color:rgba(212,175,55,0.65);
+box-shadow:0 0 0 4px rgba(212,175,55,0.12);
+}
+
+.inline-note{
+font-size:12px;color:#666;line-height:1.5;margin-top:2px;
+}
+
+.extra-wrap{
+margin-top:10px;
+padding:14px;
+border-radius:16px;
+border:1px solid rgba(212,175,55,0.20);
+background:rgba(212,175,55,0.06);
+display:none;
+animation:fadeUp 0.25s ease both;
+}
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(8px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.actions{
+margin-top:18px;
+display:flex;gap:12px;flex-wrap:wrap;
+}
+.btn-wide{
+border:none;
+background:#D4AF37;color:#000;font-weight:900;
+padding:15px 18px;border-radius:14px;
+cursor:pointer;flex:1;min-width:220px;
+transition:0.25s;
+}
+.btn-wide:hover{transform:translateY(-1px);filter:brightness(0.98);}
+.btn-soft{
+border:1px solid rgba(0,0,0,0.12);
+background:#fff;color:#111;font-weight:700;
+padding:15px 18px;border-radius:14px;
+cursor:pointer;flex:1;min-width:220px;
 }
 
 .support-box{
-margin-top:25px;
-font-size:14px;
-color:#D4AF37;
+margin-top:18px;
+padding:14px;
+border-radius:16px;
+border:1px solid rgba(212,175,55,0.22);
+background:#0b0b0b;color:#D4AF37;
 text-align:center;
+}
+.support-box a{color:#D4AF37;text-decoration:none;}
+.support-box a:hover{text-decoration:underline;}
+
+/* NON DANGEROUS MATERIALS */
+.safety{
+background:#fff;
+border-radius:22px;
+border:1px solid rgba(0,0,0,0.08);
+box-shadow:0 18px 60px rgba(0,0,0,0.07);
+padding:22px;
+}
+.safety h3{margin:0 0 8px 0;font-size:18px;}
+.safety p{margin:0;color:#555;line-height:1.7;}
+.safety-list{
+margin-top:14px;
+display:grid;grid-template-columns:1fr 1fr;
+gap:10px;
+}
+.safety-item{
+padding:12px 14px;border-radius:16px;
+border:1px solid rgba(212,175,55,0.20);
+background:rgba(212,175,55,0.06);
+color:#333;font-size:13px;line-height:1.6;
 }
 
 /* FOOTER */
-.footer-divider{
-width:100%;height:4px;
-background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55,0.2));
+.footer{
+background:#000;color:#fff;padding:50px 0;text-align:center;
+margin-top:70px;
 }
 
-.footer{background:#000;color:#fff;padding:80px 0 40px;}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:34px;}
-.footer-logo{height:85px;margin-bottom:16px;}
-.footer a{display:block;text-decoration:none;color:#cfcfcf;margin:8px 0;}
-.footer a:hover{color:#D4AF37;}
-.footer-bottom{text-align:center;margin-top:40px;color:#888;font-size:13px;}
-
+/* MOBILE */
+@media(max-width:1000px){
+.process-grid{grid-template-columns:1fr 1fr;}
+}
 @media(max-width:900px){
-.logo img{height:78px;}
 .nav-menu{display:none;}
 .hamburger{display:flex;}
-.footer-grid{grid-template-columns:1fr;}
-.hero{height:auto;padding-top:210px;}
-.hero h1{font-size:34px;}
-.btn{display:block;width:100%;text-align:center;}
-.section{padding:75px 0;}
+.hero{height:auto;}
+.hero h1{font-size:32px;}
+.grid-2{grid-template-columns:1fr;}
+.safety-list{grid-template-columns:1fr;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="mobile-menu-overlay" id="overlay"></div>
-<div class="mobile-menu">
-<div class="mobile-links">
-<a href="index.html">Accueil</a>
-<a href="tracking.html">Suivi colis</a>
-<a href="enterprise.html">Entreprise</a>
-</div>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="index.html" onclick="closeMenu()">Accueil</a>
+<a href="tracking.html" onclick="closeMenu()">Suivi colis</a>
+<a href="enterprise.html" onclick="closeMenu()">Entreprise</a>
+<a href="login.html" onclick="closeMenu()">Connexion</a>
+<a href="signup.html" onclick="closeMenu()">Créer un compte</a>
 </div>
 
 <header class="main-header">
@@ -157,10 +294,13 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <a href="index.html">Accueil</a>
 <a href="tracking.html">Suivi colis</a>
 <a href="enterprise.html">Entreprise</a>
-<a href="#form" class="btn-track">Contact</a>
+<a href="login.html">Connexion</a>
+<a href="signup.html" class="btn-outline">Créer un compte</a>
 </nav>
 
-<button class="hamburger" id="hamburgerBtn"><span></span></button>
+<button class="hamburger" onclick="toggleMenu()">
+<span></span>
+</button>
 </div>
 </header>
 
@@ -168,122 +308,419 @@ background:linear-gradient(to right,rgba(212,175,55,0.2),#D4AF37,rgba(212,175,55
 <div class="hero-overlay">
 <div class="container">
 <div class="hero-content">
+<div class="hero-meta">National Coverage • Confirmation Premium • Signature à la réception</div>
 <h1>Ciza Parcel</h1>
-<p>Service de livraison nationale avec suivi et confirmation sécurisée.</p>
+<p>Livraison nationale sécurisée avec suivi temps réel.</p>
 <a href="#form" class="btn btn-primary">Créer un envoi</a>
-<a href="tracking.html" class="btn btn-outline">Suivre un colis</a>
+<a href="tracking.html" class="btn btn-dark">Suivre un colis</a>
 </div>
 </div>
+</div>
+</section>
+
+<!-- PROCESS DHL/FedEx STYLE -->
+<section class="section">
+<div class="container">
+<h2 class="section-title">Processus Parcel</h2>
+<p class="section-sub">Un flux professionnel inspiré des standards internationaux, adapté au Burundi et à l’Afrique de l’Est.</p>
+
+<div class="process-grid">
+<div class="process-card">
+<div class="process-step">Étape 1</div>
+<h3>Création d’envoi</h3>
+<p>Saisie des informations, type de colis, origine, destination et mode de paiement.</p>
+</div>
+<div class="process-card">
+<div class="process-step">Étape 2</div>
+<h3>Confirmation premium</h3>
+<p>Résumé complet + génération du numéro de tracking (format <b>CL-BI-XXXXXXXX</b>).</p>
+</div>
+<div class="process-card">
+<div class="process-step">Étape 3</div>
+<h3>Paiement sécurisé</h3>
+<p>Paiement (Lumicash / EcoCash / eNoti) ou paiement à la livraison selon le choix.</p>
+</div>
+<div class="process-card">
+<div class="process-step">Étape 4</div>
+<h3>Transport & signature</h3>
+<p>Prise en charge, suivi et preuve de réception (signature / validation à la remise).</p>
+</div>
+</div>
+
 </div>
 </section>
 
 <section id="form" class="section">
 <div class="container">
-<h2>Créer un envoi</h2>
-<div class="form-box">
+<h2 class="section-title">Créer un envoi</h2>
+<p class="section-sub">Interface “double colonne” (desktop) comme DHL / FedEx, avec champs guidés et validation.</p>
 
-<select id="packageType">
+<div class="form-shell">
+<div class="form-topbar">
+<div class="form-badge">Service <span>Parcel</span></div>
+<div style="font-size:12px;color:#444;letter-spacing:1px;text-transform:uppercase;">Burundi 🇧🇮 / Rwanda 🇷🇼</div>
+</div>
+
+<div class="form-content">
+
+<div id="errorMsg" class="error"></div>
+
+<div class="grid-2">
+
+<div class="field">
+<div class="label">Pays</div>
+<select id="country" class="select">
+<option value="">Choisir le pays</option>
+<option value="BI">🇧🇮 Burundi</option>
+<option value="RW">🇷🇼 Rwanda</option>
+</select>
+<div class="inline-note">Le choix du pays adapte les provinces et le préfixe téléphone.</div>
+</div>
+
+<div class="field">
+<div class="label">Téléphone (format numérique)</div>
+<input type="tel" id="phone" class="input" placeholder="+257XXXXXXXX" inputmode="numeric" autocomplete="tel">
+<div class="inline-note">Aucune lettre acceptée. Le préfixe est défini automatiquement.</div>
+</div>
+
+<div class="field">
+<div class="label">Province / Ville départ</div>
+<select id="origin" class="select">
+<option value="">Ville départ</option>
+</select>
+</div>
+
+<div class="field">
+<div class="label">Province / Ville destination</div>
+<select id="destination" class="select">
+<option value="">Ville destination</option>
+</select>
+</div>
+
+<div class="field">
+<div class="label">Type d’envoi</div>
+<select id="packageType" class="select">
 <option value="">Type d’envoi</option>
 <option value="enveloppe">Enveloppe</option>
 <option value="boite">Boîte</option>
 <option value="bidon">Bidon</option>
 </select>
-
-<div id="extraFields"></div>
-
-<input type="text" placeholder="Nom expéditeur">
-<input type="text" placeholder="Téléphone">
-<input type="text" placeholder="Ville départ">
-<input type="text" placeholder="Ville destination">
-
-<select>
-<option>Mode de paiement</option>
-<option>Lumicash</option>
-<option>EcoCash</option>
-<option>eNoti</option>
-<option>Paiement à la livraison</option>
-</select>
-
-<button class="btn btn-primary" onclick="goToConfirmation()">
-Continuer vers confirmation
-</button>
-
-<div class="support-box">
-Support : +257 79 94 50 07 <br>
-infos@cizalogistics.bi
 </div>
 
+<div class="field">
+<div class="label">Nom expéditeur</div>
+<input type="text" id="sender" class="input" placeholder="Nom expéditeur" autocomplete="name">
+</div>
+
+<div class="field">
+<div class="label">Mode de paiement</div>
+<select id="payment" class="select">
+<option value="">Mode de paiement</option>
+<option value="Lumicash">Lumicash</option>
+<option value="EcoCash">EcoCash</option>
+<option value="eNoti">eNoti</option>
+<option value="Paiement à la livraison">Paiement à la livraison</option>
+</select>
+<div class="inline-note">Le paiement est exécuté après l’écran de confirmation.</div>
+</div>
+
+<div class="field">
+<div class="label">Résumé (auto)</div>
+<input type="text" id="summaryAuto" class="input" placeholder="Choisissez le pays, origine, destination..." readonly>
+<div class="inline-note">Un résumé s’affiche pour une confirmation ultra claire.</div>
+</div>
+
+</div>
+
+<!-- EXTRA FIELDS (animated) -->
+<div class="extra-wrap" id="extraWrap">
+<div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#000;margin-bottom:10px;">
+Détails du colis
+</div>
+<div class="grid-2" id="extraFields"></div>
+</div>
+
+<div class="actions">
+<button class="btn-wide" onclick="submitForm()">Continuer vers confirmation</button>
+<button class="btn-soft" onclick="window.location.href='tracking.html'">Aller au suivi</button>
+</div>
+
+<div class="support-box">
+Support :
+<a href="tel:+25779945007">+257 79 94 50 07</a> <br>
+<a href="mailto:infos@cizalogistics.bi">infos@cizalogistics.bi</a>
+</div>
+
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- NON DANGEROUS MATERIALS -->
+<section class="section" style="padding-top:0;">
+<div class="container">
+<div class="safety">
+<h3>Matières non dangereuses</h3>
+<p>Pour des raisons de sécurité, Ciza Parcel accepte uniquement des envois non dangereux. Toute expédition suspecte peut être refusée lors de la prise en charge.</p>
+<div class="safety-list">
+<div class="safety-item">✅ Documents, enveloppes, papiers, contrats</div>
+<div class="safety-item">✅ Boîtes standards (objets non fragiles / fragiles emballés)</div>
+<div class="safety-item">✅ Bidons (10L / 20L) uniquement si contenu autorisé et bien scellé</div>
+<div class="safety-item">⛔ Interdit : explosifs, carburants, produits chimiques, armes</div>
+</div>
 </div>
 </div>
 </section>
 
-<div class="footer-divider"></div>
-
 <footer class="footer">
-<div class="container footer-grid">
-<div>
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="footer-logo">
-<p>Division Logistique de Ciza Group.</p>
-</div>
-<div>
-<h4>Entreprise</h4>
-<a href="enterprise.html">Accès Entreprise</a>
-<a href="index.html">Accueil</a>
-</div>
-<div>
-<h4>Légal</h4>
-<a href="#">Confidentialité</a>
-<a href="#">Conditions</a>
-</div>
-<div>
-<h4>Contact</h4>
-<a href="mailto:contact@cizalogistics.bi">contact@cizalogistics.bi</a>
-</div>
-</div>
-<div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
+© 2026 Ciza Logistics | Division de Ciza Group – Tous droits réservés
 </footer>
 
-<script>
-document.getElementById('hamburgerBtn').onclick=function(){
-document.body.classList.add('menu-open');
-};
-document.getElementById('overlay').onclick=function(){
-document.body.classList.remove('menu-open');
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
 };
 
-const packageType = document.getElementById("packageType");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const provincesBI=["Bujumbura","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge","Bujumbura Rural"];
+const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
+
+const countryEl = document.getElementById("country");
+const originEl = document.getElementById("origin");
+const destEl = document.getElementById("destination");
+const phoneEl = document.getElementById("phone");
+const packageTypeEl = document.getElementById("packageType");
+const extraWrap = document.getElementById("extraWrap");
 const extraFields = document.getElementById("extraFields");
+const summaryAuto = document.getElementById("summaryAuto");
 
-packageType.addEventListener("change", function(){
-if(this.value==="enveloppe"){
-extraFields.innerHTML=`<input type="text" placeholder="Dimensions (ex: A4)">`;
+function setSummary(){
+const c = countryEl.value;
+const o = originEl.value;
+const d = destEl.value;
+const t = packageTypeEl.value;
+let countryName = c==="BI" ? "Burundi" : (c==="RW" ? "Rwanda" : "");
+let typeName = t ? t : "";
+summaryAuto.value = (countryName && o && d) ? (countryName+" • "+o+" → "+d+(typeName?(" • "+typeName):"")) : "Choisissez le pays, origine, destination...";
 }
-else if(this.value==="boite"){
-extraFields.innerHTML=`
-<input type="text" placeholder="Longueur (cm)">
-<input type="text" placeholder="Largeur (cm)">
-<input type="text" placeholder="Hauteur (cm)">
-<input type="text" placeholder="Poids (kg)">
-`;
+
+function fillCities(list){
+originEl.innerHTML = '<option value="">Ville départ</option>';
+destEl.innerHTML = '<option value="">Ville destination</option>';
+list.forEach(p=>{
+originEl.innerHTML += `<option value="${p}">${p}</option>`;
+destEl.innerHTML += `<option value="${p}">${p}</option>`;
+});
 }
-else if(this.value==="bidon"){
-extraFields.innerHTML=`
-<select>
-<option>Capacité</option>
-<option>10L</option>
-<option>20L</option>
-</select>
-<input type="number" placeholder="Quantité totale">
-`;
+
+countryEl.addEventListener("change",function(){
+let list = this.value==="BI" ? provincesBI : (this.value==="RW" ? provincesRW : []);
+fillCities(list);
+
+phoneEl.value = this.value==="BI" ? "+257" : (this.value==="RW" ? "+250" : "");
+setSummary();
+});
+
+originEl.addEventListener("change", setSummary);
+destEl.addEventListener("change", setSummary);
+packageTypeEl.addEventListener("change", setSummary);
+
+phoneEl.addEventListener("input", function(){
+let prefix = countryEl.value==="RW" ? "+250" : "+257";
+if(!countryEl.value){prefix="+";}
+let v = this.value || "";
+v = v.replace(/[^\d+]/g,""); 
+if(prefix!=="+" && !v.startsWith(prefix)){
+v = prefix + v.replace(/\D/g,"").replace(/^(\d+)/,""); 
 }
-else{
+if(prefix!=="+" ){
+let after = v.slice(prefix.length).replace(/\D/g,"");
+v = prefix + after;
+}
+this.value = v;
+});
+
+packageTypeEl.addEventListener("change",function(){
+const v = this.value;
+
+if(!v){
 extraFields.innerHTML="";
+extraWrap.style.display="none";
+return;
+}
+
+extraWrap.style.display="block";
+
+if(v==="boite"){
+extraFields.innerHTML=`
+<div class="field"><div class="label">Longueur (cm)</div><input id="boxL" class="input" inputmode="numeric" placeholder="Ex: 30"></div>
+<div class="field"><div class="label">Largeur (cm)</div><input id="boxW" class="input" inputmode="numeric" placeholder="Ex: 20"></div>
+<div class="field"><div class="label">Hauteur (cm)</div><input id="boxH" class="input" inputmode="numeric" placeholder="Ex: 15"></div>
+<div class="field"><div class="label">Poids (kg)</div><input id="boxKg" class="input" inputmode="decimal" placeholder="Ex: 2.5"></div>
+`;
+}
+else if(v==="bidon"){
+extraFields.innerHTML=`
+<div class="field"><div class="label">Capacité</div>
+<select id="canLiters" class="select">
+<option value="">Choisir</option>
+<option value="10L">10L</option>
+<option value="20L">20L</option>
+</select>
+</div>
+<div class="field"><div class="label">Quantité totale</div><input id="canQty" class="input" inputmode="numeric" placeholder="Ex: 3"></div>
+`;
+}
+else if(v==="enveloppe"){
+extraFields.innerHTML=`
+<div class="field"><div class="label">Format</div>
+<select id="envFormat" class="select">
+<option value="">Choisir</option>
+<option value="A4">A4</option>
+<option value="A3">A3</option>
+<option value="Autre">Autre</option>
+</select>
+</div>
+<div class="field"><div class="label">Dimensions approximatives</div><input id="envDim" class="input" placeholder="Ex: 30cm x 21cm"></div>
+`;
 }
 });
 
-function goToConfirmation(){
-window.location.href="confirmation.html?type=parcel";
+function generateTracking(country){
+const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let result="CL-"+country+"-";
+for(let i=0;i<8;i++){
+result+=chars.charAt(Math.floor(Math.random()*chars.length));
 }
+return result;
+}
+
+function getExtraPayload(type){
+let payload = {};
+if(type==="boite"){
+payload = {
+boxL: (document.getElementById("boxL")?.value || "").trim(),
+boxW: (document.getElementById("boxW")?.value || "").trim(),
+boxH: (document.getElementById("boxH")?.value || "").trim(),
+boxKg: (document.getElementById("boxKg")?.value || "").trim()
+};
+}
+else if(type==="bidon"){
+payload = {
+canLiters: (document.getElementById("canLiters")?.value || "").trim(),
+canQty: (document.getElementById("canQty")?.value || "").trim()
+};
+}
+else if(type==="enveloppe"){
+payload = {
+envFormat: (document.getElementById("envFormat")?.value || "").trim(),
+envDim: (document.getElementById("envDim")?.value || "").trim()
+};
+}
+return payload;
+}
+
+window.submitForm = async function(){
+const err = document.getElementById("errorMsg");
+err.innerText = "";
+
+const country = countryEl.value;
+const sender = (document.getElementById("sender").value || "").trim();
+const phone = (phoneEl.value || "").trim();
+const origin = originEl.value;
+const destination = destEl.value;
+const payment = document.getElementById("payment").value;
+const type = packageTypeEl.value;
+
+if(!country || !sender || !phone || !origin || !destination || !payment || !type){
+err.innerText="Veuillez remplir tous les champs obligatoires.";
+return;
+}
+if(origin===destination){
+err.innerText="La ville de départ et la ville de destination ne peuvent pas être identiques.";
+return;
+}
+if(country==="BI" && !phone.startsWith("+257")){
+err.innerText="Téléphone invalide pour le Burundi. Préfixe attendu: +257";
+return;
+}
+if(country==="RW" && !phone.startsWith("+250")){
+err.innerText="Téléphone invalide pour le Rwanda. Préfixe attendu: +250";
+return;
+}
+if(phone.replace(/\D/g,"").length < (country==="BI" ? 11 : 12)){
+err.innerText="Veuillez saisir un numéro de téléphone complet.";
+return;
+}
+
+const extra = getExtraPayload(type);
+
+if(type==="boite"){
+if(!extra.boxL || !extra.boxW || !extra.boxH || !extra.boxKg){
+err.innerText="Veuillez renseigner les dimensions et le poids de la boîte.";
+return;
+}
+}
+if(type==="bidon"){
+if(!extra.canLiters || !extra.canQty){
+err.innerText="Veuillez renseigner la capacité et la quantité du bidon.";
+return;
+}
+}
+if(type==="enveloppe"){
+if(!extra.envFormat){
+err.innerText="Veuillez sélectionner le format de l’enveloppe.";
+return;
+}
+}
+
+const tracking = generateTracking(country);
+
+await addDoc(collection(db,"shipments"),{
+trackingCode:tracking,
+service:"parcel",
+country,
+sender,
+phone,
+origin,
+destination,
+payment,
+packageType:type,
+extra,
+status:"pending",
+createdAt:serverTimestamp()
+});
+
+window.location.href="confirmation.html?tracking="+encodeURIComponent(tracking);
+};
+
+</script>
+
+<script>
+function toggleMenu(){
+document.body.classList.toggle("menu-open");
+document.body.style.overflow = document.body.classList.contains("menu-open") ? "hidden" : "";
+}
+function closeMenu(){
+document.body.classList.remove("menu-open");
+document.body.style.overflow = "";
+}
+document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
+document.addEventListener("keydown",function(e){
+if(e.key==="Escape"){closeMenu();}
+});
 </script>
 
 </body>
