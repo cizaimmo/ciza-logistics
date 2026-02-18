@@ -33,11 +33,12 @@ padding:8px 14px;border-radius:12px;
 color:#D4AF37;text-decoration:none;font-size:12px;
 }
 
-/* MOBILE MENU */
+/* MOBILE MENU PREMIUM */
 .hamburger{
 display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,0.2);
 background:transparent;border-radius:12px;cursor:pointer;
 align-items:center;justify-content:center;
+z-index:3000;
 }
 .hamburger span,
 .hamburger span:before,
@@ -47,6 +48,11 @@ content:"";
 }
 .hamburger span:before{position:absolute;top:-6px;}
 .hamburger span:after{position:absolute;top:6px;}
+
+.mobile-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.65);
+opacity:0;pointer-events:none;transition:0.3s;z-index:1999;
+}
 
 .mobile-menu{
 position:fixed;top:0;right:0;height:100%;
@@ -59,6 +65,7 @@ display:block;color:#fff;text-decoration:none;
 margin-bottom:20px;text-transform:uppercase;
 }
 .menu-open .mobile-menu{transform:translateX(0);}
+.menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
 
 /* HERO */
 .hero{
@@ -93,10 +100,7 @@ width:100%;padding:14px;margin-bottom:16px;
 border-radius:14px;border:none;
 }
 .error{color:#ff4d4d;margin-bottom:15px;}
-
-.support-box{
-margin-top:20px;color:#D4AF37;text-align:center;
-}
+.support-box{margin-top:20px;color:#D4AF37;text-align:center;}
 
 .footer{
 background:#000;color:#fff;padding:50px 0;text-align:center;
@@ -115,12 +119,14 @@ margin-top:70px;
 
 <body>
 
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
 <div class="mobile-menu" id="mobileMenu">
-<a href="index.html">Accueil</a>
-<a href="tracking.html">Suivi colis</a>
-<a href="enterprise.html">Entreprise</a>
-<a href="login.html">Connexion</a>
-<a href="signup.html">Créer un compte</a>
+<a href="index.html" onclick="closeMenu()">Accueil</a>
+<a href="tracking.html" onclick="closeMenu()">Suivi colis</a>
+<a href="enterprise.html" onclick="closeMenu()">Entreprise</a>
+<a href="login.html" onclick="closeMenu()">Connexion</a>
+<a href="signup.html" onclick="closeMenu()">Créer un compte</a>
 </div>
 
 <header class="main-header">
@@ -140,7 +146,6 @@ margin-top:70px;
 <button class="hamburger" onclick="toggleMenu()">
 <span></span>
 </button>
-
 </div>
 </header>
 
@@ -206,11 +211,10 @@ infos@cizalogistics.bi
 </section>
 
 <footer class="footer">
-© 2026 Ciza Logistics – Tous droits réservés
+© 2026 Ciza Logistics | Division de Ciza Group – Tous droits réservés
 </footer>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -300,13 +304,16 @@ createdAt:serverTimestamp()
 
 window.location.href="confirmation.html?tracking="+tracking;
 }
-
 </script>
 
 <script>
 function toggleMenu(){
 document.body.classList.toggle("menu-open");
 }
+function closeMenu(){
+document.body.classList.remove("menu-open");
+}
+document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
 </script>
 
 </body>
