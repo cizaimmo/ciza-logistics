@@ -578,21 +578,33 @@ const tracking=generateTracking(country);
 await addDoc(collection(db,"shipments"),{
 trackingCode:tracking,
 service:"parcel",
+
 country:country,
+
 senderName:sender,
 senderPhone:phone,
 receiverName:receiver,
 receiverPhone:receiverPhone,
+
 fromCity:origin,
 toCity:destination,
+
 paymentMethod:payment,
 packageType:type,
+
 declaredValue: declaredValue ? Number(declaredValue) : null,
 content: content || null,
 notes: notes || null,
+
 nonDangerous:true,
 details:details,
-status:"pending",
+
+/* FLOW BACKEND ALIGNMENT */
+status:"created",
+priceCalculated:false,
+finalPrice:null,
+priceBreakdown:null,
+
 createdAt:serverTimestamp()
 });
 
