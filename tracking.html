@@ -249,7 +249,7 @@ document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -260,55 +260,96 @@ projectId: "ciza-logistics"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const code = new URLSearchParams(window.location.search).get("code");
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
+
+if(!code){
+document.getElementById("statusBadge").innerText="Tracking invalide";
+throw new Error("Tracking invalide");
+}
+
 document.getElementById("trackCode").innerText = "Tracking : " + code;
 
-const q = query(collection(db,"shipments"), where("trackingCode","==",code));
+const ref = doc(db,"shipments",code);
 
-onSnapshot(q,(snapshot)=>{
-snapshot.forEach(doc=>{
-const data = doc.data();
-const status = data.status || "pending";
+onSnapshot(ref,(snap)=>{
 
-document.getElementById("statusBadge").innerText = status.toUpperCase();
-updateTimeline(status);
-
-/* OTP */
-if(data.deliveryOTP){
-document.getElementById("otpBox").style.display="block";
-document.getElementById("otpBox").innerText="CODE OTP : "+data.deliveryOTP;
+if(!snap.exists()){
+document.getElementById("statusBadge").innerText="Introuvable";
+return;
 }
 
-/* PHOTO */
-if(data.deliveryPhotoUrl){
-document.getElementById("photoBox").style.display="block";
-document.getElementById("deliveryPhoto").src=data.deliveryPhotoUrl;
-}
+const data = snap.data();
+const status = data.status || "created";
 
-/* PDF */
-if(status==="delivered"){
-document.getElementById("pdfBtn").style.display="inline-block";
-}
+updateStatusUI(status);
 
-/* MAP */
-if(data.currentLat && data.currentLng){
-document.getElementById("map").innerHTML =
-`<iframe width="100%" height="100%" frameborder="0"
-src="https://www.google.com/maps?q=${data.currentLat},${data.currentLng}&z=15&output=embed"></iframe>`;
-}
-});
 });
 
-function updateTimeline(status){
-const steps=["s1","s2","s3","s4","s5"];
-steps.forEach(s=>document.getElementById(s).classList.remove("active"));
+function updateStatusUI(status){
 
-if(status==="pending"){document.getElementById("s1").classList.add("active");}
-if(status==="payment_validated"){["s1","s2"].forEach(id=>document.getElementById(id).classList.add("active"));}
-if(status==="picked_up"){["s1","s2","s3"].forEach(id=>document.getElementById(id).classList.add("active"));}
-if(status==="in_transit"){["s1","s2","s3","s4"].forEach(id=>document.getElementById(id).classList.add("active"));}
-if(status==="delivered"){steps.forEach(id=>document.getElementById(id).classList.add("active"));}
+const badge = document.getElementById("statusBadge");
+const steps = ["s1","s2","s3","s4","s5"];
+
+steps.forEach(id=>document.getElementById(id).classList.remove("active"));
+
+let label = "";
+let color = "#000";
+
+switch(status){
+
+case "created":
+label = "Enregistré";
+color = "#000";
+activate(["s1"]);
+break;
+
+case "payment_under_review":
+label = "Paiement en vérification";
+color = "#a67c00";
+activate(["s1","s2"]);
+break;
+
+case "payment_validated":
+label = "Paiement validé";
+color = "#2e7d32";
+activate(["s1","s2"]);
+break;
+
+case "picked_up":
+label = "Colis ramassé";
+color = "#1565c0";
+activate(["s1","s2","s3"]);
+break;
+
+case "in_transit":
+label = "En transit";
+color = "#6a1b9a";
+activate(["s1","s2","s3","s4"]);
+break;
+
+case "delivered":
+label = "Livré";
+color = "#1b5e20";
+activate(["s1","s2","s3","s4","s5"]);
+break;
+
+default:
+label = status;
+activate(["s1"]);
 }
+
+badge.innerText = label;
+badge.style.background = color;
+}
+
+function activate(arr){
+arr.forEach(id=>{
+const el = document.getElementById(id);
+if(el) el.classList.add("active");
+});
+}
+
 </script>
 
 </body>
