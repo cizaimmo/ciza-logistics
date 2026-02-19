@@ -229,10 +229,10 @@ Montant : Chargement...
 <footer class="footer">
 © 2026 Ciza Logistics | Paiement sécurisé
 </footer>
-
+  
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -249,7 +249,30 @@ const db = getFirestore(app);
 const urlParams = new URLSearchParams(window.location.search);
 const tracking = urlParams.get("tracking");
 
-document.getElementById("amountBox").innerText = "Montant : 8 000 BIF"; // temporaire
+if(!tracking){
+alert("Tracking invalide.");
+window.location.href="index.html";
+}
+
+let shipmentData = null;
+
+/* ===== LECTURE PRIX RÉEL ===== */
+
+const snap = await getDoc(doc(db,"shipments",tracking));
+
+if(!snap.exists()){
+alert("Envoi introuvable.");
+window.location.href="index.html";
+}
+
+shipmentData = snap.data();
+
+const finalPrice = shipmentData.finalPrice || 0;
+
+document.getElementById("amountBox").innerText =
+"Montant : " + finalPrice.toLocaleString("fr-FR") + " BIF";
+
+/* ===== MÉTHODE ===== */
 
 let selectedMethod = null;
 
@@ -258,6 +281,8 @@ document.querySelectorAll(".method").forEach(m=>m.classList.remove("active"));
 element.classList.add("active");
 selectedMethod = method;
 }
+
+/* ===== CONFIRMATION ===== */
 
 window.submitPayment = async function(){
 
@@ -270,19 +295,23 @@ alert("Veuillez compléter toutes les informations.");
 return;
 }
 
+/* Mise à jour Firestore */
+
 await updateDoc(doc(db,"shipments",tracking),{
 paymentMethod:selectedMethod,
 paymentReference:ref,
 payerPhone:phone,
 paymentStatus:"awaiting_validation",
-status:"payment_under_review"
+status:"payment_under_review",
+paymentSubmittedAt: new Date()
 });
 
 alert("Paiement enregistré. Vérification en cours.");
-window.location.href="tracking.html?code="+tracking;
+
+window.location.href="confirmation.html?tracking="+tracking;
 
 }
 </script>
-
+  
 </body>
 </html>
