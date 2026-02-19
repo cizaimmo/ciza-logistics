@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driver Delivery | Ciza Parcel</title>
+
+<style>
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#0f0f10;
+color:#fff;
+padding:30px;
+}
+.container{
+max-width:600px;
+margin:auto;
+}
+h1{margin-bottom:20px;}
+input{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border-radius:12px;
+border:none;
+}
+button{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:none;
+background:#D4AF37;
+font-weight:bold;
+cursor:pointer;
+}
+canvas{
+border:1px solid rgba(255,255,255,0.3);
+border-radius:12px;
+background:#fff;
+margin-bottom:15px;
+}
+.video-box{
+margin-bottom:15px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Validation Livraison</h1>
+
+<input type="text" id="tracking" placeholder="Numéro de tracking">
+<input type="text" id="otp" placeholder="Code OTP client">
+
+<div class="video-box">
+<video id="video" width="100%" autoplay></video>
+<button onclick="capturePhoto()">Prendre photo</button>
+</div>
+
+<canvas id="photoCanvas" width="300" height="200"></canvas>
+
+<h3>Signature client</h3>
+<canvas id="signatureCanvas" width="300" height="150"></canvas>
+<button onclick="clearSignature()">Effacer signature</button>
+
+<br><br>
+<button onclick="validateDelivery()">Confirmer livraison</button>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const video = document.getElementById("video");
+navigator.mediaDevices.getUserMedia({ video:true })
+.then(stream => { video.srcObject = stream; });
+
+window.capturePhoto = function(){
+const canvas = document.getElementById("photoCanvas");
+const ctx = canvas.getContext("2d");
+ctx.drawImage(video,0,0,canvas.width,canvas.height);
+}
+
+const sigCanvas = document.getElementById("signatureCanvas");
+const sigCtx = sigCanvas.getContext("2d");
+let drawing=false;
+
+sigCanvas.addEventListener("mousedown",()=>drawing=true);
+sigCanvas.addEventListener("mouseup",()=>drawing=false);
+sigCanvas.addEventListener("mousemove",(e)=>{
+if(!drawing) return;
+sigCtx.lineWidth=2;
+sigCtx.lineTo(e.offsetX,e.offsetY);
+sigCtx.stroke();
+});
+
+window.clearSignature=function(){
+sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+}
+
+window.validateDelivery = async function(){
+
+const tracking = document.getElementById("tracking").value.trim();
+const otp = document.getElementById("otp").value.trim();
+
+if(!tracking || !otp){
+alert("Tracking et OTP requis");
+return;
+}
+
+const q = query(collection(db,"shipments"), where("trackingCode","==",tracking));
+const snapshot = await getDocs(q);
+
+if(snapshot.empty){
+alert("Colis introuvable");
+return;
+}
+
+const docRef = snapshot.docs[0].ref;
+const data = snapshot.docs[0].data();
+
+if(data.deliveryOTP !== otp){
+alert("OTP incorrect");
+return;
+}
+
+await updateDoc(docRef,{
+status:"delivered",
+deliveredAt: new Date()
+});
+
+alert("Livraison confirmée");
+}
+</script>
+
+</body>
+</html>
