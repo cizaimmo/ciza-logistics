@@ -270,8 +270,10 @@ document.getElementById("amountBox").innerText="Montant : "+(data.finalPrice || 
 document.getElementById("trackBtn").href="tracking.html?code="+tracking;
 
 /* QR */
+const trackingURL = window.location.origin + "/tracking.html?code=" + tracking;
+
 new QRCode(document.getElementById("qrcode"),{
-text: tracking,
+text: trackingURL,
 width:140,
 height:140
 });
