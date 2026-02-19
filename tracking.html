@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suivi colis | Ciza Logistics</title>
 
-<!-- jsPDF + QR -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -42,6 +41,10 @@ html{scroll-behavior:smooth;}
 
 .estimate-box{margin-top:20px;padding:15px;border-radius:14px;background:rgba(212,175,55,0.1);font-size:14px;}
 
+.driver-card{display:none;margin-top:20px;padding:18px;border-radius:20px;background:#000;color:#fff;border:1px solid rgba(212,175,55,0.25);}
+.driver-photo{width:60px;height:60px;border-radius:16px;object-fit:cover;display:none;border:1px solid rgba(212,175,55,0.4);}
+.driver-btn{display:block;margin-top:12px;padding:12px;border-radius:14px;background:#D4AF37;color:#000;text-align:center;font-weight:900;text-decoration:none;}
+
 .otp-box{margin-top:20px;padding:15px;border-radius:16px;background:#000;color:#fff;font-weight:900;letter-spacing:3px;text-align:center;display:none;}
 .photo-box{margin-top:20px;display:none;}
 .photo-box img{width:100%;border-radius:18px;border:1px solid rgba(212,175,55,0.4);}
@@ -49,39 +52,12 @@ html{scroll-behavior:smooth;}
 
 .footer{background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:60px;}
 .footer strong{color:#D4AF37;}
-
-@media(max-width:900px){
-.nav-menu{display:none;}
-.hero{padding-top:150px;}
-}
 </style>
 </head>
 
 <body>
 
-<header class="main-header">
-<div class="container header-container">
-<div class="logo">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
-</div>
-<nav class="nav-menu">
-<a href="index.html">Accueil</a>
-<a href="parcel.html">Parcel</a>
-<a href="tracking.html">Suivi</a>
-</nav>
-</div>
-</header>
-
-<section class="hero">
-<div class="container">
-<div class="hero-box">
-<h1>Suivi en temps réel</h1>
-<p>Statut officiel de votre envoi Ciza Logistics.</p>
-</div>
-</div>
-</section>
-
-<section class="container">
+<section class="container" style="padding-top:180px;">
 <div class="track-card">
 
 <div class="track-header">
@@ -99,6 +75,13 @@ html{scroll-behavior:smooth;}
 
 <div class="estimate-box" id="estimateBox"></div>
 
+<div class="driver-card" id="driverCard">
+<div id="driverName" style="font-weight:900;font-size:18px;"></div>
+<div id="driverMeta" style="margin-top:6px;font-size:13px;color:#ccc;"></div>
+<img id="driverPhoto" class="driver-photo"/>
+<a id="driverCallBtn" class="driver-btn">Appeler le chauffeur</a>
+</div>
+
 <div class="otp-box" id="otpBox"></div>
 <div class="photo-box" id="photoBox"><img id="deliveryPhoto"></div>
 <button class="pdf-btn" id="pdfBtn">Télécharger preuve officielle (PDF)</button>
@@ -110,7 +93,7 @@ html{scroll-behavior:smooth;}
 © 2026 <strong>Ciza Logistics</strong>
 </footer>
 
-<script type="module">
+  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -125,132 +108,160 @@ projectId: "ciza-logistics"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const params = new URLSearchParams(window.location.search);
-const code = params.get("code");
-
-if(!code){
-document.getElementById("statusBadge").innerText="Tracking invalide";
-throw new Error("Tracking invalide");
-}
-
+const code = new URLSearchParams(window.location.search).get("code");
 document.getElementById("trackCode").innerText="Tracking : "+code;
 
 const ref = doc(db,"shipments",code);
 
 onSnapshot(ref,(snap)=>{
-if(!snap.exists()){
-document.getElementById("statusBadge").innerText="Introuvable";
-return;
-}
-
-const data = snap.data();
-const status = data.status || "created";
-
+if(!snap.exists()) return;
+const data=snap.data();
+const status=data.status||"created";
 updateUI(status,data);
 });
 
 function updateUI(status,data){
 
-const badge = document.getElementById("statusBadge");
-const estimate = document.getElementById("estimateBox");
+const badge=document.getElementById("statusBadge");
+const estimate=document.getElementById("estimateBox");
 const steps=["s1","s2","s3","s4","s5"];
 steps.forEach(id=>document.getElementById(id).classList.remove("active"));
 
-let label="",color="#000";
-
-switch(status){
-case "created":
-label="Enregistré";color="#000";
-activate(["s1"]);
-estimate.innerText="Livraison estimée : 24 à 48h après validation.";
-break;
-
-case "payment_under_review":
-label="Paiement en vérification";color="#a67c00";
-activate(["s1","s2"]);
-document.querySelector("#s2 h3").innerText="Paiement en vérification";
-document.querySelector("#s2 p").innerText="Transaction en analyse.";
-break;
-
-case "payment_validated":
-label="Paiement validé";color="#2e7d32";
-activate(["s1","s2"]);
-document.querySelector("#s2 h3").innerText="Paiement validé";
-document.querySelector("#s2 p").innerText="Transaction confirmée.";
-break;
-
-case "picked_up":
-label="Colis ramassé";color="#1565c0";
-activate(["s1","s2","s3"]);
-estimate.innerText="Colis en préparation pour transit.";
-break;
-
-case "in_transit":
-label="En transit";color="#6a1b9a";
-activate(["s1","s2","s3","s4"]);
-estimate.innerText="Colis en route. Livraison imminente.";
-break;
-
-case "delivered":
-label="Livré";color="#1b5e20";
+if(status==="created"){activate(["s1"]);estimate.innerText="Livraison estimée 24-48h.";}
+if(status==="payment_under_review"){activate(["s1","s2"]);document.querySelector("#s2 h3").innerText="Paiement en vérification";}
+if(status==="payment_validated"){activate(["s1","s2"]);document.querySelector("#s2 h3").innerText="Paiement validé";}
+if(status==="picked_up"){activate(["s1","s2","s3"]);estimate.innerText="Colis ramassé.";}
+if(status==="in_transit"){activate(["s1","s2","s3","s4"]);estimate.innerText="Colis en transit.";}
+if(status==="delivered"){
 activate(["s1","s2","s3","s4","s5"]);
 estimate.innerText="Colis livré avec succès.";
 document.getElementById("pdfBtn").style.display="inline-block";
-break;
 }
 
-badge.innerText=label;
-badge.style.background=color;
+badge.innerText=status.toUpperCase();
+badge.style.background="#000";
 
-/* OTP */
+updateDriver(data,status);
+
 if(data.deliveryOTP){
 document.getElementById("otpBox").style.display="block";
-document.getElementById("otpBox").innerText="CODE OTP : "+data.deliveryOTP;
+document.getElementById("otpBox").innerText="OTP : "+data.deliveryOTP;
 }
 
-/* Photo */
 if(data.deliveryPhoto){
 document.getElementById("photoBox").style.display="block";
 document.getElementById("deliveryPhoto").src=data.deliveryPhoto;
 }
 
-/* POD */
 document.getElementById("pdfBtn").onclick=function(){
-generatePDF(data);
+generatePremiumPDF(data);
 };
+}
+
+function updateDriver(data,status){
+if(status!=="picked_up"&&status!=="in_transit"&&status!=="delivered"){
+document.getElementById("driverCard").style.display="none";
+return;
+}
+document.getElementById("driverCard").style.display="block";
+document.getElementById("driverName").innerText=data.driverName||"Chauffeur assigné";
+document.getElementById("driverMeta").innerText=
+(data.driverVehicleType||"")+" • "+
+(data.driverVehiclePlate||"")+" • "+
+(data.driverPhone||"");
+
+if(data.driverPhotoUrl){
+document.getElementById("driverPhoto").style.display="block";
+document.getElementById("driverPhoto").src=data.driverPhotoUrl;
+}
+
+if(data.driverPhone){
+document.getElementById("driverCallBtn").href="tel:"+data.driverPhone;
+}
 }
 
 function activate(arr){
 arr.forEach(id=>document.getElementById(id).classList.add("active"));
 }
 
-function generatePDF(data){
+/* ===============================
+   PDF PREMIUM ENTREPRISE
+================================ */
+
+async function generatePremiumPDF(data){
 
 const docPDF=new jsPDF();
-docPDF.setFontSize(18);
-docPDF.text("CIZA LOGISTICS",20,20);
+const pageWidth = docPDF.internal.pageSize.getWidth();
 
+/* HEADER */
+docPDF.setFillColor(0,0,0);
+docPDF.rect(0,0,pageWidth,25,"F");
+
+docPDF.setTextColor(255,255,255);
+docPDF.setFontSize(14);
+docPDF.text("CIZA LOGISTICS",15,15);
+
+docPDF.setFontSize(10);
+docPDF.text("Official Proof of Delivery",pageWidth-60,15);
+
+/* BODY */
+docPDF.setTextColor(0,0,0);
+docPDF.setFontSize(16);
+docPDF.text("PROOF OF DELIVERY",15,40);
+
+docPDF.setFontSize(11);
+docPDF.text("Tracking Number: "+code,15,50);
+
+const podNumber="POD-"+code+"-"+Date.now().toString().slice(-6);
+docPDF.text("Document ID: "+podNumber,15,58);
+
+/* Shipment Info */
 docPDF.setFontSize(12);
-docPDF.text("Preuve officielle de livraison",20,30);
-docPDF.text("Tracking : "+code,20,40);
+docPDF.text("Shipment Information",15,75);
+docPDF.setFontSize(10);
+
+docPDF.text("Sender: "+(data.senderName||""),15,85);
+docPDF.text("Receiver: "+(data.receiverNameConfirmed||data.receiverName||""),15,92);
+docPDF.text("Route: "+(data.fromCity||"")+" → "+(data.toCity||""),15,99);
+
+/* Delivery Info */
+docPDF.setFontSize(12);
+docPDF.text("Delivery Details",15,115);
+docPDF.setFontSize(10);
 
 if(data.deliveredAt){
-docPDF.text("Date : "+new Date(data.deliveredAt.seconds*1000).toLocaleString(),20,50);
+docPDF.text("Delivered At: "+
+new Date(data.deliveredAt.seconds*1000).toLocaleString(),
+15,125);
 }
 
-if(data.deliveredBy){
-docPDF.text("Livre par : "+data.deliveredBy,20,60);
-}
+docPDF.text("Delivered By: "+(data.driverName||""),15,132);
+docPDF.text("Vehicle: "+(data.driverVehiclePlate||""),15,139);
 
-if(data.receiverNameConfirmed){
-docPDF.text("Destinataire : "+data.receiverNameConfirmed,20,70);
-}
-
+/* QR */
 const qrContainer=document.createElement("div");
-new QRCode(qrContainer,{text:code,width:80,height:80});
+new QRCode(qrContainer,{text:window.location.href,width:100,height:100});
 const qrImg=qrContainer.querySelector("img").src;
+docPDF.addImage(qrImg,"PNG",pageWidth-60,40,40,40);
 
-docPDF.addImage(qrImg,"PNG",140,20,40,40);
+/* Photo */
+if(data.deliveryPhoto){
+docPDF.addImage(data.deliveryPhoto,"JPEG",15,150,80,60);
+}
+
+/* Signature */
+if(data.receiverSignature){
+docPDF.addImage(data.receiverSignature,"PNG",110,150,60,40);
+docPDF.text("Receiver Signature",110,195);
+}
+
+/* Footer */
+docPDF.setFontSize(8);
+docPDF.setTextColor(120);
+docPDF.text(
+"This document is digitally generated and serves as official confirmation of delivery by Ciza Logistics.",
+15,280
+);
 
 docPDF.save("Ciza_Logistics_POD_"+code+".pdf");
 }
