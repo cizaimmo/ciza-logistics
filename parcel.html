@@ -375,7 +375,8 @@ Support : +257 79 94 50 07 • infos@cizalogistics.bi
 <!-- FIREBASE + LOGIQUE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -575,7 +576,44 @@ details={format:env,weightKg:Number(wei2)};
 
 const tracking=generateTracking(country);
 
-await addDoc(collection(db,"shipments"),{
+/* ===== CALCUL PRIX RÉEL ===== */
+
+let basePrice = 0;
+
+/* Frais distance */
+if(origin !== destination){
+  basePrice += 3000;
+}
+
+/* Type colis */
+if(type === "enveloppe"){
+  basePrice += 2000;
+}
+
+if(type === "boite"){
+  const weight = details.weightKg || 1;
+  basePrice += 4000 + (weight * 1500);
+}
+
+if(type === "bidon"){
+  basePrice += 5000 + ((details.quantity || 1) * 1000);
+}
+
+/* Assurance 2% valeur déclarée */
+if(declaredValue){
+  basePrice += Number(declaredValue) * 0.02;
+}
+
+const finalPrice = Math.round(basePrice);
+
+const priceBreakdown = {
+  base: finalPrice
+};
+
+/* ===== ENREGISTREMENT ===== */
+
+await setDoc(doc(db,"shipments",tracking),{
+
 trackingCode:tracking,
 service:"parcel",
 
@@ -599,13 +637,16 @@ notes: notes || null,
 nonDangerous:true,
 details:details,
 
-/* FLOW BACKEND ALIGNMENT */
+/* FLOW */
 status:"created",
-priceCalculated:false,
-finalPrice:null,
-priceBreakdown:null,
+paymentStatus:"unpaid",
+
+priceCalculated:true,
+finalPrice:finalPrice,
+priceBreakdown:priceBreakdown,
 
 createdAt:serverTimestamp()
+
 });
 
 window.location.href="payment.html?tracking="+encodeURIComponent(tracking);
