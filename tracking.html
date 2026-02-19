@@ -3,247 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Suivi Colis | Ciza Logistics</title>
-<meta name="description" content="Suivez votre envoi Ciza Logistics en temps réel.">
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f6f9;
-color:#111;
-}
-.container{
-width:92%;
-max-width:1100px;
-margin:auto;
-}
-
-/* HEADER */
-.main-header{
-position:fixed;
-width:100%;
-background:#000;
-padding:22px 0;
-z-index:1000;
-}
-.header-container{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-.logo img{height:80px;}
-.nav-menu{
-display:flex;
-gap:24px;
-}
-.nav-menu a{
-color:#fff;
-text-decoration:none;
-font-size:13px;
-text-transform:uppercase;
-letter-spacing:1px;
-}
-.nav-menu a:hover{color:#D4AF37;}
-
-/* SECTION */
-.section{
-padding:180px 0 120px;
-text-align:center;
-}
-
-.search-box{
-background:#fff;
-padding:40px;
-border-radius:20px;
-box-shadow:0 30px 80px rgba(0,0,0,0.08);
-margin-bottom:50px;
-}
-
-.search-box input{
-width:100%;
-max-width:500px;
-padding:16px;
-border-radius:14px;
-border:1px solid #ccc;
-font-size:16px;
-margin-bottom:20px;
-}
-
-.btn-primary{
-background:#D4AF37;
-border:none;
-padding:14px 30px;
-border-radius:14px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.result-box{
-display:none;
-background:#fff;
-padding:50px;
-border-radius:24px;
-box-shadow:0 40px 100px rgba(0,0,0,0.08);
-text-align:left;
-}
-
-.tracking-code{
-font-size:24px;
-font-weight:bold;
-margin-bottom:20px;
-}
-
-/* Timeline */
-.timeline{
-margin-top:30px;
-position:relative;
-padding-left:30px;
-}
-
-.timeline::before{
-content:"";
-position:absolute;
-left:12px;
-top:0;
-bottom:0;
-width:4px;
-background:#eee;
-}
-
-.step{
-position:relative;
-margin-bottom:30px;
-padding-left:20px;
-}
-
-.step::before{
-content:"";
-position:absolute;
-left:-6px;
-top:4px;
-width:16px;
-height:16px;
-border-radius:50%;
-background:#ccc;
-}
-
-.step.active::before{
-background:#D4AF37;
-}
-
-.step h4{
-margin-bottom:5px;
-font-size:16px;
-}
-
-.step span{
-font-size:13px;
-color:#777;
-}
-
-.status-badge{
-display:inline-block;
-padding:6px 14px;
-border-radius:999px;
-background:#000;
-color:#D4AF37;
-font-size:12px;
-margin-bottom:20px;
-}
-
-.footer{
-margin-top:80px;
-padding:40px 0;
-text-align:center;
-color:#777;
-font-size:13px;
-}
-
-@media(max-width:900px){
-.result-box{padding:30px;}
-}
-</style>
+<title>Suivi colis | Ciza Parcel</title>
 </head>
-
 <body>
 
-<header class="main-header">
-<div class="container header-container">
-<div class="logo">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
-</div>
-<nav class="nav-menu">
-<a href="index.html">Accueil</a>
-<a href="parcel.html">Parcel</a>
-<a href="freight.html">Freight</a>
-<a href="enterprise.html">Entreprise</a>
-</nav>
-</div>
-</header>
+<h1>Suivi du colis</h1>
+<p>Statut : <span id="status">Chargement...</span></p>
 
-<section class="section">
-<div class="container">
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div class="search-box">
-<h1>Suivi d'envoi</h1>
-<input type="text" id="trackingInput" placeholder="Entrez votre code (ex: CZ-2026-845921)">
-<br>
-<button class="btn-primary" onclick="trackShipment()">Suivre</button>
-</div>
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
 
-<div class="result-box" id="resultBox">
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-<div class="tracking-code" id="displayTracking"></div>
+const code = new URLSearchParams(window.location.search).get("tracking");
 
-<div class="status-badge" id="statusBadge">
-En transit
-</div>
+const q = query(collection(db,"shipments"), where("trackingCode","==",code));
 
-<div class="timeline">
-<div class="step active">
-<h4>Enregistré</h4>
-<span>Confirmation système</span>
-</div>
-
-<div class="step active">
-<h4>En préparation</h4>
-<span>Centre logistique Bujumbura</span>
-</div>
-
-<div class="step active">
-<h4>En transit</h4>
-<span>Transport inter-provincial</span>
-</div>
-
-<div class="step">
-<h4>Livré</h4>
-<span>Confirmation destinataire</span>
-</div>
-</div>
-
-</div>
-
-</div>
-</section>
-
-<footer class="footer">
-© 2026 Ciza Logistics – Suivi sécurisé
-</footer>
-
-<script>
-function trackShipment(){
-const input = document.getElementById("trackingInput").value;
-
-if(input.trim() === ""){
-alert("Veuillez entrer un code de suivi.");
-return;
-}
-
-document.getElementById("displayTracking").textContent = input;
-document.getElementById("resultBox").style.display = "block";
-}
+onSnapshot(q,(snapshot)=>{
+snapshot.forEach(doc=>{
+const data = doc.data();
+document.getElementById("status").innerText = data.status;
+});
+});
 </script>
 
 </body>
