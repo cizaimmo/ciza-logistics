@@ -9,8 +9,13 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,Helvetica,sans-serif;background:#0f0f10;color:#fff;}
 .container{width:92%;max-width:1300px;margin:auto;}
-header{padding:30px 0;text-align:center;border-bottom:1px solid rgba(212,175,55,0.2);}
-header img{height:90px;margin-bottom:10px;}
+
+header{
+padding:30px 0;
+text-align:center;
+border-bottom:1px solid rgba(212,175,55,0.2);
+}
+header img{height:100px;margin-bottom:10px;}
 header h1{font-size:28px;letter-spacing:1px;}
 header p{color:#bbb;margin-top:6px;}
 
@@ -53,7 +58,7 @@ font-weight:900;
 
 .drivers-grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
 gap:25px;
 margin-bottom:60px;
 }
@@ -73,8 +78,8 @@ margin-bottom:15px;
 }
 
 .driver-top img{
-width:70px;
-height:70px;
+width:80px;
+height:80px;
 border-radius:18px;
 object-fit:cover;
 border:1px solid rgba(212,175,55,0.4);
@@ -111,15 +116,59 @@ border:none;
 .btn-approve{background:#2e7d32;color:#fff;}
 .btn-suspend{background:#c62828;color:#fff;}
 .btn-reactivate{background:#1565c0;color:#fff;}
+.btn-view{background:#D4AF37;color:#000;}
 
+#driverModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.85);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.modal-content{
+background:#111;
+width:95%;
+max-width:900px;
+padding:30px;
+border-radius:24px;
+border:1px solid rgba(212,175,55,0.4);
+color:#fff;
+overflow:auto;
+max-height:90vh;
+}
+
+.doc-block{
+margin-bottom:20px;
+}
+
+.doc-block img{
+width:100%;
+max-height:250px;
+object-fit:cover;
+border-radius:14px;
+border:1px solid rgba(212,175,55,0.3);
+}
+
+.footer{
+background:#000;
+color:#bbb;
+padding:40px 0;
+border-top:1px solid rgba(212,175,55,0.2);
+text-align:center;
+}
+.footer strong{color:#D4AF37;}
 </style>
 </head>
+
 <body>
 
 <header>
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 <h1>Gestion Chauffeurs</h1>
-<p>Supervision, validation et discipline opérationnelle</p>
+<p>Validation et supervision opérationnelle</p>
 </header>
 
 <div class="container">
@@ -141,10 +190,27 @@ border:none;
 
 </div>
 
+<div id="driverModal">
+<div class="modal-content">
+<h2 id="modalName" style="color:#D4AF37;margin-bottom:20px;"></h2>
+<div id="documentsContainer"></div>
+<div style="margin-top:20px;display:flex;gap:10px;">
+<button id="modalApprove" class="btn btn-approve">Approuver</button>
+<button id="modalSuspend" class="btn btn-suspend">Suspendre</button>
+<button onclick="closeModal()" class="btn">Fermer</button>
+</div>
+</div>
+</div>
+
+<footer class="footer">
+<strong>Ciza Logistics</strong><br>
+Division de Ciza Group • Accès sécurisé
+</footer>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -157,25 +223,38 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let currentUserRole = null;
-let currentTab = "pending";
+let currentTab="pending";
+let currentUserRole=null;
 
-function switchTab(tab){
-currentTab = tab;
+window.switchTab=function(tab){
+currentTab=tab;
 document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
 event.target.classList.add("active");
-renderDrivers(window.allDrivers || []);
+renderDrivers(window.allDrivers||[]);
+};
+
+onAuthStateChanged(auth, async(user)=>{
+if(!user){location.href="login.html";return;}
+
+const snap=await getDoc(doc(db,"users",user.uid));
+const data=snap.data();
+
+if(!data || (data.role!=="admin" && data.role!=="super_admin")){
+alert("Accès refusé.");
+location.href="login.html";
+return;
 }
-window.switchTab = switchTab;
 
-onAuthStateChanged(auth,user=>{
-if(!user) return;
+currentUserRole=data.role;
 
-onSnapshot(collection(db,"drivers"),snap=>{
+const q=query(collection(db,"users"),where("role","==","driver"));
+
+onSnapshot(q,(snapshot)=>{
+
 let total=0,pending=0,approved=0,suspended=0;
 let drivers=[];
 
-snap.forEach(docSnap=>{
+snapshot.forEach(docSnap=>{
 const d=docSnap.data();
 d.id=docSnap.id;
 total++;
@@ -192,6 +271,7 @@ document.getElementById("kpiSuspended").innerText=suspended;
 
 window.allDrivers=drivers;
 renderDrivers(drivers);
+
 });
 
 });
@@ -205,8 +285,6 @@ drivers.filter(d=>d.accountStatus===currentTab)
 .forEach(driver=>{
 
 let badgeColor="#777";
-let badgeText=driver.accountStatus;
-
 if(driver.accountStatus==="approved") badgeColor="#2e7d32";
 if(driver.accountStatus==="pending") badgeColor="#a67c00";
 if(driver.accountStatus==="suspended") badgeColor="#c62828";
@@ -214,40 +292,70 @@ if(driver.accountStatus==="suspended") badgeColor="#c62828";
 grid.innerHTML+=`
 <div class="driver-card">
 <div class="driver-top">
-<img src="${driver.photoUrl || 'https://via.placeholder.com/80'}">
+<img src="${driver.photoUrl || ''}">
 <div>
-<div class="driver-name">${driver.name}</div>
-<div class="driver-meta">${driver.phone || ''}</div>
-<div class="badge" style="background:${badgeColor}">${badgeText}</div>
+<div class="driver-name">${driver.fullName}</div>
+<div class="driver-meta">${driver.phone}</div>
+<div class="badge" style="background:${badgeColor}">${driver.accountStatus}</div>
 </div>
 </div>
 
 <div class="actions">
-${driver.accountStatus==="pending" ? `<button class="btn btn-approve" onclick="approveDriver('${driver.id}')">Approuver</button>`:''}
-${driver.accountStatus==="approved" ? `<button class="btn btn-suspend" onclick="suspendDriver('${driver.id}')">Suspendre</button>`:''}
-${driver.accountStatus==="suspended" ? `<button class="btn btn-reactivate" onclick="reactivateDriver('${driver.id}')">Réactiver</button>`:''}
+<button class="btn btn-view" onclick='openDriverModal(${JSON.stringify(driver)})'>Voir dossier</button>
+${currentUserRole==="super_admin" && driver.accountStatus==="pending" ? `<button class="btn btn-approve" onclick="approveDriver('${driver.id}')">Approuver</button>`:''}
+${currentUserRole==="super_admin" && driver.accountStatus==="approved" ? `<button class="btn btn-suspend" onclick="suspendDriver('${driver.id}')">Suspendre</button>`:''}
+${currentUserRole==="super_admin" && driver.accountStatus==="suspended" ? `<button class="btn btn-reactivate" onclick="reactivateDriver('${driver.id}')">Réactiver</button>`:''}
 </div>
 </div>
 `;
 });
 }
 
-window.approveDriver = async function(id){
-await updateDoc(doc(db,"drivers",id),{
+window.openDriverModal=function(driver){
+
+document.getElementById("driverModal").style.display="flex";
+document.getElementById("modalName").innerText=driver.fullName;
+
+const docs=driver.documents||{};
+const container=document.getElementById("documentsContainer");
+container.innerHTML="";
+
+Object.values(docs).forEach(url=>{
+if(url){
+container.innerHTML+=`
+<div class="doc-block">
+<a href="${url}" target="_blank">
+<img src="${url}">
+</a>
+</div>
+`;
+}
+});
+
+document.getElementById("modalApprove").onclick=()=>approveDriver(driver.id);
+document.getElementById("modalSuspend").onclick=()=>suspendDriver(driver.id);
+};
+
+window.closeModal=function(){
+document.getElementById("driverModal").style.display="none";
+};
+
+window.approveDriver=async function(id){
+await updateDoc(doc(db,"users",id),{
 accountStatus:"approved",
 approvedAt:serverTimestamp()
 });
 };
 
-window.suspendDriver = async function(id){
-await updateDoc(doc(db,"drivers",id),{
+window.suspendDriver=async function(id){
+await updateDoc(doc(db,"users",id),{
 accountStatus:"suspended",
 suspendedAt:serverTimestamp()
 });
 };
 
-window.reactivateDriver = async function(id){
-await updateDoc(doc(db,"drivers",id),{
+window.reactivateDriver=async function(id){
+await updateDoc(doc(db,"users",id),{
 accountStatus:"approved",
 reactivatedAt:serverTimestamp()
 });
@@ -255,31 +363,5 @@ reactivatedAt:serverTimestamp()
 
 </script>
 
-<footer style="
-background:#000;
-color:#bbb;
-padding:30px 0;
-border-top:1px solid rgba(212,175,55,0.2);
-margin-top:60px;
-">
-
-<div class="container" style="text-align:center;">
-
-<div style="font-weight:900;color:#D4AF37;margin-bottom:8px;">
-Ciza Logistics
-</div>
-
-<div style="font-size:13px;margin-bottom:6px;">
-Division de Ciza Group • Plateforme interne sécurisée
-</div>
-
-<div style="font-size:12px;color:#777;">
-Accès réservé • Supervision opérationnelle • Version 1.0
-</div>
-
-</div>
-
-</footer>
-  
 </body>
 </html>
