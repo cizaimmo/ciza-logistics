@@ -232,8 +232,15 @@ document.getElementById("waBi").href="https://wa.me/25779945007?text="+encodeURI
 function setTime(id,val){
 if(!val) return;
 const date=new Date(val.seconds*1000);
-document.getElementById(id).innerText=date.toLocaleString();
+document.getElementById(id).innerText=/* AUTO LOAD IF ?code= */
+const urlParams = new URLSearchParams(window.location.search);
+const autoCode = urlParams.get("code");
+
+if(autoCode){
+document.getElementById("trackInput").value = autoCode.toUpperCase();
+searchTracking();
 }
+  
 </script>
 
 </body>
