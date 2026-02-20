@@ -3,182 +3,278 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ciza Logistics | Driver Portal</title>
+<title>Outil Chauffeur | Ciza Logistics</title>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;}
-.container{width:92%;max-width:1200px;margin:auto;}
-html{scroll-behavior:smooth;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;color:#111;}
+.container{width:95%;max-width:1200px;margin:auto;}
 
-/* HEADER */
-.main-header{
-position:fixed;width:100%;background:rgba(0,0,0,0.98);
-padding:22px 0;z-index:1000;
-}
-.header-container{display:flex;justify-content:space-between;align-items:center;}
-.logo img{height:78px;}
-.nav-menu{display:flex;gap:22px;align-items:center;}
-.nav-menu a{
-color:#fff;text-decoration:none;text-transform:uppercase;
-font-size:13px;letter-spacing:1px;
-}
-.nav-menu a:hover{color:#D4AF37;}
-.btn-outline{
-border:1px solid #D4AF37;
-padding:8px 14px;border-radius:12px;
-color:#D4AF37;text-decoration:none;font-size:12px;
-}
+header{background:#000;color:#fff;padding:18px;text-align:center;}
+header img{height:70px;}
+header h1{font-size:18px;margin-top:8px;color:#D4AF37;}
 
-/* SECTION */
-.section{padding:140px 0 60px 0;}
-.section h2{font-size:28px;margin-bottom:20px;}
-
-.form-shell{
-background:#0f0f10;
-border-radius:26px;
-padding:26px;
-box-shadow:0 30px 90px rgba(0,0,0,0.25);
-border:1px solid rgba(212,175,55,0.18);
+.top-info{
+margin-top:15px;
+background:#000;
 color:#fff;
-}
-
-label{
-display:block;
-font-size:12px;
-color:#bfbfbf;
-margin:12px 0 6px;
-text-transform:uppercase;
-}
-
-input{
-width:100%;
-padding:14px;
+padding:15px;
 border-radius:14px;
-border:1px solid rgba(255,255,255,0.10);
-background:rgba(0,0,0,0.35);
-color:#fff;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
 }
 
-button{
-margin-top:18px;
-width:100%;
-padding:14px;
-border-radius:16px;
-border:none;
-font-weight:900;
-cursor:pointer;
-background:#D4AF37;
-color:#000;
-}
+.badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:900;background:#2e7d32;}
+.logout{background:#D4AF37;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;cursor:pointer;}
 
-.status-box{
-margin-top:20px;
-padding:14px;
-border-radius:14px;
-background:rgba(212,175,55,0.1);
-border:1px solid rgba(212,175,55,0.3);
-color:#f6e7b5;
-}
+.section{margin-top:20px;background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,0.05);}
+.section h2{font-size:16px;margin-bottom:15px;color:#D4AF37;}
 
-.footer{
-background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:60px;
-}
+.shipment-card{border:1px solid rgba(212,175,55,0.3);padding:15px;border-radius:14px;margin-bottom:15px;}
+
+.timeline{font-size:11px;color:#777;margin-top:6px;line-height:1.6;}
+
+button{width:100%;padding:12px;border-radius:12px;border:none;background:#000;color:#fff;font-weight:900;cursor:pointer;margin-top:6px;}
+button.gold{background:#D4AF37;color:#000;}
+
+.footer{background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:40px;font-size:12px;}
+.footer strong{color:#D4AF37;}
+
+video{width:100%;border-radius:12px;margin-top:10px;}
+canvas{border:1px solid #ccc;border-radius:12px;width:100%;height:150px;margin-top:10px;}
+
+.counter{font-weight:900;color:#2e7d32;margin-bottom:10px;}
 </style>
 </head>
 
 <body>
 
-<header class="main-header">
-<div class="container header-container">
-<div class="logo">
+<header>
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
-</div>
-<nav class="nav-menu">
-<a href="index.html">Accueil</a>
-<a href="tracking.html">Suivi colis</a>
-<a href="parcel.html">Créer envoi</a>
-</nav>
-</div>
+<h1>Outil Chauffeur</h1>
 </header>
 
-<section class="section">
 <div class="container">
 
-<h2>Driver Portal</h2>
+<div class="top-info">
+<div id="driverName">Chargement...</div>
+<div>
+<span class="badge">Validé</span>
+<button class="logout" onclick="logout()">Déconnexion</button>
+</div>
+</div>
 
-<div class="form-shell">
+<div class="section">
+<h2>🟡 À traiter</h2>
+<div id="assignedList"></div>
+</div>
 
-<label>Code Tracking</label>
-<input type="text" id="tracking" placeholder="CL-BI-XXXXXXXX">
+<div class="section">
+<h2>🔵 En transit</h2>
+<div id="transitList"></div>
+</div>
 
-<label>OTP Client</label>
-<input type="text" id="otp" placeholder="Ex: 4821">
+<div class="section">
+<h2>🟢 Livrés aujourd’hui</h2>
+<div class="counter" id="deliveredCount">0 livraison</div>
+<div id="deliveredList"></div>
+</div>
 
-<button onclick="validateDelivery()">Valider Livraison</button>
-
-<div class="status-box" id="result">
-Statut en attente...
+<div class="section" id="deliverySection" style="display:none;">
+<h2>Finaliser Livraison</h2>
+<input type="text" id="otpInput" placeholder="Entrer OTP client">
+<input type="file" accept="image/*" capture="environment" id="photoInput">
+<canvas id="signatureCanvas"></canvas>
+<button class="gold" onclick="clearSignature()">Effacer signature</button>
+<button class="gold" onclick="completeDelivery()">Confirmer Livraison</button>
 </div>
 
 </div>
-</div>
-</section>
 
-<footer class="footer">
-© 2026 Ciza Logistics – Driver System
-</footer>
+<div class="footer">
+<strong>Ciza Logistics</strong><br>
+Division de Ciza Group • Outil interne sécurisé
+</div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain: "ciza-logistics.firebaseapp.com",
-projectId: "ciza-logistics",
-storageBucket: "ciza-logistics.firebasestorage.app",
-messagingSenderId: "751524585771",
-appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const storage=getStorage(app);
 
-window.validateDelivery = async function(){
+let currentUser=null;
+let currentShipment=null;
 
-const tracking = document.getElementById("tracking").value.trim();
-const otp = document.getElementById("otp").value.trim();
+onAuthStateChanged(auth,async(user)=>{
+if(!user){location.href="login.html";return;}
+currentUser=user;
 
-if(!tracking || !otp){
-document.getElementById("result").innerText="Veuillez remplir tracking et OTP.";
+const snap=await getDoc(doc(db,"users",user.uid));
+const data=snap.data();
+if(data.role!=="driver"||data.accountStatus!=="approved"){
+alert("Accès refusé");
+signOut(auth);
 return;
 }
 
-const q = query(collection(db,"shipments"), where("trackingCode","==",tracking));
-const snapshot = await getDocs(q);
+document.getElementById("driverName").innerText=data.fullName;
+loadShipments();
+});
 
-if(snapshot.empty){
-document.getElementById("result").innerText="Tracking introuvable.";
+function formatDate(ts){
+if(!ts) return "";
+const d=ts.toDate();
+return d.toLocaleDateString()+" "+d.toLocaleTimeString();
+}
+
+function isToday(ts){
+if(!ts) return false;
+const d=ts.toDate();
+const now=new Date();
+return d.getFullYear()===now.getFullYear() &&
+d.getMonth()===now.getMonth() &&
+d.getDate()===now.getDate();
+}
+
+function renderCard(d){
+
+let callBtn="";
+if(d.status==="assigned"||d.status==="picked_up"){
+callBtn=`<a href="tel:${d.senderPhone||""}">📞 Expéditeur</a>`;
+}
+if(d.status==="in_transit"){
+callBtn=`<a href="tel:${d.receiverPhone||""}">📞 Destinataire</a>`;
+}
+
+let timeline=`
+<div class="timeline">
+${d.assignedAt?"🟡 Assigné : "+formatDate(d.assignedAt)+"<br>":""}
+${d.pickedUpAt?"🔵 Ramassé : "+formatDate(d.pickedUpAt)+"<br>":""}
+${d.transitAt?"🟣 Transit : "+formatDate(d.transitAt)+"<br>":""}
+${d.deliveredAt?"🟢 Livré : "+formatDate(d.deliveredAt)+"<br>":""}
+</div>`;
+
+return `
+<div class="shipment-card">
+<strong>${d.trackingCode}</strong><br>
+${d.fromCity} → ${d.toCity}<br>
+${d.receiverName||""}
+${timeline}
+${callBtn}
+${d.status!=="delivered" ? `<button onclick="nextStep('${d.id}')">Étape suivante</button>` : ""}
+</div>
+`;
+}
+
+function loadShipments(){
+const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
+onSnapshot(q,(snap)=>{
+
+let assigned=[], transit=[], delivered=[];
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+d.id=docSnap.id;
+
+if(d.status==="assigned"||d.status==="picked_up") assigned.push(d);
+else if(d.status==="in_transit") transit.push(d);
+else if(d.status==="delivered" && isToday(d.deliveredAt)) delivered.push(d);
+});
+
+document.getElementById("assignedList").innerHTML=assigned.map(renderCard).join("");
+document.getElementById("transitList").innerHTML=transit.map(renderCard).join("");
+document.getElementById("deliveredList").innerHTML=delivered.map(renderCard).join("");
+document.getElementById("deliveredCount").innerText=delivered.length+" livraison(s)";
+});
+}
+
+window.nextStep=async function(id){
+const snap=await getDoc(doc(db,"shipments",id));
+const d=snap.data();
+
+if(d.status==="assigned"){
+await updateDoc(doc(db,"shipments",id),{status:"picked_up",pickedUpAt:serverTimestamp()});
+}
+else if(d.status==="picked_up"){
+await updateDoc(doc(db,"shipments",id),{status:"in_transit",transitAt:serverTimestamp()});
+}
+else if(d.status==="in_transit"){
+currentShipment=id;
+document.getElementById("deliverySection").style.display="block";
+}
+};
+
+window.completeDelivery=async function(){
+const snap=await getDoc(doc(db,"shipments",currentShipment));
+const data=snap.data();
+
+if(data.status!=="in_transit"){
+alert("Colis non prêt");
 return;
 }
 
-snapshot.forEach(async(docSnap)=>{
-const data = docSnap.data();
-
-if(data.deliveryOtp !== otp){
-document.getElementById("result").innerText="OTP incorrect.";
+if(document.getElementById("otpInput").value!==data.deliveryOTP){
+alert("OTP incorrect");
 return;
 }
 
-await updateDoc(docSnap.ref,{
+const photo=document.getElementById("photoInput").files[0];
+if(!photo){alert("Photo obligatoire");return;}
+
+const photoRef=ref(storage,"deliveries/"+currentShipment+"/photo.jpg");
+await uploadBytes(photoRef,photo);
+const photoURL=await getDownloadURL(photoRef);
+
+const canvas=document.getElementById("signatureCanvas");
+const blob=await (await fetch(canvas.toDataURL())).blob();
+const sigRef=ref(storage,"deliveries/"+currentShipment+"/signature.png");
+await uploadBytes(sigRef,blob);
+const sigURL=await getDownloadURL(sigRef);
+
+await updateDoc(doc(db,"shipments",currentShipment),{
 status:"delivered",
-deliveredAt:new Date()
+deliveryPhoto:photoURL,
+receiverSignature:sigURL,
+deliveredAt:serverTimestamp()
 });
 
-document.getElementById("result").innerText="Livraison confirmée ✔";
+alert("Livraison confirmée");
+document.getElementById("deliverySection").style.display="none";
+};
+
+window.logout=async function(){
+await signOut(auth);
+window.location.href="login.html";
+};
+
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
+let drawing=false;
+canvas.addEventListener("mousedown",()=>drawing=true);
+canvas.addEventListener("mouseup",()=>drawing=false);
+canvas.addEventListener("mousemove",(e)=>{
+if(!drawing)return;
+ctx.lineWidth=2;
+ctx.lineTo(e.offsetX,e.offsetY);
+ctx.stroke();
 });
-}
+window.clearSignature=function(){ctx.clearRect(0,0,canvas.width,canvas.height);};
+
 </script>
 
 </body>
