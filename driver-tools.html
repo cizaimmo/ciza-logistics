@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil Chauffeur | Ciza Logistics</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;color:#111;}
+.container{width:95%;max-width:1200px;margin:auto;}
+
+header{background:#000;color:#fff;padding:18px;text-align:center;}
+header img{height:70px;}
+header h1{font-size:18px;margin-top:8px;color:#D4AF37;}
+
+.top-info{
+margin-top:15px;
+background:#000;
+color:#fff;
+padding:15px;
+border-radius:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:900;background:#2e7d32;}
+.logout{background:#D4AF37;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;cursor:pointer;}
+
+.section{margin-top:20px;background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,0.05);}
+.section h2{font-size:16px;margin-bottom:15px;color:#D4AF37;}
+
+.shipment-card{border:1px solid rgba(212,175,55,0.3);padding:15px;border-radius:14px;margin-bottom:15px;}
+
+.timeline{font-size:11px;color:#777;margin-top:6px;line-height:1.6;}
+
+button{width:100%;padding:12px;border-radius:12px;border:none;background:#000;color:#fff;font-weight:900;cursor:pointer;margin-top:6px;}
+button.gold{background:#D4AF37;color:#000;}
+
+.footer{background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:40px;font-size:12px;}
+.footer strong{color:#D4AF37;}
+
+canvas{
+border:1px solid #ccc;
+border-radius:12px;
+width:100%;
+height:200px;
+margin-top:10px;
+touch-action:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<h1>Outil Chauffeur</h1>
+</header>
+
+<div class="container">
+
+<div class="top-info">
+<div id="driverName">Chargement...</div>
+<div>
+<span class="badge">Validé</span>
+<button class="logout" onclick="logout()">Déconnexion</button>
+</div>
+</div>
+
+<div class="section">
+<h2>🟡 À traiter</h2>
+<div id="assignedList"></div>
+</div>
+
+<div class="section">
+<h2>🔵 En transit</h2>
+<div id="transitList"></div>
+</div>
+
+<div class="section">
+<h2>🟢 Livrés aujourd’hui</h2>
+<div id="deliveredCount">0 livraison</div>
+<div id="deliveredList"></div>
+</div>
+
+<div class="section" id="deliverySection" style="display:none;">
+<h2>Finaliser Livraison</h2>
+<input type="text" id="otpInput" placeholder="Entrer OTP client">
+<input type="file" accept="image/*" capture="environment" id="photoInput">
+<canvas id="signatureCanvas"></canvas>
+<button class="gold" onclick="clearSignature()">Effacer signature</button>
+<button class="gold" onclick="completeDelivery()">Confirmer Livraison</button>
+</div>
+
+</div>
+
+<div class="footer">
+<strong>Ciza Logistics</strong><br>
+Division de Ciza Group • Outil interne sécurisé
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const storage=getStorage(app);
+
+let currentUser=null;
+let currentShipment=null;
+
+onAuthStateChanged(auth,async(user)=>{
+if(!user){location.href="login.html";return;}
+currentUser=user;
+
+const snap=await getDoc(doc(db,"users",user.uid));
+const data=snap.data();
+if(data.role!=="driver"||data.accountStatus!=="approved"){
+alert("Accès refusé");
+signOut(auth);
+return;
+}
+
+document.getElementById("driverName").innerText=data.fullName;
+loadShipments();
+});
+
+function loadShipments(){
+const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
+onSnapshot(q,(snap)=>{
+let assigned=[], transit=[], delivered=[];
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+d.id=docSnap.id;
+
+if(d.status==="assigned"||d.status==="picked_up") assigned.push(d);
+else if(d.status==="in_transit") transit.push(d);
+else if(d.status==="delivered") delivered.push(d);
+});
+
+document.getElementById("assignedList").innerHTML=assigned.map(renderCard).join("");
+document.getElementById("transitList").innerHTML=transit.map(renderCard).join("");
+document.getElementById("deliveredList").innerHTML=delivered.map(renderCard).join("");
+document.getElementById("deliveredCount").innerText=delivered.length+" livraison(s)";
+});
+}
+
+function renderCard(d){
+return `
+<div class="shipment-card">
+<strong>${d.trackingCode}</strong><br>
+${d.fromCity} → ${d.toCity}<br>
+${d.receiverName||""}
+${d.status!=="delivered" ? `<button onclick="nextStep('${d.id}')">Étape suivante</button>` : ""}
+</div>`;
+}
+
+window.nextStep=async function(id){
+const snap=await getDoc(doc(db,"shipments",id));
+const d=snap.data();
+
+if(d.status==="assigned"){
+await updateDoc(doc(db,"shipments",id),{
+status:"picked_up",
+pickedUpAt:serverTimestamp()
+});
+}
+else if(d.status==="picked_up"){
+
+const otp=Math.floor(1000+Math.random()*9000).toString();
+
+await updateDoc(doc(db,"shipments",id),{
+status:"in_transit",
+transitAt:serverTimestamp(),
+otpCode:otp,
+otpGeneratedAt:serverTimestamp()
+});
+
+alert("OTP généré : "+otp);
+}
+else if(d.status==="in_transit"){
+currentShipment=id;
+document.getElementById("deliverySection").style.display="block";
+}
+};
+
+window.completeDelivery=async function(){
+const snap=await getDoc(doc(db,"shipments",currentShipment));
+const data=snap.data();
+
+if(document.getElementById("otpInput").value!==data.otpCode){
+alert("OTP incorrect");
+return;
+}
+
+const photo=document.getElementById("photoInput").files[0];
+if(!photo){alert("Photo obligatoire");return;}
+
+const photoRef=ref(storage,"deliveries/"+currentShipment+"/photo.jpg");
+await uploadBytes(photoRef,photo);
+const photoURL=await getDownloadURL(photoRef);
+
+const blob=await (await fetch(canvas.toDataURL("image/png"))).blob();
+const sigRef=ref(storage,"deliveries/"+currentShipment+"/signature.png");
+await uploadBytes(sigRef,blob);
+const sigURL=await getDownloadURL(sigRef);
+
+await updateDoc(doc(db,"shipments",currentShipment),{
+status:"delivered",
+deliveryPhoto:photoURL,
+receiverSignature:sigURL,
+deliveredAt:serverTimestamp()
+});
+
+alert("Livraison confirmée");
+document.getElementById("deliverySection").style.display="none";
+};
+
+window.logout=async function(){
+await signOut(auth);
+window.location.href="login.html";
+};
+
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
+let drawing=false;
+
+function getPos(e){
+const rect=canvas.getBoundingClientRect();
+if(e.touches){
+return {x:e.touches[0].clientX-rect.left,y:e.touches[0].clientY-rect.top};
+}
+return {x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
+
+canvas.addEventListener("mousedown",e=>{
+drawing=true;
+ctx.beginPath();
+});
+
+canvas.addEventListener("mousemove",e=>{
+if(!drawing)return;
+const pos=getPos(e);
+ctx.lineWidth=2;
+ctx.lineCap="round";
+ctx.lineTo(pos.x,pos.y);
+ctx.stroke();
+});
+
+canvas.addEventListener("mouseup",()=>drawing=false);
+
+canvas.addEventListener("touchstart",e=>{
+drawing=true;
+ctx.beginPath();
+e.preventDefault();
+},{passive:false});
+
+canvas.addEventListener("touchmove",e=>{
+if(!drawing)return;
+const pos=getPos(e);
+ctx.lineWidth=2;
+ctx.lineCap="round";
+ctx.lineTo(pos.x,pos.y);
+ctx.stroke();
+e.preventDefault();
+},{passive:false});
+
+canvas.addEventListener("touchend",()=>drawing=false);
+
+window.clearSignature=function(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+};
+</script>
+
+</body>
+</html>
