@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion Chauffeurs | Ciza Logistics</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#0f0f10;color:#fff;}
+.container{width:92%;max-width:1300px;margin:auto;}
+header{padding:30px 0;text-align:center;border-bottom:1px solid rgba(212,175,55,0.2);}
+header img{height:90px;margin-bottom:10px;}
+header h1{font-size:28px;letter-spacing:1px;}
+header p{color:#bbb;margin-top:6px;}
+
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin:40px 0;
+}
+
+.kpi{
+background:#000;
+border-radius:20px;
+padding:20px;
+border:1px solid rgba(212,175,55,0.25);
+text-align:center;
+}
+.kpi h3{font-size:14px;color:#ccc;margin-bottom:10px;}
+.kpi span{font-size:28px;font-weight:900;color:#D4AF37;}
+
+.tabs{
+display:flex;
+gap:20px;
+margin-bottom:30px;
+flex-wrap:wrap;
+}
+
+.tab{
+padding:10px 18px;
+border-radius:999px;
+border:1px solid rgba(212,175,55,0.4);
+cursor:pointer;
+}
+
+.tab.active{
+background:#D4AF37;
+color:#000;
+font-weight:900;
+}
+
+.drivers-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:25px;
+margin-bottom:60px;
+}
+
+.driver-card{
+background:#000;
+border-radius:22px;
+padding:20px;
+border:1px solid rgba(212,175,55,0.25);
+}
+
+.driver-top{
+display:flex;
+gap:15px;
+align-items:center;
+margin-bottom:15px;
+}
+
+.driver-top img{
+width:70px;
+height:70px;
+border-radius:18px;
+object-fit:cover;
+border:1px solid rgba(212,175,55,0.4);
+}
+
+.driver-name{font-weight:900;font-size:16px;}
+.driver-meta{font-size:13px;color:#bbb;margin-top:4px;}
+
+.badge{
+display:inline-block;
+padding:6px 10px;
+border-radius:999px;
+font-size:11px;
+font-weight:900;
+margin-top:8px;
+}
+
+.actions{
+margin-top:15px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.btn{
+padding:8px 12px;
+border-radius:12px;
+font-size:12px;
+font-weight:900;
+cursor:pointer;
+border:none;
+}
+
+.btn-approve{background:#2e7d32;color:#fff;}
+.btn-suspend{background:#c62828;color:#fff;}
+.btn-reactivate{background:#1565c0;color:#fff;}
+
+</style>
+</head>
+<body>
+
+<header>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<h1>Gestion Chauffeurs</h1>
+<p>Supervision, validation et discipline opérationnelle</p>
+</header>
+
+<div class="container">
+
+<div class="kpi-grid">
+<div class="kpi"><h3>Total</h3><span id="kpiTotal">0</span></div>
+<div class="kpi"><h3>En attente</h3><span id="kpiPending">0</span></div>
+<div class="kpi"><h3>Actifs</h3><span id="kpiApproved">0</span></div>
+<div class="kpi"><h3>Suspendus</h3><span id="kpiSuspended">0</span></div>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="switchTab('pending')">En attente</div>
+<div class="tab" onclick="switchTab('approved')">Approuvés</div>
+<div class="tab" onclick="switchTab('suspended')">Suspendus</div>
+</div>
+
+<div class="drivers-grid" id="driversGrid"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUserRole = null;
+let currentTab = "pending";
+
+function switchTab(tab){
+currentTab = tab;
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+event.target.classList.add("active");
+renderDrivers(window.allDrivers || []);
+}
+window.switchTab = switchTab;
+
+onAuthStateChanged(auth,user=>{
+if(!user) return;
+
+onSnapshot(collection(db,"drivers"),snap=>{
+let total=0,pending=0,approved=0,suspended=0;
+let drivers=[];
+
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+d.id=docSnap.id;
+total++;
+if(d.accountStatus==="pending") pending++;
+if(d.accountStatus==="approved") approved++;
+if(d.accountStatus==="suspended") suspended++;
+drivers.push(d);
+});
+
+document.getElementById("kpiTotal").innerText=total;
+document.getElementById("kpiPending").innerText=pending;
+document.getElementById("kpiApproved").innerText=approved;
+document.getElementById("kpiSuspended").innerText=suspended;
+
+window.allDrivers=drivers;
+renderDrivers(drivers);
+});
+
+});
+
+function renderDrivers(drivers){
+
+const grid=document.getElementById("driversGrid");
+grid.innerHTML="";
+
+drivers.filter(d=>d.accountStatus===currentTab)
+.forEach(driver=>{
+
+let badgeColor="#777";
+let badgeText=driver.accountStatus;
+
+if(driver.accountStatus==="approved") badgeColor="#2e7d32";
+if(driver.accountStatus==="pending") badgeColor="#a67c00";
+if(driver.accountStatus==="suspended") badgeColor="#c62828";
+
+grid.innerHTML+=`
+<div class="driver-card">
+<div class="driver-top">
+<img src="${driver.photoUrl || 'https://via.placeholder.com/80'}">
+<div>
+<div class="driver-name">${driver.name}</div>
+<div class="driver-meta">${driver.phone || ''}</div>
+<div class="badge" style="background:${badgeColor}">${badgeText}</div>
+</div>
+</div>
+
+<div class="actions">
+${driver.accountStatus==="pending" ? `<button class="btn btn-approve" onclick="approveDriver('${driver.id}')">Approuver</button>`:''}
+${driver.accountStatus==="approved" ? `<button class="btn btn-suspend" onclick="suspendDriver('${driver.id}')">Suspendre</button>`:''}
+${driver.accountStatus==="suspended" ? `<button class="btn btn-reactivate" onclick="reactivateDriver('${driver.id}')">Réactiver</button>`:''}
+</div>
+</div>
+`;
+});
+}
+
+window.approveDriver = async function(id){
+await updateDoc(doc(db,"drivers",id),{
+accountStatus:"approved",
+approvedAt:serverTimestamp()
+});
+};
+
+window.suspendDriver = async function(id){
+await updateDoc(doc(db,"drivers",id),{
+accountStatus:"suspended",
+suspendedAt:serverTimestamp()
+});
+};
+
+window.reactivateDriver = async function(id){
+await updateDoc(doc(db,"drivers",id),{
+accountStatus:"approved",
+reactivatedAt:serverTimestamp()
+});
+};
+
+</script>
+
+</body>
+</html>
