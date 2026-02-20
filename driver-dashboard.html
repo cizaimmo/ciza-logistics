@@ -5,17 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outil Chauffeur | Ciza Logistics</title>
 
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;color:#111;}
 .container{width:95%;max-width:1200px;margin:auto;}
 
-header{
-background:#000;
-color:#fff;
-padding:18px 0;
-text-align:center;
-}
+header{background:#000;color:#fff;padding:18px 0;text-align:center;}
 header img{height:70px;}
 header h1{font-size:18px;margin-top:8px;color:#D4AF37;}
 
@@ -29,6 +26,7 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
+gap:10px;
 }
 
 .badge{
@@ -37,6 +35,16 @@ border-radius:999px;
 font-size:12px;
 font-weight:900;
 background:#2e7d32;
+}
+
+.logout-btn{
+background:#D4AF37;
+color:#000;
+border:none;
+padding:8px 14px;
+border-radius:10px;
+font-weight:900;
+cursor:pointer;
 }
 
 .section{
@@ -53,16 +61,13 @@ margin-bottom:15px;
 color:#D4AF37;
 }
 
-.input-group{
-margin-bottom:15px;
-}
-
 input,button{
 width:100%;
 padding:14px;
 border-radius:12px;
 border:1px solid #ddd;
 font-size:15px;
+margin-top:8px;
 }
 
 button{
@@ -70,7 +75,6 @@ background:#000;
 color:#fff;
 font-weight:900;
 cursor:pointer;
-margin-top:8px;
 }
 
 button.gold{
@@ -78,17 +82,10 @@ background:#D4AF37;
 color:#000;
 }
 
-.shipment-card{
-border:1px solid rgba(212,175,55,0.3);
-padding:15px;
-border-radius:14px;
-margin-bottom:15px;
-}
-
-.status{
-font-size:12px;
-font-weight:900;
-margin-top:5px;
+video{
+width:100%;
+border-radius:12px;
+margin-top:10px;
 }
 
 canvas{
@@ -99,22 +96,14 @@ height:150px;
 margin-top:10px;
 }
 
-.footer{
+footer{
 background:#000;
-color:#fff;
-padding:40px 0;
+color:#bbb;
+padding:50px 0;
+margin-top:60px;
+border-top:1px solid rgba(212,175,55,0.3);
 text-align:center;
-margin-top:40px;
 font-size:12px;
-}
-
-/* Responsive */
-@media(min-width:768px){
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-}
 }
 </style>
 </head>
@@ -129,54 +118,53 @@ gap:20px;
 <div class="container">
 
 <div class="top-info">
+<div>
 <div id="driverName">Chargement...</div>
-<div class="badge" id="driverStatus">Validé</div>
+<div class="badge">Validé</div>
+</div>
+<button class="logout-btn" id="logoutBtn">Déconnexion</button>
 </div>
 
-<!-- SCAN / MANUAL -->
 <div class="section">
-<h2>Scanner / Recherche Tracking</h2>
-
-<div class="input-group">
-<input type="text" id="manualTracking" placeholder="Entrer tracking manuellement">
-<button onclick="searchTracking()">Rechercher</button>
+<h2>Scanner Colis</h2>
+<video id="video" autoplay playsinline></video>
+<button onclick="startScanner()">Démarrer Scanner</button>
+<button onclick="stopScanner()">Arrêter Scanner</button>
 </div>
 
-<button onclick="startCamera()">Scanner avec caméra</button>
-<video id="video" style="width:100%;margin-top:10px;display:none;"></video>
-</div>
-
-<!-- COLIS ACTIFS -->
-<div class="section">
-<h2>Mes colis actifs</h2>
-<div id="shipmentsList"></div>
-</div>
-
-<!-- LIVRAISON -->
 <div class="section" id="deliverySection" style="display:none;">
-<h2>Finaliser livraison</h2>
-
+<h2>Finaliser Livraison</h2>
 <input type="text" id="otpInput" placeholder="Entrer OTP client">
-
 <input type="file" accept="image/*" capture="environment" id="photoInput">
-
 <canvas id="signatureCanvas"></canvas>
 <button class="gold" onclick="clearSignature()">Effacer signature</button>
-
 <button class="gold" onclick="completeDelivery()">Confirmer Livraison</button>
 </div>
 
 </div>
 
-<div class="footer">
-Ciza Logistics – Outil interne sécurisé
+<footer>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" style="height:50px;margin-bottom:15px;">
+<div style="font-weight:900;color:#D4AF37;margin-bottom:8px;">
+Ciza Logistics
 </div>
+<div>
+Division officielle de <strong style="color:#fff;">Ciza Group</strong>
+</div>
+<div style="margin-top:20px;font-size:11px;color:#666;">
+Plateforme interne sécurisée destinée exclusivement aux chauffeurs autorisés.
+</div>
+<div style="margin-top:15px;font-size:11px;color:#555;">
+© 2026 Ciza Logistics – Tous droits réservés.
+</div>
+</footer>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -187,96 +175,134 @@ projectId:"ciza-logistics"
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+const storage=getStorage(app);
 
-let currentUser;
 let currentShipment=null;
+let currentUser=null;
 
 onAuthStateChanged(auth,async(user)=>{
 if(!user){location.href="login.html";return;}
 currentUser=user;
-
 const snap=await getDoc(doc(db,"users",user.uid));
 const data=snap.data();
-
 if(data.role!=="driver"||data.accountStatus!=="approved"){
 alert("Accès refusé.");
 signOut(auth);
 return;
 }
-
 document.getElementById("driverName").innerText=data.fullName;
-loadShipments();
 });
 
-function loadShipments(){
-const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
-onSnapshot(q,(snap)=>{
-const list=document.getElementById("shipmentsList");
-list.innerHTML="";
-snap.forEach(docSnap=>{
-const d=docSnap.data();
-if(d.status==="delivered")return;
+document.getElementById("logoutBtn").addEventListener("click",async ()=>{
+if(confirm("Confirmer la déconnexion ?")){
+await signOut(auth);
+location.href="login.html";
+}
+});
 
-list.innerHTML+=`
-<div class="shipment-card">
-<strong>${d.trackingCode}</strong><br>
-${d.fromCity} → ${d.toCity}
-<div class="status">${d.status}</div>
-<button onclick="updateStatus('${docSnap.id}','picked_up')">Ramassé</button>
-<button onclick="goTransit('${docSnap.id}')">En transit</button>
-<button onclick="prepareDelivery('${docSnap.id}')">Livrer</button>
-</div>
-`;
+let codeReader;
+let stream;
+
+window.startScanner = async function(){
+const video=document.getElementById("video");
+codeReader = new ZXing.BrowserMultiFormatReader();
+stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+video.srcObject=stream;
+
+codeReader.decodeFromVideoElement(video,(result)=>{
+if(result){
+stopScanner();
+handleScan(result.text);
+}
 });
-});
+};
+
+window.stopScanner = function(){
+if(codeReader) codeReader.reset();
+if(stream) stream.getTracks().forEach(track=>track.stop());
+};
+
+async function handleScan(code){
+const snap=await getDoc(doc(db,"shipments",code));
+if(!snap.exists()){alert("Colis introuvable");return;}
+const data=snap.data();
+if(data.assignedDriverId!==currentUser.uid){
+alert("Colis non assigné à vous");
+return;
+}
+currentShipment=code;
+document.getElementById("deliverySection").style.display="block";
 }
 
-window.updateStatus=async(id,status)=>{
-await updateDoc(doc(db,"shipments",id),{
-status:status,
-pickedUpAt:serverTimestamp()
-});
-};
+/* SIGNATURE */
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
+canvas.width=canvas.offsetWidth;
+canvas.height=150;
+let drawing=false;
 
-window.goTransit=async(id)=>{
-const otp=Math.floor(1000+Math.random()*9000).toString();
-await updateDoc(doc(db,"shipments",id),{
-status:"in_transit",
-deliveryOTP:otp,
-otpGeneratedAt:serverTimestamp()
-});
-};
+function getPos(e){
+const rect=canvas.getBoundingClientRect();
+return e.touches ?
+{x:e.touches[0].clientX-rect.left,y:e.touches[0].clientY-rect.top} :
+{x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
 
-window.prepareDelivery=function(id){
-currentShipment=id;
-document.getElementById("deliverySection").style.display="block";
+canvas.addEventListener("mousedown",()=>drawing=true);
+canvas.addEventListener("mouseup",()=>drawing=false);
+canvas.addEventListener("mousemove",(e)=>{
+if(!drawing)return;
+const p=getPos(e);
+ctx.lineWidth=2;
+ctx.lineTo(p.x,p.y);
+ctx.stroke();
+});
+
+canvas.addEventListener("touchstart",(e)=>{drawing=true;e.preventDefault();});
+canvas.addEventListener("touchend",()=>drawing=false);
+canvas.addEventListener("touchmove",(e)=>{
+if(!drawing)return;
+const p=getPos(e);
+ctx.lineWidth=2;
+ctx.lineTo(p.x,p.y);
+ctx.stroke();
+e.preventDefault();
+});
+
+window.clearSignature=function(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
 };
 
 window.completeDelivery=async function(){
 const snap=await getDoc(doc(db,"shipments",currentShipment));
 const data=snap.data();
-const inputOTP=document.getElementById("otpInput").value;
 
-if(inputOTP!==data.deliveryOTP){
+if(document.getElementById("otpInput").value!==data.deliveryOTP){
 alert("OTP incorrect");
 return;
 }
 
+const photoFile=document.getElementById("photoInput").files[0];
+if(!photoFile){alert("Photo obligatoire");return;}
+
+const photoRef=ref(storage,"deliveries/"+currentShipment+"/photo.jpg");
+await uploadBytes(photoRef,photoFile);
+const photoURL=await getDownloadURL(photoRef);
+
+const blob=await (await fetch(canvas.toDataURL("image/png"))).blob();
+const sigRef=ref(storage,"deliveries/"+currentShipment+"/signature.png");
+await uploadBytes(sigRef,blob);
+const sigURL=await getDownloadURL(sigRef);
+
 await updateDoc(doc(db,"shipments",currentShipment),{
 status:"delivered",
+deliveryPhoto:photoURL,
+receiverSignature:sigURL,
 deliveredAt:serverTimestamp()
 });
 
 alert("Livraison confirmée");
 document.getElementById("deliverySection").style.display="none";
-};
-
-window.searchTracking=function(){
-alert("Recherche manuelle activée");
-};
-
-window.startCamera=function(){
-document.getElementById("video").style.display="block";
 };
 
 </script>
