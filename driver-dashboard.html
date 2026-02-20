@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Chauffeur | Ciza Logistics</title>
+
+<!-- Librairies -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#111;}
+.container{width:92%;max-width:1200px;margin:auto;}
+.main-header{position:fixed;width:100%;background:#000;padding:22px 0;z-index:1000;}
+.header-container{display:flex;justify-content:space-between;align-items:center;}
+.logo img{height:95px;}
+.nav-menu{display:flex;gap:22px;}
+.nav-menu a{color:#fff;text-decoration:none;text-transform:uppercase;font-size:13px;}
+.hamburger{display:none;}
+.top-bar{margin-top:160px;background:#000;color:#fff;padding:20px;border-radius:20px;display:flex;justify-content:space-between;}
+.status-badge{padding:6px 14px;border-radius:999px;font-size:12px;background:#2e7d32;}
+.logout-btn{background:#D4AF37;border:none;padding:10px 18px;border-radius:14px;font-weight:900;cursor:pointer;}
+.section{margin-top:30px;background:#fff;padding:30px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.08);}
+.shipment-card{border:1px solid rgba(212,175,55,0.3);border-radius:18px;padding:20px;margin-bottom:20px;}
+.action-btn{display:inline-block;margin-top:10px;margin-right:10px;padding:10px 16px;background:#000;color:#fff;border-radius:12px;text-decoration:none;font-size:12px;cursor:pointer;}
+.footer{background:#000;color:#fff;padding:50px 0;text-align:center;margin-top:80px;}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/0fe6e9152b3d38b80598b842d6d32b331005df9c/logo.png">
+</div>
+<nav class="nav-menu">
+<a href="#">Dashboard</a>
+</nav>
+</div>
+</header>
+
+<div class="container">
+
+<div class="top-bar">
+<div>
+<div id="driverName">Chargement...</div>
+<div class="status-badge" id="driverStatus">Validé</div>
+</div>
+<button class="logout-btn" onclick="logout()">Déconnexion</button>
+</div>
+
+<div class="section">
+<h2>Mes colis assignés</h2>
+<div id="shipmentsList"></div>
+</div>
+
+</div>
+
+<footer class="footer">
+© 2026 Ciza Logistics – Division de Ciza Group
+</footer>
+
+<!-- SCANNER MODAL -->
+<div id="scannerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
+<div style="background:#fff;padding:20px;border-radius:20px;width:90%;max-width:400px;text-align:center;">
+<h3>Scanner le QR du colis</h3>
+<div id="reader" style="width:100%;margin-top:15px;"></div>
+<button onclick="closeScanner()" style="margin-top:15px;">Annuler</button>
+</div>
+</div>
+
+<!-- DELIVERY MODAL -->
+<div id="deliveryModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
+<div style="background:#fff;padding:20px;border-radius:20px;width:95%;max-width:500px;text-align:center;max-height:90vh;overflow:auto;">
+<h3>Confirmation Livraison</h3>
+<label>OTP client</label>
+<input type="text" id="otpInput" style="width:100%;padding:10px;margin:8px 0;">
+<label>Photo du colis</label>
+<input type="file" id="photoInput" accept="image/*" capture="environment">
+<h4>Signature destinataire</h4>
+<canvas id="signatureCanvas" width="350" height="200" style="border:1px solid #ccc;"></canvas>
+<div style="margin-top:15px;">
+<button onclick="clearSignature()">Effacer</button>
+<button onclick="confirmDelivery()" style="background:#000;color:#fff;padding:10px 15px;">Valider livraison</button>
+</div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentShipmentId=null;
+let expectedTracking=null;
+let html5QrCode;
+let signaturePad;
+
+auth.onAuthStateChanged(async(user)=>{
+if(!user){window.location.href="login.html";return;}
+const userDoc = await getDoc(doc(db,"users",user.uid));
+const userData = userDoc.data();
+document.getElementById("driverName").innerText=userData.fullName;
+document.getElementById("driverStatus").innerText=userData.accountStatus;
+loadShipments(user.uid);
+});
+
+function loadShipments(uid){
+const q=query(collection(db,"shipments"),where("assignedDriverId","==",uid));
+onSnapshot(q,(snapshot)=>{
+const list=document.getElementById("shipmentsList");
+list.innerHTML="";
+snapshot.forEach(docSnap=>{
+const data=docSnap.data();
+const div=document.createElement("div");
+div.className="shipment-card";
+div.innerHTML=`
+<h3>${data.trackingCode}</h3>
+<p>${data.fromCity} → ${data.toCity}</p>
+<p>Status: ${data.status}</p>
+<a class="action-btn" onclick="openScanner('${docSnap.id}','${data.trackingCode}')">Scanner</a>
+<a class="action-btn" onclick="updateStatus('${docSnap.id}','in_transit')">En transit</a>
+<a class="action-btn" onclick="openDelivery('${docSnap.id}')">Livrer</a>
+`;
+list.appendChild(div);
+});
+});
+}
+
+window.openScanner=function(id,tracking){
+currentShipmentId=id;
+expectedTracking=tracking;
+document.getElementById("scannerModal").style.display="flex";
+html5QrCode=new Html5Qrcode("reader");
+Html5QrCode.getCameras().then(devices=>{
+html5QrCode.start(devices[0].id,{fps:10,qrbox:250},qr=>{
+if(qr===expectedTracking){
+html5QrCode.stop();
+closeScanner();
+updateDoc(doc(db,"shipments",currentShipmentId),{
+status:"picked_up",
+pickedUpAt:serverTimestamp()
+});
+alert("Colis ramassé.");
+}
+});
+});
+}
+
+window.closeScanner=function(){
+document.getElementById("scannerModal").style.display="none";
+if(html5QrCode){html5QrCode.stop();}
+}
+
+window.updateStatus=async(id,status)=>{
+await updateDoc(doc(db,"shipments",id),{status:status});
+}
+
+window.openDelivery=function(id){
+currentShipmentId=id;
+document.getElementById("deliveryModal").style.display="flex";
+signaturePad=new SignaturePad(document.getElementById("signatureCanvas"));
+}
+
+window.clearSignature=function(){signaturePad.clear();}
+
+window.confirmDelivery=async function(){
+const otp=document.getElementById("otpInput").value.trim();
+const photoFile=document.getElementById("photoInput").files[0];
+if(!otp||!photoFile||signaturePad.isEmpty()){alert("Tous les champs sont obligatoires.");return;}
+const snap=await getDoc(doc(db,"shipments",currentShipmentId));
+const data=snap.data();
+if(otp!==data.deliveryOTP){alert("OTP incorrect.");return;}
+const photoBase64=await toBase64(photoFile);
+const signatureData=signaturePad.toDataURL();
+navigator.geolocation.getCurrentPosition(async(pos)=>{
+await updateDoc(doc(db,"shipments",currentShipmentId),{
+status:"delivered",
+deliveredAt:serverTimestamp(),
+deliveredLat:pos.coords.latitude,
+deliveredLng:pos.coords.longitude,
+deliveryPhoto:photoBase64,
+receiverSignature:signatureData,
+otpValidated:true
+});
+alert("Livraison confirmée.");
+document.getElementById("deliveryModal").style.display="none";
+});
+}
+
+function toBase64(file){
+return new Promise((res,rej)=>{
+const reader=new FileReader();
+reader.readAsDataURL(file);
+reader.onload=()=>res(reader.result);
+reader.onerror=err=>rej(err);
+});
+}
+
+window.logout=()=>{signOut(auth);}
+</script>
+
+</body>
+</html>
