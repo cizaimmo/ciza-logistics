@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion Sécurisée | Ciza Logistics</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter;
+background:linear-gradient(135deg,#000,#111);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+color:#fff;
+overflow:hidden;
+}
+
+/* Background glow */
+body::before{
+content:"";
+position:absolute;
+width:700px;
+height:700px;
+background:radial-gradient(circle,#D4AF37 0%,transparent 70%);
+opacity:0.06;
+top:-200px;
+right:-200px;
+}
+
+/* Card */
+.login-container{
+position:relative;
+width:95%;
+max-width:430px;
+padding:45px 35px;
+background:rgba(15,15,15,0.9);
+border-radius:28px;
+border:1px solid rgba(212,175,55,0.3);
+box-shadow:0 40px 90px rgba(0,0,0,0.6);
+backdrop-filter:blur(12px);
+animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.logo{text-align:center;margin-bottom:20px;}
+.logo img{height:80px;margin-bottom:10px;animation:pulse 3s infinite;}
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+}
+
+.logo h1{
+font-size:20px;
+color:#D4AF37;
+}
+
+.subtitle{
+text-align:center;
+font-size:13px;
+color:#aaa;
+margin-bottom:25px;
+}
+
+.input-group{margin-bottom:15px;}
+
+input{
+width:100%;
+padding:15px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.1);
+background:#111;
+color:#fff;
+font-size:14px;
+transition:0.3s;
+}
+
+input:focus{
+outline:none;
+border:1px solid #D4AF37;
+box-shadow:0 0 0 2px rgba(212,175,55,0.15);
+}
+
+button{
+width:100%;
+padding:15px;
+border-radius:14px;
+border:none;
+background:#D4AF37;
+color:#000;
+font-weight:900;
+cursor:pointer;
+font-size:14px;
+transition:0.3s;
+margin-top:8px;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(212,175,55,0.4);
+}
+
+.link{
+text-align:center;
+margin-top:12px;
+font-size:12px;
+color:#aaa;
+cursor:pointer;
+}
+
+.link:hover{color:#D4AF37;}
+
+.error{
+margin-top:15px;
+text-align:center;
+color:#ff4d4d;
+font-size:13px;
+}
+
+.footer{
+position:absolute;
+bottom:20px;
+text-align:center;
+width:100%;
+font-size:11px;
+color:#666;
+}
+
+@media(max-width:480px){
+.login-container{padding:35px 25px;}
+.logo img{height:70px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<h1>Connexion Sécurisée</h1>
+</div>
+
+<div class="subtitle">
+Accès réservé aux chauffeurs et administrateurs
+</div>
+
+<div class="input-group">
+<input type="email" id="email" placeholder="Email professionnel">
+</div>
+
+<div class="input-group">
+<input type="password" id="password" placeholder="Mot de passe">
+</div>
+
+<button onclick="login()">Se connecter</button>
+
+<div class="link" onclick="resetPassword()">Mot de passe oublié ?</div>
+
+<div class="error" id="errorMsg"></div>
+
+</div>
+
+<div class="footer">
+© 2026 Ciza Logistics – Division de Ciza Group
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let failedAttempts=0;
+
+function detectDevice(){
+if(/Mobi|Android/i.test(navigator.userAgent)) return "mobile";
+if(/Tablet|iPad/i.test(navigator.userAgent)) return "tablet";
+return "desktop";
+}
+
+window.login=async function(){
+
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value.trim();
+const errorMsg=document.getElementById("errorMsg");
+errorMsg.innerText="";
+
+try{
+
+if(failedAttempts>=5){
+errorMsg.innerText="Trop de tentatives. Veuillez patienter.";
+return;
+}
+
+const cred=await signInWithEmailAndPassword(auth,email,password);
+const user=cred.user;
+
+const snap=await getDoc(doc(db,"users",user.uid));
+if(!snap.exists()){
+errorMsg.innerText="Compte non configuré.";
+return;
+}
+
+const data=snap.data();
+
+if(data.accountStatus==="suspended"){
+errorMsg.innerText="Compte suspendu.";
+return;
+}
+
+/* Multi session protection */
+if(data.activeSession && data.activeSession!==user.uid){
+errorMsg.innerText="Session déjà active.";
+return;
+}
+
+await updateDoc(doc(db,"users",user.uid),{
+activeSession:user.uid,
+lastLogin:serverTimestamp(),
+lastDevice:detectDevice()
+});
+
+/* Log d’accès */
+await setDoc(doc(db,"loginLogs",user.uid+"_"+Date.now()),{
+uid:user.uid,
+role:data.role,
+device:detectDevice(),
+time:serverTimestamp()
+});
+
+/* Redirection */
+if(data.role==="driver") location.href="driver-tool.html";
+else if(data.role==="admin") location.href="admin-dashboard.html";
+else if(data.role==="superadmin") location.href="super-admin.html";
+else errorMsg.innerText="Accès non autorisé.";
+
+}
+catch(e){
+failedAttempts++;
+errorMsg.innerText="Email ou mot de passe incorrect.";
+}
+};
+
+window.resetPassword=async function(){
+const email=document.getElementById("email").value.trim();
+if(!email){alert("Entrer votre email d'abord.");return;}
+await sendPasswordResetEmail(auth,email);
+alert("Email de réinitialisation envoyé.");
+};
+
+</script>
+
+</body>
+</html>
