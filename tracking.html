@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi colis | Ciza Logistics</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#111;}
+.container{width:92%;max-width:1100px;margin:auto;}
+html{scroll-behavior:smooth;}
+
+.main-header{position:fixed;width:100%;background:#000;padding:22px 0;z-index:1000;}
+.header-container{display:flex;justify-content:space-between;align-items:center;}
+.logo img{height:90px;}
+
+.track-search{margin-top:140px;text-align:center;}
+.track-search input{
+padding:14px;border-radius:14px;border:1px solid #ccc;width:280px;
+}
+.track-search button{
+padding:14px 22px;border:none;border-radius:14px;
+background:#D4AF37;color:#000;font-weight:900;margin-left:8px;cursor:pointer;
+}
+
+.track-card{background:#fff;border-radius:28px;padding:30px;margin-top:25px;box-shadow:0 30px 80px rgba(0,0,0,0.1);border:1px solid rgba(212,175,55,0.25);}
+.track-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:25px;}
+.track-code{font-weight:900;font-size:18px;color:#D4AF37;}
+.status-badge{padding:8px 16px;border-radius:999px;color:#fff;font-size:12px;}
+
+.timeline{position:relative;margin-top:20px;}
+.timeline:before{content:"";position:absolute;left:12px;top:0;width:3px;height:100%;background:rgba(212,175,55,0.3);}
+.step{position:relative;margin-left:35px;margin-bottom:35px;}
+.step:before{content:"";position:absolute;left:-25px;top:4px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #ccc;transition:all 0.4s ease;}
+.step.active:before{border-color:#D4AF37;background:#D4AF37;}
+.step small{display:block;color:#999;margin-top:4px;font-size:12px;}
+
+.location-box{
+margin-top:25px;
+padding:18px;
+border-radius:16px;
+background:rgba(212,175,55,0.08);
+border:1px solid rgba(212,175,55,0.3);
+display:none;
+}
+
+.otp-box{
+margin-top:20px;padding:20px;border-radius:16px;background:#000;color:#fff;text-align:center;display:none;
+}
+.otp-box span{font-size:24px;letter-spacing:4px;color:#D4AF37;}
+
+.support-box{
+margin-top:40px;padding:25px;border-radius:20px;background:#000;color:#fff;text-align:center;border:1px solid rgba(212,175,55,0.3);
+}
+.support-box a{
+display:inline-block;margin:10px;padding:12px 18px;background:#25D366;
+color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
+}
+
+.footer{background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:60px;}
+.footer strong{color:#D4AF37;}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+</div>
+</header>
+
+<section class="container">
+
+<div class="track-search">
+<input type="text" id="trackInput" placeholder="Entrez votre numéro de suivi">
+<button onclick="searchTracking()">Rechercher</button>
+</div>
+
+<div class="track-card" id="trackCard" style="display:none;">
+<div class="track-header">
+<div class="track-code" id="trackCode"></div>
+<div class="status-badge" id="statusBadge"></div>
+</div>
+
+<div class="timeline">
+<div class="step" id="s1"><h3>Création</h3><small id="t1"></small></div>
+<div class="step" id="s2"><h3>Paiement</h3><small id="t2"></small></div>
+<div class="step" id="s3"><h3>Ramassage</h3><small id="t3"></small></div>
+<div class="step" id="s4"><h3>En transit</h3><small id="t4"></small></div>
+<div class="step" id="s5"><h3>Livré</h3><small id="t5"></small></div>
+</div>
+
+<!-- 📍 LOCALISATION AJOUTÉE -->
+<div class="location-box" id="locationBox">
+<strong>📍 Localisation actuelle</strong>
+<div id="currentLocation" style="margin-top:8px;font-weight:900;"></div>
+<small id="lastUpdate" style="color:#666;"></small>
+</div>
+
+<div class="otp-box" id="otpBox"></div>
+
+<div class="support-box">
+<h3>Support Client WhatsApp</h3>
+<a id="waIntl" target="_blank">International (+1)5145029503</a>
+<a id="waBi" target="_blank">Burundi (+257)79945007</a>
+</div>
+
+</div>
+</section>
+
+<footer class="footer">
+© 2026 <strong>Ciza Logistics</strong>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+
+const flowOrder = {
+created:1,
+payment_under_review:2,
+payment_validated:2,
+picked_up:3,
+in_transit:4,
+delivered:5
+};
+
+window.searchTracking=function(){
+const code=document.getElementById("trackInput").value.trim().toUpperCase();
+if(!code) return alert("Entrez un numéro valide");
+
+document.getElementById("trackCard").style.display="block";
+document.getElementById("trackCode").innerText="Tracking : "+code;
+
+const ref=doc(db,"shipments",code);
+
+onSnapshot(ref,(snap)=>{
+if(!snap.exists()){
+alert("Numéro introuvable");
+return;
+}
+const data=snap.data();
+updateUI(data,code);
+});
+}
+
+function updateUI(data,code){
+const status=data.status||"created";
+const badge=document.getElementById("statusBadge");
+badge.innerText=status.toUpperCase();
+
+const colors={
+created:"#999",
+payment_under_review:"#e67e22",
+payment_validated:"#27ae60",
+picked_up:"#D4AF37",
+in_transit:"#3498db",
+delivered:"#27ae60"
+};
+badge.style.background=colors[status]||"#000";
+
+for(let i=1;i<=5;i++){
+document.getElementById("s"+i).classList.remove("active");
+}
+let step=flowOrder[status]||1;
+for(let i=1;i<=step;i++){
+document.getElementById("s"+i).classList.add("active");
+}
+
+setTime("t1",data.createdAt);
+setTime("t2",data.paymentValidatedAt);
+setTime("t3",data.pickedUpAt);
+setTime("t4",data.transitAt);
+setTime("t5",data.deliveredAt);
+
+/* 📍 Localisation */
+if(data.currentLocation){
+document.getElementById("locationBox").style.display="block";
+document.getElementById("currentLocation").innerText=data.currentLocation;
+
+if(data.lastUpdateAt){
+const date=new Date(data.lastUpdateAt.seconds*1000);
+document.getElementById("lastUpdate").innerText=
+"Dernière mise à jour : "+date.toLocaleString();
+}
+}else{
+document.getElementById("locationBox").style.display="none";
+}
+
+/* OTP 24H */
+if(status==="in_transit" && data.otpPlain && data.transitAt){
+const transitTime=data.transitAt.seconds*1000;
+const now=Date.now();
+const expired=now-transitTime>24*60*60*1000;
+
+if(!expired && !data.otpUsed && !data.otpLocked){
+document.getElementById("otpBox").style.display="block";
+document.getElementById("otpBox").innerHTML=
+"<strong>🔐 Code de validation de livraison</strong><br><br>"+
+"Donnez ce code au chauffeur uniquement au moment de recevoir votre colis.<br><br>"+
+"<span>"+data.otpPlain+"</span><br><br>"+
+"<small>Valide 24 heures</small>";
+}else{
+document.getElementById("otpBox").style.display="block";
+document.getElementById("otpBox").innerHTML=
+"⚠️ Code expiré ou bloqué. Contactez le support.";
+}
+}else{
+document.getElementById("otpBox").style.display="none";
+}
+
+/* WhatsApp */
+const message="Bonjour Ciza Logistics, j'ai une question concernant le colis "+code;
+document.getElementById("waIntl").href="https://wa.me/15145029503?text="+encodeURIComponent(message);
+document.getElementById("waBi").href="https://wa.me/25779945007?text="+encodeURIComponent(message);
+}
+
+function setTime(id,val){
+if(!val) return;
+const date=new Date(val.seconds*1000);
+document.getElementById(id).innerText=date.toLocaleString();
+}
+</script>
+
+</body>
+</html>
