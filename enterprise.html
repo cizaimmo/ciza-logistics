@@ -359,9 +359,77 @@ document.body.classList.add('menu-open');
 document.getElementById('overlay').onclick=function(){
 document.body.classList.remove('menu-open');
 };
-function submitForm(){
-document.getElementById('successMsg').style.display='block';
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* Firebase config */
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+
+const db = getFirestore(app);
+
+/* MENU */
+document.getElementById('hamburgerBtn').onclick=function(){
+document.body.classList.add('menu-open');
+};
+document.getElementById('overlay').onclick=function(){
+document.body.classList.remove('menu-open');
+};
+
+/* FORM SUBMIT */
+window.submitForm = async function(){
+
+const companyName = document.querySelector("input[placeholder='Nom entreprise']").value.trim();
+const contactPerson = document.querySelector("input[placeholder='Responsable']").value.trim();
+const email = document.querySelector("input[placeholder='Email professionnel']").value.trim();
+const organizationType = document.querySelector("select").value;
+const monthlyVolume = document.querySelectorAll("select")[1].value;
+const description = document.querySelector("textarea").value.trim();
+
+if(!companyName || !contactPerson || !email || !organizationType || !monthlyVolume){
+alert("Veuillez remplir tous les champs obligatoires.");
+return;
 }
+
+try{
+
+await addDoc(collection(db,"enterpriseRequests"),{
+companyName,
+contactPerson,
+email,
+organizationType,
+monthlyVolume,
+description,
+status:"pending_review",
+createdAt: serverTimestamp()
+});
+
+document.getElementById('successMsg').style.display='block';
+
+}catch(error){
+console.error(error);
+alert("Erreur lors de l'envoi. Réessayez.");
+}
+
+};
+
+/* Animations */
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show');});
+});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+const divider=document.getElementById('divider');
+new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting)divider.classList.add('show');});
+}).observe(divider);
+
+</script>
+
 const observer=new IntersectionObserver(entries=>{
 entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show');});
 });
