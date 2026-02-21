@@ -10,34 +10,149 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#111;}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f5f7fa;
+color:#111;
+padding-top:130px;
+}
+
 .container{width:92%;max-width:1100px;margin:auto;}
 html{scroll-behavior:smooth;}
 
-.main-header{position:fixed;width:100%;background:#000;padding:22px 0;z-index:1000;}
-.header-container{display:flex;justify-content:space-between;align-items:center;}
-.logo img{height:90px;}
+.main-header{
+position:fixed;
+top:0;
+width:100%;
+background:#000;
+padding:18px 0;
+z-index:1000;
+}
 
-.track-search{margin-top:140px;text-align:center;}
+.header-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo img{height:70px;}
+
+.back-btn{
+background:#D4AF37;
+color:#000;
+padding:10px 16px;
+border-radius:12px;
+font-weight:900;
+text-decoration:none;
+}
+
+.track-search{
+text-align:center;
+margin-top:20px;
+}
+
 .track-search input{
-padding:14px;border-radius:14px;border:1px solid #ccc;width:280px;
-}
-.track-search button{
-padding:14px 22px;border:none;border-radius:14px;
-background:#D4AF37;color:#000;font-weight:900;margin-left:8px;cursor:pointer;
+padding:14px;
+border-radius:14px;
+border:1px solid #ccc;
+width:280px;
 }
 
-.track-card{background:#fff;border-radius:28px;padding:30px;margin-top:25px;box-shadow:0 30px 80px rgba(0,0,0,0.1);border:1px solid rgba(212,175,55,0.25);}
-.track-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:25px;}
+.track-search button{
+padding:14px 22px;
+border:none;
+border-radius:14px;
+background:#D4AF37;
+color:#000;
+font-weight:900;
+margin-left:8px;
+cursor:pointer;
+}
+
+.track-card{
+background:#fff;
+border-radius:28px;
+padding:30px;
+margin-top:25px;
+box-shadow:0 30px 80px rgba(0,0,0,0.1);
+border:1px solid rgba(212,175,55,0.25);
+transition:all .4s ease;
+}
+
+.corporate-mode{
+border:2px solid #000;
+box-shadow:0 30px 90px rgba(0,0,0,0.25);
+}
+
+.track-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+margin-bottom:25px;
+}
+
 .track-code{font-weight:900;font-size:18px;color:#D4AF37;}
 .status-badge{padding:8px 16px;border-radius:999px;color:#fff;font-size:12px;}
 
 .timeline{position:relative;margin-top:20px;}
-.timeline:before{content:"";position:absolute;left:12px;top:0;width:3px;height:100%;background:rgba(212,175,55,0.3);}
-.step{position:relative;margin-left:35px;margin-bottom:35px;}
-.step:before{content:"";position:absolute;left:-25px;top:4px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #ccc;transition:all 0.4s ease;}
-.step.active:before{border-color:#D4AF37;background:#D4AF37;}
-.step small{display:block;color:#999;margin-top:4px;font-size:12px;}
+.timeline:before{
+content:"";
+position:absolute;
+left:12px;
+top:0;
+width:3px;
+height:100%;
+background:rgba(212,175,55,0.3);
+}
+
+.step{
+position:relative;
+margin-left:35px;
+margin-bottom:35px;
+opacity:.5;
+transition:all .4s ease;
+}
+
+.step:before{
+content:"";
+position:absolute;
+left:-25px;
+top:4px;
+width:18px;
+height:18px;
+border-radius:50%;
+background:#fff;
+border:3px solid #ccc;
+transition:all 0.4s ease;
+}
+
+.step.active{
+opacity:1;
+transform:translateX(4px);
+}
+
+.step.active:before{
+border-color:#D4AF37;
+background:#D4AF37;
+box-shadow:0 0 12px rgba(212,175,55,.6);
+}
+
+.step small{
+display:block;
+color:#999;
+margin-top:4px;
+font-size:12px;
+}
+
+.estimate-box{
+margin-top:20px;
+padding:15px;
+border-radius:14px;
+background:rgba(212,175,55,0.1);
+font-weight:900;
+}
 
 .location-box{
 margin-top:25px;
@@ -49,19 +164,62 @@ display:none;
 }
 
 .otp-box{
-margin-top:20px;padding:20px;border-radius:16px;background:#000;color:#fff;text-align:center;display:none;
+margin-top:20px;
+padding:20px;
+border-radius:16px;
+background:#000;
+color:#fff;
+text-align:center;
+display:none;
 }
-.otp-box span{font-size:24px;letter-spacing:4px;color:#D4AF37;}
+
+.otp-box span{
+font-size:24px;
+letter-spacing:4px;
+color:#D4AF37;
+}
+
+.pdf-btn{
+margin-top:20px;
+padding:14px;
+border:none;
+border-radius:14px;
+background:#000;
+color:#fff;
+font-weight:900;
+cursor:pointer;
+display:none;
+}
 
 .support-box{
-margin-top:40px;padding:25px;border-radius:20px;background:#000;color:#fff;text-align:center;border:1px solid rgba(212,175,55,0.3);
-}
-.support-box a{
-display:inline-block;margin:10px;padding:12px 18px;background:#25D366;
-color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
+margin-top:40px;
+padding:25px;
+border-radius:20px;
+background:#000;
+color:#fff;
+text-align:center;
+border:1px solid rgba(212,175,55,0.3);
 }
 
-.footer{background:#000;color:#fff;padding:40px 0;text-align:center;margin-top:60px;}
+.support-box a{
+display:inline-block;
+margin:10px;
+padding:12px 18px;
+background:#25D366;
+color:#fff;
+border-radius:12px;
+text-decoration:none;
+font-weight:900;
+}
+
+.footer{
+background:#000;
+color:#fff;
+padding:40px 0;
+text-align:center;
+margin-top:60px;
+}
+
 .footer strong{color:#D4AF37;}
 </style>
 </head>
@@ -73,6 +231,7 @@ color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
 <div class="logo">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 </div>
+<a href="index.html" class="back-btn">← Retour à l’accueil</a>
 </div>
 </header>
 
@@ -84,6 +243,7 @@ color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
 </div>
 
 <div class="track-card" id="trackCard" style="display:none;">
+
 <div class="track-header">
 <div class="track-code" id="trackCode"></div>
 <div class="status-badge" id="statusBadge"></div>
@@ -97,7 +257,8 @@ color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
 <div class="step" id="s5"><h3>Livré</h3><small id="t5"></small></div>
 </div>
 
-<!-- 📍 LOCALISATION AJOUTÉE -->
+<div class="estimate-box" id="estimateBox"></div>
+
 <div class="location-box" id="locationBox">
 <strong>📍 Localisation actuelle</strong>
 <div id="currentLocation" style="margin-top:8px;font-weight:900;"></div>
@@ -105,6 +266,8 @@ color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
 </div>
 
 <div class="otp-box" id="otpBox"></div>
+
+<button class="pdf-btn" id="pdfBtn">Télécharger preuve officielle</button>
 
 <div class="support-box">
 <h3>Support Client WhatsApp</h3>
@@ -123,6 +286,8 @@ color:#fff;border-radius:12px;text-decoration:none;font-weight:900;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+const { jsPDF } = window.jspdf;
+
 const app = initializeApp({
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
@@ -130,7 +295,7 @@ projectId:"ciza-logistics"
 });
 const db = getFirestore(app);
 
-const flowOrder = {
+const flowOrder={
 created:1,
 payment_under_review:2,
 payment_validated:2,
@@ -153,12 +318,19 @@ if(!snap.exists()){
 alert("Numéro introuvable");
 return;
 }
-const data=snap.data();
-updateUI(data,code);
+updateUI(snap.data(),code);
 });
 }
 
 function updateUI(data,code){
+
+const card=document.getElementById("trackCard");
+if(data.shipmentType==="freight"||data.shipmentType==="b2b"){
+card.classList.add("corporate-mode");
+}else{
+card.classList.remove("corporate-mode");
+}
+
 const status=data.status||"created";
 const badge=document.getElementById("statusBadge");
 badge.innerText=status.toUpperCase();
@@ -187,46 +359,68 @@ setTime("t3",data.pickedUpAt);
 setTime("t4",data.transitAt);
 setTime("t5",data.deliveredAt);
 
-/* 📍 Localisation */
-if(data.currentLocation){
-document.getElementById("locationBox").style.display="block";
-document.getElementById("currentLocation").innerText=data.currentLocation;
+/* ESTIMATION INTELLIGENTE */
+let estimateText="";
 
-if(data.lastUpdateAt){
-const date=new Date(data.lastUpdateAt.seconds*1000);
-document.getElementById("lastUpdate").innerText=
-"Dernière mise à jour : "+date.toLocaleString();
+if(status==="created"||status==="payment_validated"){
+estimateText="📦 Livraison estimée : 24-48h";
 }
-}else{
-document.getElementById("locationBox").style.display="none";
+if(status==="picked_up"){
+estimateText="🚚 En préparation de transit";
+}
+if(status==="in_transit"){
+estimateText="🚛 En route vers destination";
+}
+if(status==="delivered"){
+estimateText="✅ Livraison complétée";
 }
 
-/* OTP 24H */
+document.getElementById("estimateBox").innerText=estimateText;
+
+/* OTP */
 if(status==="in_transit" && data.otpPlain && data.transitAt){
 const transitTime=data.transitAt.seconds*1000;
-const now=Date.now();
-const expired=now-transitTime>24*60*60*1000;
+const expired=Date.now()-transitTime>24*60*60*1000;
 
 if(!expired && !data.otpUsed && !data.otpLocked){
 document.getElementById("otpBox").style.display="block";
 document.getElementById("otpBox").innerHTML=
-"<strong>🔐 Code de validation de livraison</strong><br><br>"+
-"Donnez ce code au chauffeur uniquement au moment de recevoir votre colis.<br><br>"+
+"<strong>🔐 Code de validation</strong><br><br>"+
 "<span>"+data.otpPlain+"</span><br><br>"+
 "<small>Valide 24 heures</small>";
 }else{
 document.getElementById("otpBox").style.display="block";
 document.getElementById("otpBox").innerHTML=
-"⚠️ Code expiré ou bloqué. Contactez le support.";
+"⚠️ Code expiré ou bloqué.";
 }
 }else{
 document.getElementById("otpBox").style.display="none";
 }
 
-/* WhatsApp */
+/* PDF */
+if(status==="delivered"){
+document.getElementById("pdfBtn").style.display="block";
+document.getElementById("pdfBtn").onclick=function(){
+generatePDF(code,data);
+};
+}
+
 const message="Bonjour Ciza Logistics, j'ai une question concernant le colis "+code;
 document.getElementById("waIntl").href="https://wa.me/15145029503?text="+encodeURIComponent(message);
 document.getElementById("waBi").href="https://wa.me/25779945007?text="+encodeURIComponent(message);
+}
+
+function generatePDF(code,data){
+const docPDF=new jsPDF();
+docPDF.setFontSize(18);
+docPDF.text("CIZA LOGISTICS - PROOF OF DELIVERY",20,20);
+docPDF.setFontSize(12);
+docPDF.text("Tracking: "+code,20,40);
+docPDF.text("Expéditeur: "+(data.senderName||""),20,50);
+docPDF.text("Destinataire: "+(data.receiverName||""),20,60);
+docPDF.text("Chauffeur: "+(data.driverName||""),20,70);
+docPDF.text("Statut: "+data.status,20,80);
+docPDF.save("Ciza_POD_"+code+".pdf");
 }
 
 function setTime(id,val){
@@ -234,16 +428,6 @@ if(!val) return;
 const date=new Date(val.seconds*1000);
 document.getElementById(id).innerText=date.toLocaleString();
 }
-
-/* 🔥 AUTO LOAD IF ?code= */
-const urlParams = new URLSearchParams(window.location.search);
-const autoCode = urlParams.get("code");
-
-if(autoCode){
-document.getElementById("trackInput").value = autoCode.toUpperCase();
-searchTracking();
-}
-  
 </script>
 
 </body>
