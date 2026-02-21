@@ -8,7 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial;background:#f4f6f9;color:#111;}
-.container{width:95%;max-width:1400px;margin:auto;}
+.container{width:95%;max-width:1500px;margin:auto;}
 
 header{background:#000;color:#fff;padding:20px;text-align:center;}
 header h1{color:#D4AF37;}
@@ -23,7 +23,7 @@ box-shadow:0 10px 30px rgba(0,0,0,0.08);
 
 .kpi-grid{
 display:grid;
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:repeat(5,1fr);
 gap:20px;
 margin-bottom:30px;
 }
@@ -48,17 +48,10 @@ margin-bottom:20px;
 display:inline-block;
 padding:6px 12px;
 border-radius:999px;
-background:#000;
 color:#fff;
 font-size:12px;
 margin-bottom:15px;
-}
-
-select{
-padding:8px;
-border-radius:8px;
-border:1px solid #ccc;
-margin-top:8px;
+font-weight:900;
 }
 
 button{
@@ -72,6 +65,11 @@ margin-top:10px;
 margin-right:5px;
 }
 
+.export-btn{
+background:#111;
+color:#D4AF37;
+}
+
 @media(max-width:900px){
 .kpi-grid{grid-template-columns:1fr;}
 }
@@ -81,34 +79,30 @@ margin-right:5px;
 <body>
 
 <header>
-<h1>Admin Parcel – Operations Dashboard</h1>
+<h1>Admin Parcel – Unified Operations Dashboard</h1>
 </header>
 
 <div class="container">
-
 <div class="section">
 
 <h2>KPI</h2>
 
 <div class="kpi-grid">
+<div class="kpi-box"><div id="kpiPayment">0</div><small>Paiement en attente</small></div>
 <div class="kpi-box"><div id="kpiReady">0</div><small>Ready Pickup</small></div>
 <div class="kpi-box"><div id="kpiAssigned">0</div><small>Assigned</small></div>
 <div class="kpi-box"><div id="kpiTransit">0</div><small>In Transit</small></div>
 <div class="kpi-box"><div id="kpiDelivered">0</div><small>Delivered</small></div>
 </div>
 
-<select id="statusFilter">
-<option value="all">Tous</option>
-<option value="ready_for_pickup">Ready Pickup</option>
-<option value="assigned">Assigned</option>
-<option value="in_transit">In Transit</option>
-<option value="delivered">Delivered</option>
-</select>
+<button class="export-btn" onclick="exportShipments()">Export Shipments</button>
+<button class="export-btn" onclick="exportDrivers()">Export Drivers</button>
+
+<hr style="margin:25px 0">
 
 <div id="parcelList"></div>
 
 </div>
-
 </div>
 
 <script type="module">
@@ -121,50 +115,55 @@ apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
 projectId:"ciza-logistics"
 });
-
 const db = getFirestore(app);
 
-let drivers = [];
+let drivers=[];
 
 async function loadDrivers(){
 const snap = await getDocs(query(collection(db,"users"), where("role","==","driver")));
 snap.forEach(d=>drivers.push({id:d.id,...d.data()}));
 }
-
 await loadDrivers();
 
-const q = query(
-collection(db,"shipments"),
-where("service","==","parcel"),
-where("paymentStatus","==","approved")
-);
-
-const filterEl = document.getElementById("statusFilter");
+const q = query(collection(db,"shipments"), where("service","==","parcel"));
 
 onSnapshot(q,(snap)=>{
 
-let ready=0,assigned=0,transit=0,delivered=0;
+let payment=0,ready=0,assigned=0,transit=0,delivered=0;
 let html="";
 
 snap.forEach(docSnap=>{
 const d=docSnap.data();
 const id=docSnap.id;
 
+if(d.status==="payment_under_review") payment++;
 if(d.status==="ready_for_pickup") ready++;
 if(d.status==="assigned") assigned++;
 if(d.status==="in_transit") transit++;
 if(d.status==="delivered") delivered++;
 
-if(filterEl.value!=="all" && d.status!==filterEl.value) return;
+let badgeColor="#000";
+
+if(d.status==="payment_under_review") badgeColor="#e67e22";
+if(d.status==="ready_for_pickup") badgeColor="#f39c12";
+if(d.status==="assigned") badgeColor="#2980b9";
+if(d.status==="in_transit") badgeColor="#8e44ad";
+if(d.status==="delivered") badgeColor="#27ae60";
 
 html+=`
 <div class="parcel-card">
 
 <strong>${id}</strong><br>
-${d.fromCity} → ${d.toCity}<br>
-Client: ${d.senderName}<br>
+${d.fromCity || ""} → ${d.toCity || ""}<br>
+Client: ${d.senderName || ""}<br>
 
-<div class="status">${d.status}</div>
+<div class="status" style="background:${badgeColor}">
+${d.status || "—"}
+</div>
+
+${d.status==="payment_under_review" ? `
+<button onclick="validatePayment('${id}')">Valider Paiement</button>
+`:""}
 
 ${d.status==="ready_for_pickup" ? `
 <select id="driver-${id}">
@@ -187,6 +186,7 @@ ${d.status==="in_transit" ? `
 });
 
 document.getElementById("parcelList").innerHTML=html;
+document.getElementById("kpiPayment").innerText=payment;
 document.getElementById("kpiReady").innerText=ready;
 document.getElementById("kpiAssigned").innerText=assigned;
 document.getElementById("kpiTransit").innerText=transit;
@@ -194,45 +194,74 @@ document.getElementById("kpiDelivered").innerText=delivered;
 
 });
 
-filterEl.addEventListener("change",()=>location.reload());
+window.validatePayment = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"ready_for_pickup",
+paymentStatus:"verified",
+paymentValidatedAt:serverTimestamp()
+});
+alert("Paiement validé");
+};
 
 window.assignDriver = async function(id){
-
 const driverId=document.getElementById("driver-"+id).value;
 if(!driverId){alert("Choisir chauffeur");return;}
-
 await updateDoc(doc(db,"shipments",id),{
 status:"assigned",
 assignedDriverId:driverId,
 assignedAt:serverTimestamp()
 });
-
 alert("Chauffeur assigné");
-
 };
 
 window.markTransit = async function(id){
-
 await updateDoc(doc(db,"shipments",id),{
 status:"in_transit",
 inTransitAt:serverTimestamp()
 });
-
 alert("Colis en transit");
-
 };
 
 window.markDelivered = async function(id){
-
 await updateDoc(doc(db,"shipments",id),{
 status:"delivered",
 deliveredAt:serverTimestamp()
 });
-
 alert("Livraison confirmée");
-
 };
 
+window.exportShipments = async function(){
+const snap = await getDocs(collection(db,"shipments"));
+let csv="Tracking,Status,From,To,Price\n";
+snap.forEach(doc=>{
+const d=doc.data();
+csv+=`${doc.id},${d.status||""},${d.fromCity||""},${d.toCity||""},${d.finalPrice||0}\n`;
+});
+downloadCSV(csv,"shipments.csv");
+};
+
+window.exportDrivers = async function(){
+const snap = await getDocs(collection(db,"users"));
+let csv="DriverID,Name,Email\n";
+snap.forEach(doc=>{
+const d=doc.data();
+if(d.role==="driver"){
+csv+=`${doc.id},${d.name||""},${d.email||""}\n`;
+}
+});
+downloadCSV(csv,"drivers.csv");
+};
+
+function downloadCSV(content,filename){
+const blob=new Blob([content],{type:"text/csv;charset=utf-8;"});
+const url=URL.createObjectURL(blob);
+const link=document.createElement("a");
+link.href=url;
+link.setAttribute("download",filename);
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
 </script>
 
 </body>
