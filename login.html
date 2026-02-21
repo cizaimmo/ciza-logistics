@@ -266,16 +266,51 @@ document.getElementById("password").value.trim()
 );
 
 const snap=await getDoc(doc(db,"users",cred.user.uid));
+
+if(!snap.exists()){
+alert("Aucun profil trouvé.");
+loader.style.display="none";
+return;
+}
+
 const data=snap.data();
 
-if(data.accountStatus==="suspended"){alert("Compte suspendu.");loader.style.display="none";return;}
+if(data.suspended === true){
+alert("Compte suspendu.");
+loader.style.display="none";
+return;
+}
+
+if(data.approved !== true){
+alert("Compte non approuvé.");
+loader.style.display="none";
+return;
+}
 
 fade.classList.add("active");
 
 setTimeout(()=>{
-if(data.role==="driver") location.href="driver-tool.html";
-else if(data.role==="admin") location.href="admin-dashboard.html";
-else if(data.role==="superadmin") location.href="super-admin.html";
+
+if(data.role==="driver"){
+location.href="driver-tool.html";
+}
+else if(data.role==="admin_parcel"){
+location.href="admin-parcel.html";
+}
+else if(data.role==="admin_enterprise"){
+location.href="admin-enterprise.html";
+}
+else if(data.role==="admin_freight"){
+location.href="admin-freight.html";
+}
+else if(data.role==="superadmin"){
+location.href="super-admin.html";
+}
+else{
+alert("Rôle non reconnu.");
+loader.style.display="none";
+}
+
 },600);
 
 }catch(e){
