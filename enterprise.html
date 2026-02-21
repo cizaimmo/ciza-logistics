@@ -430,15 +430,5 @@ entries.forEach(e=>{if(e.isIntersecting)divider.classList.add('show');});
 
 </script>
 
-const observer=new IntersectionObserver(entries=>{
-entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show');});
-});
-document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-const divider=document.getElementById('divider');
-new IntersectionObserver(entries=>{
-entries.forEach(e=>{if(e.isIntersecting)divider.classList.add('show');});
-}).observe(divider);
-</script>
-
 </body>
 </html>
