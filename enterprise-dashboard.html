@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Entreprise | Ciza Freight</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial;background:#f4f6f9;color:#111;}
+.container{width:95%;max-width:1200px;margin:auto;}
+
+header{background:#000;color:#fff;padding:20px;text-align:center;}
+header h1{color:#D4AF37;}
+
+.section{margin-top:30px;background:#fff;padding:25px;border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);}
+
+.freight-card{
+border:1px solid rgba(212,175,55,0.4);
+padding:20px;border-radius:16px;margin-bottom:15px;
+}
+
+button{
+padding:8px 14px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:900;
+margin-right:10px;
+}
+
+.accept{background:#2e7d32;color:#fff;}
+.reject{background:#c62828;color:#fff;}
+.pay{background:#D4AF37;color:#000;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Portail Entreprise</h1>
+</header>
+
+<div class="container">
+
+<div class="section">
+<h2>Mes Transports Freight</h2>
+<div id="enterpriseFreightList"></div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth,(user)=>{
+if(!user){location.href="login.html";return;}
+
+const q = query(
+collection(db,"shipments"),
+where("shipmentType","==","freight"),
+where("companyName","==",user.displayName)
+);
+
+onSnapshot(q,(snap)=>{
+let html="";
+
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+
+html+=`
+<div class="freight-card">
+<strong>${d.trackingCode}</strong><br>
+${d.fromCity} → ${d.toCity}<br>
+Statut : ${d.status}<br>
+${d.quoteAmount ? `Devis : ${d.quoteAmount} BIF<br>` : ""}
+
+${d.status==="quote_sent" ? `
+<button class="accept" onclick="acceptQuote('${docSnap.id}')">Accepter</button>
+<button class="reject" onclick="rejectQuote('${docSnap.id}')">Refuser</button>
+` : ""}
+
+${d.status==="payment_requested" ? `
+<button class="pay">Procéder au paiement</button>
+` : ""}
+
+</div>
+`;
+});
+
+document.getElementById("enterpriseFreightList").innerHTML=html;
+
+});
+});
+
+window.acceptQuote = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"quote_accepted"
+});
+alert("Devis accepté");
+};
+
+window.rejectQuote = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"quote_rejected"
+});
+alert("Devis refusé");
+};
+</script>
+
+</body>
+</html>
