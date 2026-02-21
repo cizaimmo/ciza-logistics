@@ -11,161 +11,51 @@ body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#111;}
 .container{width:92%;max-width:1100px;margin:auto;}
 html{scroll-behavior:smooth;}
 
-/* HEADER */
-.main-header{
-position:fixed;width:100%;background:#000;
-padding:22px 0;z-index:1000;
-}
-.header-container{
-display:flex;justify-content:space-between;align-items:center;
-}
+.main-header{position:fixed;width:100%;background:#000;padding:22px 0;z-index:1000;}
+.header-container{display:flex;justify-content:space-between;align-items:center;}
 .logo img{height:95px;}
-
 .nav-menu{display:flex;gap:22px;align-items:center;}
-.nav-menu a{
-color:#fff;text-decoration:none;text-transform:uppercase;
-font-size:13px;letter-spacing:1px;
-}
+.nav-menu a{color:#fff;text-decoration:none;text-transform:uppercase;font-size:13px;letter-spacing:1px;}
 .nav-menu a:hover{color:#D4AF37;}
 
-/* MOBILE */
-.hamburger{
-display:none;width:42px;height:42px;
-border:1px solid rgba(255,255,255,0.2);
-background:transparent;border-radius:12px;
-cursor:pointer;align-items:center;justify-content:center;
-}
-.hamburger span,
-.hamburger span:before,
-.hamburger span:after{
-width:18px;height:2px;background:#fff;display:block;position:relative;content:"";
-}
-.hamburger span:before{position:absolute;top:-6px;}
-.hamburger span:after{position:absolute;top:6px;}
-
-.mobile-overlay{
-position:fixed;inset:0;background:rgba(0,0,0,0.7);
-opacity:0;pointer-events:none;transition:0.3s;z-index:1999;
-}
-.mobile-menu{
-position:fixed;top:0;right:0;height:100%;
-width:280px;background:#000;
-transform:translateX(100%);
-transition:0.3s;padding:50px 25px;z-index:2000;
-border-left:1px solid rgba(212,175,55,0.25);
-}
-.mobile-menu a{
-display:block;color:#fff;text-decoration:none;
-margin-bottom:20px;text-transform:uppercase;
-padding:12px;border-radius:14px;
-background:rgba(255,255,255,0.05);
-}
-.mobile-menu a:hover{color:#D4AF37;}
-.menu-open .mobile-menu{transform:translateX(0);}
-.menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
-
-.hero{
-padding-top:170px;padding-bottom:40px;
-text-align:center;
-}
-.hero h1{font-size:32px;margin-bottom:8px;}
-.hero p{color:#555;}
+.hero{padding-top:170px;padding-bottom:40px;text-align:center;}
+.hero h1{font-size:26px;}
 
 .confirm-card{
-background:#fff;
-border-radius:28px;
-padding:50px;
+background:#fff;border-radius:28px;padding:50px;
 box-shadow:0 30px 90px rgba(0,0,0,0.08);
 border:1px solid rgba(212,175,55,0.2);
-margin-bottom:50px;
-text-align:center;
+margin-bottom:50px;text-align:center;
 }
 
-.tracking-code{
-font-size:20px;
-font-weight:900;
-color:#D4AF37;
-margin-bottom:10px;
+.tracking-code{font-size:20px;font-weight:900;color:#D4AF37;margin-bottom:10px;}
+.status-badge{display:inline-block;padding:8px 18px;border-radius:999px;background:#000;color:#fff;font-size:12px;margin-bottom:20px;}
+.amount{font-size:24px;font-weight:900;margin-bottom:25px;}
+
+.pay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin:30px 0;}
+.pay-card{
+background:#fff;border:1px solid rgba(212,175,55,0.3);
+padding:25px;border-radius:20px;cursor:pointer;
+transition:0.3s;text-align:center;
 }
+.pay-card.active{border:2px solid #D4AF37;background:#000;color:#D4AF37;}
+.pay-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+.copy-btn{margin-top:8px;background:#D4AF37;border:none;padding:6px 12px;border-radius:12px;font-weight:700;cursor:pointer;}
 
-.status-badge{
-display:inline-block;
-padding:8px 18px;
-border-radius:999px;
-background:#000;
-color:#fff;
-font-size:12px;
-margin-bottom:20px;
-}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin:10px 0;}
+.btn-primary{display:inline-block;padding:14px 25px;border-radius:18px;background:#D4AF37;color:#000;font-weight:900;border:none;cursor:pointer;}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
 
-.amount{
-font-size:24px;
-font-weight:900;
-margin-bottom:25px;
-}
+.timeline{display:flex;justify-content:space-between;margin-top:40px;font-size:12px;}
+.timeline div{flex:1;text-align:center;padding:8px;}
+.timeline .active{color:#D4AF37;font-weight:900;}
 
-.message{
-font-size:15px;
-line-height:1.7;
-color:#333;
-margin-bottom:30px;
-}
-
-.qr-section{
-margin:25px 0;
-}
-
-.btn-primary{
-display:inline-block;
-padding:16px 30px;
-border-radius:18px;
-background:#D4AF37;
-color:#000;
-font-weight:900;
-text-decoration:none;
-margin-top:20px;
-}
-
-.btn-primary:hover{background:#c69c2d;}
-
-.faq-section{margin-bottom:60px;}
-.faq-section h2{margin-bottom:20px;text-align:center;}
-
-.faq-item{
-background:#fff;
-border-radius:18px;
-padding:22px;
-margin-bottom:15px;
-box-shadow:0 10px 30px rgba(0,0,0,0.05);
-}
-
-.faq-item h3{font-size:15px;margin-bottom:8px;}
-
-.footer{
-background:#000;
-color:#fff;
-padding:50px 0;
-text-align:center;
-}
-
-@media(max-width:900px){
-.nav-menu{display:none;}
-.hamburger{display:flex;}
-.logo img{height:70px;}
-.confirm-card{padding:30px;}
-}
+.footer{background:#000;color:#fff;padding:50px 0;text-align:center;margin-top:60px;}
+.countdown{margin-top:15px;font-size:14px;color:#555;}
 </style>
 </head>
 
 <body>
-
-<div class="mobile-overlay" id="mobileOverlay"></div>
-<div class="mobile-menu">
-<a href="index.html" onclick="closeMenu()">Accueil</a>
-<a href="parcel.html" onclick="closeMenu()">Créer un envoi</a>
-<a href="tracking.html" onclick="closeMenu()">Suivi colis</a>
-<a href="enterprise.html" onclick="closeMenu()">Entreprise</a>
-</div>
 
 <header class="main-header">
 <div class="container header-container">
@@ -178,153 +68,177 @@ text-align:center;
 <a href="tracking.html">Suivi</a>
 <a href="enterprise.html">Entreprise</a>
 </nav>
-<button class="hamburger" onclick="toggleMenu()"><span></span></button>
 </div>
 </header>
 
 <section class="hero">
 <div class="container">
-<h1>Votre référence de paiement a été transmise.
-Notre équipe vérifie actuellement la transaction mobile money.
-Le ramassage sera déclenché après validation.</h1>
-  
+<h1>Finalisez votre paiement Mobile Money</h1>
 </div>
 </section>
 
 <section>
 <div class="container">
-
 <div class="confirm-card">
 
 <div class="tracking-code" id="trackingCode">Tracking : ...</div>
-<div class="status-badge">En attente de validation</div>
+<div class="status-badge" id="statusBadge">En attente de paiement</div>
 <div class="amount" id="amountBox">Montant : ...</div>
 
-<div class="message">
-Votre paiement a été enregistré.  
-Après validation par notre équipe, le ramassage sera automatiquement déclenché.  
-Vous serez notifié à chaque étape du processus logistique.
+<div class="countdown" id="countdown"></div>
+
+<div class="pay-grid">
+<div class="pay-card" data-method="EcoCash" onclick="selectMethod('EcoCash')">
+EcoCash<br>+25779945005<br>
+<button class="copy-btn" onclick="copyNumber(event,'+25779945005')">Copier</button>
 </div>
 
-<div class="qr-section">
-<div id="barcodeContainer"></div>
+<div class="pay-card" data-method="Lumicash" onclick="selectMethod('Lumicash')">
+Lumicash<br>+25776007985<br>
+<button class="copy-btn" onclick="copyNumber(event,'+25776007985')">Copier</button>
+</div>
+
+<div class="pay-card" data-method="eNoti" onclick="selectMethod('eNoti')">
+eNoti<br>+25775890558<br>
+<button class="copy-btn" onclick="copyNumber(event,'+25775890558')">Copier</button>
+</div>
+</div>
+
+<input type="text" id="paymentReference" placeholder="Référence de transaction">
+<input type="text" id="paymentPhone" placeholder="Numéro utilisé pour paiement">
+
+<button class="btn-primary" id="submitBtn" onclick="submitPayment()">Envoyer la référence</button>
+
+<div id="barcodeContainer" style="margin-top:30px;"></div>
 <div id="qrcode" style="margin-top:20px;"></div>
-</div>
 
-<a id="trackBtn" class="btn-primary">Suivre mon colis</a>
-
-</div>
-
-<div class="faq-section">
-<h2>Questions fréquentes</h2>
-
-<div class="faq-item">
-<h3>Quand le ramassage est-il déclenché ?</h3>
-<p>Immédiatement après validation du paiement par notre équipe.</p>
-</div>
-
-<div class="faq-item">
-<h3>Combien de temps prend la validation ?</h3>
-<p>En général moins de 30 minutes durant les heures ouvrables.</p>
-</div>
-
-<div class="faq-item">
-<h3>Comment suivre mon colis ?</h3>
-<p>Utilisez votre numéro de tracking ou scannez le QR code fourni.</p>
+<div class="timeline">
+<div id="step1">Créé</div>
+<div id="step2">Paiement</div>
+<div id="step3">Validation</div>
+<div id="step4">Ramassage</div>
+<div id="step5">Livraison</div>
 </div>
 
 </div>
-
 </div>
 </section>
 
 <footer class="footer">
-© 2026 Ciza Logistics | Division de Ciza Group – Service sécurisé international
+© 2026 Ciza Logistics | Division de Ciza Group
 </footer>
 
-<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain: "ciza-logistics.firebaseapp.com",
-projectId: "ciza-logistics"
-};
-
-const app = initializeApp(firebaseConfig);
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
 const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
 
+let selectedMethod = null;
+
+window.selectMethod = function(method){
+document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
+document.querySelector(`[data-method="${method}"]`).classList.add("active");
+selectedMethod = method;
+};
+
+window.copyNumber = function(e,number){
+e.stopPropagation();
+navigator.clipboard.writeText(number);
+e.target.innerText="Copié ✓";
+setTimeout(()=>e.target.innerText="Copier",1500);
+};
+
 if(tracking){
-
 const snap = await getDoc(doc(db,"shipments",tracking));
-
 if(snap.exists()){
-
 const data = snap.data();
 
-document.getElementById("trackingCode").innerText = "Tracking : " + tracking;
-document.getElementById("amountBox").innerText =
-"Montant : " + (data.finalPrice || 0).toLocaleString("fr-FR") + " BIF";
+document.getElementById("trackingCode").innerText="Tracking : "+tracking;
+document.getElementById("amountBox").innerText="Montant : "+(data.finalPrice||0).toLocaleString("fr-FR")+" BIF";
 
-document.getElementById("trackBtn").href = "tracking.html?code=" + tracking;
+updateTimeline(data.status);
 
-/* === CARTE INFORMATION IMPORTANTE (injectée proprement) === */
-
-const infoBox = document.createElement("div");
-infoBox.style.background = "#f9f9f9";
-infoBox.style.padding = "20px";
-infoBox.style.borderRadius = "18px";
-infoBox.style.marginBottom = "25px";
-infoBox.style.border = "1px solid rgba(212,175,55,0.2)";
-
-infoBox.innerHTML = `
-<strong style="color:#D4AF37;">Informations importantes :</strong><br><br>
-• Le montant doit correspondre exactement au total affiché<br>
-• Le numéro utilisé pour la transaction doit correspondre à celui saisi<br>
-• La validation peut prendre jusqu’à 30 minutes en heures ouvrables<br>
-• En cas d’erreur, notre support vous contactera
-`;
-
-document.querySelector(".confirm-card").prepend(infoBox);
-
-/* === QR === */
-
-const baseURL = window.location.href.substring(
-0,
-window.location.href.lastIndexOf("/") + 1
-);
-
-const trackingURL = baseURL + "tracking.html?code=" + tracking;
-
-new QRCode(document.getElementById("qrcode"),{
-text: trackingURL,
-width:140,
-height:140
-});
-
-/* === BARCODE === */
-
-const svg = document.createElement("svg");
-document.getElementById("barcodeContainer").appendChild(svg);
-
-JsBarcode(svg, tracking,{
-format:"CODE128",
-width:2,
-height:60,
-displayValue:true,
-fontSize:14
-});
-
+if(data.paymentStatus==="pending_verification"){
+disableForm();
 }
+
+generateCodes(tracking);
+startCountdown(data.referenceSubmittedAt);
+}
+}
+
+function updateTimeline(status){
+const map={
+created:"step1",
+payment_under_review:"step2",
+paid:"step3",
+ready_for_dispatch:"step4",
+delivered:"step5"
+};
+if(map[status]) document.getElementById(map[status]).classList.add("active");
+}
+
+function disableForm(){
+document.getElementById("submitBtn").disabled=true;
+document.getElementById("paymentReference").disabled=true;
+document.getElementById("paymentPhone").disabled=true;
+}
+
+window.submitPayment = async function(){
+if(!selectedMethod){alert("Sélectionnez un opérateur.");return;}
+const ref=document.getElementById("paymentReference").value.trim();
+const phone=document.getElementById("paymentPhone").value.trim();
+if(!ref||!phone){alert("Entrez référence et numéro.");return;}
+
+await updateDoc(doc(db,"shipments",tracking),{
+status:"payment_under_review",
+paymentStatus:"pending_verification",
+paymentMethodSelected:selectedMethod,
+paymentReference:ref,
+paymentPhone:phone,
+referenceSubmittedAt:serverTimestamp()
+});
+
+disableForm();
+alert("Référence envoyée. En attente validation.");
+};
+
+function generateCodes(tracking){
+new QRCode(document.getElementById("qrcode"),{
+text:location.origin+"/tracking.html?code="+tracking,
+width:140,height:140
+});
+const svg=document.createElement("svg");
+document.getElementById("barcodeContainer").appendChild(svg);
+JsBarcode(svg,tracking,{format:"CODE128",width:2,height:60});
+}
+
+function startCountdown(timestamp){
+if(!timestamp)return;
+const end=new Date(timestamp.seconds*1000+30*60*1000);
+const el=document.getElementById("countdown");
+const interval=setInterval(()=>{
+const now=new Date();
+const diff=end-now;
+if(diff<=0){clearInterval(interval);el.innerText="Validation en cours...";return;}
+const m=Math.floor(diff/60000);
+const s=Math.floor((diff%60000)/1000);
+el.innerText="⏱ Validation estimée : "+m+":"+String(s).padStart(2,"0");
+},1000);
 }
 </script>
+
 </body>
 </html>
