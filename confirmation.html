@@ -263,27 +263,43 @@ const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
 
 if(tracking){
+
 const snap = await getDoc(doc(db,"shipments",tracking));
+
 if(snap.exists()){
+
 const data = snap.data();
 
-document.getElementById("trackingCode").innerText="Tracking : "+tracking;
-document.getElementById("amountBox").innerText="Montant : "+(data.finalPrice || 0).toLocaleString("fr-FR")+" BIF";
-document.getElementById("trackBtn").href="tracking.html?code="+tracking;
+document.getElementById("trackingCode").innerText = "Tracking : " + tracking;
+document.getElementById("amountBox").innerText =
+"Montant : " + (data.finalPrice || 0).toLocaleString("fr-FR") + " BIF";
 
-<div style="background:#f9f9f9;padding:20px;border-radius:18px;margin-bottom:25px;border:1px solid rgba(212,175,55,0.2);">
+document.getElementById("trackBtn").href = "tracking.html?code=" + tracking;
+
+/* === CARTE INFORMATION IMPORTANTE (injectée proprement) === */
+
+const infoBox = document.createElement("div");
+infoBox.style.background = "#f9f9f9";
+infoBox.style.padding = "20px";
+infoBox.style.borderRadius = "18px";
+infoBox.style.marginBottom = "25px";
+infoBox.style.border = "1px solid rgba(212,175,55,0.2)";
+
+infoBox.innerHTML = `
 <strong style="color:#D4AF37;">Informations importantes :</strong><br><br>
-
 • Le montant doit correspondre exactement au total affiché<br>
 • Le numéro utilisé pour la transaction doit correspondre à celui saisi<br>
 • La validation peut prendre jusqu’à 30 minutes en heures ouvrables<br>
 • En cas d’erreur, notre support vous contactera
-</div>  
-  
-/* QR */
+`;
+
+document.querySelector(".confirm-card").prepend(infoBox);
+
+/* === QR === */
+
 const baseURL = window.location.href.substring(
-  0,
-  window.location.href.lastIndexOf("/") + 1
+0,
+window.location.href.lastIndexOf("/") + 1
 );
 
 const trackingURL = baseURL + "tracking.html?code=" + tracking;
@@ -294,7 +310,8 @@ width:140,
 height:140
 });
 
-/* BARCODE */
+/* === BARCODE === */
+
 const svg = document.createElement("svg");
 document.getElementById("barcodeContainer").appendChild(svg);
 
@@ -309,12 +326,5 @@ fontSize:14
 }
 }
 </script>
-
-<script>
-function toggleMenu(){document.body.classList.toggle("menu-open");}
-function closeMenu(){document.body.classList.remove("menu-open");}
-document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
-</script>
-
 </body>
 </html>
