@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciza Freight | Transport Marchandises</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.6;}
+.container{width:92%;max-width:1200px;margin:auto;}
+
+.main-header{
+position:fixed;width:100%;background:rgba(0,0,0,0.98);
+padding:28px 0;z-index:1000;
+}
+.header-container{
+display:flex;justify-content:space-between;align-items:center;
+}
+.logo img{height:100px;}
+.nav-menu{display:flex;gap:20px;}
+.nav-menu a{
+text-decoration:none;color:#fff;text-transform:uppercase;font-size:13px;
+}
+.nav-menu a:hover{color:#D4AF37;}
+
+.hero{
+height:100vh;
+background:url('https://raw.githubusercontent.com/cizaimmo/ciza-logistics/f13d59ba5e2a0214804676ee04de0b42d6f78539/freight.png') center/cover no-repeat;
+display:flex;align-items:center;padding-top:200px;
+}
+.hero-overlay{
+width:100%;
+background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0.60));
+padding:90px 0;
+}
+.hero-content{
+color:#fff;max-width:820px;
+}
+.hero h1{font-size:50px;margin-bottom:14px;}
+
+.section{padding:110px 0;}
+.form-box{
+background:#111;color:#fff;padding:40px;border-radius:22px;
+}
+
+.form-box input,.form-box select{
+width:100%;padding:14px;margin-bottom:16px;border-radius:14px;border:none;
+}
+
+.btn{
+display:inline-block;padding:15px 30px;border-radius:16px;
+text-decoration:none;margin-top:10px;cursor:pointer;
+background:#D4AF37;color:#000;font-weight:900;border:none;
+}
+
+.footer{background:#000;color:#fff;padding:80px 0 40px;text-align:center;}
+
+@media(max-width:900px){
+.hero{height:auto;padding-top:200px;}
+.hero h1{font-size:30px;}
+}
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+<nav class="nav-menu">
+<a href="index.html">Accueil</a>
+<a href="tracking.html">Suivi</a>
+<a href="parcel.html">Parcel</a>
+</nav>
+</div>
+</header>
+
+<section class="hero">
+<div class="hero-overlay">
+<div class="container">
+<div class="hero-content">
+<h1>Ciza Freight</h1>
+<p>Transport marchandises corporate Burundi & Rwanda</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2>Demande de transport Freight</h2>
+
+<div class="form-box">
+
+<input type="text" id="company" placeholder="Nom entreprise" required>
+<input type="tel" id="phone" placeholder="Téléphone" required>
+<input type="text" id="cargo" placeholder="Type marchandise" required>
+<input type="text" id="departure" placeholder="Ville départ" required>
+<input type="text" id="destination" placeholder="Ville destination" required>
+
+<select id="truck" required>
+<option value="">Type camion</option>
+<option>Camion 5 tonnes</option>
+<option>Camion 10 tonnes</option>
+<option>Remorque</option>
+</select>
+
+<button class="btn" id="submitFreight">Soumettre demande</button>
+
+</div>
+</div>
+</section>
+
+<footer class="footer">
+© 2026 Ciza Logistics – Division Ciza Group
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+
+const db = getFirestore(app);
+
+document.getElementById("submitFreight").addEventListener("click", async function(){
+
+const company = document.getElementById("company").value.trim();
+const phone = document.getElementById("phone").value.trim();
+const cargo = document.getElementById("cargo").value.trim();
+const departure = document.getElementById("departure").value.trim();
+const destination = document.getElementById("destination").value.trim();
+const truck = document.getElementById("truck").value;
+
+if(!company || !phone || !cargo || !departure || !destination || !truck){
+alert("Remplir tous les champs.");
+return;
+}
+
+const tracking = "FR-BI-"+Math.floor(10000+Math.random()*90000);
+
+await addDoc(collection(db,"shipments"),{
+shipmentType:"freight",
+trackingCode:tracking,
+companyName:company,
+contactPhone:phone,
+cargoDescription:cargo,
+fromCity:departure,
+toCity:destination,
+truckType:truck,
+status:"created",
+quoteStatus:"pending",
+createdAt:serverTimestamp()
+});
+
+alert("Demande envoyée. Tracking : "+tracking);
+window.location.href="tracking.html?code="+tracking;
+
+});
+</script>
+
+</body>
+</html>
