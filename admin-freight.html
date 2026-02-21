@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Freight | Ciza Logistics</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial;background:#f4f6f9;color:#111;}
+.container{width:95%;max-width:1300px;margin:auto;}
+
+header{background:#000;color:#fff;padding:20px;text-align:center;}
+header h1{color:#D4AF37;}
+
+.section{margin-top:30px;background:#fff;padding:25px;border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.kpi-box{
+background:#000;color:#D4AF37;padding:20px;border-radius:16px;text-align:center;
+}
+
+.freight-card{
+border:1px solid rgba(212,175,55,0.4);
+padding:18px;border-radius:16px;margin-bottom:15px;
+}
+
+button{
+background:#D4AF37;border:none;padding:10px 15px;
+border-radius:12px;font-weight:900;cursor:pointer;
+}
+
+input{
+padding:10px;border-radius:10px;border:1px solid #ccc;
+margin-top:10px;width:200px;
+}
+
+@media(max-width:900px){
+.kpi-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Admin Freight Dashboard</h1>
+</header>
+
+<div class="container">
+
+<div class="section">
+<h2>KPI Freight</h2>
+<div class="kpi-grid">
+<div class="kpi-box"><div id="totalFreight">0</div><small>Total</small></div>
+<div class="kpi-box"><div id="pendingQuote">0</div><small>En attente devis</small></div>
+<div class="kpi-box"><div id="inTransit">0</div><small>En transit</small></div>
+<div class="kpi-box"><div id="delivered">0</div><small>Livrés</small></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Demandes Freight</h2>
+<div id="freightList"></div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+
+const q = query(collection(db,"shipments"),where("shipmentType","==","freight"));
+
+onSnapshot(q,(snap)=>{
+
+let total=0,pending=0,transit=0,deliv=0;
+let html="";
+
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+total++;
+
+if(d.status==="created") pending++;
+if(d.status==="in_transit") transit++;
+if(d.status==="delivered") deliv++;
+
+html+=`
+<div class="freight-card">
+<strong>${d.trackingCode}</strong><br>
+${d.companyName}<br>
+${d.fromCity} → ${d.toCity}<br>
+Statut: ${d.status}<br>
+
+${d.status==="created" ? `
+<input type="number" id="quote-${docSnap.id}" placeholder="Montant devis">
+<button onclick="sendQuote('${docSnap.id}')">Envoyer devis</button>
+` : ""}
+
+</div>`;
+});
+
+document.getElementById("totalFreight").innerText=total;
+document.getElementById("pendingQuote").innerText=pending;
+document.getElementById("inTransit").innerText=transit;
+document.getElementById("delivered").innerText=deliv;
+
+document.getElementById("freightList").innerHTML=html;
+
+});
+
+window.sendQuote = async function(id){
+
+const amount=document.getElementById("quote-"+id).value;
+if(!amount){alert("Entrer montant");return;}
+
+await updateDoc(doc(db,"shipments",id),{
+quoteAmount:Number(amount),
+status:"quote_sent",
+quoteSentAt:serverTimestamp()
+});
+
+alert("Devis envoyé");
+
+};
+
+</script>
+
+</body>
+</html>
