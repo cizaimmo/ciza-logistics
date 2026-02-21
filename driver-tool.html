@@ -287,19 +287,6 @@ await signOut(auth);
 location.href="login.html";
 };
 
-const canvas=document.getElementById("signatureCanvas");
-const ctx=canvas.getContext("2d");
-canvas.width=canvas.offsetWidth;
-canvas.height=canvas.offsetHeight;
-
-let drawing=false;
-canvas.addEventListener("mousedown",()=>{drawing=true;ctx.beginPath();});
-canvas.addEventListener("mousemove",e=>{
-if(!drawing)return;
-ctx.lineWidth=2;ctx.lineCap="round";
-ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();
-});
-  
 const canvas = document.getElementById("signatureCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -309,6 +296,7 @@ function resizeCanvas(){
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width * ratio;
   canvas.height = rect.height * ratio;
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(ratio, ratio);
   ctx.lineWidth = 2;
   ctx.lineCap = "round";
@@ -319,7 +307,7 @@ window.addEventListener("resize", resizeCanvas);
 
 let drawing = false;
 
-/* === GET POSITION (TOUCH + MOUSE) === */
+/* POSITION */
 function getPosition(e){
   const rect = canvas.getBoundingClientRect();
   if(e.touches){
@@ -334,7 +322,7 @@ function getPosition(e){
   };
 }
 
-/* === START DRAW === */
+/* START */
 function startDraw(e){
   drawing = true;
   const pos = getPosition(e);
@@ -342,7 +330,7 @@ function startDraw(e){
   ctx.moveTo(pos.x, pos.y);
 }
 
-/* === DRAW === */
+/* DRAW */
 function draw(e){
   if(!drawing) return;
   e.preventDefault();
@@ -351,12 +339,12 @@ function draw(e){
   ctx.stroke();
 }
 
-/* === STOP === */
+/* STOP */
 function stopDraw(){
   drawing = false;
 }
 
-/* === EVENTS === */
+/* EVENTS */
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("mouseup", stopDraw);
@@ -366,11 +354,9 @@ canvas.addEventListener("touchstart", startDraw, {passive:false});
 canvas.addEventListener("touchmove", draw, {passive:false});
 canvas.addEventListener("touchend", stopDraw);
 
-/* === CLEAR === */
 window.clearSignature = function(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
-  
 </script>
 
 </body>
