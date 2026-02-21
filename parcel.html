@@ -375,8 +375,10 @@ Support : +257 79 94 50 07 • infos@cizalogistics.bi
 <!-- FIREBASE + LOGIQUE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, serverTimestamp } 
+import { getFirestore, doc, setDoc, serverTimestamp, getDoc } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* ================= FIREBASE ================= */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -390,7 +392,8 @@ appId: "1:751524585771:web:6720db623a0ef70f56e56e"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* Provinces/regions */
+/* ================= PROVINCES ================= */
+
 const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
 const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
 
@@ -403,7 +406,8 @@ const typeEl=document.getElementById("packageType");
 const extraFields=document.getElementById("extraFields");
 const summaryText=document.getElementById("summaryText");
 
-/* Helpers */
+/* ================= HELPERS ================= */
+
 function setCities(list){
 originEl.innerHTML='<option value="">Sélectionner</option>';
 destEl.innerHTML='<option value="">Sélectionner</option>';
@@ -433,7 +437,9 @@ receiverPhoneEl.value=prefix;
 function generateTracking(country){
 const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 let result="CL-"+country+"-";
-for(let i=0;i<8;i++){result+=chars.charAt(Math.floor(Math.random()*chars.length));}
+for(let i=0;i<8;i++){
+result+=chars.charAt(Math.floor(Math.random()*chars.length));
+}
 return result;
 }
 
@@ -443,12 +449,14 @@ const origin=originEl.value;
 const dest=destEl.value;
 const type=typeEl.value;
 let cLabel = country==="BI" ? "Burundi" : (country==="RW" ? "Rwanda" : "—");
+
 summaryText.innerText = (country && origin && dest && type)
 ? `${cLabel} • ${origin} → ${dest} • ${type}`
 : "Sélectionne le pays, les villes, le type d’envoi…";
 }
 
-/* Events */
+/* ================= EVENTS ================= */
+
 countryEl.addEventListener("change",function(){
 if(this.value==="BI"){setCities(provincesBI);applyPrefix("BI");}
 else if(this.value==="RW"){setCities(provincesRW);applyPrefix("RW");}
@@ -457,70 +465,36 @@ updateSummary();
 });
 
 [originEl,destEl,typeEl].forEach(el=>el.addEventListener("change",updateSummary));
-
 phoneEl.addEventListener("input",()=>enforceNumericPhone(phoneEl));
 receiverPhoneEl.addEventListener("input",()=>enforceNumericPhone(receiverPhoneEl));
 
 typeEl.addEventListener("change",function(){
+
 if(this.value==="boite"){
 extraFields.innerHTML=`
 <div class="grid">
-<div>
-<label>Longueur (cm)</label>
-<input id="len" type="number" inputmode="numeric" placeholder="Ex: 30">
-</div>
-<div>
-<label>Largeur (cm)</label>
-<input id="wid" type="number" inputmode="numeric" placeholder="Ex: 20">
-</div>
-<div>
-<label>Hauteur (cm)</label>
-<input id="hei" type="number" inputmode="numeric" placeholder="Ex: 15">
-</div>
-<div>
-<label>Poids (kg)</label>
-<input id="wei" type="number" inputmode="decimal" placeholder="Ex: 2.5">
-</div>
+<div><label>Poids (kg)</label><input id="wei" type="number"></div>
 </div>`;
 }
 else if(this.value==="bidon"){
 extraFields.innerHTML=`
 <div class="grid">
-<div>
-<label>Capacité</label>
-<select id="cap">
-<option value="">Sélectionner</option>
-<option value="10L">10L</option>
-<option value="20L">20L</option>
-<option value="50L">50L</option>
-</select>
-</div>
-<div>
-<label>Quantité totale</label>
-<input id="qty" type="number" inputmode="numeric" placeholder="Ex: 5">
-</div>
+<div><label>Quantité</label><input id="qty" type="number"></div>
 </div>`;
 }
 else if(this.value==="enveloppe"){
 extraFields.innerHTML=`
 <div class="grid">
-<div>
-<label>Format / dimensions</label>
-<input id="env" type="text" placeholder="Ex: A4 / A5 / 30x20 cm">
-</div>
-<div>
-<label>Poids estimé (kg)</label>
-<input id="wei2" type="number" inputmode="decimal" placeholder="Ex: 0.5">
-</div>
+<div><label>Poids (kg)</label><input id="wei2" type="number"></div>
 </div>`;
 }
-else{
-extraFields.innerHTML="";
-}
-updateSummary();
+else{extraFields.innerHTML="";}
 });
 
+/* ================= SUBMIT ================= */
+
 window.submitForm=async function(){
+
 document.getElementById("errorMsg").innerText="";
 
 const country=countryEl.value;
@@ -533,96 +507,71 @@ const destination=destEl.value;
 const payment=document.getElementById("payment").value;
 const type=typeEl.value;
 const declaredValue=document.getElementById("declaredValue").value;
-const content=document.getElementById("content").value.trim();
-const notes=document.getElementById("notes").value.trim();
 const nonDangerous=document.getElementById("nonDangerous").checked;
 
 if(!country||!sender||!phone||!receiver||!receiverPhone||!origin||!destination||!payment||!type||!nonDangerous){
-document.getElementById("errorMsg").innerText="Veuillez compléter tous les champs obligatoires (et confirmer matières non dangereuses).";
+document.getElementById("errorMsg").innerText="Veuillez compléter tous les champs obligatoires.";
 return;
 }
 
-/* Extra validation per type */
+/* DETAILS */
 let details={};
 if(type==="boite"){
-const len=document.getElementById("len")?.value;
-const wid=document.getElementById("wid")?.value;
-const hei=document.getElementById("hei")?.value;
-const wei=document.getElementById("wei")?.value;
-if(!len||!wid||!hei||!wei){
-document.getElementById("errorMsg").innerText="Veuillez compléter les dimensions et le poids de la boîte.";
-return;
-}
-details={lengthCm:Number(len),widthCm:Number(wid),heightCm:Number(hei),weightKg:Number(wei)};
+details.weightKg=Number(document.getElementById("wei")?.value||1);
 }
 if(type==="bidon"){
-const cap=document.getElementById("cap")?.value;
-const qty=document.getElementById("qty")?.value;
-if(!cap||!qty){
-document.getElementById("errorMsg").innerText="Veuillez compléter la capacité et la quantité du bidon.";
-return;
-}
-details={capacity:cap,quantity:Number(qty)};
+details.quantity=Number(document.getElementById("qty")?.value||1);
 }
 if(type==="enveloppe"){
-const env=document.getElementById("env")?.value?.trim();
-const wei2=document.getElementById("wei2")?.value;
-if(!env||!wei2){
-document.getElementById("errorMsg").innerText="Veuillez compléter le format et le poids estimé de l’enveloppe.";
-return;
-}
-details={format:env,weightKg:Number(wei2)};
+details.weightKg=Number(document.getElementById("wei2")?.value||0.5);
 }
 
 const tracking=generateTracking(country);
 
-/* ===== CALCUL PRIX RÉEL ===== */
+/* ================= PRICING DYNAMIQUE ================= */
 
-let basePrice = 0;
+const pricingSnap = await getDoc(doc(db,"pricing","parcel_bi"));
 
-/* Frais distance */
-if(origin !== destination){
-  basePrice += 3000;
+if(!pricingSnap.exists()){
+document.getElementById("errorMsg").innerText="Configuration tarifaire introuvable.";
+return;
 }
 
-/* Type colis */
-if(type === "enveloppe"){
-  basePrice += 2000;
-}
+const pricing = pricingSnap.data();
 
-if(type === "boite"){
-  const weight = details.weightKg || 1;
-  basePrice += 4000 + (weight * 1500);
-}
+let base = origin===destination ? pricing.urbanBase : pricing.interBase;
 
-if(type === "bidon"){
-  basePrice += 5000 + ((details.quantity || 1) * 1000);
-}
+let weight = details.weightKg || 1;
+let weightExtra = weight>1 ? (weight-1)*pricing.weightMultiplier : 0;
 
-/* Assurance 2% valeur déclarée */
-if(declaredValue){
-  basePrice += Number(declaredValue) * 0.02;
-}
+let insurance = declaredValue 
+? Number(declaredValue)*(pricing.insurancePercent/100) 
+: 0;
 
-const finalPrice = Math.round(basePrice);
+let fuel = (base+weightExtra)*(pricing.fuelPercent/100);
 
-const priceBreakdown = {
-  base: finalPrice
+const finalPrice = Math.round(base+weightExtra+insurance+fuel);
+
+const priceBreakdown={
+base,
+weightExtra,
+insurance:Math.round(insurance),
+fuel:Math.round(fuel),
+pricingVersion:"parcel_dynamic_v1"
 };
 
-/* ===== ENREGISTREMENT ===== */
+/* ================= SAVE ================= */
 
 await setDoc(doc(db,"shipments",tracking),{
 
 trackingCode:tracking,
 service:"parcel",
-
-country:country,
+country,
 
 senderName:sender,
 senderPhone:phone,
 receiverName:receiver,
-receiverPhone:receiverPhone,
+receiverPhone,
 
 fromCity:origin,
 toCity:destination,
@@ -631,35 +580,26 @@ paymentMethod:payment,
 packageType:type,
 
 declaredValue: declaredValue ? Number(declaredValue) : null,
-content: content || null,
-notes: notes || null,
 
 nonDangerous:true,
-details:details,
+details,
 
-/* FLOW */
 status:"created",
 paymentStatus:"unpaid",
 
 priceCalculated:true,
-finalPrice:finalPrice,
-priceBreakdown:priceBreakdown,
+finalPrice,
+priceBreakdown,
 
 createdAt:serverTimestamp()
 
 });
 
-window.location.href="payment.html?tracking="+encodeURIComponent(tracking);
+/* REDIRECT */
 
+window.location.href="confirmation.html?tracking="+encodeURIComponent(tracking);
 
-}
+};
 </script>
-
-<script>
-function toggleMenu(){document.body.classList.toggle("menu-open");}
-function closeMenu(){document.body.classList.remove("menu-open");}
-document.getElementById("mobileOverlay").addEventListener("click",closeMenu);
-</script>
-
 </body>
 </html>
