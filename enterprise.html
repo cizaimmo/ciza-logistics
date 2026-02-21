@@ -352,24 +352,17 @@ Infrastructure logistique nationale conçue pour les entreprises, institutions e
 <div class="footer-bottom">© 2026 Ciza Logistics – Tous droits réservés</div>
 </footer>
 
-<script>
-document.getElementById('hamburgerBtn').onclick=function(){
-document.body.classList.add('menu-open');
-};
-document.getElementById('overlay').onclick=function(){
-document.body.classList.remove('menu-open');
-};
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* Firebase config */
+/* Firebase */
 const app = initializeApp({
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
 projectId:"ciza-logistics"
 });
-
 const db = getFirestore(app);
 
 /* MENU */
@@ -380,14 +373,15 @@ document.getElementById('overlay').onclick=function(){
 document.body.classList.remove('menu-open');
 };
 
-/* FORM SUBMIT */
+/* FORM */
 window.submitForm = async function(){
 
 const companyName = document.querySelector("input[placeholder='Nom entreprise']").value.trim();
 const contactPerson = document.querySelector("input[placeholder='Responsable']").value.trim();
 const email = document.querySelector("input[placeholder='Email professionnel']").value.trim();
-const organizationType = document.querySelector("select").value;
-const monthlyVolume = document.querySelectorAll("select")[1].value;
+const selects = document.querySelectorAll("select");
+const organizationType = selects[0].value;
+const monthlyVolume = selects[1].value;
 const description = document.querySelector("textarea").value.trim();
 
 if(!companyName || !contactPerson || !email || !organizationType || !monthlyVolume){
@@ -396,7 +390,6 @@ return;
 }
 
 try{
-
 await addDoc(collection(db,"enterpriseRequests"),{
 companyName,
 contactPerson,
@@ -412,7 +405,7 @@ document.getElementById('successMsg').style.display='block';
 
 }catch(error){
 console.error(error);
-alert("Erreur lors de l'envoi. Réessayez.");
+alert("Erreur lors de l'envoi.");
 }
 
 };
