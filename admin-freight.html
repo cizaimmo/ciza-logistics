@@ -69,12 +69,23 @@ margin-top:10px;width:200px;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  query, 
+  where, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  serverTimestamp,
+  getDocs,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
 });
 const db = getFirestore(app);
 
@@ -105,6 +116,12 @@ ${d.status==="created" ? `
 <button onclick="sendQuote('${docSnap.id}')">Envoyer devis</button>
 ` : ""}
 
+${d.status==="ready_for_assignment" ? `
+<button onclick="autoAssignDriver('${docSnap.id}')">
+Auto-assigner Chauffeur
+</button>
+` : ""}
+
 </div>`;
 });
 
@@ -129,9 +146,110 @@ quoteSentAt:serverTimestamp()
 });
 
 alert("Devis envoyé");
-
 };
 
+/* ===============================
+   AUTO ASSIGN INTELLIGENT
+================================ */
+
+window.autoAssignDriver = async function(shipmentId){
+
+const shipmentRef = doc(db,"shipments",shipmentId);
+const shipmentSnap = await getDoc(shipmentRef);
+
+if(!shipmentSnap.exists()){
+  alert("Freight introuvable");
+  return;
+}
+
+const shipment = shipmentSnap.data();
+
+if(shipment.status !== "ready_for_assignment"){
+  alert("Statut invalide pour assignation");
+  return;
+}
+
+/* === Récupérer chauffeurs compatibles === */
+
+const driversQuery = query(
+  collection(db,"users"),
+  where("role","==","driver"),
+  where("accountStatus","==","approved"),
+  where("isAvailable","==",true)
+);
+
+const driversSnap = await getDocs(driversQuery);
+
+let drivers = [];
+
+driversSnap.forEach(d=>{
+  drivers.push({ id:d.id, ...d.data() });
+});
+
+if(drivers.length===0){
+  alert("Aucun chauffeur disponible");
+  return;
+}
+
+/* === FALLBACK LOGIC === */
+
+let level1 = drivers.filter(d =>
+  d.truckType === shipment.truckType &&
+  d.currentCity === shipment.fromCity
+);
+
+let level2 = drivers.filter(d =>
+  d.truckType === shipment.truckType
+);
+
+let selectedPool = [];
+
+if(level1.length>0){
+  selectedPool = level1;
+}
+else if(level2.length>0){
+  selectedPool = level2;
+}
+else{
+  selectedPool = drivers;
+}
+
+/* === SCORE: moins de livraisons actives = prioritaire === */
+
+selectedPool.sort((a,b)=>{
+  const aCount = a.activeShipments || 0;
+  const bCount = b.activeShipments || 0;
+  return aCount - bCount;
+});
+
+const bestDriver = selectedPool[0];
+
+if(!bestDriver){
+  alert("Impossible d’assigner");
+  return;
+}
+
+/* === Mise à jour shipment === */
+
+await updateDoc(shipmentRef,{
+  assignedDriverId: bestDriver.id,
+  assignedDriverName: bestDriver.fullName || "Driver",
+  assignedAt: serverTimestamp(),
+  status:"assigned"
+});
+
+/* === Mise à jour driver === */
+
+const driverRef = doc(db,"users",bestDriver.id);
+
+await updateDoc(driverRef,{
+  isAvailable:false,
+  activeShipments:(bestDriver.activeShipments || 0) + 1
+});
+
+alert("Chauffeur assigné automatiquement ✔");
+
+};
 </script>
 
 </body>
