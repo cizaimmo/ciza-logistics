@@ -184,8 +184,10 @@ text-align:center;
 
 <section class="hero">
 <div class="container">
-<h1>Paiement enregistré avec succès</h1>
-<p>Votre transaction est en cours de vérification par notre équipe.</p>
+<h1>Votre référence de paiement a été transmise.
+Notre équipe vérifie actuellement la transaction mobile money.
+Le ramassage sera déclenché après validation.</h1>
+  
 </div>
 </section>
 
@@ -269,6 +271,15 @@ document.getElementById("trackingCode").innerText="Tracking : "+tracking;
 document.getElementById("amountBox").innerText="Montant : "+(data.finalPrice || 0).toLocaleString("fr-FR")+" BIF";
 document.getElementById("trackBtn").href="tracking.html?code="+tracking;
 
+<div style="background:#f9f9f9;padding:20px;border-radius:18px;margin-bottom:25px;border:1px solid rgba(212,175,55,0.2);">
+<strong style="color:#D4AF37;">Informations importantes :</strong><br><br>
+
+• Le montant doit correspondre exactement au total affiché<br>
+• Le numéro utilisé pour la transaction doit correspondre à celui saisi<br>
+• La validation peut prendre jusqu’à 30 minutes en heures ouvrables<br>
+• En cas d’erreur, notre support vous contactera
+</div>  
+  
 /* QR */
 const baseURL = window.location.href.substring(
   0,
