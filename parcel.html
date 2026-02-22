@@ -15,7 +15,6 @@
 --muted:#9a9aa3;
 --border:rgba(212,175,55,0.25);
 --radius:22px;
---card:#0f1012;
 --field:#101012;
 --danger:#ff6b6b;
 --ok:#1dd1a1;
@@ -26,112 +25,55 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:#fff;overflow-
 
 /* TOPBAR */
 .topbar{
-background:#000;
-border-bottom:1px solid var(--border);
-padding:9px 10px;
-text-align:center;
-color:var(--gold);
-font-size:12px;
-font-weight:700;
-letter-spacing:.4px;
+background:#000;border-bottom:1px solid var(--border);
+padding:9px 10px;text-align:center;color:var(--gold);
+font-size:12px;font-weight:700;letter-spacing:.4px;
 }
 
 /* HEADER */
 .main-header{
-position:sticky;top:0;
-background:rgba(0,0,0,0.92);
-backdrop-filter:blur(10px);
-border-bottom:1px solid var(--border);
+position:sticky;top:0;background:rgba(0,0,0,0.92);
+backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
 z-index:1200;
 }
 .header-inner{
-width:95%;
-max-width:1200px;
-margin:auto;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:14px 0;
-gap:12px;
+width:95%;max-width:1200px;margin:auto;display:flex;
+align-items:center;justify-content:space-between;padding:14px 0;gap:12px;
 }
-.logo{
-display:flex;align-items:center;gap:12px;
-}
-.logo img{
-height:60px;
-filter:drop-shadow(0 0 12px rgba(212,175,55,0.28));
-}
+.logo{display:flex;align-items:center;gap:12px}
+.logo img{height:60px;filter:drop-shadow(0 0 12px rgba(212,175,55,0.28))}
 .header-right{display:flex;align-items:center;gap:10px;}
 .user-chip{
-display:none;
-align-items:center;
-gap:8px;
-padding:10px 12px;
-border-radius:999px;
-border:1px solid rgba(212,175,55,0.20);
-background:rgba(255,255,255,0.04);
-color:#fff;
-font-size:12px;
-white-space:nowrap;
+display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;
+border:1px solid rgba(212,175,55,0.20);background:rgba(255,255,255,0.04);
+color:#fff;font-size:12px;white-space:nowrap;
 }
 .user-chip b{color:var(--gold)}
-.nav-desktop{
-display:flex;gap:22px;align-items:center;
-}
+.nav-desktop{display:flex;gap:22px;align-items:center}
 .nav-desktop a{
-text-decoration:none;
-color:#fff;
-font-size:13px;
-font-weight:700;
-letter-spacing:.2px;
+text-decoration:none;color:#fff;font-size:13px;font-weight:800;letter-spacing:.2px;
 }
 .nav-desktop a:hover{color:var(--gold)}
-.btn-outline{
-border:1px solid var(--border);
-padding:8px 12px;
-border-radius:12px;
-color:var(--gold)!important;
-}
+.btn-outline{border:1px solid var(--border);padding:8px 12px;border-radius:12px;color:var(--gold)!important}
 .logout-btn{
-background:transparent;
-border:1px solid var(--border);
-color:var(--gold);
-padding:8px 14px;
-border-radius:12px;
-cursor:pointer;
-font-weight:800;
+background:transparent;border:1px solid var(--border);color:var(--gold);
+padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:900;
 }
 .logout-btn:hover{background:rgba(212,175,55,0.12)}
 
 /* HAMBURGER */
 .hamburger{
-display:none;
-flex-direction:column;
-gap:4px;
-background:transparent;
-border:none;
-cursor:pointer;
-width:44px;height:44px;
-border-radius:14px;
-border:1px solid rgba(255,255,255,0.12);
-align-items:center;
-justify-content:center;
+display:none;flex-direction:column;gap:4px;background:transparent;border:none;cursor:pointer;
+width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);
+align-items:center;justify-content:center;
 }
 .hamburger span{width:20px;height:2px;background:var(--gold);display:block}
 
 /* MOBILE MENU */
 .mobile-menu{
-position:fixed;
-top:0;right:-100%;
-width:280px;height:100%;
-background:#0d0e10;
-border-left:1px solid var(--border);
-padding:18px;
-display:flex;
-flex-direction:column;
-gap:10px;
-transition:.35s;
-z-index:2500;
+position:fixed;top:0;right:-100%;width:280px;height:100%;
+background:#0d0e10;border-left:1px solid var(--border);
+padding:18px;display:flex;flex-direction:column;gap:10px;transition:.35s;z-index:2500;
 }
 .mm-top{
 display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -139,91 +81,55 @@ padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);
 }
 .mm-title{color:var(--gold);font-weight:900;font-size:13px;letter-spacing:.6px}
 .mm-close{
-width:42px;height:42px;border-radius:14px;
-border:1px solid rgba(255,255,255,0.14);
-background:transparent;color:#fff;
-font-size:22px;cursor:pointer;
+width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,0.14);
+background:transparent;color:#fff;font-size:22px;cursor:pointer;
 }
 .mm-user{
-margin-top:8px;
-padding:12px;border-radius:18px;
-background:rgba(255,255,255,0.04);
-border:1px solid rgba(212,175,55,0.18);
-font-size:12px;line-height:1.6;
+margin-top:8px;padding:12px;border-radius:18px;background:rgba(255,255,255,0.04);
+border:1px solid rgba(212,175,55,0.18);font-size:12px;line-height:1.6;
 }
 .mm-user b{color:var(--gold)}
 .mobile-menu a{
-text-decoration:none;
-color:#fff;
-font-weight:800;
-padding:12px 14px;
-border-radius:16px;
-background:rgba(255,255,255,0.04);
-border:1px solid rgba(255,255,255,0.06);
-text-transform:uppercase;
-font-size:12px;
-letter-spacing:.6px;
+text-decoration:none;color:#fff;font-weight:900;padding:12px 14px;border-radius:16px;
+background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+text-transform:uppercase;font-size:12px;letter-spacing:.6px;
 }
 .mobile-menu a:hover{background:rgba(212,175,55,0.10);color:var(--gold)}
 .mm-actions{
-margin-top:auto;
-padding-top:12px;
-border-top:1px solid rgba(255,255,255,0.08);
+margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);
 display:flex;flex-direction:column;gap:10px;
 }
 .mm-foot{color:#8b8b8b;font-size:11px;text-align:center}
 .menu-overlay{
-position:fixed;inset:0;
-background:rgba(0,0,0,0.65);
-opacity:0;pointer-events:none;
-transition:.25s;
-z-index:2400;
+position:fixed;inset:0;background:rgba(0,0,0,0.65);
+opacity:0;pointer-events:none;transition:.25s;z-index:2400;
 }
 .menu-open .mobile-menu{right:0}
 .menu-open .menu-overlay{opacity:1;pointer-events:auto}
 
 /* HERO */
 .hero{
-padding:44px 0 24px;
-border-bottom:1px solid var(--border);
-background:linear-gradient(180deg,#0b0b0c,#101012);
-text-align:center;
+padding:34px 0 18px;border-bottom:1px solid var(--border);
+background:linear-gradient(180deg,#0b0b0c,#101012);text-align:center;
 }
-.hero h1{
-color:var(--gold);
-font-size:28px;
-font-weight:900;
-letter-spacing:.2px;
-}
+.hero h1{color:var(--gold);font-size:28px;font-weight:900;letter-spacing:.2px}
 .hero p{
-margin:10px auto 0;
-max-width:900px;
-font-size:13px;
-line-height:1.7;
-color:var(--muted);
-padding:0 14px;
+margin:8px auto 0;max-width:900px;font-size:13px;line-height:1.6;
+color:var(--muted);padding:0 14px;
 }
 
 /* PAGE */
-.section{padding:28px 0 52px}
+.section{padding:24px 0 52px}
 .container{width:95%;max-width:1100px;margin:auto}
 .form-card{
-background:var(--softBlack);
-border:1px solid var(--border);
-border-radius:var(--radius);
-padding:18px;
-box-shadow:0 30px 90px rgba(0,0,0,0.35);
+background:var(--softBlack);border:1px solid var(--border);border-radius:var(--radius);
+padding:18px;box-shadow:0 30px 90px rgba(0,0,0,0.35);
 }
 @media(min-width:720px){.form-card{padding:26px}}
-
 .block{margin-bottom:18px}
 .block-title{
-color:var(--gold);
-font-size:12px;
-margin-bottom:12px;
-font-weight:900;
-text-transform:uppercase;
-letter-spacing:1px;
+color:var(--gold);font-size:12px;margin-bottom:12px;font-weight:900;
+text-transform:uppercase;letter-spacing:1px;
 }
 .grid{display:grid;grid-template-columns:1fr;gap:12px}
 .grid.two{grid-template-columns:1fr}
@@ -243,22 +149,12 @@ letter-spacing:1px;
 
 /* INPUTS */
 label{
-display:block;
-font-size:11px;
-margin:0 0 6px;
-color:#cfcfd4;
-text-transform:uppercase;
-letter-spacing:.6px;
-font-weight:800;
+display:block;font-size:11px;margin:0 0 6px;color:#cfcfd4;
+text-transform:uppercase;letter-spacing:.6px;font-weight:900;
 }
 input,select,textarea{
-width:100%;
-padding:14px 14px;
-background:var(--field);
-border:1px solid rgba(255,255,255,0.10);
-border-radius:14px;
-color:#fff;
-outline:none;
+width:100%;padding:14px 14px;background:var(--field);
+border:1px solid rgba(255,255,255,0.10);border-radius:14px;color:#fff;outline:none;
 transition:.2s;
 }
 textarea{min-height:92px;resize:none}
@@ -266,24 +162,16 @@ input:focus,select:focus,textarea:focus{
 border-color:rgba(212,175,55,0.75);
 box-shadow:0 0 0 2px rgba(212,175,55,0.14);
 }
-.small-note{
-font-size:12px;
-color:var(--muted);
-margin-top:6px;
-line-height:1.6;
-}
+.small-note{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6}
 .sep{
-height:1px;
-background:linear-gradient(to right,rgba(212,175,55,0),rgba(212,175,55,0.35),rgba(212,175,55,0));
+height:1px;background:linear-gradient(to right,rgba(212,175,55,0),rgba(212,175,55,0.35),rgba(212,175,55,0));
 margin:14px 0;
 }
 
 /* CHECKBOX */
 .checkbox-line{
-display:flex;gap:10px;align-items:flex-start;
-padding:12px;border-radius:16px;
-background:rgba(255,255,255,0.04);
-border:1px solid rgba(255,255,255,0.08);
+display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:16px;
+background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
 }
 .checkbox-line input{width:18px;height:18px;margin-top:2px}
 .checkbox-line span{font-size:13px;color:rgba(255,255,255,0.86);line-height:1.45}
@@ -291,64 +179,33 @@ border:1px solid rgba(255,255,255,0.08);
 
 /* SUMMARY */
 .summary{
-margin-top:10px;
-background:rgba(212,175,55,0.10);
-border:1px solid rgba(212,175,55,0.22);
-color:#f6e7b5;
-padding:12px 12px;
-border-radius:14px;
-font-size:13px;
-line-height:1.6;
+margin-top:10px;background:rgba(212,175,55,0.10);border:1px solid rgba(212,175,55,0.22);
+color:#f6e7b5;padding:12px 12px;border-radius:14px;font-size:13px;line-height:1.6;
 }
 
 /* ACTIONS */
 .actions{margin-top:14px;display:flex;flex-direction:column;gap:10px}
 @media(min-width:720px){.actions{flex-direction:row}}
 .primary-btn{
-flex:1;
-padding:16px;
-background:var(--gold);
-border:none;
-border-radius:18px;
-font-weight:900;
-color:#000;
-cursor:pointer;
-font-size:14px;
+flex:1;padding:16px;background:var(--gold);border:none;border-radius:18px;
+font-weight:900;color:#000;cursor:pointer;font-size:14px;
 }
 .primary-btn:active{transform:scale(.99)}
 .secondary-btn{
-flex:1;
-padding:16px;
-background:transparent;
-border:1px solid rgba(255,255,255,0.14);
-border-radius:18px;
-font-weight:900;
-color:#fff;
-cursor:pointer;
-font-size:14px;
+flex:1;padding:16px;background:transparent;border:1px solid rgba(255,255,255,0.14);
+border-radius:18px;font-weight:900;color:#fff;cursor:pointer;font-size:14px;
 }
 .secondary-btn:hover{border-color:rgba(212,175,55,0.35);color:var(--gold)}
-.error{color:var(--danger);font-size:13px;margin-top:10px;font-weight:700}
-.ok{color:var(--ok);font-size:13px;margin-top:10px;font-weight:800}
+.error{color:var(--danger);font-size:13px;margin-top:10px;font-weight:800}
+.ok{color:var(--ok);font-size:13px;margin-top:10px;font-weight:900}
 
 /* LOADER */
-.loader{
-display:none;
-margin-top:10px;
-text-align:center;
-color:var(--gold);
-font-weight:900;
-font-size:13px;
-}
+.loader{display:none;margin-top:10px;text-align:center;color:var(--gold);font-weight:900;font-size:13px}
 
 /* FOOTER */
 .footer{
-border-top:1px solid var(--border);
-padding:26px 0;
-text-align:center;
-color:#bdbdbd;
-font-size:11px;
-background:#000;
+border-top:1px solid var(--border);padding:26px 0;text-align:center;color:#bdbdbd;
+font-size:11px;background:#000;
 }
 .footer b{color:var(--gold)}
 </style>
@@ -391,7 +248,6 @@ background:#000;
 <div class="mm-user">
 <div style="opacity:.85">Connecté :</div>
 <div style="margin-top:6px"><b id="mmClientName">—</b></div>
-<div style="margin-top:8px;color:#cfcfcf">Espace sécurisé – Parcel</div>
 </div>
 
 <a href="index.html">Accueil</a>
@@ -408,7 +264,7 @@ background:#000;
 
 <section class="hero">
 <h1>Ciza Parcel</h1>
-<p>Formulaire intelligent multi-secteur (Particulier / Commerce / Pharmacie / Restaurant) avec localisation précise (province + quartier + repère) et tarification dynamique (Firestore), prêt pour la sécurité OTP via Espace Client.</p>
+<p>Localisation précise (province + quartier + repère) • Paiement • Assurance</p>
 </section>
 
 <section class="section">
@@ -451,8 +307,8 @@ background:#000;
 </div>
 
 <div class="grid two" style="margin-top:12px;">
-<div>
-<label for="internalRef">Référence interne (optionnel)</label>
+<div id="internalRefWrap" style="display:none;">
+<label for="internalRef">Référence interne</label>
 <input id="internalRef" placeholder="Ex: FACT-2026-015">
 </div>
 
@@ -461,21 +317,19 @@ background:#000;
 <div class="grid three" style="gap:10px;">
 <div class="checkbox-line" style="padding:10px;border-radius:14px;">
 <input type="checkbox" id="sensFragile">
-<span><strong>Fragile</strong><br><span style="color:#cfcfcf;font-size:12px;">Manipulation délicate</span></span>
+<span><strong>Fragile</strong></span>
 </div>
 <div class="checkbox-line" style="padding:10px;border-radius:14px;">
 <input type="checkbox" id="sensTemp">
-<span><strong>Température</strong><br><span style="color:#cfcfcf;font-size:12px;">Contrôle requis</span></span>
+<span><strong>Température</strong></span>
 </div>
 <div class="checkbox-line" style="padding:10px;border-radius:14px;">
 <input type="checkbox" id="sensSensitive">
-<span><strong>Sensible</strong><br><span style="color:#cfcfcf;font-size:12px;">Produit sensible</span></span>
+<span><strong>Sensible</strong></span>
 </div>
 </div>
 </div>
 </div>
-
-<div class="small-note">Ces champs sont stratégiques pour tes KPI, tes abonnements et l’évolution “Ciza Parcel Pro”.</div>
 </div>
 
 <div class="sep"></div>
@@ -501,8 +355,8 @@ background:#000;
 </div>
 
 <div>
-<label for="speedInfo">Info</label>
-<input id="speedInfo" value="Province-based • 24/7" disabled>
+<label for="info">Info</label>
+<input id="info" value="Service 24/7" disabled>
 </div>
 </div>
 
@@ -515,8 +369,8 @@ background:#000;
 <label for="originQuartier" style="margin-top:10px;">Quartier</label>
 <select id="originQuartier"><option value="">—</option></select>
 
-<label for="originLandmark" style="margin-top:10px;">Repère précis</label>
-<input id="originLandmark" placeholder="Ex: près de la station, portail bleu, école...">
+<label for="originLandmark" style="margin-top:10px;">Repère</label>
+<input id="originLandmark" placeholder="Ex: station, école, portail...">
 </div>
 
 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:14px;">
@@ -527,12 +381,12 @@ background:#000;
 <label for="destQuartier" style="margin-top:10px;">Quartier</label>
 <select id="destQuartier"><option value="">—</option></select>
 
-<label for="destLandmark" style="margin-top:10px;">Repère précis</label>
-<input id="destLandmark" placeholder="Ex: à côté du marché, maison rouge, avenue...">
+<label for="destLandmark" style="margin-top:10px;">Repère</label>
+<input id="destLandmark" placeholder="Ex: marché, avenue, maison...">
 </div>
 </div>
 
-<div class="small-note">Si la province est <b>Bujumbura</b>, une liste complète de <b>38 quartiers</b> s’affiche automatiquement. Sinon, quartier = “—”.</div>
+<div class="small-note">Si province = <b>Bujumbura</b>, 38 quartiers s’affichent automatiquement. Sinon, quartier = “—”.</div>
 </div>
 
 <div class="sep"></div>
@@ -544,18 +398,17 @@ background:#000;
 <div class="grid two">
 <div>
 <label for="senderName">Nom expéditeur</label>
-<input id="senderName" placeholder="Ex: Ciza Market / Nom complet">
+<input id="senderName" placeholder="Nom / Boutique">
 </div>
 
 <div>
 <label for="senderPhone">Téléphone expéditeur</label>
 <input id="senderPhone" inputmode="numeric" placeholder="+257XXXXXXXX" autocomplete="tel">
-<div class="small-note">Numérique uniquement. Le préfixe s’adapte au pays.</div>
 </div>
 
 <div>
 <label for="receiverName">Nom destinataire</label>
-<input id="receiverName" placeholder="Ex: Client / Boutique">
+<input id="receiverName" placeholder="Nom / Boutique">
 </div>
 
 <div>
@@ -583,9 +436,9 @@ background:#000;
 </div>
 
 <div id="dynamicFieldWrap">
-<label for="weightValue">Poids / Quantité</label>
-<input id="weightValue" type="number" inputmode="numeric" placeholder="Kg ou quantité">
-<div class="small-note" id="dynamicHint">Champ requis selon le type.</div>
+<label for="weightValue" id="weightLabel">Poids (kg)</label>
+<input id="weightValue" type="number" inputmode="numeric" placeholder="Ex: 1.5">
+<div class="small-note" id="dynamicHint">Champ requis.</div>
 </div>
 
 <div>
@@ -604,18 +457,18 @@ background:#000;
 <div>
 <label for="declaredValue">Valeur déclarée (assurance)</label>
 <input id="declaredValue" type="number" inputmode="numeric" placeholder="Ex: 50000">
-<div class="small-note">Veuillez déclarer la valeur de votre marchandise pour assurance en cas de perte de colis.</div>
+<div class="small-note">Déclare la valeur pour assurance en cas de perte/dommage.</div>
 </div>
 
-<div>
-<label for="content">Contenu (description courte)</label>
+<div id="contentWrap">
+<label for="content">Contenu</label>
 <input id="content" placeholder="Ex: documents, accessoires, denrées...">
 </div>
 </div>
 
 <div style="margin-top:12px;">
 <label for="notes">Instructions (optionnel)</label>
-<textarea id="notes" placeholder="Ex: fragile, appeler avant, laisser à la réception..."></textarea>
+<textarea id="notes" placeholder="Ex: appeler avant, fragile, réception..."></textarea>
 </div>
 
 <div style="margin-top:12px;">
@@ -652,6 +505,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+/* ================= BASE PATH (ANTI-404 GitHub Pages) ================= */
+const BASE_PATH = (() => {
+try{
+const parts = location.pathname.split("/").filter(Boolean);
+if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts[0];
+return "";
+}catch(e){return "";}
+})();
+function go(p){ location.href = (BASE_PATH ? BASE_PATH : "") + "/" + p; }
+function fixHref(a, p){ a.setAttribute("href",(BASE_PATH ? BASE_PATH : "") + "/" + p); }
+
 /* ================= FIREBASE ================= */
 const firebaseConfig = {
 apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -665,6 +529,12 @@ appId: "1:751524585771:web:6720db623a0ef70f56e56e"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+/* ================= FIX LINKS (ANTI-404) ================= */
+document.querySelectorAll('a[href="index.html"]').forEach(a=>fixHref(a,"index.html"));
+document.querySelectorAll('a[href="parcel.html"]').forEach(a=>fixHref(a,"parcel.html"));
+document.querySelectorAll('a[href="tracking.html"]').forEach(a=>fixHref(a,"tracking.html"));
+document.querySelectorAll('a[href="dashboard.html"]').forEach(a=>fixHref(a,"dashboard.html"));
 
 /* ================= UI REFS ================= */
 const hamburgerBtn=document.getElementById("hamburgerBtn");
@@ -688,6 +558,7 @@ const destLandmark=document.getElementById("destLandmark");
 const senderType=document.getElementById("senderType");
 const frequency=document.getElementById("frequency");
 const priority=document.getElementById("priority");
+const internalRefWrap=document.getElementById("internalRefWrap");
 const internalRef=document.getElementById("internalRef");
 
 const sensitivityWrap=document.getElementById("sensitivityWrap");
@@ -701,6 +572,7 @@ const receiverName=document.getElementById("receiverName");
 const receiverPhone=document.getElementById("receiverPhone");
 
 const packageType=document.getElementById("packageType");
+const weightLabel=document.getElementById("weightLabel");
 const weightValue=document.getElementById("weightValue");
 const dynamicHint=document.getElementById("dynamicHint");
 const paymentMethod=document.getElementById("paymentMethod");
@@ -717,7 +589,6 @@ const okMsg=document.getElementById("okMsg");
 const loader=document.getElementById("loader");
 
 let currentUser=null;
-let currentUserDoc=null;
 
 /* ================= MENU ================= */
 function openMenu(){document.body.classList.add("menu-open");}
@@ -726,16 +597,15 @@ hamburgerBtn.addEventListener("click",()=>{document.body.classList.contains("men
 menuOverlay.addEventListener("click",closeMenu);
 mmClose.addEventListener("click",closeMenu);
 
-/* ================= AUTH + ROLE GUARD ================= */
+/* ================= AUTH GUARD ================= */
 async function ensureClientRole(user){
 const uSnap = await getDoc(doc(db,"users",user.uid));
 if(!uSnap.exists()){
 await signOut(auth);
-location.href="login.html";
+go("login.html");
 return false;
 }
 const u=uSnap.data();
-currentUserDoc=u;
 
 const nm=(u.fullName || u.name || user.email || "Client");
 clientName.innerText=nm;
@@ -744,14 +614,13 @@ mmClientName.innerText=nm;
 if(u.accountStatus==="suspended"){
 alert("Compte suspendu.");
 await signOut(auth);
-location.href="login.html";
+go("login.html");
 return false;
 }
-
 if(u.role!=="client"){
 alert("Accès refusé.");
 await signOut(auth);
-location.href="login.html";
+go("login.html");
 return false;
 }
 
@@ -762,19 +631,14 @@ return true;
 }
 
 onAuthStateChanged(auth, async (user)=>{
-if(!user){
-location.href="login.html";
-return;
-}
+if(!user){go("login.html");return;}
 currentUser=user;
 const ok = await ensureClientRole(user);
-if(ok){
-applyPhonePrefix(country.value);
-}
+if(ok){applyPhonePrefix(country.value);}
 });
 
-logoutBtn.addEventListener("click",async()=>{await signOut(auth);location.href="login.html";});
-logoutMobile.addEventListener("click",async()=>{await signOut(auth);location.href="login.html";});
+logoutBtn.addEventListener("click",async()=>{await signOut(auth);go("login.html");});
+logoutMobile.addEventListener("click",async()=>{await signOut(auth);go("login.html");});
 
 /* ================= PHONE HELPERS ================= */
 function enforceNumericPhone(input){
@@ -796,13 +660,14 @@ country.addEventListener("change",()=>applyPhonePrefix(country.value));
 const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
 const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
 
-/* 38 quartiers (Bujumbura) — tri: ceux qui commencent par M d’abord, puis A-Z */
 const quartiersBuj38=[
-"Buyenzi","Bwiza","Nyakabiga","Kinama","Kamenge","Cibitoke","Jabe","Kanyosha",
-"Musaga","Ngagara","Rohero I","Rohero II","Rohero III","Mutanga Nord","Mutanga Sud","Buterere",
-"Gihosha","Kinanira I","Kinanira II","Carama","Kibenga","Gatumba","Ruziba","Kigobe",
-"Mutakura","Kinindo","Kiriri","Sororezo","Rweza","Nyabugete","Kajaga","Kanyosha II",
-"Kanyosha III","Kanyosha IV","Ngagara II","Ngagara III","Kamenge II","Buterere II"
+"Musaga","Mutanga Nord","Mutanga Sud","Mutakura",
+"Buyenzi","Bwiza","Buterere","Buterere II",
+"Carama","Cibitoke","Gatumba","Gihosha","Jabe","Kajaga","Kamenge","Kamenge II",
+"Kanyosha","Kanyosha II","Kanyosha III","Kanyosha IV",
+"Kibenga","Kigobe","Kinama","Kinindo","Kinanira I","Kinanira II","Kiriri",
+"Ngagara","Ngagara II","Ngagara III","Nyabugete","Nyakabiga","Rohero I","Rohero II","Rohero III",
+"Ruziba","Rweza","Sororezo"
 ];
 
 function sortMFirst(list){
@@ -823,6 +688,7 @@ destProvince.innerHTML+=`<option value="${p}">${p}</option>`;
 originQuartier.innerHTML=`<option value="">—</option>`;
 destQuartier.innerHTML=`<option value="">—</option>`;
 }
+
 function bindQuartiers(provEl, qEl){
 qEl.innerHTML=`<option value="">—</option>`;
 if(provEl.value==="Bujumbura"){
@@ -833,6 +699,7 @@ qEl.innerHTML+=`<option value="${q}">${q}</option>`;
 qEl.innerHTML=`<option value="—">—</option>`;
 }
 }
+
 country.addEventListener("change",()=>{
 loadProvinces();
 applyPhonePrefix(country.value);
@@ -847,44 +714,54 @@ destLandmark.addEventListener("input",updateSummary);
 
 loadProvinces();
 
-/* ================= PROFILE LOGIC ================= */
-function updateSensitivityVisibility(){
-const t=senderType.value;
-const show = (t==="pharmacie" || t==="restaurant");
-sensitivityWrap.style.display = show ? "block" : "none";
-if(!show){
+/* ================= FORM DYNAMIQUE (TYPE EXPEDITEUR) ================= */
+function setRequired(el, on){
+if(on) el.setAttribute("required","required");
+else el.removeAttribute("required");
+}
+function resetSensitivity(){
 sensFragile.checked=false;
 sensTemp.checked=false;
 sensSensitive.checked=false;
 }
+function applySenderTypeRules(){
+const t = senderType.value;
+
+const showSensitivity = (t==="pharmacie" || t==="restaurant");
+sensitivityWrap.style.display = showSensitivity ? "block" : "none";
+if(!showSensitivity) resetSensitivity();
+
+const showInternalRef = (t==="commerce" || t==="pharmacie" || t==="restaurant");
+internalRefWrap.style.display = showInternalRef ? "block" : "none";
+if(!showInternalRef) internalRef.value="";
+
+const contentRequired = (t==="commerce" || t==="pharmacie" || t==="restaurant");
+setRequired(content, contentRequired);
+
+if(t==="pharmacie" || t==="restaurant"){
+if(priority.value==="standard") priority.value="express";
+}
+
 updateSummary();
 }
-senderType.addEventListener("change",updateSensitivityVisibility);
-frequency.addEventListener("change",updateSummary);
-priority.addEventListener("change",updateSummary);
-internalRef.addEventListener("input",updateSummary);
+senderType.addEventListener("change", applySenderTypeRules);
 
 /* ================= PACKAGE TYPE HELP ================= */
+function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
 function updateDynamicHint(){
 const t=packageType.value;
 if(t==="bidon"){
-dynamicHint.innerText="Quantité requise (ex: 1, 2, 3…).";
-weightValue.placeholder="Quantité";
+weightLabel.innerText="Quantité";
+dynamicHint.innerText="Ex: 1, 2, 3…";
+weightValue.placeholder="Ex: 2";
 }else{
-dynamicHint.innerText="Poids requis (kg).";
-weightValue.placeholder="Poids (kg)";
+weightLabel.innerText="Poids (kg)";
+dynamicHint.innerText="Ex: 1.5";
+weightValue.placeholder="Ex: 1.5";
 }
 updateSummary();
 }
 packageType.addEventListener("change",updateDynamicHint);
-weightValue.addEventListener("input",updateSummary);
-declaredValue.addEventListener("input",updateSummary);
-paymentMethod.addEventListener("change",updateSummary);
-senderName.addEventListener("input",updateSummary);
-receiverName.addEventListener("input",updateSummary);
-content.addEventListener("input",updateSummary);
-notes.addEventListener("input",updateSummary);
-nonDangerous.addEventListener("change",updateSummary);
 
 /* ================= SUMMARY ================= */
 function safeVal(v){return (v===undefined||v===null||String(v).trim()==="")?"—":String(v).trim();}
@@ -898,22 +775,39 @@ const dq = safeVal(destQuartier.value);
 const st = safeVal(senderType.value);
 const fr = safeVal(frequency.value);
 const pr = safeVal(priority.value);
-const rf = safeVal(internalRef.value);
 
 const pt = safeVal(packageType.value);
 const pm = safeVal(paymentMethod.value);
 const dv = declaredValue.value ? Number(declaredValue.value||0).toLocaleString("fr-FR") : "—";
 const wv = weightValue.value ? String(weightValue.value) : "—";
 
-const sens = (sensitivityWrap.style.display==="block")
-? ` • Sensibilité: ${sensFragile.checked?"Fragile ":""}${sensTemp.checked?"Temp ":""}${sensSensitive.checked?"Sensible ":""}`.trim()
-: "";
+let sensTxt="—";
+if(sensitivityWrap.style.display==="block"){
+const arr=[];
+if(sensFragile.checked) arr.push("Fragile");
+if(sensTemp.checked) arr.push("Température");
+if(sensSensitive.checked) arr.push("Sensible");
+sensTxt = arr.length?arr.join(", "):"—";
+}
 
 summaryText.innerText =
 `${c} • ${op} (${oq}) → ${dp} (${dq})
-Profil: ${st} • ${fr} • ${pr} • Ref: ${rf}${sens}
-Colis: ${pt} • Valeur déclarée: ${dv} • Poids/Qté: ${wv} • Paiement: ${pm}`;
+Profil: ${st} • ${fr} • ${pr}
+Colis: ${pt} • Valeur: ${dv} • Poids/Qté: ${wv} • Paiement: ${pm}
+Sensibilité: ${sensTxt}`;
 }
+
+[
+frequency,priority,internalRef,
+originProvince,destProvince,originQuartier,destQuartier,originLandmark,destLandmark,
+senderName,senderPhone,receiverName,receiverPhone,
+weightValue,declaredValue,paymentMethod,content,notes,nonDangerous,
+sensFragile,sensTemp,sensSensitive
+].forEach(el=>{
+if(!el) return;
+el.addEventListener("input",updateSummary);
+el.addEventListener("change",updateSummary);
+});
 updateSummary();
 
 /* ================= TRACKING ================= */
@@ -926,44 +820,42 @@ return code;
 
 /* ================= PRICING ================= */
 async function loadPricing(cty){
-/* doc pricing: parcel_bi / parcel_rw */
 const id = cty==="RW" ? "parcel_rw" : "parcel_bi";
 const snap = await getDoc(doc(db,"pricing",id));
 if(!snap.exists()) throw new Error("Configuration tarifaire introuvable.");
 return { id, data:snap.data() };
 }
 
-function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
-
 /* ================= SUBMIT ================= */
 function showError(msg){errorMsg.innerText=msg; okMsg.style.display="none"; okMsg.innerText="";}
 function showOk(msg){okMsg.style.display="block"; okMsg.innerText=msg; errorMsg.innerText="";}
-function setLoading(on){
-loader.style.display = on ? "block" : "none";
-submitBtn.disabled = on;
-}
+function setLoading(on){loader.style.display = on ? "block" : "none"; submitBtn.disabled = on;}
 
-goTrackingBtn.addEventListener("click",()=>{location.href="tracking.html";});
+goTrackingBtn.addEventListener("click",()=>{go("tracking.html");});
 
 submitBtn.addEventListener("click", async ()=>{
 showError("");
 setLoading(true);
 
 try{
-/* required fields */
 if(!currentUser) throw new Error("Session expirée. Reconnectez-vous.");
 if(!senderType.value) throw new Error("Sélectionnez le type d’expéditeur.");
 if(!frequency.value) throw new Error("Sélectionnez la fréquence d’envoi.");
 if(!originProvince.value || !destProvince.value) throw new Error("Sélectionnez la province de départ et destination.");
 if(originProvince.value==="Bujumbura" && !originQuartier.value) throw new Error("Sélectionnez le quartier de départ.");
 if(destProvince.value==="Bujumbura" && !destQuartier.value) throw new Error("Sélectionnez le quartier de destination.");
-if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les informations expéditeur.");
-if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les informations destinataire.");
+if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les infos expéditeur.");
+if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les infos destinataire.");
 if(!packageType.value) throw new Error("Sélectionnez le type d’envoi.");
 if(!weightValue.value) throw new Error("Poids / quantité requis.");
 if(num(weightValue.value)<=0) throw new Error("Poids / quantité invalide.");
 if(!paymentMethod.value) throw new Error("Sélectionnez un mode de paiement.");
 if(!nonDangerous.checked) throw new Error("Veuillez confirmer 'matières non dangereuses'.");
+
+const t = senderType.value;
+if((t==="commerce" || t==="pharmacie" || t==="restaurant") && !content.value.trim()){
+throw new Error("Veuillez préciser le contenu.");
+}
 
 const cty = country.value || "BI";
 
@@ -993,12 +885,11 @@ fuel:Math.round(fuel),
 pricingVersion: pricing.pricingVersion || pricingPack.id || "parcel_dynamic_v1"
 };
 
-/* senderProfile as validated */
 const senderProfile={
-type: senderType.value,
+type: t,
 frequency: frequency.value,
 priority: priority.value,
-internalReference: internalRef.value.trim() ? internalRef.value.trim() : null,
+internalReference: internalRefWrap.style.display==="block" && internalRef.value.trim() ? internalRef.value.trim() : null,
 sensitivity:{
 fragile: !!sensFragile.checked,
 temperatureControlled: !!sensTemp.checked,
@@ -1006,20 +897,14 @@ sensitiveProduct: !!sensSensitive.checked
 }
 };
 
-/* details by package type */
 let details={};
-if(packageType.value==="bidon"){
-details.quantity = w;
-}else{
-details.weightKg = w;
-}
+if(packageType.value==="bidon"){details.quantity = w;}
+else{details.weightKg = w;}
 
 await setDoc(doc(db,"shipments",tracking),{
 trackingCode: tracking,
 service:"parcel",
 country: cty,
-
-/* compat fields */
 ownerUid: currentUser.uid,
 uid: currentUser.uid,
 
@@ -1059,13 +944,17 @@ createdAt: serverTimestamp()
 });
 
 showOk("Envoi créé. Redirection…");
-location.href = "confirmation.html?tracking=" + encodeURIComponent(tracking);
+go("confirmation.html?tracking=" + encodeURIComponent(tracking));
 
 }catch(e){
 showError(e.message || "Erreur inconnue.");
 setLoading(false);
 }
 });
+
+/* init rules */
+applySenderTypeRules();
+updateDynamicHint();
 </script>
 
 </body>
