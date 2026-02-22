@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Client | Ciza Logistics</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(180deg,#f6f8fb,#eef2f7);
+color:#111;
+min-height:100vh;
+}
+
+:root{
+--gold:#D4AF37;
+--black:#000;
+--card:#fff;
+--muted:#6b7280;
+--shadow:0 22px 60px rgba(0,0,0,0.08);
+--shadow2:0 40px 120px rgba(0,0,0,0.18);
+--radius:22px;
+}
+
+.container{width:92%;max-width:1200px;margin:auto;}
+
+/* HEADER */
+.main-header{
+position:fixed;top:0;left:0;right:0;
+background:rgba(0,0,0,0.98);
+padding:14px 0;
+z-index:1200;
+border-bottom:1px solid rgba(212,175,55,0.18);
+}
+.header-container{
+display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.logo img{height:62px;display:block;}
+.header-actions{display:flex;align-items:center;gap:10px;}
+
+.user-chip{
+display:flex;align-items:center;gap:10px;
+padding:10px 12px;border-radius:999px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(212,175,55,0.25);
+color:#fff;font-size:12px;white-space:nowrap;
+}
+.user-chip b{color:var(--gold);}
+
+.hamburger{
+width:44px;height:44px;border-radius:14px;
+border:1px solid rgba(255,255,255,0.18);
+background:transparent;cursor:pointer;
+display:flex;align-items:center;justify-content:center;
+}
+.hamburger span{
+width:18px;height:2px;background:#fff;display:block;position:relative;
+}
+.hamburger span::before,.hamburger span::after{
+content:"";width:18px;height:2px;background:#fff;position:absolute;left:0;
+}
+.hamburger span::before{top:-6px;}
+.hamburger span::after{top:6px;}
+
+/* MOBILE MENU */
+.mobile-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.68);
+opacity:0;pointer-events:none;transition:0.25s;z-index:1500;
+}
+.mobile-menu{
+position:fixed;top:0;right:0;height:100%;
+width:min(360px,88vw);
+background:#0b0b0b;
+transform:translateX(100%);
+transition:0.25s;
+z-index:1600;
+border-left:1px solid rgba(212,175,55,0.22);
+padding:18px;
+display:flex;flex-direction:column;
+}
+.menu-open .mobile-overlay{opacity:1;pointer-events:auto;}
+.menu-open .mobile-menu{transform:translateX(0);}
+
+.mm-top{
+display:flex;align-items:center;justify-content:space-between;gap:10px;
+padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.mm-title{
+color:var(--gold);font-weight:900;font-size:14px;letter-spacing:0.4px;
+}
+.mm-close{
+width:42px;height:42px;border-radius:14px;
+border:1px solid rgba(255,255,255,0.16);
+background:transparent;color:#fff;cursor:pointer;font-size:20px;
+}
+.mm-user{
+margin-top:14px;
+padding:14px;border-radius:18px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(212,175,55,0.18);
+color:#fff;font-size:12px;line-height:1.6;
+}
+.mm-user b{color:var(--gold);}
+.mm-links{
+margin-top:14px;
+display:flex;flex-direction:column;gap:10px;
+}
+.mm-links a{
+text-decoration:none;color:#fff;
+padding:12px 14px;border-radius:16px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+text-transform:uppercase;font-size:12px;letter-spacing:0.6px;
+}
+.mm-links a:hover{background:rgba(212,175,55,0.12);color:var(--gold);}
+.mm-actions{
+margin-top:auto;
+display:flex;flex-direction:column;gap:10px;
+padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);
+}
+.mm-btn{
+padding:13px 14px;border-radius:16px;border:none;cursor:pointer;
+font-weight:900;
+}
+.mm-btn-gold{background:var(--gold);color:#000;}
+.mm-btn-outline{
+background:transparent;color:var(--gold);
+border:1px solid rgba(212,175,55,0.55);
+}
+.mm-foot{
+margin-top:10px;color:#8b8b8b;font-size:11px;text-align:center;
+}
+
+/* PAGE TOP SPACE */
+.page-space{height:96px;}
+
+/* HERO */
+.hero{padding:18px 0 10px;}
+.hero-card{
+background:linear-gradient(180deg,#0b0b0b,#000);
+border-radius:28px;
+padding:18px;
+color:#fff;
+box-shadow:var(--shadow2);
+border:1px solid rgba(212,175,55,0.22);
+}
+.hero-top{
+display:flex;flex-direction:column;gap:8px;
+}
+.hero-title{
+font-size:22px;color:var(--gold);font-weight:900;line-height:1.2;
+}
+.hero-sub{color:#eaeaea;font-size:13px;line-height:1.6;}
+
+.hero-row{
+display:grid;grid-template-columns:1fr 1fr;
+gap:10px;margin-top:14px;
+}
+.kpi{
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.10);
+border-radius:18px;padding:12px;
+}
+.kpi .v{font-size:20px;font-weight:900;color:var(--gold);}
+.kpi small{color:#d7d7d7;font-size:12px;}
+
+/* TOOLBAR */
+.section{padding:12px 0 26px;}
+.toolbar{
+background:#fff;border-radius:22px;padding:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.06);
+border:1px solid rgba(212,175,55,0.16);
+display:flex;flex-direction:column;gap:10px;
+}
+.input{
+width:100%;
+padding:13px 14px;border-radius:16px;border:1px solid #e5e7eb;
+outline:none;font-size:14px;
+}
+.select{
+width:100%;
+padding:13px 14px;border-radius:16px;border:1px solid #e5e7eb;
+background:#fff;font-size:14px;
+}
+.btn-row{display:flex;gap:10px;}
+.btn{
+flex:1;
+padding:13px 14px;border-radius:16px;border:none;
+cursor:pointer;font-weight:900;font-size:13px;
+}
+.btn-dark{background:#111;color:var(--gold);border:1px solid rgba(212,175,55,0.22);}
+.btn-dark:hover{background:#0b0b0b;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{filter:brightness(0.98);}
+
+/* LIST */
+.list{
+margin-top:14px;
+display:grid;grid-template-columns:1fr;gap:12px;
+}
+.card{
+background:var(--card);
+border-radius:var(--radius);
+padding:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.06);
+border:1px solid rgba(212,175,55,0.14);
+}
+.card-top{
+display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+}
+.track{font-weight:900;color:#111;font-size:14px;}
+.created{color:#6b7280;font-size:12px;margin-top:4px;}
+.badge{
+display:inline-block;
+padding:7px 12px;border-radius:999px;
+font-size:12px;font-weight:900;color:#fff;
+background:#111;
+white-space:nowrap;
+}
+.meta{margin-top:10px;color:#111;font-size:13px;line-height:1.7;}
+.meta span{color:var(--muted);}
+.price{margin-top:10px;font-weight:900;font-size:18px;color:#111;}
+
+.actions{
+margin-top:12px;
+display:flex;gap:10px;flex-wrap:wrap;
+}
+.smallbtn{
+padding:11px 12px;border-radius:16px;border:none;cursor:pointer;
+font-weight:900;font-size:12px;
+}
+.smallbtn-outline{background:transparent;border:1px solid rgba(17,17,17,0.14);}
+.smallbtn-outline:hover{background:rgba(0,0,0,0.03);}
+.smallbtn-gold{background:var(--gold);color:#000;}
+.smallbtn-dark{background:#111;color:var(--gold);}
+
+.sep{
+height:1px;background:linear-gradient(to right,rgba(212,175,55,0),rgba(212,175,55,0.45),rgba(212,175,55,0));
+margin:12px 0;
+}
+
+/* OTP BOX */
+.otp-box{
+margin-top:12px;
+background:linear-gradient(180deg,rgba(212,175,55,0.16),rgba(212,175,55,0.08));
+border:1px solid rgba(212,175,55,0.30);
+border-radius:18px;padding:14px;
+}
+.otp-title{font-weight:900;color:#111;margin-bottom:6px;font-size:13px;}
+.otp-code{
+font-size:26px;font-weight:900;color:#000;
+letter-spacing:3px;
+}
+.otp-hint{margin-top:6px;color:#333;font-size:12px;line-height:1.5;}
+.otp-exp{margin-top:6px;color:#111;font-size:12px;font-weight:900;}
+
+/* EMPTY */
+.empty{
+margin-top:14px;
+background:#fff;border-radius:22px;padding:18px;text-align:center;
+border:1px dashed rgba(212,175,55,0.32);
+color:#555;font-size:13px;line-height:1.7;
+}
+
+/* MODAL */
+.modal-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.65);
+display:none;align-items:center;justify-content:center;
+z-index:3000;padding:14px;
+}
+.modal{
+width:100%;max-width:720px;background:#fff;border-radius:26px;
+padding:18px;border:1px solid rgba(212,175,55,0.22);
+box-shadow:0 50px 140px rgba(0,0,0,0.45);
+}
+.modal-head{
+display:flex;justify-content:space-between;align-items:center;gap:12px;
+margin-bottom:10px;
+}
+.modal-head h3{color:#111;font-size:16px;}
+.close{background:transparent;border:none;font-size:26px;cursor:pointer;}
+.invoice{
+border:1px solid rgba(0,0,0,0.08);border-radius:18px;padding:16px;
+}
+.invoice-top{
+display:flex;justify-content:space-between;gap:14px;align-items:flex-start;
+}
+.invoice-top img{height:54px;}
+.invoice h4{margin-top:10px;color:#111;font-size:14px;}
+.invoice .row{margin-top:10px;display:grid;grid-template-columns:1fr;gap:10px;}
+.invoice .box{
+border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:12px;
+font-size:13px;line-height:1.6;
+}
+.invoice .total{
+margin-top:12px;padding:14px;border-radius:14px;
+background:rgba(212,175,55,0.15);
+border:1px solid rgba(212,175,55,0.35);
+font-weight:900;
+}
+.modal-actions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;}
+.modal-actions .btn{flex:1;min-width:140px;}
+
+/* FOOTER */
+.footer{
+margin-top:26px;background:#000;color:#fff;padding:36px 0;
+text-align:center;
+}
+.footer small{color:#bbb;font-size:11px;}
+
+/* BIG PHONES / TABLETS */
+@media(min-width:720px){
+.page-space{height:98px;}
+.logo img{height:68px;}
+.hero-card{padding:22px;}
+.hero-title{font-size:26px;}
+.hero-row{grid-template-columns:repeat(4,1fr);}
+.toolbar{flex-direction:row;align-items:center;}
+.input{flex:1;}
+.select{width:260px;}
+.btn-row{width:280px;}
+.list{grid-template-columns:1fr 1fr;gap:14px;}
+.invoice .row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMenu()"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+<div class="mm-top">
+<div class="mm-title">MENU CLIENT</div>
+<button class="mm-close" onclick="closeMenu()">×</button>
+</div>
+
+<div class="mm-user">
+<div style="opacity:0.85;">Connecté :</div>
+<div style="margin-top:6px;"><b id="mmClientName">—</b></div>
+<div style="margin-top:8px;color:#cfcfcf;">Espace sécurisé – Parcels & Factures</div>
+</div>
+
+<div class="mm-links">
+<a href="parcel.html" onclick="closeMenu()">Créer un envoi</a>
+<a href="#mes-colis" onclick="closeMenu()">Mes colis</a>
+<a href="enterprise.html" onclick="closeMenu()">Entreprise</a>
+</div>
+
+<div class="mm-actions">
+<button class="mm-btn mm-btn-gold" onclick="refresh();closeMenu()">Rafraîchir</button>
+<button class="mm-btn mm-btn-outline" onclick="logout()">Déconnexion</button>
+<div class="mm-foot">© 2026 Ciza Logistics</div>
+</div>
+</div>
+
+<header class="main-header">
+<div class="container header-container">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+</div>
+
+<div class="header-actions">
+<div class="user-chip">
+<span>Client :</span>
+<b id="clientName">—</b>
+</div>
+<button class="hamburger" onclick="toggleMenu()"><span></span></button>
+</div>
+
+</div>
+</header>
+
+<div class="page-space"></div>
+
+<section class="hero">
+<div class="container">
+<div class="hero-card">
+<div class="hero-top">
+<div class="hero-title">Espace Client – Parcel</div>
+<div class="hero-sub">
+Interface mobile premium : vos colis, vos statuts, vos OTP (si en transit), et vos factures.
+</div>
+</div>
+
+<div class="hero-row">
+<div class="kpi"><div class="v" id="kpiAll">0</div><small>Total colis</small></div>
+<div class="kpi"><div class="v" id="kpiActive">0</div><small>Actifs</small></div>
+<div class="kpi"><div class="v" id="kpiDelivered">0</div><small>Livrés</small></div>
+<div class="kpi"><div class="v" id="kpiPending">0</div><small>En attente</small></div>
+</div>
+
+<div class="sep"></div>
+
+<div style="color:#eaeaea;font-size:12px;line-height:1.7;">
+<b style="color:var(--gold);">Sécurité :</b> le code OTP n’est visible que dans cet espace (compte client). Ne partagez pas vos identifiants.
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="mes-colis">
+<div class="container">
+
+<div class="toolbar">
+<input class="input" id="searchInput" placeholder="Rechercher par tracking (ex: CL-BI-XXXXXXX)">
+<select class="select" id="filterSelect">
+<option value="all">Tous</option>
+<option value="active">Actifs</option>
+<option value="delivered">Livrés</option>
+<option value="pending">En attente / Validation</option>
+</select>
+<div class="btn-row">
+<button class="btn btn-dark" onclick="refresh()">Rafraîchir</button>
+<button class="btn btn-gold" onclick="scrollToTop()">Haut</button>
+</div>
+</div>
+
+<div id="list" class="list"></div>
+<div id="empty" class="empty" style="display:none;">Aucun colis à afficher pour le moment.</div>
+
+</div>
+</section>
+
+<footer class="footer">
+<div class="container">
+<div style="font-weight:900;color:#D4AF37;margin-bottom:6px;">Ciza Logistics</div>
+<small>© 2026 Ciza Logistics | Division de Ciza Group – Service sécurisé</small>
+</div>
+</footer>
+
+<!-- MODAL FACTURE -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-head">
+<h3>Facture / Reçu</h3>
+<button class="close" onclick="closeModal()">×</button>
+</div>
+
+<div class="invoice" id="invoiceBox">
+<div class="invoice-top">
+<div>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Logo">
+<h4 style="margin-top:8px;">Facture Parcel</h4>
+<div style="color:#666;font-size:12px;margin-top:4px;">Document généré automatiquement</div>
+</div>
+<div style="text-align:right;">
+<div style="font-size:12px;color:#666;">Tracking</div>
+<div style="font-weight:900;font-size:16px;" id="invTracking">—</div>
+<div style="margin-top:6px;font-size:12px;color:#666;">Date</div>
+<div style="font-weight:900;font-size:13px;" id="invDate">—</div>
+</div>
+</div>
+
+<div class="row">
+<div class="box" id="invSender">—</div>
+<div class="box" id="invReceiver">—</div>
+</div>
+
+<div class="row">
+<div class="box" id="invRoute">—</div>
+<div class="box" id="invPayment">—</div>
+</div>
+
+<div class="total" id="invTotal">Total : —</div>
+
+<div style="margin-top:10px;font-size:12px;color:#444;line-height:1.6;">
+<b>Note :</b> Conservez ce document pour vos archives. En cas de litige, ce reçu sert de preuve.
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="btn btn-gold" onclick="printInvoice()">Imprimer / PDF</button>
+<button class="btn btn-dark" onclick="closeModal()">Fermer</button>
+</div>
+
+</div>
+</div>
+
+<script>
+function toggleMenu(){document.body.classList.add("menu-open");}
+function closeMenu(){document.body.classList.remove("menu-open");}
+function scrollToTop(){window.scrollTo({top:0,behavior:"smooth"});}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+getFirestore, doc, getDoc, collection, query, where, onSnapshot, orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const listEl=document.getElementById("list");
+const emptyEl=document.getElementById("empty");
+const searchInput=document.getElementById("searchInput");
+const filterSelect=document.getElementById("filterSelect");
+
+let unsub=null;
+let cachedShipments=[];
+
+/* ============ GUARD ROLE CLIENT ============ */
+async function ensureClient(user){
+const uSnap = await getDoc(doc(db,"users",user.uid));
+if(!uSnap.exists()){
+location.href="login.html";
+return;
+}
+const u=uSnap.data();
+
+const nm=(u.fullName || u.name || user.email || "Client");
+document.getElementById("clientName").innerText = nm;
+document.getElementById("mmClientName").innerText = nm;
+
+if(u.accountStatus==="suspended"){
+alert("Compte suspendu.");
+await signOut(auth);
+location.href="login.html";
+return;
+}
+
+if(u.role!=="client"){
+alert("Accès refusé.");
+await signOut(auth);
+location.href="login.html";
+return;
+}
+}
+
+/* ============ STATUS LABELS ============ */
+function labelStatus(s){
+if(!s) return "—";
+if(s==="payment_under_review") return "Paiement à valider";
+if(s==="ready_for_pickup") return "Prêt ramassage";
+if(s==="assigned") return "Chauffeur assigné";
+if(s==="in_transit") return "En transit";
+if(s==="delivered") return "Livré";
+if(s==="payment_issue") return "Problème paiement";
+return s;
+}
+function badgeColor(s){
+if(s==="payment_under_review") return "#e67e22";
+if(s==="ready_for_pickup") return "#f39c12";
+if(s==="assigned") return "#2980b9";
+if(s==="in_transit") return "#8e44ad";
+if(s==="delivered") return "#27ae60";
+if(s==="payment_issue") return "#c0392b";
+return "#111";
+}
+function formatDate(ts){
+try{
+if(!ts) return "—";
+const d = ts.toDate ? ts.toDate() : (ts.seconds ? new Date(ts.seconds*1000) : new Date(ts));
+return d.toLocaleString("fr-FR");
+}catch(e){ return "—"; }
+}
+function isActiveStatus(s){
+return ["payment_under_review","ready_for_pickup","assigned","in_transit"].includes(s);
+}
+
+/* ============ OTP READ (fallback) ============ */
+async function fetchOtpForShipment(tracking, data){
+let otpCode = data.otpCode || null;
+let otpExpiresAt = data.otpExpiresAt || null;
+
+if(!otpCode){
+try{
+const secSnap = await getDoc(doc(db,"shipments",tracking,"private","security"));
+if(secSnap.exists()){
+const s=secSnap.data();
+otpCode = s.otpCode || null;
+otpExpiresAt = s.otpExpiresAt || null;
+}
+}catch(e){}
+}
+return { otpCode, otpExpiresAt };
+}
+
+/* ============ KPI ============ */
+function updateKpis(){
+const all=cachedShipments.length;
+const active=cachedShipments.filter(x=>isActiveStatus(x.data.status)).length;
+const del=cachedShipments.filter(x=>x.data.status==="delivered").length;
+const pend=cachedShipments.filter(x=>["payment_under_review","payment_issue","ready_for_pickup"].includes(x.data.status)).length;
+
+document.getElementById("kpiAll").innerText=all;
+document.getElementById("kpiActive").innerText=active;
+document.getElementById("kpiDelivered").innerText=del;
+document.getElementById("kpiPending").innerText=pend;
+}
+
+/* ============ RENDER ============ */
+async function render(){
+const qSearch=(searchInput.value||"").trim().toUpperCase();
+const f=filterSelect.value;
+
+let filtered = cachedShipments.filter(x=>{
+const d=x.data;
+const id=x.id.toUpperCase();
+
+if(qSearch && !id.includes(qSearch)) return false;
+
+if(f==="all") return true;
+if(f==="delivered") return d.status==="delivered";
+if(f==="active") return isActiveStatus(d.status);
+if(f==="pending") return ["payment_under_review","payment_issue","ready_for_pickup"].includes(d.status);
+return true;
+});
+
+emptyEl.style.display = filtered.length ? "none" : "block";
+
+let html="";
+
+for(const item of filtered){
+const id=item.id;
+const d=item.data;
+
+const statusLabel=labelStatus(d.status);
+const bColor=badgeColor(d.status);
+
+let otpHtml="";
+if(d.status==="in_transit"){
+const { otpCode, otpExpiresAt } = await fetchOtpForShipment(id,d);
+if(otpCode){
+otpHtml=`
+<div class="otp-box">
+<div class="otp-title">Code OTP (donnez-le au chauffeur uniquement au moment de la livraison)</div>
+<div class="otp-code">${String(otpCode)}</div>
+<div class="otp-exp">Expiration : ${formatDate(otpExpiresAt)}</div>
+<div class="otp-hint">✅ Ce code confirme la livraison. Ne le partagez pas avant l’arrivée du chauffeur.</div>
+</div>
+`;
+}else{
+otpHtml=`
+<div class="otp-box">
+<div class="otp-title">Code OTP</div>
+<div class="otp-hint">Le code OTP s’affichera ici dès que le colis passe en transit.</div>
+</div>
+`;
+}
+}
+
+html += `
+<div class="card">
+<div class="card-top">
+<div>
+<div class="track">${id}</div>
+<div class="created">Créé : ${formatDate(d.createdAt)}</div>
+</div>
+<div class="badge" style="background:${bColor}">${statusLabel}</div>
+</div>
+
+<div class="meta">
+<div><span>Trajet :</span> <b>${d.fromCity || "—"}</b> → <b>${d.toCity || "—"}</b></div>
+<div><span>Type :</span> <b>${d.packageType || "—"}</b></div>
+<div><span>Paiement :</span> <b>${d.paymentMethod || "—"}</b> • <span>Statut :</span> <b>${d.paymentStatus || "—"}</b></div>
+</div>
+
+<div class="price">
+Montant : ${(Number(d.finalPrice||0)).toLocaleString("fr-FR")} BIF
+</div>
+
+${otpHtml}
+
+<div class="actions">
+<button class="smallbtn smallbtn-gold" onclick="openInvoice('${id}')">Facture</button>
+<a class="smallbtn smallbtn-dark" href="tracking.html?code=${encodeURIComponent(id)}" style="text-decoration:none;display:inline-block;">Voir suivi</a>
+</div>
+
+</div>
+`;
+}
+
+listEl.innerHTML=html;
+}
+
+/* ============ LISTEN SHIPMENTS OWNER ============ */
+function startListener(uid){
+if(unsub) unsub();
+
+const q = query(
+collection(db,"shipments"),
+where("ownerUid","==",uid),
+where("service","==","parcel"),
+orderBy("createdAt","desc")
+);
+
+unsub = onSnapshot(q,(snap)=>{
+cachedShipments=[];
+snap.forEach(ds=>{
+cachedShipments.push({id:ds.id,data:ds.data()});
+});
+updateKpis();
+render();
+},(err)=>{
+console.error(err);
+listEl.innerHTML = `<div class="empty">Accès refusé ou erreur de lecture. Vérifiez vos règles Firestore.</div>`;
+});
+}
+
+/* ============ EVENTS ============ */
+searchInput.addEventListener("input",()=>render());
+filterSelect.addEventListener("change",()=>render());
+
+window.refresh=function(){ render(); };
+
+window.logout=async function(){
+await signOut(auth);
+location.href="login.html";
+};
+
+/* ============ INVOICE MODAL ============ */
+window.openInvoice=function(tracking){
+const item=cachedShipments.find(x=>x.id===tracking);
+if(!item) return;
+
+const d=item.data;
+
+document.getElementById("invTracking").innerText=tracking;
+document.getElementById("invDate").innerText=formatDate(d.createdAt);
+
+document.getElementById("invSender").innerHTML = `
+<b>Expéditeur</b><br>
+${d.senderName || "—"}<br>
+${d.senderPhone || "—"}
+`;
+
+document.getElementById("invReceiver").innerHTML = `
+<b>Destinataire</b><br>
+${d.receiverName || "—"}<br>
+${d.receiverPhone || "—"}
+`;
+
+document.getElementById("invRoute").innerHTML = `
+<b>Trajet</b><br>
+${d.fromCity || "—"} → ${d.toCity || "—"}<br>
+Type: ${d.packageType || "—"}
+`;
+
+document.getElementById("invPayment").innerHTML = `
+<b>Paiement</b><br>
+Méthode: ${d.paymentMethod || "—"}<br>
+Statut: ${d.paymentStatus || "—"}<br>
+Réf: ${d.paymentReference || "—"}
+`;
+
+document.getElementById("invTotal").innerText =
+"Total : " + (Number(d.finalPrice||0)).toLocaleString("fr-FR") + " BIF";
+
+document.getElementById("modalOverlay").style.display="flex";
+};
+
+window.closeModal=function(){
+document.getElementById("modalOverlay").style.display="none";
+};
+
+window.printInvoice=function(){
+const box=document.getElementById("invoiceBox").outerHTML;
+const w=window.open("","_blank");
+w.document.write(`
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Facture</title>
+<style>
+body{font-family:Arial;margin:0;padding:18px;background:#fff;color:#111;}
+.invoice{border:1px solid rgba(0,0,0,0.10);border-radius:18px;padding:16px;}
+.invoice-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;}
+.invoice-top img{height:54px;}
+.row{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.box{border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:12px;font-size:13px;line-height:1.6;}
+.total{margin-top:12px;padding:14px;border-radius:14px;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.35);font-weight:900;}
+@media(max-width:700px){.row{grid-template-columns:1fr;}}
+</style>
+</head><body>
+${box}
+<script>window.onload=function(){window.print();window.close();};<\/script>
+</body></html>
+`);
+w.document.close();
+};
+
+/* ============ AUTH BOOTSTRAP ============ */
+onAuthStateChanged(auth, async (user)=>{
+if(!user){
+location.href="login.html";
+return;
+}
+await ensureClient(user);
+startListener(user.uid);
+});
+</script>
+
+</body>
+</html>
