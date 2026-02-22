@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciza Parcel | Livraison Nationale</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#0b0b0c;
+--softBlack:#121214;
+--card:#17171a;
+--muted:#9a9aa3;
+--border:rgba(212,175,55,0.25);
+--radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--black);color:#fff}
+.topbar{background:#000;border-bottom:1px solid var(--border);padding:8px;text-align:center;color:var(--gold);font-size:12px;font-weight:600}
+.main-header{position:sticky;top:0;background:#000;border-bottom:1px solid var(--border);z-index:1000}
+.header-inner{width:95%;max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.logo img{height:60px}
+.nav-desktop{display:flex;gap:28px}
+.nav-desktop a{text-decoration:none;color:#fff;font-size:13px;font-weight:600}
+.nav-desktop a:hover{color:var(--gold)}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--gold);padding:8px 14px;border-radius:12px;cursor:pointer}
+.hamburger{display:none;flex-direction:column;gap:4px;background:transparent;border:none}
+.hamburger span{width:22px;height:2px;background:var(--gold)}
+.mobile-menu{position:fixed;top:0;right:-100%;width:260px;height:100%;background:#111;border-left:1px solid var(--border);padding:80px 25px;display:flex;flex-direction:column;gap:20px;transition:.4s}
+.mobile-menu a{color:#fff;text-decoration:none;font-weight:600}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:.3s}
+.menu-open .mobile-menu{right:0}
+.menu-open .menu-overlay{opacity:1;pointer-events:auto}
+.hero{padding:60px;text-align:center;border-bottom:1px solid var(--border)}
+.hero h1{color:var(--gold);font-size:32px}
+.section{padding:50px 0}
+.container{width:95%;max-width:1100px;margin:auto}
+.form-card{background:var(--softBlack);border:1px solid var(--border);border-radius:var(--radius);padding:30px}
+.block{margin-bottom:30px}
+.block-title{color:var(--gold);font-size:13px;margin-bottom:16px;font-weight:700;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.nav-desktop{display:none}.hamburger{display:flex}}
+label{display:block;font-size:12px;margin-bottom:6px;color:#cfcfd4;text-transform:uppercase}
+input,select{width:100%;padding:14px;background:#101012;border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:#fff}
+.primary-btn{width:100%;padding:16px;background:var(--gold);border:none;border-radius:18px;font-weight:900;color:#000;margin-top:20px}
+.small-note{font-size:12px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">Service 24/7 • WhatsApp +257 79 94 50 07</div>
+
+<header class="main-header">
+<div class="header-inner">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+<nav class="nav-desktop">
+<a href="index.html">Accueil</a>
+<a href="parcel.html">Créer envoi</a>
+<a href="tracking.html">Suivi</a>
+<a href="enterprise.html">Entreprise</a>
+<a href="dashboard.html">Espace client</a>
+</nav>
+<button class="logout-btn" id="logoutBtn" style="display:none;">Déconnexion</button>
+<button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="index.html">Accueil</a>
+<a href="parcel.html">Créer envoi</a>
+<a href="tracking.html">Suivi</a>
+<a href="enterprise.html">Entreprise</a>
+<a href="dashboard.html">Espace client</a>
+<button class="logout-btn" id="logoutMobile" style="display:none;">Déconnexion</button>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<section class="hero">
+<h1>Ciza Parcel</h1>
+</section>
+
+<section class="section">
+<div class="container">
+<div class="form-card">
+
+<div class="block">
+<div class="block-title">Profil d’expédition</div>
+<div class="grid">
+<select id="senderType">
+<option value="">Type</option>
+<option value="particulier">Particulier</option>
+<option value="commerce">Commerce</option>
+<option value="pharmacie">Pharmacie</option>
+<option value="restaurant">Restaurant</option>
+</select>
+<select id="frequency">
+<option value="occasionnel">Occasionnel</option>
+<option value="hebdomadaire">Hebdomadaire</option>
+<option value="quotidien">Quotidien</option>
+</select>
+<select id="priority">
+<option value="standard">Standard</option>
+<option value="express">Express</option>
+</select>
+<input id="internalRef" placeholder="Référence interne">
+</div>
+</div>
+
+<div class="block">
+<div class="block-title">Localisation</div>
+<div class="grid">
+<select id="country"><option value="BI">Burundi</option><option value="RW">Rwanda</option></select>
+<select id="province"></select>
+<select id="commune"></select>
+<select id="quartier"></select>
+<input id="landmark" placeholder="Repère précis">
+</div>
+</div>
+
+<div class="block">
+<div class="block-title">Colis</div>
+<div class="grid">
+<select id="packageType">
+<option value="enveloppe">Enveloppe</option>
+<option value="boite">Boîte</option>
+<option value="bidon">Bidon</option>
+</select>
+<input id="weight" type="number" placeholder="Poids / Quantité">
+<input id="declaredValue" type="number" placeholder="Valeur déclarée">
+<select id="paymentMethod">
+<option value="Lumicash">Lumicash</option>
+<option value="EcoCash">EcoCash</option>
+<option value="eNoti">eNoti</option>
+<option value="COD">Paiement à la livraison</option>
+</select>
+</div>
+<div class="small-note">
+Veuillez déclarer la valeur de votre marchandise. Cette valeur sert au calcul de l’assurance en cas de perte.
+</div>
+</div>
+
+<button class="primary-btn" id="submitBtn">Continuer</button>
+
+</div>
+</div>
+</section>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSy...",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser;
+
+onAuthStateChanged(auth, user=>{
+if(!user){window.location.href="login.html"}
+else{
+currentUser=user;
+document.getElementById("logoutBtn").style.display="inline-block";
+document.getElementById("logoutMobile").style.display="inline-block";
+}
+});
+
+document.getElementById("logoutBtn").onclick=()=>signOut(auth);
+document.getElementById("logoutMobile").onclick=()=>signOut(auth);
+
+function generateTracking(country){
+const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let code="CL-"+country+"-";
+for(let i=0;i<8;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+return code;
+}
+
+document.getElementById("submitBtn").onclick=async()=>{
+
+const tracking=generateTracking(document.getElementById("country").value);
+
+const pricingSnap=await getDoc(doc(db,"pricing","parcel_bi"));
+if(!pricingSnap.exists()) return alert("Pricing introuvable");
+
+const pricing=pricingSnap.data();
+const weight=Number(document.getElementById("weight").value||1);
+const declaredValue=Number(document.getElementById("declaredValue").value||0);
+
+const base=pricing.urbanBase;
+const weightExtra=weight>1?(weight-1)*pricing.weightMultiplier:0;
+const insurance=declaredValue*(pricing.insurancePercent/100);
+const fuel=(base+weightExtra)*(pricing.fuelPercent/100);
+const finalPrice=Math.round(base+weightExtra+insurance+fuel);
+
+await setDoc(doc(db,"shipments",tracking),{
+trackingCode:tracking,
+uid:currentUser.uid,
+senderProfile:{
+type:senderType.value,
+frequency:frequency.value,
+priority:priority.value,
+internalReference:internalRef.value||null,
+sensitivity:{fragile:false,temperatureControlled:false,sensitiveProduct:false}
+},
+country:country.value,
+province:province.value,
+commune:commune.value,
+quartier:quartier.value,
+landmark:landmark.value,
+packageType:packageType.value,
+weight,
+declaredValue,
+paymentMethod:paymentMethod.value,
+status:"created",
+paymentStatus:"unpaid",
+finalPrice,
+createdAt:serverTimestamp()
+});
+
+window.location.href="confirmation.html?tracking="+tracking;
+
+};
+
+</script>
+
+</body>
+</html>
