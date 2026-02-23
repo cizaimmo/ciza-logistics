@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Parcel | Operations Complete</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,Arial;background:#f4f6f9;color:#111;}
+.container{width:95%;max-width:1500px;margin:auto;}
+
+header{background:#000;color:#fff;padding:18px 14px;text-align:center;position:sticky;top:0;z-index:999;}
+header h1{color:#D4AF37;font-size:16px;font-weight:900;letter-spacing:.4px}
+header .sub{font-size:12px;opacity:.85;margin-top:6px}
+
+.section{
+margin-top:18px;
+background:#fff;
+padding:16px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+border:1px solid rgba(0,0,0,0.06);
+}
+
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px;
+margin-bottom:16px;
+}
+
+.kpi-box{
+background:#000;
+color:#D4AF37;
+padding:14px;
+border-radius:16px;
+text-align:center;
+font-weight:900;
+}
+.kpi-box small{display:block;color:#fff;opacity:.85;font-weight:700;margin-top:6px;font-size:11px}
+
+.parcel-card{
+border:1px solid rgba(212,175,55,0.25);
+padding:14px;
+border-radius:16px;
+margin-bottom:12px;
+background:#fff;
+}
+
+.status{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+color:#fff;
+font-size:11px;
+margin:10px 0 12px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:.3px;
+}
+
+.row{
+display:grid;
+grid-template-columns:1fr;
+gap:8px;
+margin-top:8px;
+}
+
+.meta{
+font-size:12px;
+line-height:1.55;
+color:#222;
+}
+.meta b{color:#000}
+
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:10px;
+}
+
+button{
+background:#D4AF37;
+border:none;
+padding:10px 12px;
+border-radius:12px;
+font-weight:900;
+cursor:pointer;
+font-size:12px;
+}
+button:active{transform:scale(.99)}
+.export-btn{
+background:#111;
+color:#D4AF37;
+}
+.print-btn{
+background:#000;
+color:#D4AF37;
+border:1px solid rgba(212,175,55,0.35);
+}
+select{
+padding:10px 12px;
+border-radius:12px;
+border:1px solid rgba(0,0,0,0.15);
+font-weight:800;
+font-size:12px;
+background:#fff;
+}
+
+hr{border:none;border-top:1px solid rgba(0,0,0,0.10);margin:16px 0}
+
+.footer{
+margin:20px 0 34px;
+text-align:center;
+font-size:11px;
+color:#666;
+}
+.footer b{color:#D4AF37}
+
+@media(max-width:900px){
+.kpi-grid{grid-template-columns:1fr;}
+}
+@media(min-width:901px){
+header h1{font-size:18px}
+.row{grid-template-columns:1.3fr 1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Admin Parcel – Unified Operations Dashboard</h1>
+<div class="sub">Impression étiquette • Statuts • Assignation chauffeur</div>
+</header>
+
+<div class="container">
+<div class="section">
+
+<h2 style="font-size:14px;font-weight:900;margin-bottom:10px;color:#111;">KPI</h2>
+
+<div class="kpi-grid">
+<div class="kpi-box"><div id="kpiPayment">0</div><small>Paiement en attente</small></div>
+<div class="kpi-box"><div id="kpiReady">0</div><small>Ready Pickup</small></div>
+<div class="kpi-box"><div id="kpiAssigned">0</div><small>Assigned</small></div>
+<div class="kpi-box"><div id="kpiTransit">0</div><small>In Transit</small></div>
+<div class="kpi-box"><div id="kpiDelivered">0</div><small>Delivered</small></div>
+</div>
+
+<div class="controls">
+<button class="export-btn" onclick="exportShipments()">Export Shipments</button>
+<button class="export-btn" onclick="exportDrivers()">Export Drivers</button>
+</div>
+
+<hr>
+
+<div id="parcelList"></div>
+
+</div>
+
+<div class="footer">
+<b>Ciza Logistics</b> • Admin Ops • © 2026
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* ================= BASE PATH (ANTI-404 GitHub Pages) ================= */
+const BASE_PATH = (() => {
+try{
+const parts = location.pathname.split("/").filter(Boolean);
+if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts[0];
+return "";
+}catch(e){return "";}
+})();
+function withBase(p){
+if(!p) return (BASE_PATH||"") + "/";
+if(p.startsWith("http://") || p.startsWith("https://")) return p;
+if(p.startsWith("/")) return (BASE_PATH||"") + p;
+return (BASE_PATH||"") + "/" + p;
+}
+function openPrintLabel(tracking){
+const url = withBase("print-label.html?tracking=" + encodeURIComponent(tracking));
+window.open(url, "_blank");
+}
+window.openPrintLabel = openPrintLabel;
+
+/* ================= FIREBASE ================= */
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+
+let drivers=[];
+
+async function loadDrivers(){
+drivers=[];
+const snap = await getDocs(query(collection(db,"users"), where("role","==","driver")));
+snap.forEach(d=>drivers.push({id:d.id,...d.data()}));
+}
+await loadDrivers();
+
+/* ======== IMPORTANT: ici on garde "parcel" ======== */
+const q = query(collection(db,"shipments"), where("service","==","parcel"));
+
+onSnapshot(q,(snap)=>{
+
+let payment=0,ready=0,assigned=0,transit=0,delivered=0;
+let html="";
+
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+const id=docSnap.id;
+
+if(d.status==="payment_under_review") payment++;
+if(d.status==="ready_for_pickup") ready++;
+if(d.status==="assigned") assigned++;
+if(d.status==="in_transit") transit++;
+if(d.status==="delivered") delivered++;
+
+let badgeColor="#000";
+if(d.status==="payment_under_review") badgeColor="#e67e22";
+if(d.status==="ready_for_pickup") badgeColor="#f39c12";
+if(d.status==="assigned") badgeColor="#2980b9";
+if(d.status==="in_transit") badgeColor="#8e44ad";
+if(d.status==="delivered") badgeColor="#27ae60";
+
+const from = `${d.fromProvince || ""}${d.fromQuartier ? " • " + d.fromQuartier : ""}`;
+const to = `${d.toProvince || ""}${d.toQuartier ? " • " + d.toQuartier : ""}`;
+
+html+=`
+<div class="parcel-card">
+<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+<div style="min-width:220px">
+<div style="font-weight:900;color:#000;font-size:14px;">${id}</div>
+<div style="font-size:12px;color:#444;margin-top:4px;">${from} → ${to}</div>
+</div>
+
+<div>
+<div class="status" style="background:${badgeColor}">${(d.status || "—")}</div>
+</div>
+</div>
+
+<div class="row">
+<div class="meta">
+<b>Client/Expéditeur:</b> ${d.senderName || "—"}<br>
+<b>Tél expéditeur:</b> ${d.senderPhone || "—"}<br>
+<b>Destinataire:</b> ${d.receiverName || "—"}<br>
+<b>Tél destinataire:</b> ${d.receiverPhone || "—"}<br>
+<b>Description:</b> ${d.content || "—"}<br>
+<b>Valeur déclarée:</b> ${(d.declaredValue||0).toLocaleString("fr-FR")} BIF<br>
+</div>
+
+<div class="meta">
+<b>Service:</b> ${d.serviceLabel || d.service || "—"}<br>
+<b>Poids/Qté:</b> ${d.weightOrQty || "—"}<br>
+<b>Paiement:</b> ${d.paymentMethod || "—"}<br>
+<b>PaymentStatus:</b> ${d.paymentStatus || "—"}<br>
+<b>Prix:</b> ${(d.finalPrice||0).toLocaleString("fr-FR")} BIF<br>
+</div>
+</div>
+
+<div class="controls">
+<button class="print-btn" onclick="openPrintLabel('${id}')">🖨 Imprimer étiquette</button>
+
+${d.status==="payment_under_review" ? `
+<button onclick="validatePayment('${id}')">Valider paiement</button>
+`:""}
+
+${d.status==="ready_for_pickup" ? `
+<select id="driver-${id}">
+<option value="">Choisir chauffeur</option>
+${drivers.map(driver=>`<option value="${driver.id}">${(driver.fullName||driver.name||driver.email||driver.id)}</option>`).join("")}
+</select>
+<button onclick="assignDriver('${id}')">Assigner</button>
+`:""}
+
+${d.status==="assigned" ? `
+<button onclick="markTransit('${id}')">Marquer en transit</button>
+`:""}
+
+${d.status==="in_transit" ? `
+<button onclick="markDelivered('${id}')">Confirmer livraison</button>
+`:""}
+</div>
+
+</div>
+`;
+});
+
+document.getElementById("parcelList").innerHTML=html;
+document.getElementById("kpiPayment").innerText=payment;
+document.getElementById("kpiReady").innerText=ready;
+document.getElementById("kpiAssigned").innerText=assigned;
+document.getElementById("kpiTransit").innerText=transit;
+document.getElementById("kpiDelivered").innerText=delivered;
+
+});
+
+window.validatePayment = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"ready_for_pickup",
+paymentStatus:"verified",
+paymentValidatedAt:serverTimestamp()
+});
+alert("Paiement validé");
+};
+
+window.assignDriver = async function(id){
+const driverId=document.getElementById("driver-"+id).value;
+if(!driverId){alert("Choisir chauffeur");return;}
+await updateDoc(doc(db,"shipments",id),{
+status:"assigned",
+assignedDriverId:driverId,
+assignedAt:serverTimestamp()
+});
+alert("Chauffeur assigné");
+};
+
+window.markTransit = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"in_transit",
+inTransitAt:serverTimestamp()
+});
+alert("Colis en transit");
+};
+
+window.markDelivered = async function(id){
+await updateDoc(doc(db,"shipments",id),{
+status:"delivered",
+deliveredAt:serverTimestamp()
+});
+alert("Livraison confirmée");
+};
+
+window.exportShipments = async function(){
+const snap = await getDocs(collection(db,"shipments"));
+let csv="Tracking,Status,FromProvince,ToProvince,Price\n";
+snap.forEach(docu=>{
+const d=docu.data();
+csv+=`${docu.id},${d.status||""},${d.fromProvince||""},${d.toProvince||""},${d.finalPrice||0}\n`;
+});
+downloadCSV(csv,"shipments.csv");
+};
+
+window.exportDrivers = async function(){
+const snap = await getDocs(collection(db,"users"));
+let csv="DriverID,Name,Email\n";
+snap.forEach(docu=>{
+const d=docu.data();
+if(d.role==="driver"){
+csv+=`${docu.id},${d.fullName||d.name||""},${d.email||""}\n`;
+}
+});
+downloadCSV(csv,"drivers.csv");
+};
+
+function downloadCSV(content,filename){
+const blob=new Blob([content],{type:"text/csv;charset=utf-8;"});
+const url=URL.createObjectURL(blob);
+const link=document.createElement("a");
+link.href=url;
+link.setAttribute("download",filename);
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
+</script>
+
+</body>
+</html>
