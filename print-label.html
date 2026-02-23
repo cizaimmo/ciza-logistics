@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Label | Ciza Logistics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#000;
+--gray:#f5f5f5;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+font-family:'Inter',sans-serif;
+background:#f5f5f5;
+padding:20px;
+}
+
+.label-container{
+max-width:700px;
+margin:auto;
+background:#fff;
+padding:30px;
+border-radius:18px;
+box-shadow:0 10px 40px rgba(0,0,0,0.08);
+border:1px solid rgba(0,0,0,0.05);
+}
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:20px;
+}
+
+.logo{
+height:70px;
+}
+
+.title{
+font-weight:900;
+font-size:20px;
+color:var(--gold);
+}
+
+.tracking{
+font-size:22px;
+font-weight:900;
+margin:15px 0;
+text-align:center;
+}
+
+.section{
+margin-top:15px;
+padding-top:15px;
+border-top:1px solid #eee;
+}
+
+.section h3{
+font-size:13px;
+font-weight:900;
+color:#555;
+margin-bottom:6px;
+text-transform:uppercase;
+}
+
+.info{
+font-size:14px;
+margin-bottom:4px;
+}
+
+.barcode{
+margin-top:15px;
+text-align:center;
+}
+
+.qrcode{
+margin-top:10px;
+text-align:center;
+}
+
+.print-btn{
+margin-top:20px;
+padding:12px 20px;
+background:var(--gold);
+border:none;
+border-radius:12px;
+font-weight:900;
+cursor:pointer;
+}
+
+.signature-box{
+margin-top:25px;
+border:1px dashed #999;
+height:80px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+color:#777;
+}
+
+@media print{
+body{background:white;padding:0;}
+.print-btn{display:none;}
+.label-container{
+box-shadow:none;
+border:none;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="label-container">
+
+<div class="header">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="logo">
+<div class="title">CIZA PARCEL</div>
+</div>
+
+<div class="tracking" id="trackingCode">...</div>
+
+<div class="barcode">
+<svg id="barcode"></svg>
+</div>
+
+<div class="qrcode" id="qrcode"></div>
+
+<div class="section">
+<h3>Expéditeur</h3>
+<div class="info" id="senderInfo"></div>
+</div>
+
+<div class="section">
+<h3>Destinataire</h3>
+<div class="info" id="receiverInfo"></div>
+</div>
+
+<div class="section">
+<h3>Détails</h3>
+<div class="info" id="detailsInfo"></div>
+</div>
+
+<div class="signature-box">
+Signature réception
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨 Imprimer</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const tracking = params.get("tracking");
+
+if(!tracking){
+document.body.innerHTML="<h2>Tracking invalide</h2>";
+}
+
+const snap = await getDoc(doc(db,"shipments",tracking));
+
+if(!snap.exists()){
+document.body.innerHTML="<h2>Colis introuvable</h2>";
+}
+
+const data = snap.data();
+
+document.getElementById("trackingCode").innerText = tracking;
+
+document.getElementById("senderInfo").innerHTML =
+`${data.senderName || ""}<br>
+${data.senderPhone || ""}<br>
+${data.fromProvince || ""} - ${data.fromQuartier || ""}`;
+
+document.getElementById("receiverInfo").innerHTML =
+`${data.receiverName || ""}<br>
+${data.receiverPhone || ""}<br>
+${data.toProvince || ""} - ${data.toQuartier || ""}`;
+
+document.getElementById("detailsInfo").innerHTML =
+`Service: ${data.serviceLabel || data.service}<br>
+Poids: ${data.weightOrQty || ""}<br>
+Valeur déclarée: ${data.declaredValue || 0} BIF<br>
+Paiement: ${data.paymentMethod || ""}<br>
+Statut: ${data.status || ""}`;
+
+JsBarcode("#barcode", tracking, {
+format: "CODE128",
+width: 2,
+height: 70,
+displayValue: false
+});
+
+new QRCode(document.getElementById("qrcode"), {
+text: location.origin + "/tracking.html?code=" + tracking,
+width: 120,
+height: 120
+});
+</script>
+
+</body>
+</html>
