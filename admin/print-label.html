@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Print Label | Ciza Logistics</title>
+<title>Print Label Enterprise | Ciza Logistics</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
@@ -12,179 +12,217 @@
 --gold:#D4AF37;
 --black:#000;
 --gray:#f2f2f2;
+--green:#27ae60;
+--red:#e74c3c;
+--blue:#2980b9;
+--purple:#8e44ad;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
 font-family:'Inter',sans-serif;
 background:#f2f2f2;
-display:flex;
-justify-content:center;
 padding:20px;
 }
 
-/* FORMAT THERMIQUE 100x150 */
-.label{
-width:100mm;
-min-height:150mm;
-background:#fff;
-padding:12mm 8mm;
-position:relative;
-border:1px solid #ddd;
-}
-
-.header{
+/* ===== HEADER ===== */
+.topbar{
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-bottom:10mm;
+margin-bottom:15px;
+flex-wrap:wrap;
+gap:10px;
 }
-
 .logo{
-height:28px;
+height:42px;
+}
+.mode-switch{
+display:flex;
+gap:8px;
+}
+.mode-switch button{
+padding:8px 12px;
+border-radius:8px;
+border:none;
+font-weight:800;
+cursor:pointer;
+background:#000;
+color:#fff;
+}
+.mode-switch button.active{
+background:var(--gold);
+color:#000;
 }
 
-.company{
-font-weight:900;
-font-size:14px;
-letter-spacing:1px;
+/* ===== LABEL BASE ===== */
+.label{
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.08);
+max-width:900px;
+margin:auto;
 }
 
-.tracking{
-text-align:center;
-font-weight:900;
-font-size:18px;
-margin-bottom:6mm;
+/* THERMIQUE */
+.thermal{
+width:100mm;
+min-height:150mm;
 }
 
-.section{
-margin-bottom:6mm;
+/* A4 */
+.a4{
+width:210mm;
+min-height:297mm;
 }
 
-.section h3{
-font-size:10px;
-text-transform:uppercase;
-margin-bottom:2mm;
-font-weight:900;
-}
-
-.text{
-font-size:11px;
-line-height:1.5;
-}
-
-.barcode{
-margin:6mm 0;
-text-align:center;
-}
-
-.qr{
-text-align:center;
-margin-top:3mm;
-}
-
-.divider{
-border-top:1px dashed #000;
-margin:5mm 0;
-}
-
-.signature{
-margin-top:10mm;
-}
-
-.signature-line{
-margin-top:10mm;
-border-top:1px solid #000;
+/* ENTERPRISE VIEW */
+.enterprise{
 width:100%;
 }
 
+/* HEADER ZONE */
+.header-zone{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+flex-wrap:wrap;
+gap:15px;
+}
+.tracking{
+font-size:22px;
+font-weight:900;
+}
+.badges{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+}
+.badge{
+padding:5px 10px;
+border-radius:999px;
+font-size:11px;
+font-weight:800;
+color:#fff;
+}
+
+/* CONTENT GRID */
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-top:15px;
+}
+.block{
+border:1px solid #ddd;
+padding:12px;
+border-radius:8px;
+}
+.block h3{
+font-size:12px;
+margin-bottom:6px;
+font-weight:900;
+text-transform:uppercase;
+}
+
+/* FOOTER */
 .footer{
-position:absolute;
-bottom:8mm;
-left:8mm;
-right:8mm;
-font-size:8px;
+margin-top:20px;
+font-size:10px;
 text-align:center;
 }
 
+/* ACTIONS */
 .actions{
 text-align:center;
 margin-top:20px;
 }
-
-.btn{
-padding:10px 18px;
-font-weight:800;
-border-radius:10px;
-border:none;
-cursor:pointer;
+.actions button{
+padding:10px 16px;
 margin:5px;
+border:none;
+border-radius:8px;
+font-weight:800;
+cursor:pointer;
 }
-
 .print-btn{background:#000;color:#fff;}
 .back-btn{background:var(--gold);color:#000;}
+.logout-btn{background:#e74c3c;color:#fff;}
 
+/* RESPONSIVE */
+@media(max-width:768px){
+.grid{grid-template-columns:1fr;}
+}
 @media print{
-body{background:#fff;padding:0;}
-.actions{display:none;}
-.label{border:none;}
+body{background:#fff;}
+.actions,.mode-switch,.logout-btn{display:none;}
+.label{box-shadow:none;}
 }
 </style>
 </head>
 
 <body>
 
-<div>
-<div class="label">
-
-<div class="header">
+<div class="topbar">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="logo">
-<div class="company">CIZA PARCEL</div>
+<div class="mode-switch">
+<button id="thermalBtn" class="active">Thermique</button>
+<button id="a4Btn">A4</button>
+<button id="enterpriseBtn">Enterprise</button>
+</div>
+<button class="logout-btn" id="logoutBtn">Déconnexion</button>
 </div>
 
+<div class="label thermal" id="label">
+
+<div class="header-zone">
 <div class="tracking" id="trackingCode">...</div>
-
-<div class="barcode">
-<svg id="barcode"></svg>
+<div class="badges" id="badges"></div>
 </div>
 
-<div class="qr" id="qrcode"></div>
+<div id="barcode"></div>
+<div id="qrcode" style="margin-top:10px;"></div>
 
-<div class="divider"></div>
-
-<div class="section">
+<div class="grid">
+<div class="block">
 <h3>Expéditeur</h3>
-<div class="text" id="senderInfo"></div>
+<div id="senderInfo"></div>
 </div>
 
-<div class="section">
+<div class="block">
 <h3>Destinataire</h3>
-<div class="text" id="receiverInfo"></div>
+<div id="receiverInfo"></div>
+</div>
 </div>
 
-<div class="divider"></div>
-
-<div class="section">
-<h3>Détails colis</h3>
-<div class="text" id="detailsInfo"></div>
+<div class="grid">
+<div class="block">
+<h3>Détails Colis</h3>
+<div id="detailsInfo"></div>
 </div>
 
-<div class="signature">
-<h3>Réception</h3>
-<div class="signature-line"></div>
+<div class="block">
+<h3>Finance</h3>
+<div id="financeInfo"></div>
+</div>
+</div>
+
+<div class="block" style="margin-top:15px;">
+<h3>Chauffeur</h3>
+<div id="driverInfo"></div>
 </div>
 
 <div class="footer">
-Ciza Logistics • Burundi & Rwanda • www.cizagroup.com
+Ciza Logistics • Enterprise Label • © 2026
 </div>
 
 </div>
 
 <div class="actions">
-<button class="btn print-btn" onclick="window.print()">🖨 Imprimer</button>
-<button class="btn back-btn" onclick="goBack()">⬅ Retour Admin</button>
-</div>
-
+<button class="print-btn" onclick="window.print()">🖨 Imprimer</button>
+<button class="back-btn" onclick="window.history.back()">⬅ Retour</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -192,70 +230,119 @@ Ciza Logistics • Burundi & Rwanda • www.cizagroup.com
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* BASE PATH FIX */
+const BASE_PATH = (() => {
+const parts = location.pathname.split("/").filter(Boolean);
+if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts[0];
+return "";
+})();
+function withBase(p){
+if(p.startsWith("/")) return BASE_PATH + p;
+return BASE_PATH + "/" + p;
+}
+
+/* FIREBASE */
 const firebaseConfig = {
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
 projectId:"ciza-logistics"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+/* GUARD */
+onAuthStateChanged(auth, async (user)=>{
+if(!user){ window.location.href = withBase("/login.html"); return; }
+
+const snapUser = await getDoc(doc(db,"users",user.uid));
+if(!snapUser.exists()){ alert("Accès refusé."); signOut(auth); return; }
+
+const role = snapUser.data().role;
+if(!["admin","bureau","superadmin"].includes(role)){
+alert("Accès non autorisé.");
+window.location.href = withBase("/index.html");
+}
+});
+
+/* LOGOUT */
+document.getElementById("logoutBtn").onclick = ()=>signOut(auth);
+
+/* TRACKING */
 const params = new URLSearchParams(window.location.search);
 const tracking = params.get("tracking");
-
-if(!tracking){
-document.body.innerHTML="<h2>Tracking invalide</h2>";
-}
+if(!tracking){ document.body.innerHTML="Tracking invalide"; }
 
 const snap = await getDoc(doc(db,"shipments",tracking));
-
-if(!snap.exists()){
-document.body.innerHTML="<h2>Colis introuvable</h2>";
-}
+if(!snap.exists()){ document.body.innerHTML="Colis introuvable"; }
 
 const d = snap.data();
 
+/* UI */
 document.getElementById("trackingCode").innerText = tracking;
 
 document.getElementById("senderInfo").innerHTML =
-`${d.senderName || ""}<br>
-${d.senderPhone || ""}<br>
-${d.fromProvince || ""} ${d.fromQuartier || ""}`;
+`${d.senderName||""}<br>${d.senderPhone||""}<br>${d.fromProvince||""} ${d.fromQuartier||""}`;
 
 document.getElementById("receiverInfo").innerHTML =
-`${d.receiverName || ""}<br>
-${d.receiverPhone || ""}<br>
-${d.toProvince || ""} ${d.toQuartier || ""}`;
+`${d.receiverName||""}<br>${d.receiverPhone||""}<br>${d.toProvince||""} ${d.toQuartier||""}`;
 
 document.getElementById("detailsInfo").innerHTML =
-`Service: ${d.serviceLabel || d.service || ""}<br>
-Poids/Qté: ${d.weightOrQty || ""}<br>
-Valeur déclarée: ${(d.declaredValue||0).toLocaleString("fr-FR")} BIF<br>
-Paiement: ${d.paymentMethod || ""}<br>
-Statut: ${d.status || ""}<br>
-Chauffeur: ${d.assignedDriverName || d.assignedDriverId || "Non assigné"}<br>
-Créé le: ${d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString() : ""}<br>
-Livré le: ${d.deliveredAt?.toDate ? d.deliveredAt.toDate().toLocaleString() : ""}`;
+`Service: ${d.serviceLabel||d.service||""}<br>
+Poids: ${d.weightOrQty||""}<br>
+Valeur: ${(d.declaredValue||0).toLocaleString("fr-FR")} BIF`;
 
-JsBarcode("#barcode", tracking, {
-format:"CODE128",
-width:2,
-height:50,
-displayValue:false
-});
+document.getElementById("financeInfo").innerHTML =
+`Prix total: ${(d.finalPrice||0).toLocaleString("fr-FR")} BIF<br>
+Paiement: ${d.paymentMethod||""}<br>
+Statut paiement: ${d.paymentStatus||""}`;
 
-new QRCode(document.getElementById("qrcode"), {
-text: location.origin + "/tracking.html?code=" + tracking,
+document.getElementById("driverInfo").innerHTML =
+`${d.assignedDriverName||"Non assigné"}<br>
+${d.assignedDriverPhone||""}<br>
+Statut: ${d.status||""}`;
+
+/* BADGES */
+const badges = document.getElementById("badges");
+if(d.priority==="express"){
+badges.innerHTML += `<div class="badge" style="background:var(--red)">EXPRESS</div>`;
+}
+if(d.senderProfile?.type==="pharmacie"){
+badges.innerHTML += `<div class="badge" style="background:var(--green)">PHARMA</div>`;
+}
+if(d.declaredValue>500000){
+badges.innerHTML += `<div class="badge" style="background:var(--purple)">HAUTE VALEUR</div>`;
+}
+
+/* BARCODE + QR */
+JsBarcode("#barcode", tracking, {format:"CODE128",width:2,height:50});
+new QRCode(document.getElementById("qrcode"),{
+text: location.origin + withBase("/tracking.html?code=" + tracking),
 width:90,
 height:90
 });
 
-window.goBack = function(){
-window.history.back();
+/* MODE SWITCH */
+const label = document.getElementById("label");
+document.getElementById("thermalBtn").onclick=()=>{
+label.className="label thermal";
+setActive("thermalBtn");
 };
+document.getElementById("a4Btn").onclick=()=>{
+label.className="label a4";
+setActive("a4Btn");
+};
+document.getElementById("enterpriseBtn").onclick=()=>{
+label.className="label enterprise";
+setActive("enterpriseBtn");
+};
+function setActive(id){
+document.querySelectorAll(".mode-switch button").forEach(b=>b.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
 </script>
 
 </body>
