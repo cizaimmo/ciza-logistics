@@ -11,118 +11,135 @@
 :root{
 --gold:#D4AF37;
 --black:#000;
---gray:#f5f5f5;
+--gray:#f2f2f2;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
 font-family:'Inter',sans-serif;
-background:#f5f5f5;
+background:#f2f2f2;
+display:flex;
+justify-content:center;
 padding:20px;
 }
 
-.label-container{
-max-width:700px;
-margin:auto;
+/* FORMAT THERMIQUE 100x150 */
+.label{
+width:100mm;
+min-height:150mm;
 background:#fff;
-padding:30px;
-border-radius:18px;
-box-shadow:0 10px 40px rgba(0,0,0,0.08);
-border:1px solid rgba(0,0,0,0.05);
+padding:12mm 8mm;
+position:relative;
+border:1px solid #ddd;
 }
 
 .header{
 display:flex;
-align-items:center;
 justify-content:space-between;
-margin-bottom:20px;
+align-items:center;
+margin-bottom:10mm;
 }
 
 .logo{
-height:70px;
+height:28px;
 }
 
-.title{
+.company{
 font-weight:900;
-font-size:20px;
-color:var(--gold);
+font-size:14px;
+letter-spacing:1px;
 }
 
 .tracking{
-font-size:22px;
-font-weight:900;
-margin:15px 0;
 text-align:center;
+font-weight:900;
+font-size:18px;
+margin-bottom:6mm;
 }
 
 .section{
-margin-top:15px;
-padding-top:15px;
-border-top:1px solid #eee;
+margin-bottom:6mm;
 }
 
 .section h3{
-font-size:13px;
-font-weight:900;
-color:#555;
-margin-bottom:6px;
+font-size:10px;
 text-transform:uppercase;
+margin-bottom:2mm;
+font-weight:900;
 }
 
-.info{
-font-size:14px;
-margin-bottom:4px;
+.text{
+font-size:11px;
+line-height:1.5;
 }
 
 .barcode{
-margin-top:15px;
+margin:6mm 0;
 text-align:center;
 }
 
-.qrcode{
-margin-top:10px;
+.qr{
+text-align:center;
+margin-top:3mm;
+}
+
+.divider{
+border-top:1px dashed #000;
+margin:5mm 0;
+}
+
+.signature{
+margin-top:10mm;
+}
+
+.signature-line{
+margin-top:10mm;
+border-top:1px solid #000;
+width:100%;
+}
+
+.footer{
+position:absolute;
+bottom:8mm;
+left:8mm;
+right:8mm;
+font-size:8px;
 text-align:center;
 }
 
-.print-btn{
+.actions{
+text-align:center;
 margin-top:20px;
-padding:12px 20px;
-background:var(--gold);
-border:none;
-border-radius:12px;
-font-weight:900;
-cursor:pointer;
 }
 
-.signature-box{
-margin-top:25px;
-border:1px dashed #999;
-height:80px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:12px;
-color:#777;
+.btn{
+padding:10px 18px;
+font-weight:800;
+border-radius:10px;
+border:none;
+cursor:pointer;
+margin:5px;
 }
+
+.print-btn{background:#000;color:#fff;}
+.back-btn{background:var(--gold);color:#000;}
 
 @media print{
-body{background:white;padding:0;}
-.print-btn{display:none;}
-.label-container{
-box-shadow:none;
-border:none;
-}
+body{background:#fff;padding:0;}
+.actions{display:none;}
+.label{border:none;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="label-container">
+<div>
+<div class="label">
 
 <div class="header">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" class="logo">
-<div class="title">CIZA PARCEL</div>
+<div class="company">CIZA PARCEL</div>
 </div>
 
 <div class="tracking" id="trackingCode">...</div>
@@ -131,28 +148,42 @@ border:none;
 <svg id="barcode"></svg>
 </div>
 
-<div class="qrcode" id="qrcode"></div>
+<div class="qr" id="qrcode"></div>
+
+<div class="divider"></div>
 
 <div class="section">
 <h3>Expéditeur</h3>
-<div class="info" id="senderInfo"></div>
+<div class="text" id="senderInfo"></div>
 </div>
 
 <div class="section">
 <h3>Destinataire</h3>
-<div class="info" id="receiverInfo"></div>
+<div class="text" id="receiverInfo"></div>
 </div>
+
+<div class="divider"></div>
 
 <div class="section">
-<h3>Détails</h3>
-<div class="info" id="detailsInfo"></div>
+<h3>Détails colis</h3>
+<div class="text" id="detailsInfo"></div>
 </div>
 
-<div class="signature-box">
-Signature réception
+<div class="signature">
+<h3>Réception</h3>
+<div class="signature-line"></div>
 </div>
 
-<button class="print-btn" onclick="window.print()">🖨 Imprimer</button>
+<div class="footer">
+Ciza Logistics • Burundi & Rwanda • www.cizagroup.com
+</div>
+
+</div>
+
+<div class="actions">
+<button class="btn print-btn" onclick="window.print()">🖨 Imprimer</button>
+<button class="btn back-btn" onclick="goBack()">⬅ Retour Admin</button>
+</div>
 
 </div>
 
@@ -185,39 +216,46 @@ if(!snap.exists()){
 document.body.innerHTML="<h2>Colis introuvable</h2>";
 }
 
-const data = snap.data();
+const d = snap.data();
 
 document.getElementById("trackingCode").innerText = tracking;
 
 document.getElementById("senderInfo").innerHTML =
-`${data.senderName || ""}<br>
-${data.senderPhone || ""}<br>
-${data.fromProvince || ""} - ${data.fromQuartier || ""}`;
+`${d.senderName || ""}<br>
+${d.senderPhone || ""}<br>
+${d.fromProvince || ""} ${d.fromQuartier || ""}`;
 
 document.getElementById("receiverInfo").innerHTML =
-`${data.receiverName || ""}<br>
-${data.receiverPhone || ""}<br>
-${data.toProvince || ""} - ${data.toQuartier || ""}`;
+`${d.receiverName || ""}<br>
+${d.receiverPhone || ""}<br>
+${d.toProvince || ""} ${d.toQuartier || ""}`;
 
 document.getElementById("detailsInfo").innerHTML =
-`Service: ${data.serviceLabel || data.service}<br>
-Poids: ${data.weightOrQty || ""}<br>
-Valeur déclarée: ${data.declaredValue || 0} BIF<br>
-Paiement: ${data.paymentMethod || ""}<br>
-Statut: ${data.status || ""}`;
+`Service: ${d.serviceLabel || d.service || ""}<br>
+Poids/Qté: ${d.weightOrQty || ""}<br>
+Valeur déclarée: ${(d.declaredValue||0).toLocaleString("fr-FR")} BIF<br>
+Paiement: ${d.paymentMethod || ""}<br>
+Statut: ${d.status || ""}<br>
+Chauffeur: ${d.assignedDriverName || d.assignedDriverId || "Non assigné"}<br>
+Créé le: ${d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString() : ""}<br>
+Livré le: ${d.deliveredAt?.toDate ? d.deliveredAt.toDate().toLocaleString() : ""}`;
 
 JsBarcode("#barcode", tracking, {
-format: "CODE128",
-width: 2,
-height: 70,
-displayValue: false
+format:"CODE128",
+width:2,
+height:50,
+displayValue:false
 });
 
 new QRCode(document.getElementById("qrcode"), {
 text: location.origin + "/tracking.html?code=" + tracking,
-width: 120,
-height: 120
+width:90,
+height:90
 });
+
+window.goBack = function(){
+window.history.back();
+};
 </script>
 
 </body>
