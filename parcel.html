@@ -18,6 +18,7 @@
 --field:#101012;
 --danger:#ff6b6b;
 --ok:#1dd1a1;
+--white:#ffffff;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -27,12 +28,12 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:#fff;overflow-
 .topbar{
 background:#000;border-bottom:1px solid var(--border);
 padding:9px 10px;text-align:center;color:var(--gold);
-font-size:12px;font-weight:700;letter-spacing:.4px;
+font-size:12px;font-weight:800;letter-spacing:.4px;
 }
 
 /* HEADER */
 .main-header{
-position:sticky;top:0;background:rgba(0,0,0,0.92);
+position:sticky;top:0;background:rgba(0,0,0,0.90);
 backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
 z-index:1200;
 }
@@ -51,7 +52,7 @@ color:#fff;font-size:12px;white-space:nowrap;
 .user-chip b{color:var(--gold)}
 .nav-desktop{display:flex;gap:22px;align-items:center}
 .nav-desktop a{
-text-decoration:none;color:#fff;font-size:13px;font-weight:800;letter-spacing:.2px;
+text-decoration:none;color:#fff;font-size:13px;font-weight:900;letter-spacing:.2px;
 }
 .nav-desktop a:hover{color:var(--gold)}
 .btn-outline{border:1px solid var(--border);padding:8px 12px;border-radius:12px;color:var(--gold)!important}
@@ -107,23 +108,44 @@ opacity:0;pointer-events:none;transition:.25s;z-index:2400;
 .menu-open .mobile-menu{right:0}
 .menu-open .menu-overlay{opacity:1;pointer-events:auto}
 
-/* HERO */
+/* HERO (IMAGE + OVERLAY) */
 .hero{
-padding:34px 0 18px;border-bottom:1px solid var(--border);
-background:linear-gradient(180deg,#0b0b0c,#101012);text-align:center;
+position:relative;
+padding:36px 0 18px;
+border-bottom:1px solid var(--border);
+text-align:center;
+overflow:hidden;
+}
+.hero::before{
+content:"";
+position:absolute;inset:0;
+background:
+linear-gradient(180deg,rgba(11,11,12,0.70),rgba(11,11,12,0.95)),
+url("https://raw.githubusercontent.com/cizaimmo/ciza-logistics/e3c40587e17d4f35695b7daf5fab9383dcd38bd1/ciza-percel.png");
+background-size:cover;
+background-position:center;
+filter:saturate(1.05);
+transform:scale(1.02);
+}
+.hero-inner{
+position:relative;
+width:95%;max-width:1100px;margin:auto;
 }
 .hero h1{color:var(--gold);font-size:28px;font-weight:900;letter-spacing:.2px}
 .hero p{
-margin:8px auto 0;max-width:900px;font-size:13px;line-height:1.6;
-color:var(--muted);padding:0 14px;
+margin:8px auto 0;max-width:860px;font-size:13px;line-height:1.6;
+color:rgba(255,255,255,0.82);padding:0 6px;
 }
 
 /* PAGE */
-.section{padding:24px 0 52px}
+.section{padding:22px 0 52px}
 .container{width:95%;max-width:1100px;margin:auto}
 .form-card{
-background:var(--softBlack);border:1px solid var(--border);border-radius:var(--radius);
-padding:18px;box-shadow:0 30px 90px rgba(0,0,0,0.35);
+background:rgba(255,255,255,0.03);
+border:1px solid var(--border);
+border-radius:var(--radius);
+padding:18px;
+box-shadow:0 30px 90px rgba(0,0,0,0.35);
 }
 @media(min-width:720px){.form-card{padding:26px}}
 .block{margin-bottom:18px}
@@ -149,12 +171,17 @@ text-transform:uppercase;letter-spacing:1px;
 
 /* INPUTS */
 label{
-display:block;font-size:11px;margin:0 0 6px;color:#cfcfd4;
+display:block;font-size:11px;margin:0 0 6px;color:#e7e7ea;
 text-transform:uppercase;letter-spacing:.6px;font-weight:900;
 }
 input,select,textarea{
-width:100%;padding:14px 14px;background:var(--field);
-border:1px solid rgba(255,255,255,0.10);border-radius:14px;color:#fff;outline:none;
+width:100%;
+padding:14px 14px;
+background:var(--field);
+border:1px solid rgba(255,255,255,0.10);
+border-radius:14px;
+color:#fff;
+outline:none;
 transition:.2s;
 }
 textarea{min-height:92px;resize:none}
@@ -162,7 +189,7 @@ input:focus,select:focus,textarea:focus{
 border-color:rgba(212,175,55,0.75);
 box-shadow:0 0 0 2px rgba(212,175,55,0.14);
 }
-.small-note{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6}
+.small-note{font-size:12px;color:rgba(255,255,255,0.72);margin-top:6px;line-height:1.55}
 .sep{
 height:1px;background:linear-gradient(to right,rgba(212,175,55,0),rgba(212,175,55,0.35),rgba(212,175,55,0));
 margin:14px 0;
@@ -174,13 +201,20 @@ display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:16px;
 background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
 }
 .checkbox-line input{width:18px;height:18px;margin-top:2px}
-.checkbox-line span{font-size:13px;color:rgba(255,255,255,0.86);line-height:1.45}
+.checkbox-line span{font-size:13px;color:rgba(255,255,255,0.90);line-height:1.45}
 .checkbox-line strong{color:var(--gold)}
 
 /* SUMMARY */
 .summary{
-margin-top:10px;background:rgba(212,175,55,0.10);border:1px solid rgba(212,175,55,0.22);
-color:#f6e7b5;padding:12px 12px;border-radius:14px;font-size:13px;line-height:1.6;
+margin-top:10px;
+background:rgba(212,175,55,0.10);
+border:1px solid rgba(212,175,55,0.22);
+color:#f6e7b5;
+padding:12px 12px;
+border-radius:14px;
+font-size:13px;
+line-height:1.6;
+white-space:pre-line;
 }
 
 /* ACTIONS */
@@ -196,7 +230,7 @@ flex:1;padding:16px;background:transparent;border:1px solid rgba(255,255,255,0.1
 border-radius:18px;font-weight:900;color:#fff;cursor:pointer;font-size:14px;
 }
 .secondary-btn:hover{border-color:rgba(212,175,55,0.35);color:var(--gold)}
-.error{color:var(--danger);font-size:13px;margin-top:10px;font-weight:800}
+.error{color:var(--danger);font-size:13px;margin-top:10px;font-weight:900}
 .ok{color:var(--ok);font-size:13px;margin-top:10px;font-weight:900}
 
 /* LOADER */
@@ -263,13 +297,52 @@ font-size:11px;background:#000;
 <div class="menu-overlay" id="menuOverlay"></div>
 
 <section class="hero">
+<div class="hero-inner">
 <h1>Ciza Parcel</h1>
-<p>Localisation précise (province + quartier + repère) • Paiement • Assurance</p>
+<p>Choisis le service, le formulaire s’adapte automatiquement (Food, Pharmacie, Business, Parcel). Localisation précise (Province + Quartier + Repère) et tarification dynamique via Firestore.</p>
+</div>
 </section>
 
 <section class="section">
 <div class="container">
 <div class="form-card">
+
+<!-- SERVICE -->
+<div class="block">
+<div class="block-title">Service</div>
+<div class="grid three">
+<div>
+<label for="country">Pays</label>
+<select id="country">
+<option value="BI">🇧🇮 Burundi</option>
+<option value="RW">🇷🇼 Rwanda</option>
+</select>
+</div>
+
+<div>
+<label for="service">Service</label>
+<select id="service">
+<option value="parcel">Parcel (Colis)</option>
+<option value="food">Food (Livraison alimentaire)</option>
+<option value="pharmacy">Pharmacie (Santé)</option>
+<option value="business">Business (Commerce)</option>
+<option value="documents">Documents (Express)</option>
+</select>
+</div>
+
+<div>
+<label for="priority">Priorité</label>
+<select id="priority">
+<option value="standard">Standard</option>
+<option value="express">Express</option>
+</select>
+</div>
+</div>
+
+<div class="small-note" id="serviceHint">Sélectionne un service : le type d’expéditeur et les marchandises s’adaptent.</div>
+</div>
+
+<div class="sep"></div>
 
 <!-- PROFIL -->
 <div class="block">
@@ -288,7 +361,7 @@ font-size:11px;background:#000;
 </div>
 
 <div>
-<label for="frequency">Fréquence d’envoi</label>
+<label for="frequency">Fréquence</label>
 <select id="frequency">
 <option value="">Sélectionner</option>
 <option value="occasionnel">Occasionnel</option>
@@ -297,23 +370,14 @@ font-size:11px;background:#000;
 </select>
 </div>
 
-<div>
-<label for="priority">Priorité</label>
-<select id="priority">
-<option value="standard">Standard</option>
-<option value="express">Express</option>
-</select>
-</div>
-</div>
-
-<div class="grid two" style="margin-top:12px;">
 <div id="internalRefWrap" style="display:none;">
 <label for="internalRef">Référence interne</label>
 <input id="internalRef" placeholder="Ex: FACT-2026-015">
 </div>
+</div>
 
-<div id="sensitivityWrap" style="display:none;">
-<label>Sensibilité colis</label>
+<div id="sensitivityWrap" style="display:none;margin-top:12px;">
+<label>Sensibilité</label>
 <div class="grid three" style="gap:10px;">
 <div class="checkbox-line" style="padding:10px;border-radius:14px;">
 <input type="checkbox" id="sensFragile">
@@ -329,7 +393,7 @@ font-size:11px;background:#000;
 </div>
 </div>
 </div>
-</div>
+
 </div>
 
 <div class="sep"></div>
@@ -338,29 +402,7 @@ font-size:11px;background:#000;
 <div class="block">
 <div class="block-title">Route & Localisation</div>
 
-<div class="grid three">
-<div>
-<label for="country">Pays</label>
-<select id="country">
-<option value="BI">🇧🇮 Burundi</option>
-<option value="RW">🇷🇼 Rwanda</option>
-</select>
-</div>
-
-<div>
-<label for="service">Service</label>
-<select id="service" disabled>
-<option value="parcel" selected>Parcel</option>
-</select>
-</div>
-
-<div>
-<label for="info">Info</label>
-<input id="info" value="Service 24/7" disabled>
-</div>
-</div>
-
-<div class="grid two" style="margin-top:12px;">
+<div class="grid two" style="margin-top:4px;">
 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:14px;">
 <div style="color:var(--gold);font-weight:900;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Départ</div>
 <label for="originProvince">Province / Ville</label>
@@ -386,7 +428,7 @@ font-size:11px;background:#000;
 </div>
 </div>
 
-<div class="small-note">Si province = <b>Bujumbura</b>, 38 quartiers s’affichent automatiquement. Sinon, quartier = “—”.</div>
+<div class="small-note">Si province = <b>Bujumbura</b>, la liste de <b>38 quartiers</b> s’affiche (M d’abord, puis A-Z). Sinon : “—”.</div>
 </div>
 
 <div class="sep"></div>
@@ -420,23 +462,20 @@ font-size:11px;background:#000;
 
 <div class="sep"></div>
 
-<!-- COLIS -->
+<!-- MARCHANDISE -->
 <div class="block">
-<div class="block-title">Colis & Paiement</div>
+<div class="block-title" id="goodsTitle">Marchandise</div>
 
 <div class="grid three">
 <div>
-<label for="packageType">Type d’envoi</label>
-<select id="packageType">
+<label for="goodsType" id="goodsTypeLabel">Type</label>
+<select id="goodsType">
 <option value="">Sélectionner</option>
-<option value="enveloppe">Enveloppe</option>
-<option value="boite">Boîte</option>
-<option value="bidon">Bidon</option>
 </select>
 </div>
 
-<div id="dynamicFieldWrap">
-<label for="weightValue" id="weightLabel">Poids (kg)</label>
+<div>
+<label for="weightValue" id="weightLabel">Poids estimé (kg)</label>
 <input id="weightValue" type="number" inputmode="numeric" placeholder="Ex: 1.5">
 <div class="small-note" id="dynamicHint">Champ requis.</div>
 </div>
@@ -457,12 +496,12 @@ font-size:11px;background:#000;
 <div>
 <label for="declaredValue">Valeur déclarée (assurance)</label>
 <input id="declaredValue" type="number" inputmode="numeric" placeholder="Ex: 50000">
-<div class="small-note">Déclare la valeur pour assurance en cas de perte/dommage.</div>
+<div class="small-note">Veuillez déclarer la valeur de votre marchandise pour assurance en cas de perte/dommage.</div>
 </div>
 
-<div id="contentWrap">
-<label for="content">Contenu</label>
-<input id="content" placeholder="Ex: documents, accessoires, denrées...">
+<div>
+<label for="content">Description</label>
+<input id="content" placeholder="Ex: médicaments, repas, accessoires, documents...">
 </div>
 </div>
 
@@ -479,7 +518,7 @@ font-size:11px;background:#000;
 </div>
 
 <label style="margin-top:14px;">Résumé</label>
-<div class="summary" id="summaryText">Complète le profil, la route, les contacts et le colis…</div>
+<div class="summary" id="summaryText">Complète le service, la route, les contacts et la marchandise…</div>
 
 </div>
 
@@ -513,8 +552,14 @@ if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts
 return "";
 }catch(e){return "";}
 })();
-function go(p){ location.href = (BASE_PATH ? BASE_PATH : "") + "/" + p; }
-function fixHref(a, p){ a.setAttribute("href",(BASE_PATH ? BASE_PATH : "") + "/" + p); }
+function withBase(p){
+if(!p) return (BASE_PATH||"") + "/";
+if(p.startsWith("http://") || p.startsWith("https://")) return p;
+if(p.startsWith("/")) return (BASE_PATH||"") + p;
+return (BASE_PATH||"") + "/" + p;
+}
+function go(p){ location.href = withBase(p); }
+function fixHref(a, p){ a.setAttribute("href", withBase(p)); }
 
 /* ================= FIREBASE ================= */
 const firebaseConfig = {
@@ -525,7 +570,6 @@ storageBucket: "ciza-logistics.firebasestorage.app",
 messagingSenderId: "751524585771",
 appId: "1:751524585771:web:6720db623a0ef70f56e56e"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -548,16 +592,13 @@ const clientName=document.getElementById("clientName");
 const mmClientName=document.getElementById("mmClientName");
 
 const country=document.getElementById("country");
-const originProvince=document.getElementById("originProvince");
-const destProvince=document.getElementById("destProvince");
-const originQuartier=document.getElementById("originQuartier");
-const destQuartier=document.getElementById("destQuartier");
-const originLandmark=document.getElementById("originLandmark");
-const destLandmark=document.getElementById("destLandmark");
+const service=document.getElementById("service");
+const priority=document.getElementById("priority");
+const serviceHint=document.getElementById("serviceHint");
 
 const senderType=document.getElementById("senderType");
 const frequency=document.getElementById("frequency");
-const priority=document.getElementById("priority");
+
 const internalRefWrap=document.getElementById("internalRefWrap");
 const internalRef=document.getElementById("internalRef");
 
@@ -566,12 +607,21 @@ const sensFragile=document.getElementById("sensFragile");
 const sensTemp=document.getElementById("sensTemp");
 const sensSensitive=document.getElementById("sensSensitive");
 
+const originProvince=document.getElementById("originProvince");
+const destProvince=document.getElementById("destProvince");
+const originQuartier=document.getElementById("originQuartier");
+const destQuartier=document.getElementById("destQuartier");
+const originLandmark=document.getElementById("originLandmark");
+const destLandmark=document.getElementById("destLandmark");
+
 const senderName=document.getElementById("senderName");
 const senderPhone=document.getElementById("senderPhone");
 const receiverName=document.getElementById("receiverName");
 const receiverPhone=document.getElementById("receiverPhone");
 
-const packageType=document.getElementById("packageType");
+const goodsTitle=document.getElementById("goodsTitle");
+const goodsTypeLabel=document.getElementById("goodsTypeLabel");
+const goodsType=document.getElementById("goodsType");
 const weightLabel=document.getElementById("weightLabel");
 const weightValue=document.getElementById("weightValue");
 const dynamicHint=document.getElementById("dynamicHint");
@@ -634,7 +684,12 @@ onAuthStateChanged(auth, async (user)=>{
 if(!user){go("login.html");return;}
 currentUser=user;
 const ok = await ensureClientRole(user);
-if(ok){applyPhonePrefix(country.value);}
+if(ok){
+applyPhonePrefix(country.value);
+loadProvinces();
+applyServiceRules(true);
+updateSummary();
+}
 });
 
 logoutBtn.addEventListener("click",async()=>{await signOut(auth);go("login.html");});
@@ -654,7 +709,11 @@ if(receiverPhone.value.trim()==="" || receiverPhone.value.startsWith("+")) recei
 }
 senderPhone.addEventListener("input",()=>enforceNumericPhone(senderPhone));
 receiverPhone.addEventListener("input",()=>enforceNumericPhone(receiverPhone));
-country.addEventListener("change",()=>applyPhonePrefix(country.value));
+country.addEventListener("change",()=>{
+applyPhonePrefix(country.value);
+loadProvinces();
+updateSummary();
+});
 
 /* ================= PROVINCES + 38 QUARTIERS ================= */
 const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
@@ -669,13 +728,11 @@ const quartiersBuj38=[
 "Ngagara","Ngagara II","Ngagara III","Nyabugete","Nyakabiga","Rohero I","Rohero II","Rohero III",
 "Ruziba","Rweza","Sororezo"
 ];
-
 function sortMFirst(list){
 const m=list.filter(x=>x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
 const rest=list.filter(x=>!x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
 return [...m,...rest];
 }
-
 function loadProvinces(){
 const c = country.value;
 const list = c==="RW" ? provincesRW : provincesBI;
@@ -688,7 +745,6 @@ destProvince.innerHTML+=`<option value="${p}">${p}</option>`;
 originQuartier.innerHTML=`<option value="">—</option>`;
 destQuartier.innerHTML=`<option value="">—</option>`;
 }
-
 function bindQuartiers(provEl, qEl){
 qEl.innerHTML=`<option value="">—</option>`;
 if(provEl.value==="Bujumbura"){
@@ -699,12 +755,6 @@ qEl.innerHTML+=`<option value="${q}">${q}</option>`;
 qEl.innerHTML=`<option value="—">—</option>`;
 }
 }
-
-country.addEventListener("change",()=>{
-loadProvinces();
-applyPhonePrefix(country.value);
-updateSummary();
-});
 originProvince.addEventListener("change",()=>{bindQuartiers(originProvince,originQuartier);updateSummary();});
 destProvince.addEventListener("change",()=>{bindQuartiers(destProvince,destQuartier);updateSummary();});
 originQuartier.addEventListener("change",updateSummary);
@@ -712,9 +762,7 @@ destQuartier.addEventListener("change",updateSummary);
 originLandmark.addEventListener("input",updateSummary);
 destLandmark.addEventListener("input",updateSummary);
 
-loadProvinces();
-
-/* ================= FORM DYNAMIQUE (TYPE EXPEDITEUR) ================= */
+/* ================= SERVICE -> FORM LOGIC ================= */
 function setRequired(el, on){
 if(on) el.setAttribute("required","required");
 else el.removeAttribute("required");
@@ -724,49 +772,170 @@ sensFragile.checked=false;
 sensTemp.checked=false;
 sensSensitive.checked=false;
 }
-function applySenderTypeRules(){
-const t = senderType.value;
+const SERVICES = {
+parcel:{
+label:"Parcel (Colis)",
+lockSender:false,
+senderDefault:"",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:false,
+forcePriority:"",
+goodsTitle:"Marchandise",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"boite",t:"Boîte / Carton"},
+{v:"sac",t:"Sac"},
+{v:"enveloppe",t:"Enveloppe"},
+{v:"bidon",t:"Bidon / Liquide"}
+],
+weightMode:"weight"
+},
+food:{
+label:"Food (Livraison alimentaire)",
+lockSender:true,
+senderDefault:"restaurant",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:true,
+forcePriority:"express",
+goodsTitle:"Commande (Food)",
+goodsTypeLabel:"Catégorie",
+goodsOptions:[
+{v:"repas_chaud",t:"Repas chaud"},
+{v:"repas_froid",t:"Repas froid"},
+{v:"boissons",t:"Boissons"},
+{v:"patisserie",t:"Pâtisserie / Gâteau"},
+{v:"surgele",t:"Surgelé"}
+],
+weightMode:"qty"
+},
+pharmacy:{
+label:"Pharmacie (Santé)",
+lockSender:true,
+senderDefault:"pharmacie",
+showInternalRef:true,
+internalRefRequired:false,
+showSensitivity:true,
+forcePriority:"express",
+goodsTitle:"Envoi (Pharmacie)",
+goodsTypeLabel:"Catégorie",
+goodsOptions:[
+{v:"medicaments",t:"Médicaments"},
+{v:"ordonnance",t:"Ordonnance"},
+{v:"materiel",t:"Matériel médical"},
+{v:"parapharmacie",t:"Parapharmacie"}
+],
+weightMode:"weight"
+},
+business:{
+label:"Business (Commerce)",
+lockSender:true,
+senderDefault:"commerce",
+showInternalRef:true,
+internalRefRequired:true,
+showSensitivity:false,
+forcePriority:"",
+goodsTitle:"Marchandise (Business)",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"carton",t:"Carton"},
+{v:"sacs",t:"Sacs"},
+{v:"colis_multiple",t:"Colis multiple"},
+{v:"palette",t:"Palette"}
+],
+weightMode:"weight"
+},
+documents:{
+label:"Documents (Express)",
+lockSender:false,
+senderDefault:"particulier",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:false,
+forcePriority:"express",
+goodsTitle:"Documents",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"documents",t:"Documents"},
+{v:"enveloppe",t:"Enveloppe"}
+],
+weightMode:"weight"
+}
+};
 
-const showSensitivity = (t==="pharmacie" || t==="restaurant");
-sensitivityWrap.style.display = showSensitivity ? "block" : "none";
-if(!showSensitivity) resetSensitivity();
-
-const showInternalRef = (t==="commerce" || t==="pharmacie" || t==="restaurant");
-internalRefWrap.style.display = showInternalRef ? "block" : "none";
-if(!showInternalRef) internalRef.value="";
-
-const contentRequired = (t==="commerce" || t==="pharmacie" || t==="restaurant");
-setRequired(content, contentRequired);
-
-if(t==="pharmacie" || t==="restaurant"){
-if(priority.value==="standard") priority.value="express";
+function fillGoodsOptions(list){
+goodsType.innerHTML=`<option value="">Sélectionner</option>`;
+list.forEach(o=>{
+goodsType.innerHTML+=`<option value="${o.v}">${o.t}</option>`;
+});
 }
 
-updateSummary();
-}
-senderType.addEventListener("change", applySenderTypeRules);
-
-/* ================= PACKAGE TYPE HELP ================= */
-function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
-function updateDynamicHint(){
-const t=packageType.value;
-if(t==="bidon"){
+function applyWeightMode(mode){
+if(mode==="qty"){
 weightLabel.innerText="Quantité";
-dynamicHint.innerText="Ex: 1, 2, 3…";
 weightValue.placeholder="Ex: 2";
+dynamicHint.innerText="Quantité requise.";
 }else{
-weightLabel.innerText="Poids (kg)";
-dynamicHint.innerText="Ex: 1.5";
+weightLabel.innerText="Poids estimé (kg)";
 weightValue.placeholder="Ex: 1.5";
+dynamicHint.innerText="Poids requis.";
 }
+}
+
+function applyServiceRules(init=false){
+const s = SERVICES[service.value] || SERVICES.parcel;
+
+serviceHint.innerText = "Service : " + s.label + " • Le formulaire s’adapte automatiquement.";
+
+goodsTitle.innerText = s.goodsTitle;
+goodsTypeLabel.innerText = s.goodsTypeLabel;
+fillGoodsOptions(s.goodsOptions);
+applyWeightMode(s.weightMode);
+
+if(s.forcePriority){
+priority.value = s.forcePriority;
+}
+
+if(s.lockSender){
+senderType.value = s.senderDefault || "";
+senderType.disabled = true;
+}else{
+senderType.disabled = false;
+if(init && s.senderDefault) senderType.value = s.senderDefault;
+}
+
+const showInternal = !!s.showInternalRef;
+internalRefWrap.style.display = showInternal ? "block" : "none";
+if(!showInternal) internalRef.value="";
+setRequired(internalRef, !!s.internalRefRequired);
+
+sensitivityWrap.style.display = s.showSensitivity ? "block" : "none";
+if(!s.showSensitivity) resetSensitivity();
+else{
+sensTemp.checked = true;
+}
+
 updateSummary();
 }
-packageType.addEventListener("change",updateDynamicHint);
+
+service.addEventListener("change",()=>{applyServiceRules(false);});
+senderType.addEventListener("change",()=>{
+const t = senderType.value;
+const showInternal = (t==="commerce" || t==="pharmacie" || t==="restaurant");
+internalRefWrap.style.display = showInternal ? "block" : "none";
+if(!showInternal) internalRef.value="";
+const showSens = (t==="pharmacie" || t==="restaurant");
+sensitivityWrap.style.display = showSens ? "block" : "none";
+if(!showSens) resetSensitivity();
+updateSummary();
+});
 
 /* ================= SUMMARY ================= */
 function safeVal(v){return (v===undefined||v===null||String(v).trim()==="")?"—":String(v).trim();}
 function updateSummary(){
 const c = country.value==="RW" ? "Rwanda" : "Burundi";
+const s = SERVICES[service.value]?.label || "Parcel";
 const op = safeVal(originProvince.value);
 const dp = safeVal(destProvince.value);
 const oq = safeVal(originQuartier.value);
@@ -776,7 +945,7 @@ const st = safeVal(senderType.value);
 const fr = safeVal(frequency.value);
 const pr = safeVal(priority.value);
 
-const pt = safeVal(packageType.value);
+const gt = safeVal(goodsType.value);
 const pm = safeVal(paymentMethod.value);
 const dv = declaredValue.value ? Number(declaredValue.value||0).toLocaleString("fr-FR") : "—";
 const wv = weightValue.value ? String(weightValue.value) : "—";
@@ -791,9 +960,10 @@ sensTxt = arr.length?arr.join(", "):"—";
 }
 
 summaryText.innerText =
-`${c} • ${op} (${oq}) → ${dp} (${dq})
-Profil: ${st} • ${fr} • ${pr}
-Colis: ${pt} • Valeur: ${dv} • Poids/Qté: ${wv} • Paiement: ${pm}
+`Service: ${s}
+${c} • ${op} (${oq}) → ${dp} (${dq})
+Expéditeur: ${st} • Fréquence: ${fr} • Priorité: ${pr}
+Marchandise: ${gt} • Valeur déclarée: ${dv} • Poids/Qté: ${wv} • Paiement: ${pm}
 Sensibilité: ${sensTxt}`;
 }
 
@@ -801,14 +971,13 @@ Sensibilité: ${sensTxt}`;
 frequency,priority,internalRef,
 originProvince,destProvince,originQuartier,destQuartier,originLandmark,destLandmark,
 senderName,senderPhone,receiverName,receiverPhone,
-weightValue,declaredValue,paymentMethod,content,notes,nonDangerous,
+goodsType,weightValue,declaredValue,paymentMethod,content,notes,nonDangerous,
 sensFragile,sensTemp,sensSensitive
 ].forEach(el=>{
 if(!el) return;
 el.addEventListener("input",updateSummary);
 el.addEventListener("change",updateSummary);
 });
-updateSummary();
 
 /* ================= TRACKING ================= */
 function generateTracking(cty){
@@ -825,6 +994,7 @@ const snap = await getDoc(doc(db,"pricing",id));
 if(!snap.exists()) throw new Error("Configuration tarifaire introuvable.");
 return { id, data:snap.data() };
 }
+function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
 
 /* ================= SUBMIT ================= */
 function showError(msg){errorMsg.innerText=msg; okMsg.style.display="none"; okMsg.innerText="";}
@@ -839,32 +1009,37 @@ setLoading(true);
 
 try{
 if(!currentUser) throw new Error("Session expirée. Reconnectez-vous.");
+if(!service.value) throw new Error("Sélectionnez le service.");
 if(!senderType.value) throw new Error("Sélectionnez le type d’expéditeur.");
-if(!frequency.value) throw new Error("Sélectionnez la fréquence d’envoi.");
+if(!frequency.value) throw new Error("Sélectionnez la fréquence.");
 if(!originProvince.value || !destProvince.value) throw new Error("Sélectionnez la province de départ et destination.");
 if(originProvince.value==="Bujumbura" && !originQuartier.value) throw new Error("Sélectionnez le quartier de départ.");
 if(destProvince.value==="Bujumbura" && !destQuartier.value) throw new Error("Sélectionnez le quartier de destination.");
+
 if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les infos expéditeur.");
 if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les infos destinataire.");
-if(!packageType.value) throw new Error("Sélectionnez le type d’envoi.");
+
+if(!goodsType.value) throw new Error("Sélectionnez la marchandise.");
 if(!weightValue.value) throw new Error("Poids / quantité requis.");
 if(num(weightValue.value)<=0) throw new Error("Poids / quantité invalide.");
 if(!paymentMethod.value) throw new Error("Sélectionnez un mode de paiement.");
+if(!content.value.trim()) throw new Error("Ajoutez une description courte.");
 if(!nonDangerous.checked) throw new Error("Veuillez confirmer 'matières non dangereuses'.");
 
-const t = senderType.value;
-if((t==="commerce" || t==="pharmacie" || t==="restaurant") && !content.value.trim()){
-throw new Error("Veuillez préciser le contenu.");
+if(internalRefWrap.style.display==="block" && internalRef.hasAttribute("required") && !internalRef.value.trim()){
+throw new Error("Référence interne requise (Business).");
 }
 
 const cty = country.value || "BI";
 
-/* pricing */
+/* pricing (dynamic) */
 const pricingPack = await loadPricing(cty);
 const pricing = pricingPack.data;
 
+/* tracking */
 const tracking = generateTracking(cty);
 
+/* base: même province vs inter-province */
 const originSameDest = (originProvince.value === destProvince.value);
 let base = originSameDest ? num(pricing.urbanBase) : num(pricing.interBase);
 
@@ -886,10 +1061,10 @@ pricingVersion: pricing.pricingVersion || pricingPack.id || "parcel_dynamic_v1"
 };
 
 const senderProfile={
-type: t,
+type: senderType.value,
 frequency: frequency.value,
 priority: priority.value,
-internalReference: internalRefWrap.style.display==="block" && internalRef.value.trim() ? internalRef.value.trim() : null,
+internalReference: (internalRefWrap.style.display==="block" && internalRef.value.trim()) ? internalRef.value.trim() : null,
 sensitivity:{
 fragile: !!sensFragile.checked,
 temperatureControlled: !!sensTemp.checked,
@@ -897,14 +1072,13 @@ sensitiveProduct: !!sensSensitive.checked
 }
 };
 
-let details={};
-if(packageType.value==="bidon"){details.quantity = w;}
-else{details.weightKg = w;}
-
 await setDoc(doc(db,"shipments",tracking),{
 trackingCode: tracking,
-service:"parcel",
+
+service: service.value,
+serviceLabel: (SERVICES[service.value]?.label || "Parcel"),
 country: cty,
+
 ownerUid: currentUser.uid,
 uid: currentUser.uid,
 
@@ -923,11 +1097,11 @@ toProvince: destProvince.value,
 toQuartier: destProvince.value==="Bujumbura" ? (destQuartier.value || "—") : "—",
 toLandmark: destLandmark.value.trim() || null,
 
-packageType: packageType.value,
+goodsType: goodsType.value,
+weightOrQty: w,
 declaredValue: declared>0 ? declared : null,
-details,
 
-content: content.value.trim() || null,
+content: content.value.trim(),
 notes: notes.value.trim() || null,
 
 nonDangerous:true,
@@ -952,9 +1126,9 @@ setLoading(false);
 }
 });
 
-/* init rules */
-applySenderTypeRules();
-updateDynamicHint();
+/* INIT */
+applyServiceRules(true);
+updateSummary();
 </script>
 
 </body>
