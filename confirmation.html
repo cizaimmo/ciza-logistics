@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmation paiement | Ciza Logistics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#0b0b0c;
+--soft:#121214;
+--border:rgba(212,175,55,0.25);
+--field:#101012;
+--muted:#9a9aa3;
+--danger:#ff6b6b;
+--ok:#1dd1a1;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:'Inter',sans-serif;
+background:var(--black);
+color:#fff;
+}
+
+/* HEADER */
+.header{
+background:#000;
+border-bottom:1px solid var(--border);
+padding:20px 15px;
+display:flex;
+justify-content:center;
+}
+.header img{
+height:70px;
+}
+@media(min-width:900px){
+.header img{
+height:110px; /* plus grand que bouton */
+}
+}
+
+/* HERO */
+.hero{
+padding:35px 20px 25px;
+text-align:center;
+border-bottom:1px solid var(--border);
+}
+.hero h1{
+color:var(--gold);
+font-size:22px;
+font-weight:900;
+}
+.hero p{
+font-size:13px;
+margin-top:10px;
+color:rgba(255,255,255,0.85);
+line-height:1.7;
+max-width:700px;
+margin-left:auto;
+margin-right:auto;
+}
+
+/* CONTAINER */
+.container{
+padding:30px 18px 60px;
+max-width:900px;
+margin:auto;
+}
+
+.card{
+background:var(--soft);
+border:1px solid var(--border);
+border-radius:22px;
+padding:25px;
+}
+
+/* TRACKING */
+.tracking{
+text-align:center;
+margin-bottom:20px;
+}
+.tracking-code{
+color:var(--gold);
+font-weight:900;
+font-size:18px;
+}
+.amount{
+font-size:24px;
+font-weight:900;
+margin-top:8px;
+}
+.status{
+display:inline-block;
+padding:6px 14px;
+border-radius:999px;
+background:#000;
+border:1px solid var(--border);
+margin-top:10px;
+font-size:11px;
+}
+
+/* COUNTDOWN */
+.countdown{
+margin-top:8px;
+font-size:12px;
+color:var(--muted);
+}
+
+/* PAYMENT */
+.payment-grid{
+display:grid;
+grid-template-columns:1fr;
+gap:16px;
+margin-top:25px;
+}
+@media(min-width:700px){
+.payment-grid{
+grid-template-columns:repeat(3,1fr);
+}
+}
+
+.pay-card{
+background:#111;
+border:1px solid rgba(255,255,255,0.08);
+border-radius:18px;
+padding:20px;
+cursor:pointer;
+transition:.3s;
+text-align:center;
+}
+.pay-card.active{
+border:2px solid var(--gold);
+background:#000;
+}
+.pay-card img{
+height:45px;
+margin-bottom:12px;
+}
+.pay-card .number{
+font-weight:800;
+margin-bottom:10px;
+}
+.copy-btn{
+background:var(--gold);
+border:none;
+border-radius:12px;
+padding:6px 14px;
+font-weight:800;
+cursor:pointer;
+}
+
+/* INPUT PREMIUM */
+.input-group{
+margin-top:20px;
+}
+.input-group label{
+font-size:11px;
+text-transform:uppercase;
+color:var(--muted);
+font-weight:800;
+letter-spacing:.8px;
+}
+.input-group input{
+width:100%;
+padding:15px;
+margin-top:6px;
+background:var(--field);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:16px;
+color:#fff;
+font-size:14px;
+}
+.input-group input:focus{
+border-color:var(--gold);
+outline:none;
+box-shadow:0 0 0 2px rgba(212,175,55,0.15);
+}
+
+/* INFO */
+.info-box{
+margin-top:20px;
+background:rgba(212,175,55,0.08);
+border:1px solid rgba(212,175,55,0.25);
+border-radius:16px;
+padding:16px;
+font-size:12px;
+line-height:1.7;
+color:#f5e7b5;
+}
+
+/* BUTTON */
+.btn{
+width:100%;
+padding:16px;
+background:var(--gold);
+border:none;
+border-radius:18px;
+font-weight:900;
+color:#000;
+margin-top:22px;
+cursor:pointer;
+font-size:15px;
+}
+.btn:disabled{
+opacity:.5;
+cursor:not-allowed;
+}
+
+/* MESSAGE */
+.message{
+margin-top:14px;
+font-size:13px;
+font-weight:800;
+}
+.message.error{color:var(--danger)}
+.message.ok{color:var(--ok)}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+</div>
+
+<section class="hero">
+<h1>Finalisez votre paiement</h1>
+<p>
+Effectuez le paiement via l’un des opérateurs ci-dessous.
+Votre envoi sera validé après vérification sécurisée par notre équipe.
+</p>
+</section>
+
+<div class="container">
+<div class="card">
+
+<div class="tracking">
+<div class="tracking-code" id="trackingCode">...</div>
+<div class="amount" id="amountBox">...</div>
+<div class="status" id="statusBadge">Chargement...</div>
+<div class="countdown" id="countdown"></div>
+</div>
+
+<div class="payment-grid">
+<div class="pay-card" data-method="EcoCash">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Ecocash_logo.png">
+<div class="number">+257 79 94 50 05</div>
+<button class="copy-btn" data-number="+25779945005">Copier</button>
+</div>
+
+<div class="pay-card" data-method="Lumicash">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Lumicash_logo.png">
+<div class="number">+257 76 00 79 85</div>
+<button class="copy-btn" data-number="+25776007985">Copier</button>
+</div>
+
+<div class="pay-card" data-method="eNoti">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/E_Noti_logo.png">
+<div class="number">+257 75 89 05 58</div>
+<button class="copy-btn" data-number="+25775890558">Copier</button>
+</div>
+</div>
+
+<div class="input-group">
+<label>Référence de transaction</label>
+<input id="paymentReference">
+</div>
+
+<div class="input-group">
+<label>Numéro utilisé pour paiement</label>
+<input id="paymentPhone" inputmode="numeric">
+</div>
+
+<div class="info-box">
+<strong>Information :</strong><br>
+• Validation manuelle sécurisée.<br>
+• Délai estimé : 5 à 15 minutes.<br>
+• Les paiements sont automatiquement rapprochés avec le tracking.<br>
+• Toute incohérence peut entraîner suspension du compte.
+</div>
+
+<button class="btn" id="submitBtn">Envoyer la référence</button>
+
+<div class="message" id="messageBox"></div>
+
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+const tracking=new URLSearchParams(window.location.search).get("tracking");
+let selectedMethod=null;
+
+function mapStatus(status){
+switch(status){
+case "created": return "En attente paiement";
+case "payment_under_review": return "Vérification en cours";
+case "paid": return "Paiement validé";
+default: return "En attente";
+}
+}
+
+function startCountdown(ts){
+if(!ts) return;
+const end=new Date(ts.seconds*1000+30*60*1000);
+const el=document.getElementById("countdown");
+const interval=setInterval(()=>{
+const now=new Date();
+const diff=end-now;
+if(diff<=0){clearInterval(interval);el.innerText="Validation en cours...";return;}
+const m=Math.floor(diff/60000);
+const s=Math.floor((diff%60000)/1000);
+el.innerText="⏱ "+m+":"+String(s).padStart(2,"0");
+},1000);
+}
+
+onAuthStateChanged(auth,async user=>{
+if(!user){location.href="login.html";return;}
+const snap=await getDoc(doc(db,"shipments",tracking));
+if(!snap.exists()){return;}
+const data=snap.data();
+if(data.ownerUid!==user.uid){return;}
+
+document.getElementById("trackingCode").innerText="Tracking : "+tracking;
+document.getElementById("amountBox").innerText=(data.finalPrice||0).toLocaleString("fr-FR")+" BIF";
+document.getElementById("statusBadge").innerText=mapStatus(data.status);
+if(data.referenceSubmittedAt) startCountdown(data.referenceSubmittedAt);
+});
+
+document.querySelectorAll(".pay-card").forEach(card=>{
+card.addEventListener("click",()=>{
+document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
+card.classList.add("active");
+selectedMethod=card.dataset.method;
+});
+});
+
+document.querySelectorAll(".copy-btn").forEach(btn=>{
+btn.addEventListener("click",(e)=>{
+e.stopPropagation();
+navigator.clipboard.writeText(btn.dataset.number);
+btn.innerText="Copié ✓";
+setTimeout(()=>btn.innerText="Copier",1500);
+});
+});
+
+document.getElementById("submitBtn").addEventListener("click",async()=>{
+const msg=document.getElementById("messageBox");
+msg.className="message";
+
+if(!selectedMethod){msg.innerText="Sélectionnez un opérateur.";msg.classList.add("error");return;}
+
+const ref=document.getElementById("paymentReference").value.trim();
+const phone=document.getElementById("paymentPhone").value.trim();
+if(!ref||!phone){msg.innerText="Entrez référence et numéro.";msg.classList.add("error");return;}
+
+await updateDoc(doc(db,"shipments",tracking),{
+status:"payment_under_review",
+paymentStatus:"pending_verification",
+paymentMethodSelected:selectedMethod,
+paymentReference:ref,
+paymentPhone:phone,
+referenceSubmittedAt:serverTimestamp()
+});
+
+msg.innerText="Référence envoyée. Validation en cours.";
+msg.classList.add("ok");
+});
+</script>
+
+</body>
+</html>
