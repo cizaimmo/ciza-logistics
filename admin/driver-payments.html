@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiements Chauffeurs | Admin</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,Arial;background:#f4f6f9;color:#111}
+.container{max-width:1200px;margin:auto;padding:30px}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+.title{font-size:20px;font-weight:900}
+.back-btn{
+background:#000;
+color:#D4AF37;
+padding:10px 14px;
+border-radius:10px;
+text-decoration:none;
+font-weight:900;
+}
+
+.card{
+background:#fff;
+padding:20px;
+border-radius:16px;
+margin-bottom:20px;
+border:1px solid rgba(0,0,0,.05);
+}
+
+select{
+padding:10px 12px;
+border-radius:10px;
+border:1px solid rgba(0,0,0,.15);
+font-weight:800;
+margin-bottom:20px;
+}
+
+.meta{
+font-size:14px;
+line-height:1.8;
+}
+.total{
+font-size:18px;
+font-weight:900;
+color:#D4AF37;
+margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<div class="title">Calcul Paiement Chauffeur</div>
+<a href="admin-parcel.html" class="back-btn">← Retour</a>
+</div>
+
+<select id="driverSelect">
+<option value="">Sélectionner chauffeur</option>
+</select>
+
+<div id="result"></div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+/* FIREBASE */
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* ADMIN GUARD */
+onAuthStateChanged(auth, async(user)=>{
+if(!user){ location.href="../login.html"; return; }
+const snap = await getDoc(doc(db,"users",user.uid));
+if(!snap.exists()){ location.href="../login.html"; return; }
+const data=snap.data();
+if(data.role!=="admin" && data.role!=="superadmin"){
+location.href="../login.html";
+}
+});
+
+/* LOAD DRIVERS */
+const driverSelect = document.getElementById("driverSelect");
+
+async function loadDrivers(){
+const snap = await getDocs(query(collection(db,"users"), where("role","==","driver")));
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+driverSelect.innerHTML += `<option value="${docSnap.id}">
+${d.fullName || d.name || d.email}
+</option>`;
+});
+}
+await loadDrivers();
+
+/* CALCUL */
+driverSelect.addEventListener("change", async ()=>{
+const driverId = driverSelect.value;
+if(!driverId) return;
+
+const pricingSnap = await getDoc(doc(db,"driverPricing","BI"));
+if(!pricingSnap.exists()){
+document.getElementById("result").innerHTML="Configuration pricing manquante.";
+return;
+}
+const pricing = pricingSnap.data();
+
+/*
+ATTENDU STRUCTURE Firestore:
+
+driverPricing/BI
+   basePerParcel
+   zoneMultiplier
+   bonus7sur7
+*/
+
+const shipmentsSnap = await getDocs(query(
+collection(db,"shipments"),
+where("assignedDriverId","==",driverId),
+where("status","==","delivered")
+));
+
+let totalParcels = 0;
+let baseTotal = 0;
+
+shipmentsSnap.forEach(docSnap=>{
+totalParcels++;
+baseTotal += pricing.basePerParcel;
+});
+
+let zoneBonus = baseTotal * (pricing.zoneMultiplier || 0);
+let weeklyBonus = (totalParcels >= 7) ? pricing.bonus7sur7 : 0;
+
+let finalTotal = baseTotal + zoneBonus + weeklyBonus;
+
+document.getElementById("result").innerHTML = `
+<div class="card">
+<div class="meta">
+<b>Nombre colis livrés:</b> ${totalParcels}<br>
+<b>Base total:</b> ${baseTotal.toLocaleString("fr-FR")} BIF<br>
+<b>Bonus zone:</b> ${zoneBonus.toLocaleString("fr-FR")} BIF<br>
+<b>Bonus 7/7:</b> ${weeklyBonus.toLocaleString("fr-FR")} BIF
+</div>
+
+<div class="total">
+Total à payer: ${finalTotal.toLocaleString("fr-FR")} BIF
+</div>
+</div>
+`;
+});
+</script>
+
+</body>
+</html>
