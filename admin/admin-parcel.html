@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Parcel | Ciza Logistics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#070707;
+--soft:#0f1115;
+--card:#ffffff;
+--muted:#6b7280;
+--border:rgba(212,175,55,0.22);
+--border2:rgba(0,0,0,0.08);
+--danger:#ff6b6b;
+--ok:#1dd1a1;
+--radius:18px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,Arial;background:var(--soft);color:#0b0b0c;min-height:100vh}
+a{text-decoration:none}
+
+.wrap{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+width:280px;
+background:#000;
+color:#fff;
+display:flex;
+flex-direction:column;
+padding:18px 14px;
+position:sticky;
+top:0;
+height:100vh;
+border-right:1px solid rgba(255,255,255,0.06);
+}
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+padding:10px 10px 16px;
+border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.brand img{
+height:44px;
+filter:drop-shadow(0 0 14px rgba(212,175,55,0.28));
+}
+.brand .txt{
+line-height:1.1;
+}
+.brand .txt .t1{
+font-weight:900;
+letter-spacing:.5px;
+color:var(--gold);
+font-size:14px;
+}
+.brand .txt .t2{
+font-weight:800;
+font-size:11px;
+opacity:.85;
+margin-top:4px;
+}
+
+.nav{
+margin-top:14px;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+.nav a{
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px 12px;
+border-radius:14px;
+color:#fff;
+font-weight:900;
+font-size:12px;
+letter-spacing:.35px;
+text-transform:uppercase;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.06);
+}
+.nav a:hover{
+background:rgba(212,175,55,0.10);
+border-color:rgba(212,175,55,0.22);
+color:var(--gold);
+}
+.nav a.active{
+background:var(--gold);
+color:#000;
+border-color:rgba(212,175,55,0.55);
+}
+
+.sidebar-bottom{
+margin-top:auto;
+padding-top:12px;
+border-top:1px solid rgba(255,255,255,0.08);
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+.userbox{
+padding:12px;
+border-radius:16px;
+border:1px solid rgba(212,175,55,0.18);
+background:rgba(255,255,255,0.04);
+font-size:12px;
+line-height:1.55;
+}
+.userbox b{color:var(--gold)}
+.logout-btn{
+background:var(--gold);
+border:none;
+padding:12px 12px;
+border-radius:14px;
+font-weight:900;
+cursor:pointer;
+color:#000;
+}
+.logout-btn:active{transform:scale(.99)}
+.sidefoot{
+text-align:center;
+font-size:11px;
+color:rgba(255,255,255,0.75);
+}
+.sidefoot b{color:var(--gold)}
+
+/* MAIN */
+.main{
+flex:1;
+background:#f4f6f9;
+min-height:100vh;
+}
+.topbar{
+position:sticky;
+top:0;
+z-index:50;
+background:rgba(255,255,255,0.92);
+backdrop-filter:blur(10px);
+border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.topbar-inner{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+padding:14px 16px;
+max-width:1500px;
+margin:auto;
+}
+.page-title{
+display:flex;
+flex-direction:column;
+gap:4px;
+}
+.page-title .h{
+font-size:16px;
+font-weight:900;
+letter-spacing:.2px;
+color:#0b0b0c;
+}
+.page-title .p{
+font-size:12px;
+color:#4b5563;
+font-weight:700;
+}
+.actions-top{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+.btn{
+border:none;
+cursor:pointer;
+border-radius:14px;
+padding:10px 12px;
+font-weight:900;
+font-size:12px;
+}
+.btn:active{transform:scale(.99)}
+.btn-dark{background:#000;color:var(--gold);border:1px solid rgba(212,175,55,0.35)}
+.btn-outline{background:#fff;color:#0b0b0c;border:1px solid rgba(0,0,0,0.12)}
+.btn-gold{background:var(--gold);color:#000;border:1px solid rgba(212,175,55,0.55)}
+.btn-danger{background:#111;color:#ffb4b4;border:1px solid rgba(255,107,107,0.35)}
+
+.container{
+width:95%;
+max-width:1500px;
+margin:18px auto 40px;
+}
+
+/* KPI */
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:12px;
+}
+.kpi{
+background:#000;
+color:var(--gold);
+padding:14px;
+border-radius:16px;
+text-align:center;
+font-weight:900;
+border:1px solid rgba(212,175,55,0.20);
+box-shadow:0 18px 50px rgba(0,0,0,0.10);
+}
+.kpi small{
+display:block;
+color:#fff;
+opacity:.85;
+margin-top:6px;
+font-size:11px;
+font-weight:700;
+}
+@media(max-width:1100px){
+.kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+.kpi-grid{grid-template-columns:1fr}
+}
+
+/* SEARCH / FILTER BAR */
+.tools{
+margin-top:14px;
+background:#fff;
+border:1px solid rgba(0,0,0,0.06);
+border-radius:18px;
+padding:12px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+align-items:center;
+}
+.input{
+padding:12px 12px;
+border-radius:14px;
+border:1px solid rgba(0,0,0,0.12);
+font-weight:800;
+font-size:12px;
+outline:none;
+min-width:220px;
+}
+.select{
+padding:12px 12px;
+border-radius:14px;
+border:1px solid rgba(0,0,0,0.12);
+font-weight:800;
+font-size:12px;
+background:#fff;
+outline:none;
+}
+.badge{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:10px 12px;
+border-radius:999px;
+border:1px solid rgba(212,175,55,0.20);
+background:rgba(212,175,55,0.08);
+color:#6b4e00;
+font-weight:900;
+font-size:12px;
+}
+
+/* LIST */
+.list{
+margin-top:14px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+.card{
+background:#fff;
+border:1px solid rgba(0,0,0,0.06);
+border-radius:18px;
+padding:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+.card-top{
+display:flex;
+justify-content:space-between;
+gap:12px;
+flex-wrap:wrap;
+align-items:flex-start;
+}
+.tracking{
+font-weight:900;
+font-size:14px;
+color:#0b0b0c;
+}
+.route{
+margin-top:5px;
+font-size:12px;
+color:#4b5563;
+font-weight:800;
+}
+.status{
+display:inline-block;
+padding:7px 12px;
+border-radius:999px;
+color:#fff;
+font-size:11px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:.35px;
+}
+.grid{
+display:grid;
+grid-template-columns:1.3fr 1fr;
+gap:16px;
+margin-top:10px;
+}
+@media(max-width:920px){
+.grid{grid-template-columns:1fr}
+}
+.meta{
+font-size:12px;
+line-height:1.65;
+color:#111827;
+}
+.meta b{color:#0b0b0c}
+.hr{
+border:none;
+border-top:1px solid rgba(0,0,0,0.08);
+margin:12px 0;
+}
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:10px;
+}
+.note{
+font-size:12px;
+color:#6b7280;
+font-weight:700;
+margin-top:10px;
+}
+
+/* MODAL */
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.62);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+padding:18px;
+}
+.modal{
+width:min(720px, 100%);
+background:#0b0b0c;
+color:#fff;
+border-radius:22px;
+border:1px solid rgba(212,175,55,0.22);
+box-shadow:0 30px 90px rgba(0,0,0,0.50);
+overflow:hidden;
+}
+.modal-head{
+padding:14px 14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.modal-head .title{
+font-weight:900;
+letter-spacing:.4px;
+color:var(--gold);
+font-size:13px;
+text-transform:uppercase;
+}
+.modal-close{
+width:42px;height:42px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.12);
+background:transparent;color:#fff;
+cursor:pointer;font-size:22px;
+}
+.modal-body{
+padding:14px;
+}
+.modal-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+@media(max-width:720px){.modal-grid{grid-template-columns:1fr}}
+.modal-label{
+font-size:11px;
+font-weight:900;
+letter-spacing:.6px;
+text-transform:uppercase;
+opacity:.9;
+margin-bottom:6px;
+}
+.modal-input, .modal-select{
+width:100%;
+padding:12px 12px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.14);
+background:#101012;
+color:#fff;
+outline:none;
+font-weight:800;
+font-size:12px;
+}
+.modal-actions{
+margin-top:12px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+.modal-actions .btn{
+border-radius:14px;
+padding:12px 12px;
+}
+.modal-hint{
+margin-top:10px;
+font-size:12px;
+color:rgba(255,255,255,0.75);
+line-height:1.6;
+}
+.modal-hint b{color:var(--gold)}
+
+/* FOOTER MAIN */
+.footer{
+max-width:1500px;
+margin:0 auto 40px;
+padding:0 16px;
+text-align:center;
+color:#6b7280;
+font-size:11px;
+font-weight:700;
+}
+.footer b{color:var(--gold)}
+
+/* MOBILE SIDEBAR COLLAPSE */
+.mobilebar{
+display:none;
+background:#000;
+color:#fff;
+padding:12px 12px;
+position:sticky;
+top:0;
+z-index:80;
+border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.mobilebar-inner{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+.mbrand{
+display:flex;
+align-items:center;
+gap:10px;
+}
+.mbrand img{height:34px;filter:drop-shadow(0 0 12px rgba(212,175,55,0.25))}
+.mbrand b{color:var(--gold);font-size:12px;letter-spacing:.5px}
+.mtoggle{
+width:44px;height:44px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.14);
+background:transparent;
+color:#fff;
+font-size:22px;
+cursor:pointer;
+}
+@media(max-width:980px){
+.sidebar{display:none;position:fixed;left:0;top:0;bottom:0;z-index:12000}
+.sidebar.open{display:flex}
+.mobilebar{display:block}
+.main{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobilebar">
+  <div class="mobilebar-inner">
+    <div class="mbrand">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+      <b>ADMIN OPS</b>
+    </div>
+    <button class="mtoggle" id="openSide">≡</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
+      <div class="txt">
+        <div class="t1">CIZA LOGISTICS</div>
+        <div class="t2">Admin Ops — Colis Premium</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="active" href="admin-parcel.html">📦 Colis</a>
+      <a href="admin-drivers.html">🚚 Chauffeurs</a>
+      <a href="admin-driver-payments.html">💰 Paiements</a>
+      <a href="internal-messages.html">💬 Messagerie</a>
+      <a href="calendar.html">📅 Calendrier</a>
+      <a href="admin-bureau.html">🏢 Bureau</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="userbox">
+        <div style="opacity:.85">Connecté :</div>
+        <div style="margin-top:6px"><b id="adminName">—</b></div>
+        <div style="margin-top:6px;font-size:11px;opacity:.8" id="adminRole">—</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+      <div class="sidefoot">© 2026 <b>Ciza Logistics</b></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="page-title">
+          <div class="h">Dashboard Colis</div>
+          <div class="p">Validation paiement • Assignation • Impression • Documents</div>
+        </div>
+
+        <div class="actions-top">
+          <button class="btn btn-outline" id="refreshBtn">Rafraîchir</button>
+          <button class="btn btn-dark" id="exportShipBtn">Exporter colis</button>
+          <button class="btn btn-dark" id="exportDrvBtn">Exporter chauffeurs</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="kpi-grid">
+        <div class="kpi"><div id="kpiPayment">0</div><small>Paiement en attente</small></div>
+        <div class="kpi"><div id="kpiReady">0</div><small>Ready pickup</small></div>
+        <div class="kpi"><div id="kpiAssigned">0</div><small>Assigné</small></div>
+        <div class="kpi"><div id="kpiTransit">0</div><small>En transit</small></div>
+        <div class="kpi"><div id="kpiDelivered">0</div><small>Livré</small></div>
+        <div class="kpi"><div id="kpiRevenue">0</div><small>Total CA</small></div>
+      </div>
+
+      <div class="tools">
+        <input class="input" id="searchBox" placeholder="Recherche tracking, nom, téléphone, province…">
+        <select class="select" id="statusFilter">
+          <option value="">Tous statuts</option>
+          <option value="payment_under_review">payment_under_review</option>
+          <option value="ready_for_pickup">ready_for_pickup</option>
+          <option value="assigned">assigned</option>
+          <option value="in_transit">in_transit</option>
+          <option value="delivered">delivered</option>
+        </select>
+        <span class="badge" id="countBadge">0 colis</span>
+      </div>
+
+      <div class="list" id="parcelList"></div>
+
+      <div class="note">
+        Astuce : pour impression, utilise “🖨 Imprimer étiquette”. Pour documents : “📎 Uploader”.
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <b>Ciza Logistics</b> • Admin Ops • Burundi & Rwanda — © 2026
+    </div>
+
+  </main>
+
+</div>
+
+<!-- MODAL ASSIGN + UPLOAD -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="title" id="modalTitle">ASSIGNATION</div>
+      <button class="modal-close" id="modalClose">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-grid">
+        <div>
+          <div class="modal-label">Tracking</div>
+          <input class="modal-input" id="mTracking" disabled>
+        </div>
+        <div>
+          <div class="modal-label">Destination</div>
+          <input class="modal-input" id="mDest" disabled>
+        </div>
+
+        <div>
+          <div class="modal-label">Chauffeur</div>
+          <select class="modal-select" id="mDriverSelect">
+            <option value="">Choisir chauffeur</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="modal-label">Type de document</div>
+          <select class="modal-select" id="mDocType">
+            <option value="driver_dossier">Dossier chauffeur</option>
+            <option value="invoice">Facture</option>
+            <option value="contract">Contrat entreprise</option>
+            <option value="proof">Preuve / Photo</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+
+        <div style="grid-column:1/-1">
+          <div class="modal-label">Uploader (PDF/JPG/PNG)</div>
+          <input class="modal-input" id="mFile" type="file" accept=".pdf,image/*">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-gold" id="mAssignBtn">Assigner</button>
+        <button class="btn btn-dark" id="mUploadBtn">📎 Uploader</button>
+        <button class="btn btn-outline" id="mPrintBtn">🖨 Imprimer</button>
+        <button class="btn btn-danger" id="mCancelBtn">Fermer</button>
+      </div>
+
+      <div class="modal-hint" id="modalHint">
+        Assignation : la liste s’adapte si le chauffeur a <b>coverageProvinces</b> ou <b>coverageQuartiers</b> dans Firestore.
+        Upload : les fichiers sont enregistrés dans <b>shipments/{tracking}/docs</b>.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, getDoc, getDocs, updateDoc, serverTimestamp,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+/* ================= BASE PATH (ANTI-404 GitHub Pages) ================= */
+const BASE_PATH = (() => {
+  try{
+    const parts = location.pathname.split("/").filter(Boolean);
+    if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts[0];
+    return "";
+  }catch(e){return "";}
+})();
+function withBase(p){
+  if(!p) return (BASE_PATH||"") + "/";
+  if(p.startsWith("http://") || p.startsWith("https://")) return p;
+  if(p.startsWith("/")) return (BASE_PATH||"") + p;
+  return (BASE_PATH||"") + "/" + p;
+}
+function go(p){ location.href = withBase(p); }
+
+/* ================= FIREBASE ================= */
+const firebaseConfig = {
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics",
+  storageBucket:"ciza-logistics.firebasestorage.app",
+  messagingSenderId:"751524585771",
+  appId:"1:751524585771:web:6720db623a0ef70f56e56e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+/* ================= UI ================= */
+const sidebar = document.getElementById("sidebar");
+document.getElementById("openSide").addEventListener("click",()=>sidebar.classList.add("open"));
+
+/* modal */
+const overlay = document.getElementById("overlay");
+const modalClose = document.getElementById("modalClose");
+const mCancelBtn = document.getElementById("mCancelBtn");
+function closeModal(){ overlay.style.display="none"; }
+function openModal(){ overlay.style.display="flex"; }
+modalClose.addEventListener("click",closeModal);
+mCancelBtn.addEventListener("click",closeModal);
+overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeModal(); });
+
+const adminName = document.getElementById("adminName");
+const adminRole = document.getElementById("adminRole");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const searchBox = document.getElementById("searchBox");
+const statusFilter = document.getElementById("statusFilter");
+const countBadge = document.getElementById("countBadge");
+
+const parcelList = document.getElementById("parcelList");
+
+const kpiPayment = document.getElementById("kpiPayment");
+const kpiReady = document.getElementById("kpiReady");
+const kpiAssigned = document.getElementById("kpiAssigned");
+const kpiTransit = document.getElementById("kpiTransit");
+const kpiDelivered = document.getElementById("kpiDelivered");
+const kpiRevenue = document.getElementById("kpiRevenue");
+
+document.getElementById("refreshBtn").addEventListener("click",()=>location.reload());
+document.getElementById("exportShipBtn").addEventListener("click",()=>exportShipments());
+document.getElementById("exportDrvBtn").addEventListener("click",()=>exportDrivers());
+
+/* ================= AUTH GUARD (admin + superadmin) ================= */
+let currentUser=null;
+let driversCache=[];
+let shipmentsCache=[];
+
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){ go("login.html"); return; } /* login à la racine */
+  currentUser=user;
+
+  const snap = await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()){ await signOut(auth); go("login.html"); return; }
+
+  const u = snap.data();
+  const role = (u.role || "").toLowerCase();
+  if(role!=="admin" && role!=="superadmin"){
+    await signOut(auth);
+    go("login.html");
+    return;
+  }
+
+  adminName.innerText = (u.fullName || u.name || user.email || "Admin");
+  adminRole.innerText = "Role: " + role;
+
+  await loadDrivers();
+  subscribeShipments();
+});
+
+logoutBtn.addEventListener("click", async()=>{
+  await signOut(auth);
+  go("login.html");
+});
+
+/* ================= DRIVERS LOAD ================= */
+async function loadDrivers(){
+  driversCache=[];
+  const snap = await getDocs(query(collection(db,"users"), where("role","==","driver")));
+  snap.forEach(d=>{
+    const data = d.data() || {};
+    driversCache.push({
+      id:d.id,
+      fullName: data.fullName || data.name || data.email || d.id,
+      email: data.email || "",
+      phone: data.phone || data.tel || "",
+      province: data.province || data.homeProvince || "",
+      quartier: data.quartier || data.homeQuartier || "",
+      coverageProvinces: Array.isArray(data.coverageProvinces) ? data.coverageProvinces : [],
+      coverageQuartiers: Array.isArray(data.coverageQuartiers) ? data.coverageQuartiers : [],
+      isActive: (data.isActive!==undefined ? !!data.isActive : true)
+    });
+  });
+}
+
+/* ================= STATUS COLOR ================= */
+function statusColor(s){
+  if(s==="payment_under_review") return "#e67e22";
+  if(s==="ready_for_pickup") return "#f39c12";
+  if(s==="assigned") return "#2980b9";
+  if(s==="in_transit") return "#8e44ad";
+  if(s==="delivered") return "#27ae60";
+  return "#111";
+}
+
+/* ================= SHIPMENTS SUB ================= */
+function subscribeShipments(){
+  const q = query(collection(db,"shipments"), where("service","==","parcel"));
+  onSnapshot(q,(snap)=>{
+    shipmentsCache=[];
+    snap.forEach(ds=>{
+      shipmentsCache.push({ id: ds.id, ...ds.data() });
+    });
+    render();
+  });
+}
+
+/* ================= FILTER + RENDER ================= */
+function norm(x){return (x||"").toString().toLowerCase().trim();}
+function safe(x){return (x===undefined || x===null || x==="") ? "—" : x;}
+function money(n){return (Number(n||0)).toLocaleString("fr-FR")+" BIF";}
+
+searchBox.addEventListener("input",render);
+statusFilter.addEventListener("change",render);
+
+function render(){
+  const q = norm(searchBox.value);
+  const st = statusFilter.value;
+
+  const list = shipmentsCache.filter(d=>{
+    if(st && d.status!==st) return false;
+
+    if(!q) return true;
+    const blob = [
+      d.id,
+      d.trackingCode,
+      d.senderName, d.senderPhone,
+      d.receiverName, d.receiverPhone,
+      d.fromProvince, d.fromQuartier, d.toProvince, d.toQuartier,
+      d.content
+    ].map(norm).join(" ");
+    return blob.includes(q);
+  });
+
+  /* KPI */
+  let payment=0,ready=0,assigned=0,transit=0,delivered=0,revenue=0;
+  shipmentsCache.forEach(d=>{
+    if(d.status==="payment_under_review") payment++;
+    if(d.status==="ready_for_pickup") ready++;
+    if(d.status==="assigned") assigned++;
+    if(d.status==="in_transit") transit++;
+    if(d.status==="delivered") delivered++;
+    revenue += Number(d.finalPrice||0);
+  });
+  kpiPayment.innerText=payment;
+  kpiReady.innerText=ready;
+  kpiAssigned.innerText=assigned;
+  kpiTransit.innerText=transit;
+  kpiDelivered.innerText=delivered;
+  kpiRevenue.innerText=money(revenue);
+
+  countBadge.innerText = list.length + " colis";
+
+  parcelList.innerHTML = list.map(d=>cardHtml(d)).join("");
+}
+
+function cardHtml(d){
+  const from = `${safe(d.fromProvince)}${(d.fromQuartier && d.fromQuartier!=="—") ? " • " + d.fromQuartier : ""}`;
+  const to = `${safe(d.toProvince)}${(d.toQuartier && d.toQuartier!=="—") ? " • " + d.toQuartier : ""}`;
+
+  const payBtn = (d.status==="payment_under_review" && (d.paymentStatus==="pending_verification" || d.paymentStatus==="pending")) ?
+    `<button class="btn btn-gold" onclick="validatePayment('${d.id}')">Valider paiement</button>` : ``;
+
+  const assignBtn = (d.status==="ready_for_pickup") ?
+    `<button class="btn btn-gold" onclick="openAssign('${d.id}')">Assigner chauffeur</button>` : ``;
+
+  const transitBtn = (d.status==="assigned") ?
+    `<button class="btn btn-gold" onclick="markTransit('${d.id}')">Marquer en transit</button>` : ``;
+
+  const deliveredBtn = (d.status==="in_transit") ?
+    `<button class="btn btn-gold" onclick="markDelivered('${d.id}')">Confirmer livraison</button>` : ``;
+
+  return `
+  <div class="card">
+    <div class="card-top">
+      <div>
+        <div class="tracking">${d.id}</div>
+        <div class="route">${from} → ${to}</div>
+      </div>
+      <div>
+        <div class="status" style="background:${statusColor(d.status)}">${safe(d.status)}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="meta">
+        <b>Client/Expéditeur :</b> ${safe(d.senderName)}<br>
+        <b>Tél expéditeur :</b> ${safe(d.senderPhone)}<br>
+        <b>Destinataire :</b> ${safe(d.receiverName)}<br>
+        <b>Tél destinataire :</b> ${safe(d.receiverPhone)}<br>
+        <b>Description :</b> ${safe(d.content)}<br>
+        <b>Valeur déclarée :</b> ${money(d.declaredValue||0)}<br>
+        <b>Repère départ :</b> ${safe(d.fromLandmark)}<br>
+        <b>Repère destination :</b> ${safe(d.toLandmark)}<br>
+      </div>
+      <div class="meta">
+        <b>Service :</b> ${safe(d.serviceLabel || d.service)}<br>
+        <b>Poids/Qté :</b> ${safe(d.weightOrQty)}<br>
+        <b>Paiement :</b> ${safe(d.paymentMethod)}<br>
+        <b>PaymentStatus :</b> ${safe(d.paymentStatus)}<br>
+        <b>Prix :</b> ${money(d.finalPrice||0)}<br>
+        <b>Chauffeur :</b> ${safe(d.assignedDriverName || d.assignedDriverId)}<br>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="controls">
+      <button class="btn btn-dark" onclick="openPrintLabel('${d.id}')">🖨 Imprimer étiquette</button>
+      <button class="btn btn-outline" onclick="openAssign('${d.id}')">📌 Détails / Upload</button>
+      ${payBtn}
+      ${assignBtn}
+      ${transitBtn}
+      ${deliveredBtn}
+    </div>
+  </div>
+  `;
+}
+
+/* ================= PRINT ================= */
+window.openPrintLabel = function(tracking){
+  const url = withBase("print-label.html?tracking=" + encodeURIComponent(tracking));
+  window.open(url,"_blank");
+};
+
+/* ================= PAYMENT VALIDATION ================= */
+window.validatePayment = async function(id){
+  if(!confirm("Valider le paiement pour " + id + " ?")) return;
+
+  await updateDoc(doc(db,"shipments",id),{
+    status:"ready_for_pickup",
+    paymentStatus:"verified",
+    paymentValidatedAt:serverTimestamp()
+  });
+
+  alert("Paiement validé ✔");
+};
+
+/* ================= ASSIGN / UPLOAD MODAL ================= */
+const mTracking = document.getElementById("mTracking");
+const mDest = document.getElementById("mDest");
+const mDriverSelect = document.getElementById("mDriverSelect");
+const mDocType = document.getElementById("mDocType");
+const mFile = document.getElementById("mFile");
+
+const mAssignBtn = document.getElementById("mAssignBtn");
+const mUploadBtn = document.getElementById("mUploadBtn");
+const mPrintBtn = document.getElementById("mPrintBtn");
+
+let modalShipmentId=null;
+let modalShipmentData=null;
+
+window.openAssign = function(id){
+  const found = shipmentsCache.find(x=>x.id===id);
+  if(!found){ alert("Colis introuvable"); return; }
+
+  modalShipmentId=id;
+  modalShipmentData=found;
+
+  mTracking.value=id;
+  const to = `${safe(found.toProvince)}${(found.toQuartier && found.toQuartier!=="—") ? " • " + found.toQuartier : ""}`;
+  mDest.value=to;
+
+  fillDriversForShipment(found);
+
+  mFile.value="";
+  openModal();
+};
+
+function fillDriversForShipment(sh){
+  const destProvince = sh.toProvince || "";
+  const destQuartier = sh.toQuartier || "";
+
+  const list = driversCache
+    .filter(d=>d.isActive)
+    .filter(d=>{
+      /* Filtre intelligent :
+         - si coverageProvinces existe => doit contenir destProvince
+         - si coverageQuartiers existe (ex Bujumbura) => doit contenir destQuartier
+         - si rien n'est défini => chauffeur visible (pas bloquant)
+      */
+      const hasProv = Array.isArray(d.coverageProvinces) && d.coverageProvinces.length>0;
+      const hasQ = Array.isArray(d.coverageQuartiers) && d.coverageQuartiers.length>0;
+
+      let okProv = true;
+      let okQ = true;
+
+      if(hasProv) okProv = d.coverageProvinces.includes(destProvince);
+      if(hasQ && destProvince==="Bujumbura" && destQuartier && destQuartier!=="—"){
+        okQ = d.coverageQuartiers.includes(destQuartier);
+      }
+
+      return okProv && okQ;
+    });
+
+  mDriverSelect.innerHTML = `<option value="">Choisir chauffeur</option>` +
+    list.map(d=>`<option value="${d.id}">${d.fullName}</option>`).join("");
+
+  /* Si aucun match, fallback : tout le monde */
+  if(list.length===0){
+    mDriverSelect.innerHTML = `<option value="">Choisir chauffeur</option>` +
+      driversCache.filter(d=>d.isActive).map(d=>`<option value="${d.id}">${d.fullName}</option>`).join("");
+  }
+
+  /* Pré-sélection si déjà assigné */
+  if(sh.assignedDriverId){
+    mDriverSelect.value = sh.assignedDriverId;
+  }
+}
+
+mPrintBtn.addEventListener("click",()=>{
+  if(!modalShipmentId) return;
+  window.openPrintLabel(modalShipmentId);
+});
+
+mAssignBtn.addEventListener("click", async()=>{
+  if(!modalShipmentId) return;
+
+  const driverId = mDriverSelect.value;
+  if(!driverId){ alert("Choisir chauffeur"); return; }
+
+  const driver = driversCache.find(d=>d.id===driverId);
+  if(!driver){ alert("Chauffeur introuvable"); return; }
+
+  await updateDoc(doc(db,"shipments",modalShipmentId),{
+    status:"assigned",
+    assignedDriverId:driverId,
+    assignedDriverName:driver.fullName,
+    assignedAt:serverTimestamp()
+  });
+
+  alert("Chauffeur assigné ✔");
+  closeModal();
+});
+
+mUploadBtn.addEventListener("click", async()=>{
+  if(!modalShipmentId) return;
+  const file = mFile.files && mFile.files[0];
+  if(!file){ alert("Choisir un fichier"); return; }
+
+  const type = (mDocType.value || "other");
+  const ts = Date.now();
+  const cleanName = (file.name||"document").replace(/[^\w.\-]+/g,"_");
+  const path = `shipments/${modalShipmentId}/docs/${type}_${ts}_${cleanName}`;
+
+  try{
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db,"shipmentDocs"),{
+      shipmentId: modalShipmentId,
+      type,
+      fileName: file.name || cleanName,
+      storagePath: path,
+      url,
+      uploadedBy: currentUser ? currentUser.uid : null,
+      createdAt: serverTimestamp()
+    });
+
+    alert("Document uploadé ✔");
+    mFile.value="";
+  }catch(e){
+    alert("Upload impossible. Vérifie Storage rules. (" + (e.message||"") + ")");
+  }
+});
+
+/* ================= TRANSIT / DELIVERED ================= */
+window.markTransit = async function(id){
+  if(!confirm("Marquer en transit : " + id + " ?")) return;
+  await updateDoc(doc(db,"shipments",id),{
+    status:"in_transit",
+    inTransitAt:serverTimestamp()
+  });
+  alert("Colis en transit ✔");
+};
+
+async function loadDriverRules(){
+  const snap = await getDoc(doc(db,"pricing","driver_rules"));
+  if(!snap.exists()) throw new Error("Configuration driver_rules manquante");
+  return snap.data();
+}
+function num(v,def=0){ const n=Number(v); return Number.isFinite(n)?n:def; }
+
+async function createDriverPaymentForShipment(shipmentId){
+  const sSnap = await getDoc(doc(db,"shipments",shipmentId));
+  if(!sSnap.exists()) throw new Error("Colis introuvable");
+  const s = sSnap.data();
+
+  const driverId = s.assignedDriverId;
+  if(!driverId) throw new Error("Aucun chauffeur assigné");
+
+  const rules = await loadDriverRules();
+
+  const zone = (s.toProvince==="Bujumbura") ? "urban" : "inter";
+  const baseUrban = num(rules.baseUrbanPerParcel);
+  const baseInter = num(rules.baseInterPerParcel);
+
+  const amount = Math.round(zone==="urban" ? baseUrban : baseInter);
+
+  await addDoc(collection(db,"driverPayments"),{
+    driverId,
+    shipmentId,
+    service:"parcel",
+    zone,
+    amount,
+    status:"pending",
+    createdAt: serverTimestamp()
+  });
+
+  /* Bonus 7/7 (simple, basé sur "deliveries per day") :
+     - Si rules.bonus7_7Enabled true, on laisse le backend finaliser plus tard.
+     - Ici Phase 1: on crée un "bonusCandidate" quand enabled.
+  */
+  if(!!rules.bonus7_7Enabled){
+    await addDoc(collection(db,"driverBonusCandidates"),{
+      driverId,
+      shipmentId,
+      type:"bonus_7_7_candidate",
+      createdAt: serverTimestamp()
+    });
+  }
+}
+
+window.markDelivered = async function(id){
+  if(!confirm("Confirmer livraison : " + id + " ?")) return;
+
+  /* 1) status delivered */
+  await updateDoc(doc(db,"shipments",id),{
+    status:"delivered",
+    deliveredAt:serverTimestamp()
+  });
+
+  /* 2) paiement chauffeur (phase 1) */
+  try{
+    await createDriverPaymentForShipment(id);
+    alert("Livraison confirmée ✔ Paiement chauffeur généré ✔");
+  }catch(e){
+    alert("Livraison confirmée ✔ (paiement chauffeur non créé) : " + (e.message||""));
+  }
+};
+
+/* ================= EXPORTS ================= */
+window.exportShipments = exportShipments;
+window.exportDrivers = exportDrivers;
+
+async function exportShipments(){
+  const snap = await getDocs(collection(db,"shipments"));
+  let csv="Tracking,Status,FromProvince,FromQuartier,ToProvince,ToQuartier,SenderName,SenderPhone,ReceiverName,ReceiverPhone,FinalPrice,PaymentStatus\n";
+  snap.forEach(docu=>{
+    const d=docu.data()||{};
+    csv+=`${docu.id},${d.status||""},${d.fromProvince||""},${d.fromQuartier||""},${d.toProvince||""},${d.toQuartier||""},${(d.senderName||"").replaceAll(","," ")},${d.senderPhone||""},${(d.receiverName||"").replaceAll(","," ")},${d.receiverPhone||""},${d.finalPrice||0},${d.paymentStatus||""}\n`;
+  });
+  downloadCSV(csv,"shipments.csv");
+}
+
+async function exportDrivers(){
+  const snap = await getDocs(collection(db,"users"));
+  let csv="DriverID,FullName,Email,Phone,Province,Quartier\n";
+  snap.forEach(docu=>{
+    const d=docu.data()||{};
+    if((d.role||"").toLowerCase()==="driver"){
+      csv+=`${docu.id},${(d.fullName||d.name||"").replaceAll(","," ")},${d.email||""},${d.phone||d.tel||""},${d.province||d.homeProvince||""},${d.quartier||d.homeQuartier||""}\n`;
+    }
+  });
+  downloadCSV(csv,"drivers.csv");
+}
+
+function downloadCSV(content,filename){
+  const blob=new Blob([content],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.setAttribute("download",filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/* ================= FIX NAV PATHS (admin folder) ================= */
+document.querySelectorAll('.nav a').forEach(a=>{
+  const href = a.getAttribute("href") || "";
+  if(href.startsWith("http")) return;
+  /* on force dans /admin/ */
+  a.setAttribute("href", withBase("admin/" + href));
+});
+
+/* mobile close sidebar when click link */
+document.querySelectorAll('.nav a').forEach(a=>{
+  a.addEventListener("click",()=>sidebar.classList.remove("open"));
+});
+</script>
+
+</body>
+</html>
