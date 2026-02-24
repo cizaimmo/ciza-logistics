@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driver Payments | Ciza Logistics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#000;
+--soft:#0f1115;
+--radius:18px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,Arial;background:#f4f6f9;color:#111;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+width:280px;
+background:#000;
+color:#fff;
+display:flex;
+flex-direction:column;
+padding:20px 18px;
+position:fixed;
+height:100vh;
+}
+.logo-container{text-align:center;margin-bottom:25px;}
+.logo-container img{
+height:85px;
+filter:drop-shadow(0 0 25px rgba(212,175,55,0.4));
+}
+.logo-title{
+font-weight:900;
+color:var(--gold);
+margin-top:10px;
+font-size:14px;
+}
+.nav a{
+display:block;
+padding:12px 14px;
+border-radius:12px;
+text-decoration:none;
+color:#fff;
+font-weight:800;
+font-size:13px;
+margin-bottom:8px;
+}
+.nav a:hover,
+.nav a.active{
+background:var(--gold);
+color:#000;
+}
+.sidebar-bottom{margin-top:auto;}
+.logout-btn{
+background:var(--gold);
+border:none;
+padding:12px;
+width:100%;
+border-radius:12px;
+font-weight:900;
+cursor:pointer;
+}
+
+/* MAIN */
+.main{
+margin-left:280px;
+flex:1;
+padding:30px;
+background:#f4f6f9;
+min-height:100vh;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+margin-bottom:30px;
+gap:20px;
+}
+.header-left h1{
+font-size:22px;
+font-weight:900;
+}
+.header-left p{
+font-size:13px;
+color:#555;
+margin-top:6px;
+font-weight:600;
+}
+
+/* CLOCK */
+.clock-box{
+background:#000;
+color:var(--gold);
+padding:18px 22px;
+border-radius:16px;
+text-align:center;
+min-width:260px;
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
+}
+.clock-time{
+font-size:26px;
+font-weight:900;
+letter-spacing:1px;
+}
+.clock-date{
+font-size:12px;
+margin-top:6px;
+color:#fff;
+opacity:.85;
+}
+.clock-secure{
+font-size:10px;
+margin-top:6px;
+opacity:.6;
+letter-spacing:.6px;
+}
+
+/* KPI */
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:16px;
+margin-bottom:30px;
+}
+.kpi{
+background:#000;
+color:var(--gold);
+padding:18px;
+border-radius:16px;
+text-align:center;
+font-weight:900;
+}
+.kpi small{
+display:block;
+color:#fff;
+opacity:.8;
+margin-top:6px;
+font-size:11px;
+}
+
+/* TABLE */
+.table-container{
+background:#fff;
+border-radius:16px;
+padding:18px;
+border:1px solid rgba(0,0,0,0.05);
+}
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+}
+th,td{
+padding:10px;
+text-align:left;
+border-bottom:1px solid rgba(0,0,0,0.05);
+}
+th{
+background:#f8f8f8;
+font-weight:900;
+}
+.status{
+padding:6px 10px;
+border-radius:999px;
+font-size:10px;
+font-weight:900;
+color:#fff;
+}
+.pending{background:#e67e22;}
+.paid{background:#27ae60;}
+button{
+background:var(--gold);
+border:none;
+padding:6px 10px;
+border-radius:8px;
+font-weight:900;
+cursor:pointer;
+font-size:11px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<div class="logo-container">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<div class="logo-title">CIZA LOGISTICS</div>
+</div>
+
+<div class="nav">
+<a href="admin-parcel.html">📦 Colis</a>
+<a href="admin-drivers.html">🚚 Chauffeurs</a>
+<a href="admin-driver-payments.html" class="active">💰 Paiements</a>
+<a href="admin-bureau.html">🏢 Bureau</a>
+</div>
+
+<div class="sidebar-bottom">
+<button class="logout-btn" id="logoutBtn">Déconnexion</button>
+</div>
+</div>
+
+<div class="main">
+
+<div class="header">
+<div class="header-left">
+<h1>Driver Payments Dashboard</h1>
+<p>Gestion financière des chauffeurs • Comptabilité interne</p>
+</div>
+
+<div class="clock-box">
+<div class="clock-time" id="clockTime">--:--:--</div>
+<div class="clock-date" id="clockDate">Date</div>
+<div class="clock-secure">Secure Financial System • Ciza Logistics</div>
+</div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi"><div id="kpiPending">0</div><small>Total dû</small></div>
+<div class="kpi"><div id="kpiPaid">0</div><small>Total payé</small></div>
+<div class="kpi"><div id="kpiBonus">0</div><small>Bonus générés</small></div>
+<div class="kpi"><div id="kpiTotal">0</div><small>Total global</small></div>
+</div>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Chauffeur</th>
+<th>Shipment</th>
+<th>Zone</th>
+<th>Type</th>
+<th>Montant</th>
+<th>Statut</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="paymentTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* AUTH */
+onAuthStateChanged(auth,user=>{
+if(!user) location.href="../login.html";
+});
+document.getElementById("logoutBtn").onclick=()=>signOut(auth).then(()=>location.href="../login.html");
+
+/* CLOCK */
+function updateClock(){
+const now=new Date();
+document.getElementById("clockTime").innerText=
+now.toLocaleTimeString("fr-FR");
+document.getElementById("clockDate").innerText=
+now.toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* LOAD PAYMENTS */
+async function loadPayments(){
+let pending=0,paid=0,bonus=0,total=0;
+let html="";
+
+const snap=await getDocs(collection(db,"driverPayments"));
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+const amount=d.amount||0;
+total+=amount;
+if(d.status==="pending") pending+=amount;
+if(d.status==="paid") paid+=amount;
+if(d.type==="bonus") bonus+=amount;
+
+html+=`
+<tr>
+<td>${d.driverId||"—"}</td>
+<td>${d.shipmentId||"—"}</td>
+<td>${d.zone||"—"}</td>
+<td>${d.type||"parcel"}</td>
+<td>${amount.toLocaleString("fr-FR")} BIF</td>
+<td><span class="status ${d.status}">${d.status}</span></td>
+<td>${d.createdAt?.toDate().toLocaleDateString("fr-FR")||"—"}</td>
+<td>${d.status==="pending"?
+`<button onclick="markPaid('${docSnap.id}')">Marquer payé</button>`:"—"}</td>
+</tr>
+`;
+});
+
+document.getElementById("paymentTable").innerHTML=html;
+document.getElementById("kpiPending").innerText=pending.toLocaleString("fr-FR")+" BIF";
+document.getElementById("kpiPaid").innerText=paid.toLocaleString("fr-FR")+" BIF";
+document.getElementById("kpiBonus").innerText=bonus.toLocaleString("fr-FR")+" BIF";
+document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR")+" BIF";
+}
+
+window.markPaid=async function(id){
+await updateDoc(doc(db,"driverPayments",id),{
+status:"paid",
+paidAt:new Date()
+});
+loadPayments();
+};
+
+loadPayments();
+</script>
+
+</body>
+</html>
