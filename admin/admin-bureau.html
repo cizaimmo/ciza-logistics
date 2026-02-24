@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bureau Enterprise Suite | Ciza Logistics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#000;
+--bg:#f4f6f9;
+--radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter;background:var(--bg);display:flex}
+
+/* SIDEBAR */
+.sidebar{
+width:280px;
+background:#000;
+color:#fff;
+display:flex;
+flex-direction:column;
+padding:20px;
+height:100vh;
+position:fixed;
+}
+.sidebar img{
+height:85px;
+margin-bottom:15px;
+filter:drop-shadow(0 0 25px rgba(212,175,55,0.4));
+}
+.nav a{
+display:block;
+padding:12px;
+border-radius:12px;
+color:#fff;
+text-decoration:none;
+font-weight:800;
+margin-bottom:8px;
+}
+.nav a:hover,
+.nav a.active{
+background:var(--gold);
+color:#000;
+}
+
+/* MAIN */
+.main{
+margin-left:280px;
+flex:1;
+padding:30px;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+.header h1{font-size:22px;font-weight:900;}
+.clock{
+background:#000;
+color:var(--gold);
+padding:15px 20px;
+border-radius:15px;
+text-align:center;
+min-width:250px;
+}
+.clock-time{font-size:24px;font-weight:900;}
+.clock-date{font-size:12px;color:#fff;margin-top:5px;}
+.clock-secure{font-size:10px;margin-top:4px;opacity:.7}
+
+/* TABS */
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+.tab-btn{
+background:#000;
+color:var(--gold);
+padding:10px 14px;
+border-radius:12px;
+font-weight:900;
+cursor:pointer;
+}
+.tab-btn.active{
+background:var(--gold);
+color:#000;
+}
+
+/* MODULE */
+.module{
+display:none;
+background:#fff;
+padding:20px;
+border-radius:16px;
+}
+.module.active{display:block}
+
+/* TABLE */
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+}
+th,td{
+padding:10px;
+border-bottom:1px solid #eee;
+}
+th{background:#f8f8f8;font-weight:900}
+button{
+background:var(--gold);
+border:none;
+padding:6px 10px;
+border-radius:8px;
+font-weight:900;
+cursor:pointer;
+font-size:11px;
+}
+input,textarea,select{
+width:100%;
+padding:8px;
+margin-bottom:8px;
+border-radius:8px;
+border:1px solid #ddd;
+font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<div class="nav">
+<a href="admin-parcel.html">📦 Colis</a>
+<a href="admin-drivers.html">🚚 Chauffeurs</a>
+<a href="admin-driver-payments.html">💰 Paiements</a>
+<a href="admin-bureau.html" class="active">🏢 Bureau</a>
+</div>
+</div>
+
+<div class="main">
+
+<div class="header">
+<h1>Bureau Enterprise Suite</h1>
+<div class="clock">
+<div class="clock-time" id="clockTime"></div>
+<div class="clock-date" id="clockDate"></div>
+<div class="clock-secure">Corporate Internal System • Ciza Logistics</div>
+</div>
+</div>
+
+<div class="tabs">
+<div class="tab-btn active" onclick="switchTab('staff')">👔 Staff</div>
+<div class="tab-btn" onclick="switchTab('planning')">📅 Planning</div>
+<div class="tab-btn" onclick="switchTab('messages')">💬 Messagerie</div>
+</div>
+
+<!-- STAFF MODULE -->
+<div id="staff" class="module active">
+<h3>Gestion Employés</h3>
+<input id="empName" placeholder="Nom complet">
+<input id="empRole" placeholder="Rôle interne (RH, Comptable, Admin...)">
+<button onclick="addEmployee()">Ajouter Employé</button>
+<table>
+<thead><tr><th>Nom</th><th>Rôle</th><th>Date</th></tr></thead>
+<tbody id="staffTable"></tbody>
+</table>
+</div>
+
+<!-- PLANNING MODULE -->
+<div id="planning" class="module">
+<h3>Planning Interne</h3>
+<input id="eventTitle" placeholder="Titre événement">
+<input type="datetime-local" id="eventDate">
+<textarea id="eventNote" placeholder="Note"></textarea>
+<button onclick="addEvent()">Ajouter Événement</button>
+<table>
+<thead><tr><th>Titre</th><th>Date</th><th>Note</th></tr></thead>
+<tbody id="planningTable"></tbody>
+</table>
+</div>
+
+<!-- MESSAGES MODULE -->
+<div id="messages" class="module">
+<h3>Messagerie Interne</h3>
+<input id="msgSubject" placeholder="Sujet">
+<textarea id="msgContent" placeholder="Message"></textarea>
+<button onclick="sendMessage()">Envoyer</button>
+<table>
+<thead><tr><th>Sujet</th><th>Date</th></tr></thead>
+<tbody id="messageTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app=initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db=getFirestore(app);
+
+/* CLOCK */
+function updateClock(){
+const now=new Date();
+document.getElementById("clockTime").innerText=now.toLocaleTimeString("fr-FR");
+document.getElementById("clockDate").innerText=now.toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* TABS */
+window.switchTab=function(tab){
+document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
+document.getElementById(tab).classList.add("active");
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
+}
+
+/* STAFF */
+window.addEmployee=async function(){
+await addDoc(collection(db,"bureauEmployees"),{
+name:document.getElementById("empName").value,
+role:document.getElementById("empRole").value,
+createdAt:serverTimestamp()
+});
+loadStaff();
+}
+async function loadStaff(){
+let html="";
+const snap=await getDocs(collection(db,"bureauEmployees"));
+snap.forEach(d=>{
+const data=d.data();
+html+=`<tr><td>${data.name}</td><td>${data.role}</td><td>${data.createdAt?.toDate().toLocaleDateString("fr-FR")||""}</td></tr>`;
+});
+document.getElementById("staffTable").innerHTML=html;
+}
+loadStaff();
+
+/* PLANNING */
+window.addEvent=async function(){
+await addDoc(collection(db,"bureauSchedule"),{
+title:document.getElementById("eventTitle").value,
+date:document.getElementById("eventDate").value,
+note:document.getElementById("eventNote").value,
+createdAt:serverTimestamp()
+});
+loadEvents();
+}
+async function loadEvents(){
+let html="";
+const snap=await getDocs(collection(db,"bureauSchedule"));
+snap.forEach(d=>{
+const data=d.data();
+html+=`<tr><td>${data.title}</td><td>${data.date}</td><td>${data.note}</td></tr>`;
+});
+document.getElementById("planningTable").innerHTML=html;
+}
+loadEvents();
+
+/* MESSAGES */
+window.sendMessage=async function(){
+await addDoc(collection(db,"bureauMessages"),{
+subject:document.getElementById("msgSubject").value,
+content:document.getElementById("msgContent").value,
+createdAt:serverTimestamp()
+});
+loadMessages();
+}
+async function loadMessages(){
+let html="";
+const snap=await getDocs(collection(db,"bureauMessages"));
+snap.forEach(d=>{
+const data=d.data();
+html+=`<tr><td>${data.subject}</td><td>${data.createdAt?.toDate().toLocaleDateString("fr-FR")||""}</td></tr>`;
+});
+document.getElementById("messageTable").innerHTML=html;
+}
+loadMessages();
+</script>
+
+</body>
+</html>
