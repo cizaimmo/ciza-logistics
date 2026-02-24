@@ -7,623 +7,1778 @@
 
 <link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
+:root{
+--gold:#D4AF37;
+--black:#000000;
+--bg:#0f1115;
+--panel:#0b0b0c;
+--soft:#f4f6f9;
+--card:#ffffff;
+--muted:#6b7280;
+--border:rgba(212,175,55,.28);
+--radius:16px;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Inter,Arial;background:#0f1115;color:#111;display:flex;min-height:100vh}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial;background:var(--bg);color:#111;min-height:100vh}
 
-/* SIDEBAR */
-.sidebar{
-width:270px;
-background:#000;
-color:#fff;
-display:flex;
-flex-direction:column;
-padding:24px 18px;
-position:fixed;
-height:100vh;
-transition:.3s;
-z-index:1000;
-}
-.logo{
-font-size:22px;
-font-weight:900;
-color:#D4AF37;
-margin-bottom:40px;
-}
-.nav a{
-display:block;
-padding:12px 14px;
-border-radius:12px;
-text-decoration:none;
-color:#fff;
-font-weight:800;
-font-size:13px;
-margin-bottom:8px;
-cursor:pointer;
-}
-.nav a:hover,
-.nav a.active{
-background:#D4AF37;
-color:#000;
-}
-.logout-btn{
-background:#D4AF37;
-border:none;
-padding:12px;
-width:100%;
-border-radius:12px;
-font-weight:900;
-cursor:pointer;
-margin-top:auto;
-}
+/* APP SHELL */
+.app{display:flex;min-height:100vh}
 
 /* HAMBURGER */
 .hamburger{
 display:none;
 position:fixed;
-top:18px;
-left:18px;
+top:14px;
+left:14px;
 background:#000;
-border:1px solid rgba(212,175,55,.4);
+border:1px solid rgba(212,175,55,.35);
 padding:10px 12px;
-border-radius:10px;
+border-radius:12px;
 cursor:pointer;
-z-index:1100;
+z-index:2500;
+box-shadow:0 14px 40px rgba(0,0,0,.35);
 }
-.hamburger span{
-display:block;
-width:20px;
-height:2px;
-background:#D4AF37;
-margin:4px 0;
-}
+.hamburger span{display:block;width:22px;height:2px;background:var(--gold);margin:4px 0;border-radius:3px}
 
 /* OVERLAY */
 .overlay{
+position:fixed;inset:0;background:rgba(0,0,0,.65);
+opacity:0;pointer-events:none;transition:.25s;z-index:2400;
+}
+.menu-open .overlay{opacity:1;pointer-events:auto}
+
+/* SIDEBAR */
+.sidebar{
+width:290px;
+background:#000;
+color:#fff;
+display:flex;
+flex-direction:column;
+padding:20px 18px;
 position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-opacity:0;
-pointer-events:none;
-transition:.3s;
-z-index:900;
+top:0;left:0;
+height:100vh;
+z-index:2450;
+box-shadow:6px 0 30px rgba(0,0,0,.45);
+transition:.25s;
 }
-.menu-open .overlay{
-opacity:1;
-pointer-events:auto;
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+padding:8px 8px 18px;
+border-bottom:1px solid rgba(255,255,255,.08);
+margin-bottom:14px;
 }
-.menu-open .sidebar{
-transform:translateX(0);
+.brand img{
+width:64px;height:64px;border-radius:18px;
+border:1px solid rgba(212,175,55,.35);
+box-shadow:0 18px 50px rgba(0,0,0,.35);
+background:#0b0b0c;object-fit:cover;
 }
+.brand .t1{font-weight:900;color:var(--gold);font-size:15px;letter-spacing:.3px;line-height:1.1}
+.brand .t2{font-size:11px;color:rgba(255,255,255,.78);margin-top:4px;letter-spacing:.4px}
+
+.nav{padding:6px 0}
+.nav button{
+all:unset;
+display:flex;align-items:center;gap:10px;
+width:100%;
+padding:12px 14px;
+border-radius:14px;
+cursor:pointer;
+font-weight:900;
+font-size:13px;
+letter-spacing:.2px;
+color:#fff;
+border:1px solid rgba(255,255,255,.06);
+background:rgba(255,255,255,.03);
+margin-bottom:10px;
+}
+.nav button:hover{border-color:rgba(212,175,55,.25);background:rgba(212,175,55,.10);color:var(--gold)}
+.nav button.active{background:var(--gold);color:#000;border-color:rgba(212,175,55,.55)}
+.nav small{display:block;font-weight:800;color:rgba(255,255,255,.65);font-size:11px;margin:8px 2px 10px}
+
+.sidebar-bottom{
+margin-top:auto;
+padding-top:12px;
+border-top:1px solid rgba(255,255,255,.08);
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+.userchip{
+border:1px solid rgba(212,175,55,.22);
+background:rgba(255,255,255,.04);
+padding:10px 12px;border-radius:14px;
+font-size:12px;line-height:1.5;
+}
+.userchip b{color:var(--gold)}
+.logout-btn{
+background:var(--gold);
+border:none;
+padding:12px 14px;
+border-radius:14px;
+font-weight:900;
+cursor:pointer;
+}
+.logout-btn:active{transform:scale(.99)}
 
 /* MAIN */
 .main{
-margin-left:270px;
+margin-left:290px;
 flex:1;
-padding:40px;
-background:#f4f6f9;
+background:var(--soft);
 min-height:100vh;
-transition:.3s;
+padding:22px 22px 80px;
+transition:.25s;
 }
-
-.view{display:none}
-.view.active{display:block}
-
-.header-title{
-font-size:22px;
-font-weight:900;
-margin-bottom:25px;
+.topline{
+display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
+margin-bottom:14px;
+}
+.header-title{font-size:22px;font-weight:900;color:#0b0b0c}
+.header-sub{font-size:12px;color:#4b5563;margin-top:6px;font-weight:700}
+.clock{
+background:#000;color:var(--gold);
+border:1px solid rgba(212,175,55,.35);
+padding:10px 12px;border-radius:14px;
+font-weight:900;font-size:12px;letter-spacing:.3px;
+min-width:170px;text-align:center;
 }
 
 /* KPI */
 .kpi-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:18px;
-margin-bottom:30px;
+gap:14px;
+margin:14px 0 16px;
 }
 .kpi{
-background:#000;
-color:#D4AF37;
-padding:20px;
-border-radius:16px;
+background:linear-gradient(135deg,#000,#101012);
+color:var(--gold);
+padding:16px;
+border-radius:18px;
 text-align:center;
 font-weight:900;
+border:1px solid rgba(212,175,55,.25);
+box-shadow:0 18px 50px rgba(0,0,0,.12);
 }
-.kpi small{
-display:block;
-color:#fff;
-opacity:.8;
-margin-top:6px;
+.kpi small{display:block;color:rgba(255,255,255,.85);opacity:.95;margin-top:6px;font-size:11px;font-weight:800}
+
+/* TOOLBAR */
+.toolbar{
+display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+background:#fff;border:1px solid rgba(0,0,0,.06);
+border-radius:18px;padding:12px;
+box-shadow:0 10px 28px rgba(0,0,0,.06);
+margin-bottom:14px;
+}
+.toolbar input,.toolbar select{
+padding:11px 12px;border-radius:14px;border:1px solid rgba(0,0,0,.12);
+font-weight:700;font-size:12px;background:#fff;outline:none;
+}
+.toolbar input{flex:1;min-width:210px}
+.toolbar .btn{
+background:#000;color:var(--gold);
+border:1px solid rgba(212,175,55,.35);
+padding:11px 12px;border-radius:14px;
+font-weight:900;font-size:12px;cursor:pointer;
+}
+.toolbar .btn:active{transform:scale(.99)}
+.toolbar .btn.secondary{background:#fff;color:#000;border:1px solid rgba(0,0,0,.12)}
+
+/* CARDS */
+.grid-cards{display:grid;grid-template-columns:1fr;gap:12px}
+.card{
+background:#fff;
+border-radius:18px;
+padding:16px;
+border:1px solid rgba(0,0,0,.06);
+box-shadow:0 12px 36px rgba(0,0,0,.08);
+}
+.card-head{
+display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;
+}
+.tracking{font-weight:900;font-size:14px;color:#000}
+.route{font-size:12px;color:#4b5563;margin-top:4px;font-weight:700}
+.badge{
+display:inline-block;
+padding:7px 12px;
+border-radius:999px;
 font-size:11px;
+font-weight:900;
+letter-spacing:.4px;
+text-transform:uppercase;
+color:#fff;
+}
+.meta-wrap{
+display:grid;
+grid-template-columns:1fr;
+gap:10px;
+margin-top:12px;
+}
+@media(min-width:980px){
+.grid-cards{grid-template-columns:1fr 1fr}
+.meta-wrap{grid-template-columns:1.15fr 1fr}
+}
+.meta{
+font-size:12px;
+line-height:1.55;
+color:#111827;
+}
+.meta b{color:#000}
+.hr{
+height:1px;background:rgba(0,0,0,.08);margin:12px 0;
+}
+.controls{
+display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;
+}
+.controls button,.controls select{
+padding:10px 12px;border-radius:14px;font-weight:900;font-size:12px;cursor:pointer;border:none;
+}
+.controls button.primary{background:var(--gold);color:#000}
+.controls button.dark{background:#000;color:var(--gold);border:1px solid rgba(212,175,55,.35)}
+.controls button.ghost{background:#fff;color:#111;border:1px solid rgba(0,0,0,.12)}
+.controls button:active{transform:scale(.99)}
+.controls select{
+border:1px solid rgba(0,0,0,.14);background:#fff;color:#111;
 }
 
-/* SEARCH */
-.search-bar{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
+/* VIEWS */
+.view{display:none}
+.view.active{display:block}
+
+/* MAP */
+#map{
+height:420px;
+border-radius:18px;
+border:1px solid rgba(0,0,0,.08);
+overflow:hidden;
+background:#e5e7eb;
 }
-.search-bar input,
-.search-bar select{
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
-font-weight:600;
+
+/* MODAL */
+.modal{
+position:fixed;inset:0;background:rgba(0,0,0,.65);
+display:none;align-items:center;justify-content:center;
+z-index:4000;padding:18px;
+}
+.modal.open{display:flex}
+.modal-card{
+width:100%;
+max-width:860px;
+background:#fff;border-radius:22px;
+border:1px solid rgba(212,175,55,.22);
+box-shadow:0 40px 120px rgba(0,0,0,.35);
+overflow:hidden;
+}
+.modal-top{
+background:#000;color:#fff;
+padding:16px 16px;
+display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.modal-top .ttl{font-weight:900;color:var(--gold);letter-spacing:.3px}
+.modal-close{
+width:42px;height:42px;border-radius:14px;
+border:1px solid rgba(255,255,255,.15);
+background:transparent;color:#fff;font-size:20px;cursor:pointer;
+}
+.modal-body{padding:16px}
+.form-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:900px){.form-grid{grid-template-columns:1fr 1fr}}
+.field label{display:block;font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#111;margin-bottom:6px}
+.field input,.field textarea,.field select{
+width:100%;
+padding:12px 12px;border-radius:14px;
+border:1px solid rgba(0,0,0,.14);
+font-weight:700;font-size:12px;outline:none;
+}
+.field textarea{min-height:92px;resize:none}
+.note{
+font-size:12px;color:#4b5563;line-height:1.55;background:rgba(212,175,55,.10);
+border:1px solid rgba(212,175,55,.22);
+padding:12px;border-radius:16px;
+}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.modal-actions button{
+padding:12px 14px;border-radius:14px;font-weight:900;font-size:12px;cursor:pointer;border:none;
+}
+.modal-actions .save{background:var(--gold);color:#000}
+.modal-actions .dark{background:#000;color:var(--gold);border:1px solid rgba(212,175,55,.35)}
+.modal-actions .ghost{background:#fff;border:1px solid rgba(0,0,0,.14)}
+
+/* FOOTER */
+.footer{
+position:fixed;
+left:290px;right:0;bottom:0;
+background:#000;color:#fff;
+border-top:1px solid rgba(212,175,55,.22);
+padding:12px 16px;
+font-size:11px;
+display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+z-index:2000;
+}
+.footer b{color:var(--gold)}
+.footer .mini{opacity:.85}
+.footer .pill{
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.10);
+padding:7px 10px;border-radius:999px;font-weight:900;letter-spacing:.2px
 }
 
 /* MOBILE */
 @media(max-width:900px){
 .sidebar{transform:translateX(-100%)}
-.main{margin-left:0;padding:80px 20px}
+.menu-open .sidebar{transform:translateX(0)}
+.main{margin-left:0;padding:72px 14px 96px}
 .hamburger{display:block}
+.footer{left:0}
 }
 </style>
 </head>
 
 <body>
 
-<div class="hamburger" id="hamburgerBtn">
+<div class="hamburger" id="hamburgerBtn" aria-label="Menu">
 <span></span><span></span><span></span>
 </div>
-
 <div class="overlay" id="overlay"></div>
 
-<div class="sidebar" id="sidebar">
-<div class="logo">CIZA LOGISTICS</div>
+<div class="app">
 
-<div class="nav">
-<a class="active" onclick="showView('colis')">📦 Colis</a>
-<a onclick="showView('commandes')">🧾 Commandes (GPS)</a>
-<a onclick="showView('chauffeurs')">🚚 Chauffeurs</a>
-<a onclick="showView('paiements')">💰 Paiements</a>
-<a onclick="showView('messagerie')">💬 Messagerie</a>
-<a onclick="showView('planning')">📅 Planning</a>
-<a onclick="showView('bureau')">🏢 Bureau</a>
-<a onclick="showView('entreprise')">🏭 Entreprise</a>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/9f727e7c0fd9cd5643f9af3bad4116e534bd67e7/admin/91BABD19-AC01-4B6C-BB65-C87661788A77.png" alt="Ciza Logistics">
+<div>
+<div class="t1">CIZA GROUP</div>
+<div class="t2">Division Logistics • ERP</div>
+</div>
 </div>
 
+<div class="nav" id="nav">
+<small>Modules</small>
+<button type="button" class="active" data-view="colis">📦 Colis</button>
+<button type="button" data-view="commandes">🧾 Commandes (GPS)</button>
+<button type="button" data-view="chauffeurs">🚚 Chauffeurs (Dossier)</button>
+<button type="button" data-view="paiements">💰 Paiements Chauffeurs</button>
+<button type="button" data-view="messagerie">💬 Messagerie interne</button>
+<button type="button" data-view="planning">📅 Planning</button>
+<button type="button" data-view="bureau">🏢 Bureau</button>
+<button type="button" data-view="entreprise">🏭 Entreprise</button>
+</div>
+
+<div class="sidebar-bottom">
+<div class="userchip">
+Connecté : <b id="userName">—</b><br>
+Rôle : <b id="userRole">—</b>
+</div>
 <button class="logout-btn" id="logoutBtn">Déconnexion</button>
 </div>
+</aside>
 
-<div class="main">
+<!-- MAIN -->
+<main class="main">
 
-<!-- ==================== COLIS ==================== -->
+<div class="topline">
+<div>
+<div class="header-title" id="pageTitle">Gestion des Colis</div>
+<div class="header-sub">Recherche • Détails complets • Paiement • Assignation • Impression</div>
+</div>
+<div class="clock" id="clock">—</div>
+</div>
+
+<!-- ==================== VUE COLIS ==================== -->
 <section id="view-colis" class="view active">
 
-<div class="header-title">Gestion des Colis</div>
-
 <div class="kpi-grid">
-<div class="kpi"><div id="kpiPayment">0</div><small>Paiement attente</small></div>
-<div class="kpi"><div id="kpiReady">0</div><small>Ready</small></div>
-<div class="kpi"><div id="kpiTransit">0</div><small>Transit</small></div>
+<div class="kpi"><div id="kpiPayment">0</div><small>Paiement review</small></div>
+<div class="kpi"><div id="kpiReady">0</div><small>Ready pickup</small></div>
+<div class="kpi"><div id="kpiAssigned">0</div><small>Assigné</small></div>
+<div class="kpi"><div id="kpiTransit">0</div><small>En transit</small></div>
 <div class="kpi"><div id="kpiDelivered">0</div><small>Livré</small></div>
-<div class="kpi"><div id="kpiRevenue">0</div><small>CA Total</small></div>
+<div class="kpi"><div id="kpiRevenue">0</div><small>CA total</small></div>
 </div>
 
-<div class="search-bar">
-<input type="text" id="searchInput" placeholder="Recherche tracking / nom / téléphone">
+<div class="toolbar">
+<input id="searchInput" placeholder="Recherche tracking / nom / téléphone / province / quartier">
 <select id="statusFilter">
 <option value="">Tous statuts</option>
-<option value="payment_under_review">Payment Review</option>
-<option value="ready_for_pickup">Ready</option>
-<option value="in_transit">Transit</option>
-<option value="delivered">Livré</option>
+<option value="payment_under_review">payment_under_review</option>
+<option value="ready_for_pickup">ready_for_pickup</option>
+<option value="assigned">assigned</option>
+<option value="in_transit">in_transit</option>
+<option value="delivered">delivered</option>
 </select>
+<button class="btn secondary" type="button" id="clearBtn">Effacer</button>
+<button class="btn" type="button" id="refreshBtn">Rafraîchir</button>
 </div>
 
-<div id="parcelList"></div>
+<div class="grid-cards" id="parcelList"></div>
 
 </section>
 
-<!-- AUTRES VUES (VIDES POUR INSTANT) -->
-<section id="view-commandes" class="view"><h2>Commandes + GPS</h2><div id="map" style="height:400px;"></div></section>
-<section id="view-chauffeurs" class="view"><h2>Chauffeurs</h2></section>
-<section id="view-paiements" class="view"><h2>Paiements</h2></section>
-<section id="view-messagerie" class="view"><h2>Messagerie</h2></section>
-<section id="view-planning" class="view"><h2>Planning</h2></section>
-<section id="view-bureau" class="view"><h2>Bureau</h2></section>
-<section id="view-entreprise" class="view"><h2>Entreprise (Superadmin)</h2></section>
+<!-- ==================== COMMANDES / GPS ==================== -->
+<section id="view-commandes" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">GPS Chauffeurs (driversLive)</div>
+<div class="route">Carte OpenStreetMap • Sans clé</div>
+</div>
+<span class="badge" style="background:#000">LIVE</span>
+</div>
+<div class="hr"></div>
+<div id="map"></div>
+<div class="hr"></div>
+<div class="meta">
+<b>Note :</b> la carte affiche les chauffeurs qui écrivent <b>lat</b> + <b>lng</b> dans la collection <b>driversLive</b>.
+</div>
+</div>
+</section>
 
+<!-- ==================== CHAUFFEURS ==================== -->
+<section id="view-chauffeurs" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Dossiers Chauffeurs</div>
+<div class="route">Fiche complète • Documents (phase 1) • Accès rapide</div>
+</div>
+<span class="badge" style="background:#000">ERP</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="toolbar" style="margin-bottom:0">
+<input id="driverSearch" placeholder="Recherche chauffeur: nom / téléphone / province / email">
+<button class="btn secondary" type="button" id="driverClear">Effacer</button>
+</div>
+
+<div class="hr"></div>
+
+<div class="grid-cards" id="driversList"></div>
+</div>
+</section>
+
+<!-- ==================== PAIEMENTS ==================== -->
+<section id="view-paiements" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Paiements Chauffeurs</div>
+<div class="route">Taux dynamique depuis Firestore • Bonus 7/7 (prévu)</div>
+</div>
+<span class="badge" style="background:#000">FINANCE</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="note">
+<b>Taux par colis livré</b> : provient de <b>settings/driverPay.perDeliveredParcelBI</b> (modifiable backend).<br>
+Ce module calcule le <b>total dû</b> selon les colis au statut <b>delivered</b>.
+</div>
+
+<div class="hr"></div>
+
+<div class="kpi-grid" style="margin:0 0 10px">
+<div class="kpi"><div id="payRate">0</div><small>Taux / colis</small></div>
+<div class="kpi"><div id="payDelivered">0</div><small>Colis livrés</small></div>
+<div class="kpi"><div id="payTotalDue">0</div><small>Total dû chauffeurs</small></div>
+<div class="kpi"><div id="payNet">0</div><small>Net entreprise</small></div>
+</div>
+
+<div class="grid-cards" id="paymentsList"></div>
+</div>
+</section>
+
+<!-- ==================== MESSAGERIE ==================== -->
+<section id="view-messagerie" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Messagerie interne</div>
+<div class="route">Admin ↔ Bureau ↔ Superadmin (phase 1)</div>
+</div>
+<span class="badge" style="background:#000">CHAT</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="form-grid">
+<div class="field">
+<label>Destinataire (uid ou email)</label>
+<input id="msgTo" placeholder="Ex: uid-du-bureau ou email@...">
+</div>
+<div class="field">
+<label>Objet</label>
+<input id="msgSubject" placeholder="Ex: Urgent • Paiements chauffeurs">
+</div>
+<div class="field" style="grid-column:1/-1">
+<label>Message</label>
+<textarea id="msgBody" placeholder="Écris ton message ici..."></textarea>
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="save" type="button" id="sendMsgBtn">Envoyer</button>
+<button class="ghost" type="button" id="refreshMsgBtn">Rafraîchir</button>
+</div>
+
+<div class="hr"></div>
+
+<div class="grid-cards" id="messagesList"></div>
+</div>
+</section>
+
+<!-- ==================== PLANNING ==================== -->
+<section id="view-planning" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Planning</div>
+<div class="route">Prise de rendez-vous (phase 1)</div>
+</div>
+<span class="badge" style="background:#000">CAL</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="form-grid">
+<div class="field">
+<label>Titre</label>
+<input id="calTitle" placeholder="Ex: Réunion chauffeurs">
+</div>
+<div class="field">
+<label>Date & Heure</label>
+<input id="calWhen" type="datetime-local">
+</div>
+<div class="field">
+<label>Lieu</label>
+<input id="calWhere" placeholder="Ex: Bureau Gitega">
+</div>
+<div class="field">
+<label>Assigné à (uid/email)</label>
+<input id="calTo" placeholder="Ex: uid bureau / admin">
+</div>
+<div class="field" style="grid-column:1/-1">
+<label>Notes</label>
+<textarea id="calNotes" placeholder="Détails..."></textarea>
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="save" type="button" id="calSaveBtn">Ajouter</button>
+<button class="ghost" type="button" id="calRefreshBtn">Rafraîchir</button>
+</div>
+
+<div class="hr"></div>
+
+<div class="grid-cards" id="calendarList"></div>
+</div>
+</section>
+
+<!-- ==================== BUREAU ==================== -->
+<section id="view-bureau" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Bureau</div>
+<div class="route">Appels • Organisation documents (phase 1)</div>
+</div>
+<span class="badge" style="background:#000">OFFICE</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="form-grid">
+<div class="field">
+<label>Client / Contact</label>
+<input id="officeName" placeholder="Nom / entreprise">
+</div>
+<div class="field">
+<label>Téléphone</label>
+<input id="officePhone" placeholder="+257...">
+</div>
+<div class="field">
+<label>Objet</label>
+<input id="officeTopic" placeholder="Ex: réclamation, contrat, suivi">
+</div>
+<div class="field">
+<label>Priorité</label>
+<select id="officePriority">
+<option value="normal">Normal</option>
+<option value="urgent">Urgent</option>
+</select>
+</div>
+<div class="field" style="grid-column:1/-1">
+<label>Notes</label>
+<textarea id="officeNotes" placeholder="Éléments importants..."></textarea>
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="save" type="button" id="officeSaveBtn">Enregistrer</button>
+<button class="ghost" type="button" id="officeRefreshBtn">Rafraîchir</button>
+</div>
+
+<div class="hr"></div>
+
+<div class="grid-cards" id="officeList"></div>
+</div>
+</section>
+
+<!-- ==================== ENTREPRISE ==================== -->
+<section id="view-entreprise" class="view">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="tracking">Entreprise</div>
+<div class="route">Contrats • Paramètres • Superadmin</div>
+</div>
+<span class="badge" style="background:#000">HQ</span>
+</div>
+
+<div class="hr"></div>
+
+<div class="note">
+<b>Paramètre clé :</b> Paiement chauffeur par colis (BI) vient de <b>settings/driverPay.perDeliveredParcelBI</b>.<br>
+Ce bloc permet de visualiser les paramètres (édition possible après).
+</div>
+
+<div class="hr"></div>
+
+<div class="grid-cards" id="enterpriseList"></div>
+</div>
+</section>
+
+</main>
+
+</div>
+
+<footer class="footer">
+<div><b>Ciza Group</b> • Division Logistics ERP</div>
+<div class="mini">© 2026 • Ops • Admin</div>
+<div class="pill" id="pwaMode">Mode: —</div>
+</footer>
+
+<!-- MODAL DRIVER DOSSIER -->
+<div class="modal" id="driverModal">
+<div class="modal-card">
+<div class="modal-top">
+<div class="ttl" id="driverModalTitle">Dossier Chauffeur</div>
+<button class="modal-close" id="driverModalClose">×</button>
+</div>
+<div class="modal-body">
+<div class="note" style="margin-bottom:12px">
+<b>Uploader (phase 1)</b> : ton Storage est bloqué actuellement. Ici on enregistre des <b>liens</b> (Drive/URL) + métadonnées dans Firestore.  
+Quand tu ouvriras Storage + Rules, on activera l’upload réel.
+</div>
+
+<div class="form-grid">
+<div class="field">
+<label>Nom complet</label>
+<input id="dmFullName" placeholder="—">
+</div>
+<div class="field">
+<label>Téléphone</label>
+<input id="dmPhone" placeholder="—">
+</div>
+<div class="field">
+<label>Province (base)</label>
+<input id="dmProvince" placeholder="—">
+</div>
+<div class="field">
+<label>Email</label>
+<input id="dmEmail" placeholder="—">
+</div>
+
+<div class="field" style="grid-column:1/-1">
+<label>Pièce / Dossier (lien)</label>
+<input id="dmDocUrl" placeholder="Colle un lien (Drive/URL)">
+</div>
+<div class="field" style="grid-column:1/-1">
+<label>Facture / Contrat (lien)</label>
+<input id="dmInvoiceUrl" placeholder="Colle un lien (Drive/URL)">
+</div>
+
+<div class="field" style="grid-column:1/-1">
+<label>Notes admin</label>
+<textarea id="dmNotes" placeholder="Observations, documents manquants, etc."></textarea>
+</div>
+
+<div class="field" style="grid-column:1/-1">
+<label>Fichier (optionnel — non uploadé)</label>
+<input id="dmFile" type="file">
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="save" type="button" id="driverModalSave">Enregistrer</button>
+<button class="dark" type="button" id="driverModalCall">Appeler</button>
+<button class="ghost" type="button" id="driverModalClose2">Fermer</button>
+</div>
+
+</div>
+</div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore, collection, query, where, onSnapshot, doc, getDoc, getDocs,
+  updateDoc, setDoc, addDoc, serverTimestamp, orderBy, limit
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* FIREBASE */
+/* ================= FIREBASE ================= */
 const app = initializeApp({
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
 });
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* GUARD */
-onAuthStateChanged(auth, async(user)=>{
-if(!user){ location.href="../login.html"; return; }
-const snap = await getDoc(doc(db,"users",user.uid));
-if(!snap.exists()){ location.href="../login.html"; return; }
-const role=snap.data().role;
-if(role!=="admin" && role!=="superadmin"){
-location.href="../login.html";
+let currentUser=null;
+let currentRole=null;
+
+/* ================= UI REFS ================= */
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const overlay = document.getElementById("overlay");
+const nav = document.getElementById("nav");
+const pageTitle = document.getElementById("pageTitle");
+
+const userName = document.getElementById("userName");
+const userRole = document.getElementById("userRole");
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const clearBtn = document.getElementById("clearBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+
+const parcelList = document.getElementById("parcelList");
+
+const driverSearch = document.getElementById("driverSearch");
+const driverClear = document.getElementById("driverClear");
+const driversList = document.getElementById("driversList");
+
+const paymentsList = document.getElementById("paymentsList");
+
+const messagesList = document.getElementById("messagesList");
+const msgTo = document.getElementById("msgTo");
+const msgSubject = document.getElementById("msgSubject");
+const msgBody = document.getElementById("msgBody");
+const sendMsgBtn = document.getElementById("sendMsgBtn");
+const refreshMsgBtn = document.getElementById("refreshMsgBtn");
+
+const calendarList = document.getElementById("calendarList");
+const calTitle = document.getElementById("calTitle");
+const calWhen = document.getElementById("calWhen");
+const calWhere = document.getElementById("calWhere");
+const calTo = document.getElementById("calTo");
+const calNotes = document.getElementById("calNotes");
+const calSaveBtn = document.getElementById("calSaveBtn");
+const calRefreshBtn = document.getElementById("calRefreshBtn");
+
+const officeList = document.getElementById("officeList");
+const officeName = document.getElementById("officeName");
+const officePhone = document.getElementById("officePhone");
+const officeTopic = document.getElementById("officeTopic");
+const officePriority = document.getElementById("officePriority");
+const officeNotes = document.getElementById("officeNotes");
+const officeSaveBtn = document.getElementById("officeSaveBtn");
+const officeRefreshBtn = document.getElementById("officeRefreshBtn");
+
+const enterpriseList = document.getElementById("enterpriseList");
+
+const kpiPayment = document.getElementById("kpiPayment");
+const kpiReady = document.getElementById("kpiReady");
+const kpiAssigned = document.getElementById("kpiAssigned");
+const kpiTransit = document.getElementById("kpiTransit");
+const kpiDelivered = document.getElementById("kpiDelivered");
+const kpiRevenue = document.getElementById("kpiRevenue");
+
+const payRate = document.getElementById("payRate");
+const payDelivered = document.getElementById("payDelivered");
+const payTotalDue = document.getElementById("payTotalDue");
+const payNet = document.getElementById("payNet");
+
+const clockEl = document.getElementById("clock");
+const pwaMode = document.getElementById("pwaMode");
+
+/* ================= MENU MOBILE ================= */
+function openMenu(){ document.body.classList.add("menu-open"); }
+function closeMenu(){ document.body.classList.remove("menu-open"); }
+hamburgerBtn.addEventListener("click", ()=>{
+  document.body.classList.contains("menu-open") ? closeMenu() : openMenu();
+});
+overlay.addEventListener("click", closeMenu);
+
+/* ================= CLOCK ================= */
+function tick(){
+  const d = new Date();
+  const pad = (n)=>String(n).padStart(2,"0");
+  clockEl.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
+setInterval(tick,1000); tick();
+
+/* ================= PWA MODE CHIP ================= */
+(function(){
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  pwaMode.textContent = "Mode: " + (isStandalone ? "App" : "Browser");
+})();
+
+/* ================= AUTH GUARD (admin/superadmin) ================= */
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){
+    location.href = "../login.html";
+    return;
+  }
+  currentUser = user;
+
+  const snap = await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()){
+    await signOut(auth);
+    location.href="../login.html";
+    return;
+  }
+
+  const u = snap.data();
+  const role = u.role || "";
+  currentRole = role;
+
+  const nm = (u.fullName || u.name || user.email || "Admin");
+  userName.textContent = nm;
+  userRole.textContent = role || "—";
+
+  if(role!=="admin" && role!=="superadmin"){
+    await signOut(auth);
+    location.href="../login.html";
+    return;
+  }
+
+  // superadmin: entreprise visible, sinon on garde mais lecture-only.
+  startRealtime();
 });
 
-/* LOGOUT */
-document.getElementById("logoutBtn").onclick=async()=>{
-await signOut(auth);
-location.href="../login.html";
+/* ================= LOGOUT ================= */
+logoutBtn.addEventListener("click", async()=>{
+  await signOut(auth);
+  location.href="../login.html";
+});
+
+/* ================= NAVIGATION (NO event.target bug) ================= */
+const VIEW_TITLES = {
+  colis:"Gestion des Colis",
+  commandes:"Commandes (GPS)",
+  chauffeurs:"Chauffeurs (Dossier)",
+  paiements:"Paiements Chauffeurs",
+  messagerie:"Messagerie interne",
+  planning:"Planning",
+  bureau:"Bureau",
+  entreprise:"Entreprise"
 };
 
-/* NAVIGATION */
-window.showView=function(view){
-document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-document.getElementById('view-'+view).classList.add('active');
-document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
-event.target.classList.add('active');
+function showView(view){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  const target = document.getElementById("view-"+view);
+  if(target) target.classList.add("active");
+
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active"));
+  const btn = document.querySelector(`#nav button[data-view="${view}"]`);
+  if(btn) btn.classList.add("active");
+
+  pageTitle.textContent = VIEW_TITLES[view] || "ERP";
+
+  closeMenu();
+
+  if(view==="commandes"){ setTimeout(()=>initMapOnce(), 250); }
+  if(view==="chauffeurs"){ renderDrivers(); }
+  if(view==="paiements"){ renderPayments(); }
+  if(view==="messagerie"){ loadMessages(); }
+  if(view==="planning"){ loadCalendar(); }
+  if(view==="bureau"){ loadOffice(); }
+  if(view==="entreprise"){ loadEnterprise(); }
 }
 
-/* MOBILE MENU */
-const hamburger=document.getElementById("hamburgerBtn");
-const overlay=document.getElementById("overlay");
-function openMenu(){document.body.classList.add("menu-open");}
-function closeMenu(){document.body.classList.remove("menu-open");}
-hamburger.addEventListener("click",()=>{
-document.body.classList.contains("menu-open")?closeMenu():openMenu();
+nav.addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-view]");
+  if(!btn) return;
+  showView(btn.getAttribute("data-view"));
 });
-overlay.addEventListener("click",closeMenu);
-</script>/* ===========================
-   SETTINGS DRIVER PAY (DYNAMIQUE)
-=========================== */
 
+/* ================= HELPERS ================= */
+function safe(v){ return (v===undefined || v===null || String(v).trim()==="") ? "—" : String(v); }
+function num(v,def=0){ const n=Number(v); return Number.isFinite(n)?n:def; }
+function money(v){ return num(v,0).toLocaleString("fr-FR")+" BIF"; }
+
+function statusColor(status){
+  if(status==="payment_under_review") return "#e67e22";
+  if(status==="ready_for_pickup") return "#f39c12";
+  if(status==="assigned") return "#2980b9";
+  if(status==="in_transit") return "#8e44ad";
+  if(status==="delivered") return "#27ae60";
+  return "#000";
+}
+
+/* ================= DRIVER PAY SETTINGS (DYNAMIQUE) ================= */
 let driverRateBI = 0;
-
 async function loadDriverRate(){
-  const snap = await getDoc(doc(db,"settings","driverPay"));
-  if(snap.exists()){
-    driverRateBI = snap.data().perDeliveredParcelBI || 0;
+  try{
+    const snap = await getDoc(doc(db,"settings","driverPay"));
+    if(snap.exists()){
+      driverRateBI = num(snap.data().perDeliveredParcelBI, 0);
+    }else{
+      driverRateBI = 0;
+    }
+  }catch(e){
+    driverRateBI = 0;
   }
+  payRate.textContent = money(driverRateBI);
 }
-await loadDriverRate();
 
-/* ===========================
-   LOAD SHIPMENTS
-=========================== */
-
+/* ================= DATA STORES ================= */
 let allShipments = [];
+let allDrivers = [];
 
-const shipmentsQuery = query(collection(db,"shipments"));
+/* ================= REALTIME START ================= */
+let started=false;
+function startRealtime(){
+  if(started) return;
+  started=true;
 
-onSnapshot(shipmentsQuery, (snapshot)=>{
-  allShipments = [];
-  snapshot.forEach(docSnap=>{
-    allShipments.push({id:docSnap.id, ...docSnap.data()});
+  loadDriverRate();
+
+  // drivers realtime
+  const dq = query(collection(db,"users"), where("role","==","driver"));
+  onSnapshot(dq,(snap)=>{
+    allDrivers = [];
+    snap.forEach(ds=>{
+      allDrivers.push({ id: ds.id, ...ds.data() });
+    });
+    // update current screens
+    if(document.getElementById("view-chauffeurs").classList.contains("active")) renderDrivers();
   });
-  renderShipments();
-});
 
-/* ===========================
-   RENDER + FILTRE
-=========================== */
+  // shipments realtime
+  const sq = query(collection(db,"shipments"), where("service","==","parcel"));
+  onSnapshot(sq,(snap)=>{
+    allShipments = [];
+    snap.forEach(ds=>{
+      allShipments.push({ id: ds.id, ...ds.data() });
+    });
+    renderShipments();
+    if(document.getElementById("view-paiements").classList.contains("active")) renderPayments();
+  });
+}
 
-document.getElementById("searchInput").addEventListener("input", renderShipments);
-document.getElementById("statusFilter").addEventListener("change", renderShipments);
+/* ================= SHIPMENTS UI ================= */
+function matchesSearch(s, q){
+  if(!q) return true;
+  const t = q.toLowerCase();
+
+  const from = `${safe(s.fromProvince)} ${safe(s.fromQuartier)} ${safe(s.fromLandmark)}`.toLowerCase();
+  const to = `${safe(s.toProvince)} ${safe(s.toQuartier)} ${safe(s.toLandmark)}`.toLowerCase();
+
+  return (
+    (safe(s.id)).toLowerCase().includes(t) ||
+    (safe(s.trackingCode)).toLowerCase().includes(t) ||
+    (safe(s.senderName)).toLowerCase().includes(t) ||
+    (safe(s.receiverName)).toLowerCase().includes(t) ||
+    (safe(s.senderPhone)).toLowerCase().includes(t) ||
+    (safe(s.receiverPhone)).toLowerCase().includes(t) ||
+    from.includes(t) ||
+    to.includes(t) ||
+    (safe(s.content)).toLowerCase().includes(t)
+  );
+}
 
 function renderShipments(){
+  const q = (searchInput.value || "").trim();
+  const st = statusFilter.value || "";
 
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const statusFilter = document.getElementById("statusFilter").value;
+  let payment=0, ready=0, assigned=0, transit=0, delivered=0, revenue=0;
 
-  let payment=0, ready=0, transit=0, delivered=0, revenue=0;
+  const items = allShipments
+    .filter(s=>{
+      const okSearch = matchesSearch(s,q);
+      const okStatus = st ? (s.status===st) : true;
+      return okSearch && okStatus;
+    })
+    .sort((a,b)=>{
+      const aa = a.createdAt?.seconds || 0;
+      const bb = b.createdAt?.seconds || 0;
+      return bb - aa;
+    });
 
-  const container = document.getElementById("parcelList");
-  container.innerHTML="";
+  parcelList.innerHTML = "";
 
-  allShipments
-  .filter(s=>{
-    const matchSearch =
-      (s.id || "").toLowerCase().includes(search) ||
-      (s.senderName || "").toLowerCase().includes(search) ||
-      (s.receiverName || "").toLowerCase().includes(search) ||
-      (s.senderPhone || "").includes(search) ||
-      (s.receiverPhone || "").includes(search);
-
-    const matchStatus = statusFilter ? s.status === statusFilter : true;
-
-    return matchSearch && matchStatus;
-  })
-  .forEach(s=>{
-
+  items.forEach(s=>{
     if(s.status==="payment_under_review") payment++;
     if(s.status==="ready_for_pickup") ready++;
+    if(s.status==="assigned") assigned++;
     if(s.status==="in_transit") transit++;
     if(s.status==="delivered") delivered++;
-
-    revenue += s.finalPrice || 0;
-
-    const driverEarning = s.status==="delivered" ? driverRateBI : 0;
-    const companyNet = s.status==="delivered" ? (s.finalPrice - driverRateBI) : 0;
+    revenue += num(s.finalPrice,0);
 
     const card = document.createElement("div");
     card.className="card";
 
-    card.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="font-weight:900">${s.id}</div>
-      <div class="status" style="background:${getStatusColor(s.status)}">${s.status || "—"}</div>
-    </div>
+    const from = `${safe(s.fromProvince)}${s.fromQuartier ? " • "+safe(s.fromQuartier) : ""}`;
+    const to = `${safe(s.toProvince)}${s.toQuartier ? " • "+safe(s.toQuartier) : ""}`;
 
-    <div class="row">
-      <div class="meta">
-        <b>Route:</b> ${s.fromProvince || ""} → ${s.toProvince || ""}<br>
-        <b>Expéditeur:</b> ${s.senderName || ""} (${s.senderPhone || ""})<br>
-        <b>Destinataire:</b> ${s.receiverName || ""} (${s.receiverPhone || ""})<br>
-        <b>Description:</b> ${s.content || ""}<br>
-        <b>Valeur déclarée:</b> ${(s.declaredValue||0).toLocaleString("fr-FR")} BIF
+    const driverNet = (s.status==="delivered") ? driverRateBI : 0;
+    const companyNet = (s.status==="delivered") ? Math.max(0, num(s.finalPrice,0) - driverRateBI) : 0;
+
+    card.innerHTML = `
+      <div class="card-head">
+        <div>
+          <div class="tracking">${safe(s.id)}</div>
+          <div class="route">${from} → ${to}</div>
+        </div>
+        <span class="badge" style="background:${statusColor(s.status)}">${safe(s.status)}</span>
       </div>
 
-      <div class="meta">
-        <b>Service:</b> ${s.serviceLabel || s.service || ""}<br>
-        <b>Poids/Qté:</b> ${s.weightOrQty || ""}<br>
-        <b>Paiement:</b> ${s.paymentMethod || ""}<br>
-        <b>PaymentStatus:</b> ${s.paymentStatus || ""}<br>
-        <b>Prix:</b> ${(s.finalPrice||0).toLocaleString("fr-FR")} BIF<br>
-        ${s.status==="delivered" ? `
-        <hr>
-        💰 Chauffeur : ${driverRateBI.toLocaleString("fr-FR")} BIF<br>
-        🏢 Net entreprise : ${companyNet.toLocaleString("fr-FR")} BIF
+      <div class="meta-wrap">
+        <div class="meta">
+          <b>Client/Expéditeur :</b> ${safe(s.senderName)}<br>
+          <b>Tél expéditeur :</b> ${safe(s.senderPhone)}<br>
+          <b>Destinataire :</b> ${safe(s.receiverName)}<br>
+          <b>Tél destinataire :</b> ${safe(s.receiverPhone)}<br>
+          <b>Description :</b> ${safe(s.content)}<br>
+          <b>Valeur déclarée :</b> ${money(num(s.declaredValue,0))}
+        </div>
+
+        <div class="meta">
+          <b>Service :</b> ${safe(s.serviceLabel || s.service)}<br>
+          <b>Poids/Qté :</b> ${safe(s.weightOrQty)}<br>
+          <b>Paiement :</b> ${safe(s.paymentMethod)}<br>
+          <b>PaymentStatus :</b> ${safe(s.paymentStatus)}<br>
+          <b>Prix :</b> ${money(num(s.finalPrice,0))}<br>
+          <div class="hr"></div>
+          <b>Chauffeur :</b> ${safe(s.assignedDriverName || s.assignedDriverId)}<br>
+          ${s.status==="delivered" ? `<b>Pay chauffeur :</b> ${money(driverNet)}<br><b>Net entreprise :</b> ${money(companyNet)}` : `<span style="color:#6b7280;font-weight:800">Pay chauffeur / net : après livraison</span>`}
+        </div>
+      </div>
+
+      <div class="controls" id="controls-${safe(s.id)}">
+        <button class="dark" type="button" data-print="${safe(s.id)}">🖨 Imprimer</button>
+
+        ${s.status==="payment_under_review" ? `<button class="primary" type="button" data-validate="${safe(s.id)}">Valider paiement</button>` : ""}
+
+        ${s.status==="ready_for_pickup" ? `
+          <select data-driver-select="${safe(s.id)}">
+            <option value="">Assigner chauffeur (filtré)</option>
+          </select>
+          <button class="primary" type="button" data-assign="${safe(s.id)}">Assigner</button>
         ` : ""}
+
+        ${s.status==="assigned" ? `<button class="primary" type="button" data-transit="${safe(s.id)}">Marquer en transit</button>` : ""}
+
+        ${s.status==="in_transit" ? `<button class="primary" type="button" data-delivered="${safe(s.id)}">Confirmer livraison</button>` : ""}
+
+        <button class="ghost" type="button" data-open-driver="${safe(s.assignedDriverId || "")}" ${s.assignedDriverId ? "" : "disabled"}>Dossier chauffeur</button>
       </div>
-    </div>
-
-    <div class="controls">
-      ${s.status==="payment_under_review" ? `
-        <button onclick="validatePayment('${s.id}')">Valider paiement</button>
-      `:""}
-
-      ${s.status==="ready_for_pickup" ? `
-        <button onclick="markTransit('${s.id}')">Marquer en transit</button>
-      `:""}
-
-      ${s.status==="in_transit" ? `
-        <button onclick="markDelivered('${s.id}')">Confirmer livraison</button>
-      `:""}
-
-      <button class="print-btn" onclick="window.open('../print-label.html?tracking=${s.id}','_blank')">Imprimer</button>
-    </div>
     `;
 
-    container.appendChild(card);
+    parcelList.appendChild(card);
+
+    // fill driver select if needed
+    if(s.status==="ready_for_pickup"){
+      const sel = card.querySelector(`select[data-driver-select="${s.id}"]`);
+      if(sel){
+        const filtered = filterDriversForShipment(s);
+        filtered.forEach(dr=>{
+          const nm = dr.fullName || dr.name || dr.email || dr.id;
+          const opt = document.createElement("option");
+          opt.value = dr.id;
+          opt.textContent = nm + (dr.province ? " • " + dr.province : "");
+          sel.appendChild(opt);
+        });
+        // fallback show all if empty
+        if(filtered.length===0){
+          allDrivers.forEach(dr=>{
+            const nm = dr.fullName || dr.name || dr.email || dr.id;
+            const opt = document.createElement("option");
+            opt.value = dr.id;
+            opt.textContent = nm + (dr.province ? " • " + dr.province : "");
+            sel.appendChild(opt);
+          });
+        }
+      }
+    }
   });
 
-  document.getElementById("kpiPayment").innerText = payment;
-  document.getElementById("kpiReady").innerText = ready;
-  document.getElementById("kpiTransit").innerText = transit;
-  document.getElementById("kpiDelivered").innerText = delivered;
-  document.getElementById("kpiRevenue").innerText = revenue.toLocaleString("fr-FR")+" BIF";
+  kpiPayment.textContent = payment;
+  kpiReady.textContent = ready;
+  kpiAssigned.textContent = assigned;
+  kpiTransit.textContent = transit;
+  kpiDelivered.textContent = delivered;
+  kpiRevenue.textContent = money(revenue);
 }
 
-/* ===========================
-   WORKFLOW ACTIONS
-=========================== */
+/* ================= DRIVER FILTER (DESTINATION) ================= */
+function normalize(s){ return String(s||"").trim().toLowerCase(); }
 
-window.validatePayment = async function(id){
+/*
+  Supporte plusieurs structures côté driver (sans casser) :
+  - driver.province (base)
+  - driver.provinces: ["Gitega","Ngozi"]
+  - driver.quartiers: ["Rohero I", ...] (pour Bujumbura)
+  - driver.serviceAreas: [{province:"Gitega",quartier:"..."}]
+*/
+function driverMatchesShipment(driver, shipment){
+  const destP = normalize(shipment.toProvince);
+  const destQ = normalize(shipment.toQuartier);
+
+  const baseP = normalize(driver.province);
+  if(baseP && baseP===destP) return true;
+
+  const provinces = Array.isArray(driver.provinces) ? driver.provinces.map(normalize) : [];
+  if(provinces.includes(destP)) return true;
+
+  const quartiers = Array.isArray(driver.quartiers) ? driver.quartiers.map(normalize) : [];
+  if(destQ && quartiers.includes(destQ)) return true;
+
+  const areas = Array.isArray(driver.serviceAreas) ? driver.serviceAreas : [];
+  for(const a of areas){
+    const ap = normalize(a?.province);
+    const aq = normalize(a?.quartier);
+    if(ap && ap===destP){
+      if(!destQ) return true;
+      if(aq && aq===destQ) return true;
+      if(!aq) return true;
+    }
+  }
+
+  // règle simple validée : un chauffeur Bujumbura peut aller à Gitega (si tu veux l’ouvrir)
+  // => si baseProvince = Bujumbura et destProvince = Gitega => ok
+  if(baseP==="bujumbura" && destP==="gitega") return true;
+
+  return false;
+}
+
+function filterDriversForShipment(shipment){
+  return allDrivers.filter(d=>driverMatchesShipment(d, shipment));
+}
+
+/* ================= ACTIONS HANDLERS (EVENT DELEGATION) ================= */
+parcelList.addEventListener("click", async(e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+
+  const idPrint = btn.getAttribute("data-print");
+  if(idPrint){
+    window.open(`../print-label.html?tracking=${encodeURIComponent(idPrint)}`, "_blank");
+    return;
+  }
+
+  const idValidate = btn.getAttribute("data-validate");
+  if(idValidate){
+    await validatePayment(idValidate);
+    return;
+  }
+
+  const idAssign = btn.getAttribute("data-assign");
+  if(idAssign){
+    const sel = document.querySelector(`select[data-driver-select="${CSS.escape(idAssign)}"]`);
+    const driverId = sel ? sel.value : "";
+    if(!driverId){ alert("Choisir un chauffeur."); return; }
+    await assignDriver(idAssign, driverId);
+    return;
+  }
+
+  const idTransit = btn.getAttribute("data-transit");
+  if(idTransit){
+    await markTransit(idTransit);
+    return;
+  }
+
+  const idDelivered = btn.getAttribute("data-delivered");
+  if(idDelivered){
+    await markDelivered(idDelivered);
+    return;
+  }
+
+  const openDriverId = btn.getAttribute("data-open-driver");
+  if(openDriverId){
+    openDriverModal(openDriverId);
+    return;
+  }
+});
+
+/* ================= WORKFLOW ACTIONS ================= */
+async function validatePayment(id){
   await updateDoc(doc(db,"shipments",id),{
     status:"ready_for_pickup",
-    paymentStatus:"verified"
+    paymentStatus:"verified",
+    paymentValidatedAt: serverTimestamp()
   });
-};
+  alert("Paiement validé.");
+}
 
-window.markTransit = async function(id){
+async function assignDriver(id, driverId){
+  const d = allDrivers.find(x=>x.id===driverId) || null;
   await updateDoc(doc(db,"shipments",id),{
-    status:"in_transit"
+    status:"assigned",
+    assignedDriverId: driverId,
+    assignedDriverName: d ? (d.fullName || d.name || d.email || driverId) : driverId,
+    assignedAt: serverTimestamp()
   });
-};
+  alert("Chauffeur assigné.");
+}
 
-window.markDelivered = async function(id){
+async function markTransit(id){
   await updateDoc(doc(db,"shipments",id),{
-    status:"delivered"
+    status:"in_transit",
+    inTransitAt: serverTimestamp()
   });
-};
+  alert("Colis en transit.");
+}
 
-/* ===========================
-   UTILS
-=========================== */
+async function markDelivered(id){
+  await updateDoc(doc(db,"shipments",id),{
+    status:"delivered",
+    deliveredAt: serverTimestamp()
+  });
+  alert("Livraison confirmée.");
+}
 
-function getStatusColor(status){
-  if(status==="payment_under_review") return "#e67e22";
-  if(status==="ready_for_pickup") return "#f39c12";
-  if(status==="in_transit") return "#8e44ad";
-  if(status==="delivered") return "#27ae60";
-  return "#000";
-}/* ===========================
-   GPS LIVE - LEAFLET
-=========================== */
+/* ================= SEARCH / FILTER ================= */
+searchInput.addEventListener("input", renderShipments);
+statusFilter.addEventListener("change", renderShipments);
+clearBtn.addEventListener("click", ()=>{
+  searchInput.value="";
+  statusFilter.value="";
+  renderShipments();
+});
+refreshBtn.addEventListener("click", ()=>{
+  renderShipments();
+});
 
-let mapInitialized = false;
-let map;
-let driverMarkers = {};
+/* ================= DRIVERS MODULE ================= */
+driverSearch.addEventListener("input", renderDrivers);
+driverClear.addEventListener("click", ()=>{
+  driverSearch.value="";
+  renderDrivers();
+});
 
-function initMap(){
+function driverMatch(d, q){
+  if(!q) return true;
+  const t = q.toLowerCase();
+  return (
+    safe(d.fullName||d.name||"").toLowerCase().includes(t) ||
+    safe(d.phone||"").toLowerCase().includes(t) ||
+    safe(d.province||"").toLowerCase().includes(t) ||
+    safe(d.email||"").toLowerCase().includes(t)
+  );
+}
+
+function renderDrivers(){
+  const q = (driverSearch.value||"").trim();
+  driversList.innerHTML="";
+
+  const list = allDrivers
+    .filter(d=>driverMatch(d,q))
+    .sort((a,b)=>safe(a.fullName||a.name||"").localeCompare(safe(b.fullName||b.name||""), "fr"));
+
+  list.forEach(d=>{
+    const card = document.createElement("div");
+    card.className="card";
+    const nm = d.fullName || d.name || d.email || d.id;
+
+    card.innerHTML = `
+      <div class="card-head">
+        <div>
+          <div class="tracking">${safe(nm)}</div>
+          <div class="route">${safe(d.province)} • ${safe(d.phone)} • ${safe(d.email)}</div>
+        </div>
+        <span class="badge" style="background:#000">DRIVER</span>
+      </div>
+      <div class="hr"></div>
+      <div class="meta">
+        <b>UID:</b> ${safe(d.id)}<br>
+        <b>Zones:</b> ${Array.isArray(d.provinces) ? d.provinces.join(", ") : safe(d.province)}<br>
+        <b>Quartiers:</b> ${Array.isArray(d.quartiers) ? d.quartiers.join(", ") : "—"}<br>
+        <b>Docs:</b> ${safe(d.adminDocUrl)}<br>
+        <b>Facture/Contrat:</b> ${safe(d.adminInvoiceUrl)}<br>
+        <b>Notes admin:</b> ${safe(d.adminNotes)}
+      </div>
+      <div class="controls">
+        <button class="primary" type="button" data-open="${safe(d.id)}">Ouvrir dossier</button>
+        <button class="dark" type="button" data-call="${safe(d.phone)}">Appeler</button>
+      </div>
+    `;
+    driversList.appendChild(card);
+
+    card.querySelector('button[data-open]')?.addEventListener("click", ()=>openDriverModal(d.id));
+    card.querySelector('button[data-call]')?.addEventListener("click", ()=>{
+      const p = safe(d.phone);
+      if(p==="—"){ alert("Téléphone non disponible."); return; }
+      location.href = "tel:" + p;
+    });
+  });
+}
+
+/* ================= DRIVER MODAL ================= */
+const driverModal = document.getElementById("driverModal");
+const driverModalClose = document.getElementById("driverModalClose");
+const driverModalClose2 = document.getElementById("driverModalClose2");
+const driverModalTitle = document.getElementById("driverModalTitle");
+
+const dmFullName = document.getElementById("dmFullName");
+const dmPhone = document.getElementById("dmPhone");
+const dmProvince = document.getElementById("dmProvince");
+const dmEmail = document.getElementById("dmEmail");
+const dmDocUrl = document.getElementById("dmDocUrl");
+const dmInvoiceUrl = document.getElementById("dmInvoiceUrl");
+const dmNotes = document.getElementById("dmNotes");
+const dmFile = document.getElementById("dmFile");
+const driverModalSave = document.getElementById("driverModalSave");
+const driverModalCall = document.getElementById("driverModalCall");
+
+let modalDriverId=null;
+
+function closeDriverModal(){
+  driverModal.classList.remove("open");
+  modalDriverId=null;
+}
+driverModalClose.addEventListener("click", closeDriverModal);
+driverModalClose2.addEventListener("click", closeDriverModal);
+driverModal.addEventListener("click", (e)=>{ if(e.target===driverModal) closeDriverModal(); });
+
+async function openDriverModal(driverId){
+  if(!driverId){ alert("Chauffeur non assigné."); return; }
+  modalDriverId = driverId;
+
+  const snap = await getDoc(doc(db,"users",driverId));
+  if(!snap.exists()){
+    alert("Chauffeur introuvable.");
+    return;
+  }
+  const d = snap.data();
+  const nm = d.fullName || d.name || d.email || driverId;
+
+  driverModalTitle.textContent = "Dossier Chauffeur • " + nm;
+
+  dmFullName.value = d.fullName || d.name || "";
+  dmPhone.value = d.phone || "";
+  dmProvince.value = d.province || "";
+  dmEmail.value = d.email || "";
+
+  dmDocUrl.value = d.adminDocUrl || "";
+  dmInvoiceUrl.value = d.adminInvoiceUrl || "";
+  dmNotes.value = d.adminNotes || "";
+
+  dmFile.value = "";
+
+  driverModal.classList.add("open");
+}
+
+driverModalSave.addEventListener("click", async()=>{
+  if(!modalDriverId) return;
+
+  // fichier local : non uploadé (phase 1)
+  const f = dmFile.files && dmFile.files[0] ? dmFile.files[0].name : null;
+
+  await updateDoc(doc(db,"users",modalDriverId),{
+    adminDocUrl: dmDocUrl.value.trim() || null,
+    adminInvoiceUrl: dmInvoiceUrl.value.trim() || null,
+    adminNotes: dmNotes.value.trim() || null,
+    adminLastLocalFileName: f || null,
+    adminUpdatedAt: serverTimestamp()
+  });
+
+  alert("Dossier mis à jour.");
+  closeDriverModal();
+});
+
+driverModalCall.addEventListener("click", ()=>{
+  const p = (dmPhone.value||"").trim();
+  if(!p){ alert("Téléphone non disponible."); return; }
+  location.href = "tel:" + p;
+});
+
+/* ================= PAYMENTS MODULE ================= */
+function renderPayments(){
+  // taux dynamique déjà chargé
+  payRate.textContent = money(driverRateBI);
+
+  const deliveredShipments = allShipments.filter(s=>s.status==="delivered");
+  const deliveredCount = deliveredShipments.length;
+  const totalDue = deliveredCount * driverRateBI;
+
+  let revenueDelivered = 0;
+  deliveredShipments.forEach(s=> revenueDelivered += num(s.finalPrice,0));
+  const net = Math.max(0, revenueDelivered - totalDue);
+
+  payDelivered.textContent = deliveredCount;
+  payTotalDue.textContent = money(totalDue);
+  payNet.textContent = money(net);
+
+  paymentsList.innerHTML="";
+
+  deliveredShipments
+    .sort((a,b)=>{
+      const aa = a.deliveredAt?.seconds || 0;
+      const bb = b.deliveredAt?.seconds || 0;
+      return bb - aa;
+    })
+    .slice(0, 50)
+    .forEach(s=>{
+      const card = document.createElement("div");
+      card.className="card";
+
+      const from = `${safe(s.fromProvince)}${s.fromQuartier ? " • "+safe(s.fromQuartier) : ""}`;
+      const to = `${safe(s.toProvince)}${s.toQuartier ? " • "+safe(s.toQuartier) : ""}`;
+
+      const compNet = Math.max(0, num(s.finalPrice,0) - driverRateBI);
+
+      card.innerHTML = `
+        <div class="card-head">
+          <div>
+            <div class="tracking">${safe(s.id)}</div>
+            <div class="route">${from} → ${to}</div>
+          </div>
+          <span class="badge" style="background:#27ae60">DELIVERED</span>
+        </div>
+        <div class="hr"></div>
+        <div class="meta-wrap">
+          <div class="meta">
+            <b>Chauffeur:</b> ${safe(s.assignedDriverName || s.assignedDriverId)}<br>
+            <b>Client:</b> ${safe(s.senderName)}<br>
+            <b>Destinataire:</b> ${safe(s.receiverName)}
+          </div>
+          <div class="meta">
+            <b>Prix:</b> ${money(num(s.finalPrice,0))}<br>
+            <b>Pay chauffeur:</b> ${money(driverRateBI)}<br>
+            <b>Net entreprise:</b> ${money(compNet)}
+          </div>
+        </div>
+        <div class="controls">
+          <button class="dark" type="button" data-print="${safe(s.id)}">🖨 Imprimer</button>
+        </div>
+      `;
+      paymentsList.appendChild(card);
+
+      card.querySelector('button[data-print]')?.addEventListener("click", ()=>{
+        window.open(`../print-label.html?tracking=${encodeURIComponent(s.id)}`, "_blank");
+      });
+    });
+}
+
+/* ================= GPS LIVE (LEAFLET) ================= */
+let mapInitialized=false;
+let map=null;
+let driverMarkers={};
+
+function initMapOnce(){
   if(mapInitialized) return;
 
-  map = L.map('map').setView([-3.3614, 29.3599], 8);
+  map = L.map('map').setView([-3.3731, 29.9189], 8);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     maxZoom: 19
   }).addTo(map);
 
-  mapInitialized = true;
+  mapInitialized=true;
 
-  onSnapshot(collection(db,"driversLive"), snap=>{
-    snap.forEach(docSnap=>{
-      const d = docSnap.data();
-      const id = docSnap.id;
+  onSnapshot(collection(db,"driversLive"), (snap)=>{
+    snap.forEach(ds=>{
+      const d = ds.data();
+      const id = ds.id;
+      const lat = num(d.lat, null);
+      const lng = num(d.lng, null);
+      if(lat===null || lng===null) return;
 
-      if(!d.lat || !d.lng) return;
+      const nm = d.fullName || d.name || id;
 
       if(driverMarkers[id]){
-        driverMarkers[id].setLatLng([d.lat,d.lng]);
+        driverMarkers[id].setLatLng([lat,lng]);
       }else{
-        driverMarkers[id] = L.marker([d.lat,d.lng])
-          .addTo(map)
-          .bindPopup(`🚚 ${d.fullName || id}`);
+        driverMarkers[id] = L.marker([lat,lng]).addTo(map).bindPopup(`🚚 ${safe(nm)}`);
       }
     });
   });
 }
 
-document.querySelector("[onclick=\"showView('commandes')\"]")
-  .addEventListener("click", ()=>{
-    setTimeout(initMap,300);
-  });
+/* ================= MESSAGING (PHASE 1) ================= */
+async function loadMessages(){
+  // message model:
+  // internalMessages: { fromUid, fromName, to, subject, body, createdAt }
+  // to: uid OR email OR role keyword (ex: "bureau")
+  messagesList.innerHTML = "";
+  if(!currentUser) return;
 
-/* ===========================
-   CHAUFFEURS MODULE
-=========================== */
-
-async function loadDriversModule(){
-  const container = document.getElementById("view-chauffeurs");
-  container.innerHTML="<h2>Chauffeurs</h2>";
-
-  const snap = await getDocs(collection(db,"users"));
-  snap.forEach(docSnap=>{
-    const d = docSnap.data();
-    if(d.role==="driver"){
-      const div = document.createElement("div");
-      div.className="card";
-      div.innerHTML=`
-        <b>${d.fullName || ""}</b><br>
-        Téléphone: ${d.phone || ""}<br>
-        Province: ${d.province || ""}<br>
-        Email: ${d.email || ""}
+  const q = query(collection(db,"internalMessages"), orderBy("createdAt","desc"), limit(25));
+  onSnapshot(q,(snap)=>{
+    messagesList.innerHTML="";
+    snap.forEach(ds=>{
+      const m = ds.data();
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML = `
+        <div class="card-head">
+          <div>
+            <div class="tracking">${safe(m.subject || "Sans objet")}</div>
+            <div class="route">De: ${safe(m.fromName || m.fromUid)} • À: ${safe(m.to)}</div>
+          </div>
+          <span class="badge" style="background:#000">MSG</span>
+        </div>
+        <div class="hr"></div>
+        <div class="meta">${safe(m.body)}</div>
       `;
-      container.appendChild(div);
-    }
+      messagesList.appendChild(card);
+    });
   });
 }
 
-document.querySelector("[onclick=\"showView('chauffeurs')\"]")
-  .addEventListener("click", loadDriversModule);
+sendMsgBtn.addEventListener("click", async()=>{
+  if(!currentUser) return;
+  const to = (msgTo.value||"").trim();
+  const subject = (msgSubject.value||"").trim();
+  const body = (msgBody.value||"").trim();
 
-/* ===========================
-   PAIEMENTS MODULE
-=========================== */
+  if(!to || !body){
+    alert("Destinataire + message requis.");
+    return;
+  }
 
-async function loadPayments(){
-  const container = document.getElementById("view-paiements");
-  container.innerHTML="<h2>Paiements Chauffeurs</h2>";
-
-  const snap = await getDocs(collection(db,"shipments"));
-  let totalDue = 0;
-
-  snap.forEach(docSnap=>{
-    const d = docSnap.data();
-    if(d.status==="delivered"){
-      totalDue += driverRateBI;
-    }
+  await addDoc(collection(db,"internalMessages"),{
+    fromUid: currentUser.uid,
+    fromName: userName.textContent || currentUser.email || "Admin",
+    to,
+    subject: subject || null,
+    body,
+    createdAt: serverTimestamp()
   });
 
-  container.innerHTML+=`
-    <div class="card">
-      Total dû chauffeurs : <b>${totalDue.toLocaleString("fr-FR")} BIF</b>
-    </div>
-  `;
+  msgSubject.value="";
+  msgBody.value="";
+  alert("Message envoyé.");
+});
+
+refreshMsgBtn.addEventListener("click", loadMessages);
+
+/* ================= PLANNING (PHASE 1) ================= */
+async function loadCalendar(){
+  calendarList.innerHTML="";
+  const q = query(collection(db,"internalCalendar"), orderBy("when","desc"), limit(30));
+  onSnapshot(q,(snap)=>{
+    calendarList.innerHTML="";
+    snap.forEach(ds=>{
+      const e = ds.data();
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <div class="card-head">
+          <div>
+            <div class="tracking">${safe(e.title)}</div>
+            <div class="route">${safe(e.where)} • Assigné: ${safe(e.to)}</div>
+          </div>
+          <span class="badge" style="background:#000">RDV</span>
+        </div>
+        <div class="hr"></div>
+        <div class="meta">
+          <b>Date:</b> ${e.when?.toDate ? e.when.toDate().toLocaleString() : safe(e.whenText)}<br>
+          <b>Notes:</b> ${safe(e.notes)}
+        </div>
+      `;
+      calendarList.appendChild(card);
+    });
+  });
 }
 
-document.querySelector("[onclick=\"showView('paiements')\"]")
-  .addEventListener("click", loadPayments);
+calSaveBtn.addEventListener("click", async()=>{
+  const title = (calTitle.value||"").trim();
+  const whenVal = (calWhen.value||"").trim();
+  const whereTxt = (calWhere.value||"").trim();
+  const to = (calTo.value||"").trim();
+  const notes = (calNotes.value||"").trim();
 
-/* ===========================
-   MESSAGERIE SIMPLE
-=========================== */
+  if(!title || !whenVal){
+    alert("Titre + date/heure requis.");
+    return;
+  }
 
-function loadMessages(){
-  const container = document.getElementById("view-messagerie");
-  container.innerHTML=`
-    <h2>Messagerie Interne</h2>
-    <div class="card">
-      Module chat interne prêt pour extension.
-    </div>
-  `;
+  await addDoc(collection(db,"internalCalendar"),{
+    title,
+    whenText: whenVal,
+    when: serverTimestamp(), // phase 1 (sans conversion timezone); on met timestamp + texte
+    where: whereTxt || null,
+    to: to || null,
+    notes: notes || null,
+    createdAt: serverTimestamp(),
+    createdBy: currentUser ? currentUser.uid : null
+  });
+
+  calTitle.value="";
+  calWhen.value="";
+  calWhere.value="";
+  calTo.value="";
+  calNotes.value="";
+  alert("Rendez-vous ajouté.");
+});
+
+calRefreshBtn.addEventListener("click", loadCalendar);
+
+/* ================= OFFICE (PHASE 1) ================= */
+async function loadOffice(){
+  officeList.innerHTML="";
+  const q = query(collection(db,"officeLog"), orderBy("createdAt","desc"), limit(30));
+  onSnapshot(q,(snap)=>{
+    officeList.innerHTML="";
+    snap.forEach(ds=>{
+      const o = ds.data();
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <div class="card-head">
+          <div>
+            <div class="tracking">${safe(o.name)}</div>
+            <div class="route">${safe(o.phone)} • ${safe(o.topic)}</div>
+          </div>
+          <span class="badge" style="background:${o.priority==="urgent" ? "#e11d48" : "#000"}">${safe(o.priority||"normal")}</span>
+        </div>
+        <div class="hr"></div>
+        <div class="meta">${safe(o.notes)}</div>
+      `;
+      officeList.appendChild(card);
+    });
+  });
 }
-document.querySelector("[onclick=\"showView('messagerie')\"]")
-  .addEventListener("click", loadMessages);
 
-/* ===========================
-   PLANNING
-=========================== */
+officeSaveBtn.addEventListener("click", async()=>{
+  const name = (officeName.value||"").trim();
+  const phone = (officePhone.value||"").trim();
+  const topic = (officeTopic.value||"").trim();
+  const priority = officePriority.value || "normal";
+  const notes = (officeNotes.value||"").trim();
 
-function loadPlanning(){
-  const container = document.getElementById("view-planning");
-  container.innerHTML=`
-    <h2>Planning</h2>
-    <div class="card">
-      Module calendrier à intégrer (FullCalendar possible).
+  if(!name || !phone || !topic){
+    alert("Client + téléphone + objet requis.");
+    return;
+  }
+
+  await addDoc(collection(db,"officeLog"),{
+    name, phone, topic, priority,
+    notes: notes || null,
+    createdAt: serverTimestamp(),
+    createdBy: currentUser ? currentUser.uid : null
+  });
+
+  officeName.value="";
+  officePhone.value="";
+  officeTopic.value="";
+  officePriority.value="normal";
+  officeNotes.value="";
+  alert("Enregistré.");
+});
+
+officeRefreshBtn.addEventListener("click", loadOffice);
+
+/* ================= ENTERPRISE (SUPERADMIN) ================= */
+async function loadEnterprise(){
+  enterpriseList.innerHTML="";
+  // visible à tous, mais modif plus tard / superadmin
+  const card = document.createElement("div");
+  card.className="card";
+  card.innerHTML = `
+    <div class="card-head">
+      <div>
+        <div class="tracking">Paramètres Entreprise</div>
+        <div class="route">Lecture (édition ensuite)</div>
+      </div>
+      <span class="badge" style="background:#000">${safe(currentRole)}</span>
     </div>
+    <div class="hr"></div>
+    <div class="meta" id="enterpriseMeta">Chargement...</div>
   `;
-}
-document.querySelector("[onclick=\"showView('planning')\"]")
-  .addEventListener("click", loadPlanning);
+  enterpriseList.appendChild(card);
 
-/* ===========================
-   BUREAU
-=========================== */
-
-function loadBureau(){
-  const container = document.getElementById("view-bureau");
-  container.innerHTML=`
-    <h2>Bureau</h2>
-    <div class="card">
-      Gestion administrative, contrats, documents.
-    </div>
-  `;
-}
-document.querySelector("[onclick=\"showView('bureau')\"]")
-  .addEventListener("click", loadBureau);
-
-/* ===========================
-   ENTREPRISE (SUPERADMIN)
-=========================== */
-
-async function loadEntreprise(){
-  const container = document.getElementById("view-entreprise");
-  container.innerHTML="<h2>Paramètres Entreprise</h2>";
-
+  const meta = card.querySelector("#enterpriseMeta");
   const snap = await getDoc(doc(db,"settings","driverPay"));
   if(snap.exists()){
-    const rate = snap.data().perDeliveredParcelBI;
-    container.innerHTML+=`
-      <div class="card">
-        Paiement par colis : ${rate} BIF
-      </div>
+    const d = snap.data();
+    meta.innerHTML = `
+      <b>driverPay.perDeliveredParcelBI :</b> ${money(num(d.perDeliveredParcelBI,0))}<br>
+      <b>Note :</b> valeur modifiable backend • pas codée en dur.
+    `;
+  }else{
+    meta.innerHTML = `
+      <b>settings/driverPay</b> introuvable.<br>
+      Crée le doc avec le champ <b>perDeliveredParcelBI</b>.
     `;
   }
 }
 
-document.querySelector("[onclick=\"showView('entreprise')\"]")
-  .addEventListener("click", loadEntreprise);
-
-/* ===========================
-   SERVICE WORKER
-=========================== */
-
+/* ================= PWA SERVICE WORKER ================= */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('../sw.js');
-}if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('../sw.js');
 }
+
+/* ================= ERP LOCKDOWN (PWA feel) ================= */
+history.pushState(null, null, location.href);
+window.onpopstate = function(){ history.go(1); };
+
+document.addEventListener("keydown", function(e){
+  if(
+    e.key==="F5" ||
+    (e.ctrlKey && (e.key==="r" || e.key==="R")) ||
+    (e.metaKey && (e.key==="r" || e.key==="R"))
+  ){
+    e.preventDefault();
+  }
+});
+document.addEventListener("contextmenu", e=>e.preventDefault());
+document.addEventListener("selectstart", e=>e.preventDefault());
+
+/* ================= INITIAL UI DEFAULT ================= */
+showView("colis");
+
+/* ================= SPLASH LOADER ================= */
+window.addEventListener("load", ()=>{
+  const splash = document.createElement("div");
+  splash.style.position="fixed";
+  splash.style.inset="0";
+  splash.style.background="#000";
+  splash.style.display="flex";
+  splash.style.flexDirection="column";
+  splash.style.alignItems="center";
+  splash.style.justifyContent="center";
+  splash.style.zIndex="99999";
+  splash.style.color="#D4AF37";
+  splash.style.fontFamily="Inter, Arial";
+  splash.style.fontWeight="900";
+  splash.style.letterSpacing=".4px";
+  splash.innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px">
+      <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/9f727e7c0fd9cd5643f9af3bad4116e534bd67e7/admin/91BABD19-AC01-4B6C-BB65-C87661788A77.png" style="width:70px;height:70px;border-radius:20px;border:1px solid rgba(212,175,55,.35)">
+      <div style="text-align:left">
+        <div style="font-size:18px">CIZA GROUP</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.72);margin-top:6px;font-weight:800">Division Logistics • ERP</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;font-size:12px;color:rgba(255,255,255,.80);font-weight:800">Chargement sécurisé...</div>
+  `;
+  document.body.appendChild(splash);
+  setTimeout(()=>{ splash.remove(); }, 900);
+});
 </script>
 
 </body>
