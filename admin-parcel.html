@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciza Group | Division Logistics ERP</title>
+
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#000000">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,Arial;background:#0f1115;color:#111;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+width:270px;
+background:#000;
+color:#fff;
+display:flex;
+flex-direction:column;
+padding:24px 18px;
+position:fixed;
+height:100vh;
+transition:.3s;
+z-index:1000;
+}
+.logo{
+font-size:22px;
+font-weight:900;
+color:#D4AF37;
+margin-bottom:40px;
+}
+.nav a{
+display:block;
+padding:12px 14px;
+border-radius:12px;
+text-decoration:none;
+color:#fff;
+font-weight:800;
+font-size:13px;
+margin-bottom:8px;
+cursor:pointer;
+}
+.nav a:hover,
+.nav a.active{
+background:#D4AF37;
+color:#000;
+}
+.logout-btn{
+background:#D4AF37;
+border:none;
+padding:12px;
+width:100%;
+border-radius:12px;
+font-weight:900;
+cursor:pointer;
+margin-top:auto;
+}
+
+/* HAMBURGER */
+.hamburger{
+display:none;
+position:fixed;
+top:18px;
+left:18px;
+background:#000;
+border:1px solid rgba(212,175,55,.4);
+padding:10px 12px;
+border-radius:10px;
+cursor:pointer;
+z-index:1100;
+}
+.hamburger span{
+display:block;
+width:20px;
+height:2px;
+background:#D4AF37;
+margin:4px 0;
+}
+
+/* OVERLAY */
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+opacity:0;
+pointer-events:none;
+transition:.3s;
+z-index:900;
+}
+.menu-open .overlay{
+opacity:1;
+pointer-events:auto;
+}
+.menu-open .sidebar{
+transform:translateX(0);
+}
+
+/* MAIN */
+.main{
+margin-left:270px;
+flex:1;
+padding:40px;
+background:#f4f6f9;
+min-height:100vh;
+transition:.3s;
+}
+
+.view{display:none}
+.view.active{display:block}
+
+.header-title{
+font-size:22px;
+font-weight:900;
+margin-bottom:25px;
+}
+
+/* KPI */
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:18px;
+margin-bottom:30px;
+}
+.kpi{
+background:#000;
+color:#D4AF37;
+padding:20px;
+border-radius:16px;
+text-align:center;
+font-weight:900;
+}
+.kpi small{
+display:block;
+color:#fff;
+opacity:.8;
+margin-top:6px;
+font-size:11px;
+}
+
+/* SEARCH */
+.search-bar{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+.search-bar input,
+.search-bar select{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+font-weight:600;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.main{margin-left:0;padding:80px 20px}
+.hamburger{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<div class="hamburger" id="hamburgerBtn">
+<span></span><span></span><span></span>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+<div class="logo">CIZA LOGISTICS</div>
+
+<div class="nav">
+<a class="active" onclick="showView('colis')">📦 Colis</a>
+<a onclick="showView('commandes')">🧾 Commandes (GPS)</a>
+<a onclick="showView('chauffeurs')">🚚 Chauffeurs</a>
+<a onclick="showView('paiements')">💰 Paiements</a>
+<a onclick="showView('messagerie')">💬 Messagerie</a>
+<a onclick="showView('planning')">📅 Planning</a>
+<a onclick="showView('bureau')">🏢 Bureau</a>
+<a onclick="showView('entreprise')">🏭 Entreprise</a>
+</div>
+
+<button class="logout-btn" id="logoutBtn">Déconnexion</button>
+</div>
+
+<div class="main">
+
+<!-- ==================== COLIS ==================== -->
+<section id="view-colis" class="view active">
+
+<div class="header-title">Gestion des Colis</div>
+
+<div class="kpi-grid">
+<div class="kpi"><div id="kpiPayment">0</div><small>Paiement attente</small></div>
+<div class="kpi"><div id="kpiReady">0</div><small>Ready</small></div>
+<div class="kpi"><div id="kpiTransit">0</div><small>Transit</small></div>
+<div class="kpi"><div id="kpiDelivered">0</div><small>Livré</small></div>
+<div class="kpi"><div id="kpiRevenue">0</div><small>CA Total</small></div>
+</div>
+
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="Recherche tracking / nom / téléphone">
+<select id="statusFilter">
+<option value="">Tous statuts</option>
+<option value="payment_under_review">Payment Review</option>
+<option value="ready_for_pickup">Ready</option>
+<option value="in_transit">Transit</option>
+<option value="delivered">Livré</option>
+</select>
+</div>
+
+<div id="parcelList"></div>
+
+</section>
+
+<!-- AUTRES VUES (VIDES POUR INSTANT) -->
+<section id="view-commandes" class="view"><h2>Commandes + GPS</h2><div id="map" style="height:400px;"></div></section>
+<section id="view-chauffeurs" class="view"><h2>Chauffeurs</h2></section>
+<section id="view-paiements" class="view"><h2>Paiements</h2></section>
+<section id="view-messagerie" class="view"><h2>Messagerie</h2></section>
+<section id="view-planning" class="view"><h2>Planning</h2></section>
+<section id="view-bureau" class="view"><h2>Bureau</h2></section>
+<section id="view-entreprise" class="view"><h2>Entreprise (Superadmin)</h2></section>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+/* FIREBASE */
+const app = initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* GUARD */
+onAuthStateChanged(auth, async(user)=>{
+if(!user){ location.href="../login.html"; return; }
+const snap = await getDoc(doc(db,"users",user.uid));
+if(!snap.exists()){ location.href="../login.html"; return; }
+const role=snap.data().role;
+if(role!=="admin" && role!=="superadmin"){
+location.href="../login.html";
+}
+});
+
+/* LOGOUT */
+document.getElementById("logoutBtn").onclick=async()=>{
+await signOut(auth);
+location.href="../login.html";
+};
+
+/* NAVIGATION */
+window.showView=function(view){
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+document.getElementById('view-'+view).classList.add('active');
+document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+event.target.classList.add('active');
+}
+
+/* MOBILE MENU */
+const hamburger=document.getElementById("hamburgerBtn");
+const overlay=document.getElementById("overlay");
+function openMenu(){document.body.classList.add("menu-open");}
+function closeMenu(){document.body.classList.remove("menu-open");}
+hamburger.addEventListener("click",()=>{
+document.body.classList.contains("menu-open")?closeMenu():openMenu();
+});
+overlay.addEventListener("click",closeMenu);
+</script>/* ===========================
+   SETTINGS DRIVER PAY (DYNAMIQUE)
+=========================== */
+
+let driverRateBI = 0;
+
+async function loadDriverRate(){
+  const snap = await getDoc(doc(db,"settings","driverPay"));
+  if(snap.exists()){
+    driverRateBI = snap.data().perDeliveredParcelBI || 0;
+  }
+}
+await loadDriverRate();
+
+/* ===========================
+   LOAD SHIPMENTS
+=========================== */
+
+let allShipments = [];
+
+const shipmentsQuery = query(collection(db,"shipments"));
+
+onSnapshot(shipmentsQuery, (snapshot)=>{
+  allShipments = [];
+  snapshot.forEach(docSnap=>{
+    allShipments.push({id:docSnap.id, ...docSnap.data()});
+  });
+  renderShipments();
+});
+
+/* ===========================
+   RENDER + FILTRE
+=========================== */
+
+document.getElementById("searchInput").addEventListener("input", renderShipments);
+document.getElementById("statusFilter").addEventListener("change", renderShipments);
+
+function renderShipments(){
+
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const statusFilter = document.getElementById("statusFilter").value;
+
+  let payment=0, ready=0, transit=0, delivered=0, revenue=0;
+
+  const container = document.getElementById("parcelList");
+  container.innerHTML="";
+
+  allShipments
+  .filter(s=>{
+    const matchSearch =
+      (s.id || "").toLowerCase().includes(search) ||
+      (s.senderName || "").toLowerCase().includes(search) ||
+      (s.receiverName || "").toLowerCase().includes(search) ||
+      (s.senderPhone || "").includes(search) ||
+      (s.receiverPhone || "").includes(search);
+
+    const matchStatus = statusFilter ? s.status === statusFilter : true;
+
+    return matchSearch && matchStatus;
+  })
+  .forEach(s=>{
+
+    if(s.status==="payment_under_review") payment++;
+    if(s.status==="ready_for_pickup") ready++;
+    if(s.status==="in_transit") transit++;
+    if(s.status==="delivered") delivered++;
+
+    revenue += s.finalPrice || 0;
+
+    const driverEarning = s.status==="delivered" ? driverRateBI : 0;
+    const companyNet = s.status==="delivered" ? (s.finalPrice - driverRateBI) : 0;
+
+    const card = document.createElement("div");
+    card.className="card";
+
+    card.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:900">${s.id}</div>
+      <div class="status" style="background:${getStatusColor(s.status)}">${s.status || "—"}</div>
+    </div>
+
+    <div class="row">
+      <div class="meta">
+        <b>Route:</b> ${s.fromProvince || ""} → ${s.toProvince || ""}<br>
+        <b>Expéditeur:</b> ${s.senderName || ""} (${s.senderPhone || ""})<br>
+        <b>Destinataire:</b> ${s.receiverName || ""} (${s.receiverPhone || ""})<br>
+        <b>Description:</b> ${s.content || ""}<br>
+        <b>Valeur déclarée:</b> ${(s.declaredValue||0).toLocaleString("fr-FR")} BIF
+      </div>
+
+      <div class="meta">
+        <b>Service:</b> ${s.serviceLabel || s.service || ""}<br>
+        <b>Poids/Qté:</b> ${s.weightOrQty || ""}<br>
+        <b>Paiement:</b> ${s.paymentMethod || ""}<br>
+        <b>PaymentStatus:</b> ${s.paymentStatus || ""}<br>
+        <b>Prix:</b> ${(s.finalPrice||0).toLocaleString("fr-FR")} BIF<br>
+        ${s.status==="delivered" ? `
+        <hr>
+        💰 Chauffeur : ${driverRateBI.toLocaleString("fr-FR")} BIF<br>
+        🏢 Net entreprise : ${companyNet.toLocaleString("fr-FR")} BIF
+        ` : ""}
+      </div>
+    </div>
+
+    <div class="controls">
+      ${s.status==="payment_under_review" ? `
+        <button onclick="validatePayment('${s.id}')">Valider paiement</button>
+      `:""}
+
+      ${s.status==="ready_for_pickup" ? `
+        <button onclick="markTransit('${s.id}')">Marquer en transit</button>
+      `:""}
+
+      ${s.status==="in_transit" ? `
+        <button onclick="markDelivered('${s.id}')">Confirmer livraison</button>
+      `:""}
+
+      <button class="print-btn" onclick="window.open('../print-label.html?tracking=${s.id}','_blank')">Imprimer</button>
+    </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  document.getElementById("kpiPayment").innerText = payment;
+  document.getElementById("kpiReady").innerText = ready;
+  document.getElementById("kpiTransit").innerText = transit;
+  document.getElementById("kpiDelivered").innerText = delivered;
+  document.getElementById("kpiRevenue").innerText = revenue.toLocaleString("fr-FR")+" BIF";
+}
+
+/* ===========================
+   WORKFLOW ACTIONS
+=========================== */
+
+window.validatePayment = async function(id){
+  await updateDoc(doc(db,"shipments",id),{
+    status:"ready_for_pickup",
+    paymentStatus:"verified"
+  });
+};
+
+window.markTransit = async function(id){
+  await updateDoc(doc(db,"shipments",id),{
+    status:"in_transit"
+  });
+};
+
+window.markDelivered = async function(id){
+  await updateDoc(doc(db,"shipments",id),{
+    status:"delivered"
+  });
+};
+
+/* ===========================
+   UTILS
+=========================== */
+
+function getStatusColor(status){
+  if(status==="payment_under_review") return "#e67e22";
+  if(status==="ready_for_pickup") return "#f39c12";
+  if(status==="in_transit") return "#8e44ad";
+  if(status==="delivered") return "#27ae60";
+  return "#000";
+}/* ===========================
+   GPS LIVE - LEAFLET
+=========================== */
+
+let mapInitialized = false;
+let map;
+let driverMarkers = {};
+
+function initMap(){
+  if(mapInitialized) return;
+
+  map = L.map('map').setView([-3.3614, 29.3599], 8);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom: 19
+  }).addTo(map);
+
+  mapInitialized = true;
+
+  onSnapshot(collection(db,"driversLive"), snap=>{
+    snap.forEach(docSnap=>{
+      const d = docSnap.data();
+      const id = docSnap.id;
+
+      if(!d.lat || !d.lng) return;
+
+      if(driverMarkers[id]){
+        driverMarkers[id].setLatLng([d.lat,d.lng]);
+      }else{
+        driverMarkers[id] = L.marker([d.lat,d.lng])
+          .addTo(map)
+          .bindPopup(`🚚 ${d.fullName || id}`);
+      }
+    });
+  });
+}
+
+document.querySelector("[onclick=\"showView('commandes')\"]")
+  .addEventListener("click", ()=>{
+    setTimeout(initMap,300);
+  });
+
+/* ===========================
+   CHAUFFEURS MODULE
+=========================== */
+
+async function loadDriversModule(){
+  const container = document.getElementById("view-chauffeurs");
+  container.innerHTML="<h2>Chauffeurs</h2>";
+
+  const snap = await getDocs(collection(db,"users"));
+  snap.forEach(docSnap=>{
+    const d = docSnap.data();
+    if(d.role==="driver"){
+      const div = document.createElement("div");
+      div.className="card";
+      div.innerHTML=`
+        <b>${d.fullName || ""}</b><br>
+        Téléphone: ${d.phone || ""}<br>
+        Province: ${d.province || ""}<br>
+        Email: ${d.email || ""}
+      `;
+      container.appendChild(div);
+    }
+  });
+}
+
+document.querySelector("[onclick=\"showView('chauffeurs')\"]")
+  .addEventListener("click", loadDriversModule);
+
+/* ===========================
+   PAIEMENTS MODULE
+=========================== */
+
+async function loadPayments(){
+  const container = document.getElementById("view-paiements");
+  container.innerHTML="<h2>Paiements Chauffeurs</h2>";
+
+  const snap = await getDocs(collection(db,"shipments"));
+  let totalDue = 0;
+
+  snap.forEach(docSnap=>{
+    const d = docSnap.data();
+    if(d.status==="delivered"){
+      totalDue += driverRateBI;
+    }
+  });
+
+  container.innerHTML+=`
+    <div class="card">
+      Total dû chauffeurs : <b>${totalDue.toLocaleString("fr-FR")} BIF</b>
+    </div>
+  `;
+}
+
+document.querySelector("[onclick=\"showView('paiements')\"]")
+  .addEventListener("click", loadPayments);
+
+/* ===========================
+   MESSAGERIE SIMPLE
+=========================== */
+
+function loadMessages(){
+  const container = document.getElementById("view-messagerie");
+  container.innerHTML=`
+    <h2>Messagerie Interne</h2>
+    <div class="card">
+      Module chat interne prêt pour extension.
+    </div>
+  `;
+}
+document.querySelector("[onclick=\"showView('messagerie')\"]")
+  .addEventListener("click", loadMessages);
+
+/* ===========================
+   PLANNING
+=========================== */
+
+function loadPlanning(){
+  const container = document.getElementById("view-planning");
+  container.innerHTML=`
+    <h2>Planning</h2>
+    <div class="card">
+      Module calendrier à intégrer (FullCalendar possible).
+    </div>
+  `;
+}
+document.querySelector("[onclick=\"showView('planning')\"]")
+  .addEventListener("click", loadPlanning);
+
+/* ===========================
+   BUREAU
+=========================== */
+
+function loadBureau(){
+  const container = document.getElementById("view-bureau");
+  container.innerHTML=`
+    <h2>Bureau</h2>
+    <div class="card">
+      Gestion administrative, contrats, documents.
+    </div>
+  `;
+}
+document.querySelector("[onclick=\"showView('bureau')\"]")
+  .addEventListener("click", loadBureau);
+
+/* ===========================
+   ENTREPRISE (SUPERADMIN)
+=========================== */
+
+async function loadEntreprise(){
+  const container = document.getElementById("view-entreprise");
+  container.innerHTML="<h2>Paramètres Entreprise</h2>";
+
+  const snap = await getDoc(doc(db,"settings","driverPay"));
+  if(snap.exists()){
+    const rate = snap.data().perDeliveredParcelBI;
+    container.innerHTML+=`
+      <div class="card">
+        Paiement par colis : ${rate} BIF
+      </div>
+    `;
+  }
+}
+
+document.querySelector("[onclick=\"showView('entreprise')\"]")
+  .addEventListener("click", loadEntreprise);
+
+/* ===========================
+   SERVICE WORKER
+=========================== */
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('../sw.js');
+}if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('../sw.js');
+}
+</script>
+
+</body>
+</html>
