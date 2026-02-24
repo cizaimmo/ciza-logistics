@@ -1,0 +1,23 @@
+{
+  "name": "Ciza Group | Division Logistics",
+  "short_name": "Ciza Logistics",
+  "description": "Plateforme interne de gestion logistique - Colis, Chauffeurs, Paiements, Bureau.",
+  "start_url": "/ciza-logistics/admin/admin-parcel.html",
+  "scope": "/ciza-logistics/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/cizaimmo/ciza-logistics/9f727e7c0fd9cd5643f9af3bad4116e534bd67e7/admin/91BABD19-AC01-4B6C-BB65-C87661788A77.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/cizaimmo/ciza-logistics/9f727e7c0fd9cd5643f9af3bad4116e534bd67e7/admin/91BABD19-AC01-4B6C-BB65-C87661788A77.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
