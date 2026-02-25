@@ -2,368 +2,104 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciza Logistics - Login</title>
 
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-
-<link rel="manifest" href="../manifest.json">
-
-<title>Ciza Driver</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-:root{
-  --gold:#D4AF37;
-  --black:#000;
-  --green:#16a34a;
-  --red:#dc2626;
-}
-
-*{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:Inter,Arial;
-  background:#f3f4f6;
-  overflow-x:hidden;
-}
-
-.header{
+  margin:0;
+  font-family:Arial;
   background:#000;
   color:#fff;
-  padding:14px;
   display:flex;
-  justify-content:space-between;
+  justify-content:center;
   align-items:center;
+  height:100vh;
 }
-
-.brand{color:var(--gold);font-weight:900}
-
-.badge{
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.online{background:var(--green)}
-.offline{background:var(--red)}
-
-.logout{
-  background:var(--gold);
-  border:none;
-  padding:6px 10px;
-  border-radius:10px;
-  font-weight:900;
-}
-
-.main{padding:16px}
-
 .card{
-  background:#fff;
-  padding:16px;
+  background:#111;
+  padding:30px;
   border-radius:16px;
-  margin-bottom:14px;
-  box-shadow:0 6px 20px rgba(0,0,0,.05);
+  width:300px;
 }
-
-#map{
-  height:280px;
-  border-radius:16px;
-  margin-top:10px;
-}
-
-.btn{
+input{
   width:100%;
-  padding:14px;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:8px;
   border:none;
-  border-radius:14px;
-  font-weight:900;
-  margin-top:10px;
 }
-
-.gold{background:var(--gold)}
-.dark{background:#111;color:#fff}
-
-.section-title{font-weight:900;margin-bottom:8px}
-
-#scanOverlay{
-position:fixed;
-inset:0;
-background:#000;
-display:none;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:2000;
-color:#fff;
-}
-
-.laser{
-width:80%;
-height:3px;
-background:var(--gold);
-position:absolute;
-animation:scan 2s infinite;
-}
-
-@keyframes scan{
-0%{top:20%}
-50%{top:80%}
-100%{top:20%}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#D4AF37;
+  font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="brand">🚚 Ciza Driver</div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <div id="onlineBadge" class="badge online">🟢 En ligne</div>
-    <button id="logoutBtn" class="logout">Déconnexion</button>
-  </div>
-</div>
-
-<div class="main">
-
-  <div class="card">
-    <div class="section-title">Livraison active</div>
-    <div id="activeShipmentInfo">Aucune</div>
-    <div id="etaInfo"></div>
-    <div id="map"></div>
-  </div>
-
-  <div class="card">
-    <button id="scanBtn" class="btn dark">📷 Scanner colis</button>
-  </div>
-
-  <div id="stickyAction" style="display:none">
-    <button id="mainActionBtn" class="btn gold">🚀 Action</button>
-  </div>
-
-</div>
-
-<div id="scanOverlay">
-<div class="laser"></div>
-<div id="reader" style="width:80%"></div>
+<div class="card">
+  <h2>Connexion</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Mot de passe">
+  <button id="loginBtn">Se connecter</button>
+  <p id="error" style="color:red;"></p>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, doc, getDoc, updateDoc, setDoc,
-  collection, query, where, onSnapshot,
-  serverTimestamp, getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-import { 
-  getAuth, onAuthStateChanged, signOut 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
-/* FIREBASE */
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
   authDomain:"ciza-logistics.firebaseapp.com",
-  projectId:"ciza-logistics",
-  storageBucket:"ciza-logistics.appspot.com"
+  projectId:"ciza-logistics"
 });
 
-const db=getFirestore(app);
-const auth=getAuth(app);
-const storage=getStorage(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-let currentUser=null;
-let activeShipment=null;
-let driverSpeed=0;
+document.getElementById("loginBtn").onclick = async()=>{
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-/* MAP */
-
-let map=L.map('map').setView([-3.3731,29.9189],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let driverMarker=null;
-let destinationMarker=null;
-
-/* AUTH GUARD */
-
-onAuthStateChanged(auth,async(user)=>{
-if(!user){ location.replace("../login.html"); return; }
-
-const snap=await getDoc(doc(db,"users",user.uid));
-if(!snap.exists() || snap.data().role!=="driver"){
-await signOut(auth);
-location.replace("../login.html");
-return;
-}
-
-currentUser=user;
-startGPS();
-});
-
-/* GPS LIVE */
-
-function startGPS(){
-navigator.geolocation.watchPosition(async(pos)=>{
-
-driverSpeed=pos.coords.speed||0;
-
-await setDoc(doc(db,"driversLive",currentUser.uid),{
-lat:pos.coords.latitude,
-lng:pos.coords.longitude,
-speed:driverSpeed,
-lastUpdate:serverTimestamp()
-});
-
-if(driverMarker){
-driverMarker.setLatLng([pos.coords.latitude,pos.coords.longitude]);
-}else{
-driverMarker=L.marker([pos.coords.latitude,pos.coords.longitude]).addTo(map);
-}
-
-updateETA();
-
-},{enableHighAccuracy:true});
-}
-
-/* SCAN */
-
-let qrScanner=null;
-
-document.getElementById("scanBtn").onclick=async()=>{
-
-document.getElementById("scanOverlay").style.display="flex";
-
-qrScanner=new Html5Qrcode("reader");
-
-await qrScanner.start(
-{facingMode:"environment"},
-{fps:10,qrbox:250},
-async(text)=>{
-
-await qrScanner.stop();
-document.getElementById("scanOverlay").style.display="none";
-
-const q=query(collection(db,"shipments"),where("trackingCode","==",text));
-const snap=await getDocs(q);
-
-if(snap.empty){ alert("Introuvable"); return; }
-
-const shipment={id:snap.docs[0].id,...snap.docs[0].data()};
-
-if(shipment.paymentStatus!=="verified"){
-alert("Paiement non validé.");
-return;
-}
-
-activeShipment=shipment;
-
-document.getElementById("activeShipmentInfo").textContent=shipment.trackingCode;
-
-if(shipment.toLat && shipment.toLng){
-destinationMarker=L.marker([shipment.toLat,shipment.toLng]).addTo(map);
-map.setView([shipment.toLat,shipment.toLng],14);
-}
-
-document.getElementById("stickyAction").style.display="block";
-document.getElementById("mainActionBtn").textContent=
-shipment.status==="assigned"?
-"🚀 Démarrer livraison":
-"📦 Confirmer livraison";
-
-});
+  try{
+    const cred = await signInWithEmailAndPassword(auth,email,password);
+  }catch(e){
+    document.getElementById("error").textContent="Erreur connexion";
+  }
 };
 
-/* ETA */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
-function updateETA(){
-if(!activeShipment || !destinationMarker || !driverMarker) return;
+onAuthStateChanged(auth, async(user)=>{
+  if(!user) return;
 
-const lat1=driverMarker.getLatLng().lat;
-const lng1=driverMarker.getLatLng().lng;
-const lat2=destinationMarker.getLatLng().lat;
-const lng2=destinationMarker.getLatLng().lng;
+  const snap = await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()){
+    return;
+  }
 
-const R=6371;
-const dLat=(lat2-lat1)*Math.PI/180;
-const dLon=(lng2-lng1)*Math.PI/180;
-const a=Math.sin(dLat/2)**2+
-Math.cos(lat1*Math.PI/180)*
-Math.cos(lat2*Math.PI/180)*
-Math.sin(dLon/2)**2;
-const distance=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  const role = snap.data().role;
 
-const speedKmh=(driverSpeed||10)*3.6;
-const eta=speedKmh>0?(distance/speedKmh)*60:0;
-
-document.getElementById("etaInfo").innerHTML=
-`📍 ${distance.toFixed(2)} km • ⏱ ${eta.toFixed(0)} min`;
-}
-
-/* DELIVERY */
-
-document.getElementById("mainActionBtn").onclick=async()=>{
-
-if(activeShipment.status==="assigned"){
-await updateDoc(doc(db,"shipments",activeShipment.id),{
-status:"in_transit"
+  if(role==="driver"){
+    window.location.href = "./driver-tool.html";
+  }
+  else if(role==="admin" || role==="superadmin"){
+    window.location.href = "./admin/admin-parcel.html";
+  }
 });
-activeShipment.status="in_transit";
-document.getElementById("mainActionBtn").textContent="📦 Confirmer livraison";
-return;
-}
-
-if(activeShipment.status==="in_transit"){
-
-/* PHOTO UPLOAD */
-
-const file=await capturePhoto();
-
-const storageRef=ref(storage,"proofs/"+activeShipment.id+"/photo.jpg");
-await uploadBytes(storageRef,file);
-const url=await getDownloadURL(storageRef);
-
-await updateDoc(doc(db,"shipments",activeShipment.id),{
-status:"delivered",
-deliveredAt:serverTimestamp(),
-proofPhoto:url
-});
-
-alert("Livraison confirmée.");
-document.getElementById("stickyAction").style.display="none";
-}
-};
-
-async function capturePhoto(){
-return new Promise((resolve)=>{
-const input=document.createElement("input");
-input.type="file";
-input.accept="image/*";
-input.capture="environment";
-input.onchange=()=>resolve(input.files[0]);
-input.click();
-});
-}
-
-/* LOGOUT */
-
-document.getElementById("logoutBtn").onclick=async()=>{
-await signOut(auth);
-location.replace("../login.html");
-};
 
 </script>
 
