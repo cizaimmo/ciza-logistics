@@ -126,7 +126,7 @@ updateETA();
 }
 
 function listenShipments(){
-const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
+const q=query(collection(db,"shipments"));
 onSnapshot(q,(snapshot)=>{
 activeShipment=null;
 snapshot.forEach(docSnap=>{
