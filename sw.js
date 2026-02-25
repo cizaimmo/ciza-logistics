@@ -1,7 +1,9 @@
-const CACHE_NAME = "ciza-logistics-v2";
+const CACHE_NAME = "ciza-logistics-v3";
 
 const CORE_ASSETS = [
-  "/ciza-logistics/admin/admin-parcel.html"
+  "./login.html",
+  "./driver-tool.html",
+  "./admin/admin-parcel.html"
 ];
 
 // INSTALL
@@ -14,18 +16,18 @@ self.addEventListener("install", event => {
   );
 });
 
-// ACTIVATE (supprime anciens caches)
+// ACTIVATE
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys.map(key => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
-      );
-    })
+      )
+    )
   );
   self.clients.claim();
 });
@@ -33,19 +35,21 @@ self.addEventListener("activate", event => {
 // FETCH STRATEGY
 self.addEventListener("fetch", event => {
 
-  // Ne pas interférer avec Firebase / API
-  if (event.request.url.includes("firestore") ||
-      event.request.url.includes("firebase") ||
-      event.request.url.includes("googleapis")) {
+  // Ignore Firebase/API calls
+  if (
+    event.request.url.includes("firestore") ||
+    event.request.url.includes("firebase") ||
+    event.request.url.includes("googleapis")
+  ) {
     return;
   }
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        const responseClone = response.clone();
+        const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseClone);
+          cache.put(event.request, clone);
         });
         return response;
       })
