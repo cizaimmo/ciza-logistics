@@ -90,6 +90,32 @@ body{
 .dark{background:#111;color:#fff}
 
 .section-title{font-weight:900;margin-bottom:8px}
+
+#scanOverlay{
+position:fixed;
+inset:0;
+background:#000;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:2000;
+color:#fff;
+}
+
+.laser{
+width:80%;
+height:3px;
+background:var(--gold);
+position:absolute;
+animation:scan 2s infinite;
+}
+
+@keyframes scan{
+0%{top:20%}
+50%{top:80%}
+100%{top:20%}
+}
 </style>
 </head>
 
@@ -106,61 +132,68 @@ body{
 <div class="main">
 
   <div class="card">
-    <div class="section-title">Statut</div>
-    <button id="toggleOnline" class="btn gold">Se mettre hors ligne</button>
-    <div id="driverInfo"></div>
-  </div>
-
-  <div class="card">
     <div class="section-title">Livraison active</div>
     <div id="activeShipmentInfo">Aucune</div>
+    <div id="etaInfo"></div>
     <div id="map"></div>
   </div>
 
-  <div id="shipmentsContainer"></div>
+  <div class="card">
+    <button id="scanBtn" class="btn dark">📷 Scanner colis</button>
+  </div>
 
+  <div id="stickyAction" style="display:none">
+    <button id="mainActionBtn" class="btn gold">🚀 Action</button>
+  </div>
+
+</div>
+
+<div id="scanOverlay">
+<div class="laser"></div>
+<div id="reader" style="width:80%"></div>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
-  deleteDoc,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  serverTimestamp
+  getFirestore, doc, getDoc, updateDoc, setDoc,
+  collection, query, where, onSnapshot,
+  serverTimestamp, getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { 
+  getAuth, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 /* FIREBASE */
 
 const app = initializeApp({
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
   authDomain:"ciza-logistics.firebaseapp.com",
-  projectId:"ciza-logistics"
+  projectId:"ciza-logistics",
+  storageBucket:"ciza-logistics.appspot.com"
 });
 
 const db=getFirestore(app);
 const auth=getAuth(app);
+const storage=getStorage(app);
 
 let currentUser=null;
-let driverData=null;
-let watchId=null;
 let activeShipment=null;
+let driverSpeed=0;
 
 /* MAP */
 
 let map=L.map('map').setView([-3.3731,29.9189],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19
-}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let driverMarker=null;
 let destinationMarker=null;
@@ -168,470 +201,170 @@ let destinationMarker=null;
 /* AUTH GUARD */
 
 onAuthStateChanged(auth,async(user)=>{
-  if(!user){
-    location.replace("../login.html");
-    return;
-  }
+if(!user){ location.replace("../login.html"); return; }
 
-  const snap=await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists() || snap.data().role!=="driver"){
-    await signOut(auth);
-    location.replace("../login.html");
-    return;
-  }
-
-  currentUser=user;
-  driverData=snap.data();
-
-  document.getElementById("driverInfo").textContent=
-    driverData.fullName+" • "+(driverData.province||"");
-
-  startShipmentsListener();
-});
-
-/* ONLINE TOGGLE */
-
-const toggleBtn=document.getElementById("toggleOnline");
-
-toggleBtn.addEventListener("click",async()=>{
-  const newStatus=driverData.onlineStatus==="online"?"offline":"online";
-
-  await updateDoc(doc(db,"users",currentUser.uid),{
-    onlineStatus:newStatus
-  });
-
-  driverData.onlineStatus=newStatus;
-  updateOnlineUI();
-});
-
-function updateOnlineUI(){
-  const badge=document.getElementById("onlineBadge");
-
-  if(driverData.onlineStatus==="online"){
-    badge.className="badge online";
-    badge.textContent="🟢 En ligne";
-    toggleBtn.textContent="Se mettre hors ligne";
-    startGPS();
-  }else{
-    badge.className="badge offline";
-    badge.textContent="🔴 Hors ligne";
-    toggleBtn.textContent="Revenir en ligne";
-    stopGPS();
-  }
+const snap=await getDoc(doc(db,"users",user.uid));
+if(!snap.exists() || snap.data().role!=="driver"){
+await signOut(auth);
+location.replace("../login.html");
+return;
 }
+
+currentUser=user;
+startGPS();
+});
 
 /* GPS LIVE */
 
 function startGPS(){
-  if(watchId) return;
+navigator.geolocation.watchPosition(async(pos)=>{
 
-  watchId=navigator.geolocation.watchPosition(async(pos)=>{
-    const {latitude,longitude,speed}=pos.coords;
+driverSpeed=pos.coords.speed||0;
 
-    await setDoc(doc(db,"driversLive",currentUser.uid),{
-      driverUid:currentUser.uid,
-      fullName:driverData.fullName,
-      lat:latitude,
-      lng:longitude,
-      speed:speed||0,
-      status:"online",
-      lastUpdate:serverTimestamp()
-    });
+await setDoc(doc(db,"driversLive",currentUser.uid),{
+lat:pos.coords.latitude,
+lng:pos.coords.longitude,
+speed:driverSpeed,
+lastUpdate:serverTimestamp()
+});
 
-    if(driverMarker){
-      driverMarker.setLatLng([latitude,longitude]);
-    }else{
-      driverMarker=L.marker([latitude,longitude]).addTo(map);
-    }
-
-  },{
-    enableHighAccuracy:true
-  });
+if(driverMarker){
+driverMarker.setLatLng([pos.coords.latitude,pos.coords.longitude]);
+}else{
+driverMarker=L.marker([pos.coords.latitude,pos.coords.longitude]).addTo(map);
 }
 
-function stopGPS(){
-  if(watchId){
-    navigator.geolocation.clearWatch(watchId);
-    watchId=null;
-  }
+updateETA();
+
+},{enableHighAccuracy:true});
 }
 
-/* FIFO SHIPMENTS */
+/* SCAN */
 
-function startShipmentsListener(){
+let qrScanner=null;
 
-  const q=query(
-    collection(db,"shipments"),
-    where("assignedDriverId","==",currentUser.uid)
-  );
+document.getElementById("scanBtn").onclick=async()=>{
 
-  onSnapshot(q,(snap)=>{
+document.getElementById("scanOverlay").style.display="flex";
 
-    let shipments=[];
+qrScanner=new Html5Qrcode("reader");
 
-    snap.forEach(docSnap=>{
-      shipments.push({id:docSnap.id,...docSnap.data()});
-    });
+await qrScanner.start(
+{facingMode:"environment"},
+{fps:10,qrbox:250},
+async(text)=>{
 
-    shipments.sort((a,b)=>{
-      const aa=a.assignedAt?.seconds||0;
-      const bb=b.assignedAt?.seconds||0;
-      return aa-bb;
-    });
+await qrScanner.stop();
+document.getElementById("scanOverlay").style.display="none";
 
-    renderShipments(shipments);
-  });
+const q=query(collection(db,"shipments"),where("trackingCode","==",text));
+const snap=await getDocs(q);
+
+if(snap.empty){ alert("Introuvable"); return; }
+
+const shipment={id:snap.docs[0].id,...snap.docs[0].data()};
+
+if(shipment.paymentStatus!=="verified"){
+alert("Paiement non validé.");
+return;
 }
 
-function renderShipments(list){
+activeShipment=shipment;
 
-  const container=document.getElementById("shipmentsContainer");
-  container.innerHTML="";
+document.getElementById("activeShipmentInfo").textContent=shipment.trackingCode;
 
-  list.forEach(s=>{
-
-    const card=document.createElement("div");
-    card.className="card";
-
-    card.innerHTML=`
-      <div class="section-title">${s.trackingCode}</div>
-      <div>Statut : ${s.status}</div>
-      <button class="btn gold" data-id="${s.id}">
-        Ouvrir
-      </button>
-    `;
-
-    card.querySelector("button").addEventListener("click",()=>{
-      openShipment(s);
-    });
-
-    container.appendChild(card);
-  });
+if(shipment.toLat && shipment.toLng){
+destinationMarker=L.marker([shipment.toLat,shipment.toLng]).addTo(map);
+map.setView([shipment.toLat,shipment.toLng],14);
 }
 
-function openShipment(s){
-  activeShipment=s;
+document.getElementById("stickyAction").style.display="block";
+document.getElementById("mainActionBtn").textContent=
+shipment.status==="assigned"?
+"🚀 Démarrer livraison":
+"📦 Confirmer livraison";
 
-  document.getElementById("activeShipmentInfo").textContent=
-    s.trackingCode+" • "+s.status;
+});
+};
 
-  if(s.toLat && s.toLng){
-    if(destinationMarker){
-      destinationMarker.setLatLng([s.toLat,s.toLng]);
-    }else{
-      destinationMarker=L.marker([s.toLat,s.toLng]).addTo(map);
-    }
+/* ETA */
 
-    map.setView([s.toLat,s.toLng],14);
-  }
+function updateETA(){
+if(!activeShipment || !destinationMarker || !driverMarker) return;
+
+const lat1=driverMarker.getLatLng().lat;
+const lng1=driverMarker.getLatLng().lng;
+const lat2=destinationMarker.getLatLng().lat;
+const lng2=destinationMarker.getLatLng().lng;
+
+const R=6371;
+const dLat=(lat2-lat1)*Math.PI/180;
+const dLon=(lng2-lng1)*Math.PI/180;
+const a=Math.sin(dLat/2)**2+
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLon/2)**2;
+const distance=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+const speedKmh=(driverSpeed||10)*3.6;
+const eta=speedKmh>0?(distance/speedKmh)*60:0;
+
+document.getElementById("etaInfo").innerHTML=
+`📍 ${distance.toFixed(2)} km • ⏱ ${eta.toFixed(0)} min`;
+}
+
+/* DELIVERY */
+
+document.getElementById("mainActionBtn").onclick=async()=>{
+
+if(activeShipment.status==="assigned"){
+await updateDoc(doc(db,"shipments",activeShipment.id),{
+status:"in_transit"
+});
+activeShipment.status="in_transit";
+document.getElementById("mainActionBtn").textContent="📦 Confirmer livraison";
+return;
+}
+
+if(activeShipment.status==="in_transit"){
+
+/* PHOTO UPLOAD */
+
+const file=await capturePhoto();
+
+const storageRef=ref(storage,"proofs/"+activeShipment.id+"/photo.jpg");
+await uploadBytes(storageRef,file);
+const url=await getDownloadURL(storageRef);
+
+await updateDoc(doc(db,"shipments",activeShipment.id),{
+status:"delivered",
+deliveredAt:serverTimestamp(),
+proofPhoto:url
+});
+
+alert("Livraison confirmée.");
+document.getElementById("stickyAction").style.display="none";
+}
+};
+
+async function capturePhoto(){
+return new Promise((resolve)=>{
+const input=document.createElement("input");
+input.type="file";
+input.accept="image/*";
+input.capture="environment";
+input.onchange=()=>resolve(input.files[0]);
+input.click();
+});
 }
 
 /* LOGOUT */
 
-document.getElementById("logoutBtn")
-.addEventListener("click",async()=>{
-  await signOut(auth);
-  location.replace("../login.html");
-});
-/* ================= SCAN + OTP + SIGNATURE + DELIVERY ================= */
+document.getElementById("logoutBtn").onclick=async()=>{
+await signOut(auth);
+location.replace("../login.html");
+};
 
-let qrScanner=null;
-let scanCooldown=3000;
-let lastScanTime=0;
-
-/* UI injection (scan + sticky + signature overlay) */
-
-const scanUI=`
-<div class="card">
-  <div class="section-title">Scanner colis</div>
-  <button id="scanBtn" class="btn dark">📷 Scanner QR</button>
-  <div id="readerWrapper" style="display:none;margin-top:10px;">
-    <div id="reader" style="width:100%;border-radius:16px;overflow:hidden;"></div>
-  </div>
-  <div id="scanResult" style="margin-top:10px;font-size:13px;"></div>
-</div>
-
-<div id="stickyAction" style="
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-padding:16px;
-background:#000;
-display:none;
-z-index:999;">
-  <button id="mainActionBtn" style="
-  width:100%;
-  padding:16px;
-  font-weight:900;
-  border:none;
-  border-radius:14px;
-  background:#D4AF37;">
-  🚀 Action
-  </button>
-</div>
-
-<div id="signatureOverlay" style="
-position:fixed;
-inset:0;
-background:#000;
-display:none;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:2000;">
-  <div style="color:#fff;font-weight:800;margin-bottom:10px;">
-    ✍️ Signature du client<br>
-    <span style="font-weight:400;font-size:13px;">
-      Merci pour votre confiance
-    </span>
-  </div>
-  <canvas id="signatureCanvas"
-    style="width:95%;height:220px;background:#fff;border-radius:12px;"></canvas>
-  <div style="margin-top:15px;display:flex;gap:10px;">
-    <button id="clearSign" class="btn dark">Effacer</button>
-    <button id="validateSign" class="btn gold">Valider</button>
-  </div>
-</div>
-`;
-
-document.querySelector(".main").insertAdjacentHTML("beforeend",scanUI);
-
-/* ================= QR SCAN ================= */
-
-document.getElementById("scanBtn").addEventListener("click",async()=>{
-
-  const wrapper=document.getElementById("readerWrapper");
-
-  if(qrScanner){
-    await qrScanner.stop();
-    await qrScanner.clear();
-    qrScanner=null;
-    wrapper.style.display="none";
-    return;
-  }
-
-  wrapper.style.display="block";
-  qrScanner=new Html5Qrcode("reader");
-
-  await qrScanner.start(
-    {facingMode:"environment"},
-    {fps:10,qrbox:250},
-    onScanSuccess
-  );
-});
-
-async function onScanSuccess(decodedText){
-
-  const now=Date.now();
-  if(now-lastScanTime<scanCooldown) return;
-  lastScanTime=now;
-
-  await qrScanner.stop();
-  await qrScanner.clear();
-  qrScanner=null;
-  document.getElementById("readerWrapper").style.display="none";
-
-  const q=query(
-    collection(db,"shipments"),
-    where("trackingCode","==",decodedText)
-  );
-
-  const snap=await getDocs(q);
-
-  if(snap.empty){
-    alert("Tracking introuvable.");
-    return;
-  }
-
-  const docSnap=snap.docs[0];
-  const shipment={id:docSnap.id,...docSnap.data()};
-
-  if(shipment.assignedDriverId!==currentUser.uid){
-    alert("Colis non assigné à vous.");
-    return;
-  }
-
-  activeShipment=shipment;
-
-  document.getElementById("scanResult").innerHTML=
-    "✅ "+shipment.trackingCode;
-
-  showSticky();
-}
-
-/* ================= STICKY ACTION ================= */
-
-function showSticky(){
-  const sticky=document.getElementById("stickyAction");
-  const btn=document.getElementById("mainActionBtn");
-
-  sticky.style.display="block";
-
-  if(activeShipment.status==="assigned"){
-    btn.textContent="🚀 Démarrer livraison";
-  }
-  else if(activeShipment.status==="in_transit"){
-    btn.textContent="🔐 Confirmer livraison";
-  }
-}
-
-document.getElementById("mainActionBtn")
-.addEventListener("click",async()=>{
-
-  if(!activeShipment) return;
-
-  if(activeShipment.status==="assigned"){
-    await updateDoc(doc(db,"shipments",activeShipment.id),{
-      status:"in_transit",
-      inTransitAt:serverTimestamp()
-    });
-    activeShipment.status="in_transit";
-    alert("Livraison démarrée.");
-    showSticky();
-  }
-  else if(activeShipment.status==="in_transit"){
-    verifyDistanceAndOTP();
-  }
-});
-
-/* ================= DISTANCE < 200m ================= */
-
-function distanceKm(lat1,lon1,lat2,lon2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLon=(lon2-lon1)*Math.PI/180;
-  const a=
-    Math.sin(dLat/2)*Math.sin(dLat/2)+
-    Math.cos(lat1*Math.PI/180)*
-    Math.cos(lat2*Math.PI/180)*
-    Math.sin(dLon/2)*Math.sin(dLon/2);
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function verifyDistanceAndOTP(){
-
-  navigator.geolocation.getCurrentPosition(async(pos)=>{
-
-    const d=distanceKm(
-      pos.coords.latitude,
-      pos.coords.longitude,
-      activeShipment.toLat,
-      activeShipment.toLng
-    );
-
-    if(d>0.2){
-      alert("Vous devez être à moins de 200m.");
-      return;
-    }
-
-    verifyOTP();
-
-  });
-}
-
-/* ================= OTP ================= */
-
-let otpAttempts=0;
-
-function verifyOTP(){
-
-  if(activeShipment.otpLocked){
-    alert("OTP verrouillé.");
-    return;
-  }
-
-  const code=prompt("Entrez le code client");
-
-  if(code!==activeShipment.otpCode){
-    otpAttempts++;
-    if(otpAttempts>=3){
-      updateDoc(doc(db,"shipments",activeShipment.id),{
-        otpLocked:true
-      });
-      alert("OTP verrouillé.");
-    }else{
-      alert("Code incorrect.");
-    }
-    return;
-  }
-
-  openSignature();
-}
-
-/* ================= SIGNATURE ================= */
-
-function openSignature(){
-
-  const overlay=document.getElementById("signatureOverlay");
-  const canvas=document.getElementById("signatureCanvas");
-  const ctx=canvas.getContext("2d");
-
-  overlay.style.display="flex";
-  canvas.width=canvas.offsetWidth;
-  canvas.height=canvas.offsetHeight;
-
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  let drawing=false;
-
-  canvas.onmousedown=e=>{
-    drawing=true;
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX,e.offsetY);
-  };
-
-  canvas.onmousemove=e=>{
-    if(!drawing) return;
-    ctx.lineTo(e.offsetX,e.offsetY);
-    ctx.stroke();
-  };
-
-  canvas.onmouseup=()=>drawing=false;
-
-  canvas.ontouchstart=e=>{
-    drawing=true;
-    const rect=canvas.getBoundingClientRect();
-    const x=e.touches[0].clientX-rect.left;
-    const y=e.touches[0].clientY-rect.top;
-    ctx.beginPath();
-    ctx.moveTo(x,y);
-  };
-
-  canvas.ontouchmove=e=>{
-    if(!drawing) return;
-    e.preventDefault();
-    const rect=canvas.getBoundingClientRect();
-    const x=e.touches[0].clientX-rect.left;
-    const y=e.touches[0].clientY-rect.top;
-    ctx.lineTo(x,y);
-    ctx.stroke();
-  };
-
-  canvas.ontouchend=()=>drawing=false;
-
-  document.getElementById("clearSign").onclick=()=>{
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-  };
-
-  document.getElementById("validateSign").onclick=async()=>{
-
-    const signature=canvas.toDataURL("image/png");
-
-    await updateDoc(doc(db,"shipments",activeShipment.id),{
-      status:"delivered",
-      deliveredAt:serverTimestamp(),
-      deliveredBy:currentUser.uid,
-      proofSignatureBase64:signature
-    });
-
-    overlay.style.display="none";
-    document.getElementById("stickyAction").style.display="none";
-
-    alert("Livraison confirmée.");
-  };
-}
 </script>
 
 </body>
