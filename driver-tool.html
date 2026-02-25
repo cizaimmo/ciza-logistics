@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
 <meta name="theme-color" content="#000000">
-
 <title>Ciza Driver</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -14,43 +12,18 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Inter;
-  background:#f3f4f6;
-}
-.header{
-  background:#000;
-  color:#fff;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+body{margin:0;font-family:Inter;background:#f3f4f6}
+.header{background:#000;color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
 .brand{color:#D4AF37;font-weight:900}
-.badge{
-  padding:6px 12px;
-  border-radius:999px;
-  font-weight:700;
-}
+.badge{padding:6px 12px;border-radius:999px;font-weight:700}
 .online{background:#16a34a}
-.card{
-  background:#fff;
-  margin:16px;
-  padding:16px;
-  border-radius:16px;
-}
+.card{background:#fff;margin:16px;padding:16px;border-radius:16px}
 #map{height:260px;border-radius:16px;margin-top:10px}
-.btn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-weight:900;
-  margin-top:10px;
-}
+.btn{width:100%;padding:14px;border:none;border-radius:14px;font-weight:900;margin-top:10px}
 .gold{background:#D4AF37}
 .dark{background:#111;color:#fff}
+input{width:100%;padding:12px;margin-top:10px;border-radius:12px;border:1px solid #ddd}
+canvas{border:1px solid #ddd;margin-top:10px;border-radius:12px}
 </style>
 </head>
 
@@ -69,6 +42,12 @@ body{
   <div id="activeShipmentInfo">Aucune</div>
   <div id="etaInfo"></div>
   <div id="map"></div>
+
+  <!-- OTP + Signature -->
+  <input id="otpInput" placeholder="Code OTP client">
+  <canvas id="signaturePad" width="300" height="150"></canvas>
+  <button id="clearSignature" class="btn dark">Effacer signature</button>
+
 </div>
 
 <div class="card">
@@ -87,7 +66,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore, doc, getDoc, updateDoc,
   collection, query, where, onSnapshot,
-  serverTimestamp, getDocs
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
@@ -115,7 +94,9 @@ let driverMarker=null;
 let destinationMarker=null;
 let driverSpeed=0;
 
-/* MAP */
+let lastLat=null;
+let lastLng=null;
+let lastAccuracy=null;
 
 let map=L.map('map').setView([-3.3731,29.9189],12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -123,10 +104,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 /* AUTH */
 
 onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    window.location.href="./login.html";
-    return;
-  }
+  if(!user){ window.location.href="./login.html"; return; }
 
   const snap=await getDoc(doc(db,"users",user.uid));
   if(!snap.exists() || snap.data().role!=="driver"){
@@ -144,12 +122,17 @@ onAuthStateChanged(auth, async(user)=>{
 
 function startGPS(){
   navigator.geolocation.watchPosition(async(pos)=>{
+
+    lastLat = pos.coords.latitude;
+    lastLng = pos.coords.longitude;
+    lastAccuracy = pos.coords.accuracy;
+
     driverSpeed=pos.coords.speed||0;
 
     if(driverMarker){
-      driverMarker.setLatLng([pos.coords.latitude,pos.coords.longitude]);
+      driverMarker.setLatLng([lastLat,lastLng]);
     }else{
-      driverMarker=L.marker([pos.coords.latitude,pos.coords.longitude]).addTo(map);
+      driverMarker=L.marker([lastLat,lastLng]).addTo(map);
     }
 
     updateETA();
@@ -157,10 +140,22 @@ function startGPS(){
   },{enableHighAccuracy:true});
 }
 
-/* LISTENER ASSIGNATION */
+/* DISTANCE CALC */
+
+function calculateDistance(lat1, lon1, lat2, lon2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+
+    Math.cos(lat1*Math.PI/180)*
+    Math.cos(lat2*Math.PI/180)*
+    Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+/* LISTENER */
 
 function startShipmentListener(){
-
   const q=query(
     collection(db,"shipments"),
     where("assignedDriverId","==",currentUser.uid)
@@ -203,40 +198,27 @@ function startShipmentListener(){
   });
 }
 
-/* SCAN */
+/* SIGNATURE */
 
-let qrScanner=null;
+const canvas=document.getElementById("signaturePad");
+const ctx=canvas.getContext("2d");
+let drawing=false;
 
-document.getElementById("scanBtn").onclick=async()=>{
-  document.getElementById("reader").style.display="block";
+canvas.addEventListener("mousedown",()=>drawing=true);
+canvas.addEventListener("mouseup",()=>drawing=false);
+canvas.addEventListener("mousemove",(e)=>{
+  if(!drawing) return;
+  ctx.lineWidth=2;
+  ctx.lineCap="round";
+  ctx.strokeStyle="#000";
+  ctx.lineTo(e.offsetX,e.offsetY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX,e.offsetY);
+});
 
-  qrScanner=new Html5Qrcode("reader");
-
-  await qrScanner.start(
-    {facingMode:"environment"},
-    {fps:10,qrbox:250},
-    async(text)=>{
-
-      await qrScanner.stop();
-      document.getElementById("reader").style.display="none";
-
-      const snap=await getDoc(doc(db,"shipments",text));
-      if(!snap.exists()){
-        alert("Introuvable");
-        return;
-      }
-
-      const s={id:snap.id,...snap.data()};
-
-      if(s.assignedDriverId!==currentUser.uid){
-        alert("Non assigné à vous.");
-        return;
-      }
-
-      activeShipment=s;
-      document.getElementById("activeShipmentInfo").textContent=s.id;
-    }
-  );
+document.getElementById("clearSignature").onclick=()=>{
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 };
 
 /* ACTION */
@@ -254,16 +236,53 @@ document.getElementById("mainActionBtn").onclick=async()=>{
 
   else if(activeShipment.status==="in_transit"){
 
-    const file=await capturePhoto();
-    const storageRef=ref(storage,"proofs/"+activeShipment.id+"/photo.jpg");
+    const otpInput=document.getElementById("otpInput").value.trim();
+    if(otpInput!==activeShipment.deliveryOtp){
+      alert("OTP incorrect.");
+      return;
+    }
 
+    const signatureData=canvas.toDataURL();
+    if(signatureData.length<1000){
+      alert("Signature obligatoire.");
+      return;
+    }
+
+    if(!lastLat || !activeShipment.toLat){
+      alert("GPS non disponible.");
+      return;
+    }
+
+    const distanceKm=calculateDistance(
+      lastLat,lastLng,
+      activeShipment.toLat,activeShipment.toLng
+    );
+
+    if(distanceKm*1000>100){
+      alert("Vous êtes trop loin du point de livraison.");
+      return;
+    }
+
+    const file=await capturePhoto();
+    if(!file){
+      alert("Photo obligatoire.");
+      return;
+    }
+
+    const storageRef=ref(storage,"proofs/"+activeShipment.id+"/photo.jpg");
     await uploadBytes(storageRef,file);
     const url=await getDownloadURL(storageRef);
 
     await updateDoc(doc(db,"shipments",activeShipment.id),{
       status:"delivered",
       deliveredAt:serverTimestamp(),
-      proofPhoto:url
+      proofPhoto:url,
+      signature:signatureData,
+      deliveryLocation:{
+        lat:lastLat,
+        lng:lastLng,
+        accuracy:lastAccuracy
+      }
     });
 
     alert("Livraison confirmée.");
