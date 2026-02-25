@@ -34,6 +34,8 @@ flex-wrap:wrap;
 
 .shipment-card{border:1px solid rgba(212,175,55,0.3);padding:15px;border-radius:14px;margin-bottom:15px;}
 
+.timeline{font-size:11px;color:#777;margin-top:6px;line-height:1.6;}
+
 button{width:100%;padding:12px;border-radius:12px;border:none;background:#000;color:#fff;font-weight:900;cursor:pointer;margin-top:6px;}
 button.gold{background:#D4AF37;color:#000;}
 
@@ -90,7 +92,7 @@ touch-action:none;
 <input type="file" accept="image/*" capture="environment" id="photoInput">
 <canvas id="signatureCanvas"></canvas>
 <button class="gold" onclick="clearSignature()">Effacer signature</button>
-<button class="gold" id="confirmBtn" onclick="completeDelivery()">Confirmer Livraison</button>
+<button class="gold" onclick="completeDelivery()">Confirmer Livraison</button>
 </div>
 
 </div>
@@ -106,13 +108,13 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-const app = initializeApp({
-  apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-  authDomain: "ciza-logistics.firebaseapp.com",
-  projectId: "ciza-logistics",
-  storageBucket: "ciza-logistics.firebasestorage.app"
-});
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
 
+const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const storage=getStorage(app);
@@ -166,19 +168,6 @@ ${d.status!=="delivered" ? `<button onclick="nextStep('${d.id}')">Étape suivant
 </div>`;
 }
 
-async function sha256(text){
-const data=new TextEncoder().encode(text);
-const hash=await crypto.subtle.digest("SHA-256",data);
-return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-
-function isCanvasEmpty(canvas){
-const blank=document.createElement("canvas");
-blank.width=canvas.width;
-blank.height=canvas.height;
-return canvas.toDataURL()===blank.toDataURL();
-}
-
 window.nextStep=async function(id){
 const snap=await getDoc(doc(db,"shipments",id));
 const d=snap.data();
@@ -190,17 +179,17 @@ pickedUpAt:serverTimestamp()
 });
 }
 else if(d.status==="picked_up"){
+
 const otp=Math.floor(1000+Math.random()*9000).toString();
+
 await updateDoc(doc(db,"shipments",id),{
 status:"in_transit",
 transitAt:serverTimestamp(),
-otpHash:await sha256(otp),
-otpUsed:false,
-otpLocked:false,
-attemptCount:0,
-otpPlain:otp
+otpCode:otp,
+otpGeneratedAt:serverTimestamp()
 });
-alert("OTP disponible sur le tracking client");
+
+alert("OTP généré : "+otp);
 }
 else if(d.status==="in_transit"){
 currentShipment=id;
@@ -209,49 +198,19 @@ document.getElementById("deliverySection").style.display="block";
 };
 
 window.completeDelivery=async function(){
-const btn=document.getElementById("confirmBtn");
-if(btn.disabled)return;
+const snap=await getDoc(doc(db,"shipments",currentShipment));
+const data=snap.data();
 
-if(!navigator.onLine){
-alert("Connexion internet instable");
+if(document.getElementById("otpInput").value!==data.otpCode){
+alert("OTP incorrect");
 return;
 }
 
-if(!currentShipment){
-alert("Aucune livraison sélectionnée");
-return;
-}
-
-btn.disabled=true;
-btn.innerText="Validation...";
-
-try{
-const refDoc=doc(db,"shipments",currentShipment);
-const snap=await getDoc(refDoc);
-const d=snap.data();
-
-if(d.status!=="in_transit"){alert("Statut invalide");throw 0;}
-if(d.otpLocked){alert("OTP bloqué (3 tentatives)");throw 0;}
-if(d.otpUsed){alert("Déjà livrée");throw 0;}
-
-const input=document.getElementById("otpInput").value.trim();
-const inputHash=await sha256(input);
-
-if(inputHash!==d.otpHash){
-const attempts=(d.attemptCount||0)+1;
-await updateDoc(refDoc,{
-attemptCount:attempts,
-otpLocked:attempts>=3
-});
-alert("OTP incorrect. Tentatives restantes : "+(3-attempts));
-throw 0;
-}
-
-if(!document.getElementById("photoInput").files[0]){alert("Photo obligatoire");throw 0;}
-if(isCanvasEmpty(canvas)){alert("Signature obligatoire");throw 0;}
+const photo=document.getElementById("photoInput").files[0];
+if(!photo){alert("Photo obligatoire");return;}
 
 const photoRef=ref(storage,"deliveries/"+currentShipment+"/photo.jpg");
-await uploadBytes(photoRef,document.getElementById("photoInput").files[0]);
+await uploadBytes(photoRef,photo);
 const photoURL=await getDownloadURL(photoRef);
 
 const blob=await (await fetch(canvas.toDataURL("image/png"))).blob();
@@ -259,104 +218,70 @@ const sigRef=ref(storage,"deliveries/"+currentShipment+"/signature.png");
 await uploadBytes(sigRef,blob);
 const sigURL=await getDownloadURL(sigRef);
 
-await updateDoc(refDoc,{
+await updateDoc(doc(db,"shipments",currentShipment),{
 status:"delivered",
-otpUsed:true,
 deliveryPhoto:photoURL,
 receiverSignature:sigURL,
-deliveredAt:serverTimestamp(),
-otpPlain:null
+deliveredAt:serverTimestamp()
 });
 
 alert("Livraison confirmée");
-currentShipment=null;
 document.getElementById("deliverySection").style.display="none";
-document.getElementById("otpInput").value="";
-document.getElementById("photoInput").value="";
-clearSignature();
-
-}catch(e){
-console.error(e);
-}
-
-btn.disabled=false;
-btn.innerText="Confirmer Livraison";
 };
 
 window.logout=async function(){
 await signOut(auth);
-location.href="login.html";
+window.location.href="login.html";
 };
 
-const canvas = document.getElementById("signatureCanvas");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
+let drawing=false;
 
-/* === FIX RESOLUTION MOBILE === */
-function resizeCanvas(){
-  const ratio = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * ratio;
-  canvas.height = rect.height * ratio;
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.scale(ratio, ratio);
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
+function getPos(e){
+const rect=canvas.getBoundingClientRect();
+if(e.touches){
+return {x:e.touches[0].clientX-rect.left,y:e.touches[0].clientY-rect.top};
+}
+return {x:e.clientX-rect.left,y:e.clientY-rect.top};
 }
 
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+canvas.addEventListener("mousedown",e=>{
+drawing=true;
+ctx.beginPath();
+});
 
-let drawing = false;
+canvas.addEventListener("mousemove",e=>{
+if(!drawing)return;
+const pos=getPos(e);
+ctx.lineWidth=2;
+ctx.lineCap="round";
+ctx.lineTo(pos.x,pos.y);
+ctx.stroke();
+});
 
-/* POSITION */
-function getPosition(e){
-  const rect = canvas.getBoundingClientRect();
-  if(e.touches){
-    return {
-      x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
-    };
-  }
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  };
-}
+canvas.addEventListener("mouseup",()=>drawing=false);
 
-/* START */
-function startDraw(e){
-  drawing = true;
-  const pos = getPosition(e);
-  ctx.beginPath();
-  ctx.moveTo(pos.x, pos.y);
-}
+canvas.addEventListener("touchstart",e=>{
+drawing=true;
+ctx.beginPath();
+e.preventDefault();
+},{passive:false});
 
-/* DRAW */
-function draw(e){
-  if(!drawing) return;
-  e.preventDefault();
-  const pos = getPosition(e);
-  ctx.lineTo(pos.x, pos.y);
-  ctx.stroke();
-}
+canvas.addEventListener("touchmove",e=>{
+if(!drawing)return;
+const pos=getPos(e);
+ctx.lineWidth=2;
+ctx.lineCap="round";
+ctx.lineTo(pos.x,pos.y);
+ctx.stroke();
+e.preventDefault();
+},{passive:false});
 
-/* STOP */
-function stopDraw(){
-  drawing = false;
-}
+canvas.addEventListener("touchend",()=>drawing=false);
 
-/* EVENTS */
-canvas.addEventListener("mousedown", startDraw);
-canvas.addEventListener("mousemove", draw);
-canvas.addEventListener("mouseup", stopDraw);
-canvas.addEventListener("mouseleave", stopDraw);
-
-canvas.addEventListener("touchstart", startDraw, {passive:false});
-canvas.addEventListener("touchmove", draw, {passive:false});
-canvas.addEventListener("touchend", stopDraw);
-
-window.clearSignature = function(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+window.clearSignature=function(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
 };
 </script>
 
