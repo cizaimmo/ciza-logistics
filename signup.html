@@ -8,168 +8,107 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --gold:#D4AF37;
-}
-*{box-sizing:border-box}
-
+:root{--gold:#D4AF37;}
 body{
-  margin:0;
-  font-family:Inter;
-  background:radial-gradient(circle at top,#111,#000);
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
+margin:0;font-family:Inter;
+background:radial-gradient(circle at top,#111,#000);
+color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;
 }
-
 .card{
-  width:95%;
-  max-width:460px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);
-  border-radius:28px;
-  padding:40px 30px;
-  border:1px solid rgba(212,175,55,0.25);
-  box-shadow:0 25px 60px rgba(0,0,0,0.6);
+width:95%;max-width:460px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+border-radius:28px;padding:40px 30px;
+border:1px solid rgba(212,175,55,0.25);
 }
-
-.logo{
-  text-align:center;
-  margin-bottom:25px;
+.logo{text-align:center;margin-bottom:25px;}
+.logo img{width:150px;}
+h2{text-align:center;margin-bottom:25px;}
+input,select{
+width:100%;padding:14px;margin-top:12px;
+border-radius:16px;border:1px solid rgba(255,255,255,0.1);
+background:#111;color:#fff;
 }
-
-.logo img{
-  width:150px;
-}
-
-h2{
-  text-align:center;
-  font-weight:800;
-  margin-bottom:25px;
-}
-
-input, select{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:#111;
-  color:#fff;
-}
-
-input:focus, select:focus{
-  outline:none;
-  border:1px solid var(--gold);
-}
-
 button{
-  width:100%;
-  padding:15px;
-  margin-top:20px;
-  border-radius:16px;
-  border:none;
-  font-weight:900;
-  cursor:pointer;
+width:100%;padding:15px;margin-top:20px;
+border-radius:16px;border:none;font-weight:900;
+background:var(--gold);color:#000;
 }
-
-.btn{
-  background:var(--gold);
-  color:#000;
-}
-
-.note{
-  margin-top:15px;
-  font-size:12px;
-  color:#bbb;
-  text-align:center;
-}
+.note{margin-top:15px;font-size:12px;color:#bbb;text-align:center;}
 </style>
 </head>
 
 <body>
-
 <div class="card">
 
-  <div class="logo">
-    <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/893e5582023cca6493a2a462843ad9d01286b82b/logo.png">
-  </div>
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/893e5582023cca6493a2a462843ad9d01286b82b/logo.png">
+</div>
 
-  <h2>Créer un compte sécurisé</h2>
+<h2>Créer un compte sécurisé</h2>
 
-  <input type="text" id="fullName" placeholder="Nom complet">
-  <input type="email" id="email" placeholder="Adresse email">
-  <input type="password" id="password" placeholder="Mot de passe">
+<input type="text" id="fullName" placeholder="Nom complet">
+<input type="email" id="email" placeholder="Adresse email">
+<input type="password" id="password" placeholder="Mot de passe">
 
-  <select id="role">
-    <option value="client">Client</option>
-    <option value="driver">Chauffeur</option>
-  </select>
+<select id="role">
+<option value="client">Client</option>
+<option value="driver">Chauffeur</option>
+</select>
 
-  <button class="btn" id="signupBtn">Créer le compte</button>
+<button id="signupBtn">Créer le compte</button>
 
-  <div class="note">
-    Les comptes Chauffeur nécessitent validation par l'administration.
-  </div>
+<div class="note">
+Les comptes Chauffeur nécessitent validation par l'administration.
+</div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp({
-  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-  authDomain:"ciza-logistics.firebaseapp.com",
-  projectId:"ciza-logistics"
+const app=initializeApp({
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+});
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+document.getElementById("signupBtn").onclick=async()=>{
+
+const fullName=document.getElementById("fullName").value.trim();
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+const role=document.getElementById("role").value;
+
+if(!fullName || !email || !password){
+alert("Tous les champs sont obligatoires.");
+return;
+}
+
+const cred=await createUserWithEmailAndPassword(auth,email,password);
+await sendEmailVerification(cred.user);
+
+// ✅ CLIENT APPROVED DIRECT
+let accountStatus = "approved";
+
+if(role === "driver"){
+accountStatus = "pending";
+}
+
+await setDoc(doc(db,"users",cred.user.uid),{
+fullName,
+email,
+role,
+accountStatus,
+createdAt:serverTimestamp()
 });
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-document.getElementById("signupBtn").onclick = async()=>{
-
-  const fullName = document.getElementById("fullName").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const role = document.getElementById("role").value;
-
-  if(!fullName || !email || !password){
-    alert("Tous les champs sont obligatoires");
-    return;
-  }
-
-  try{
-    const cred = await createUserWithEmailAndPassword(auth,email,password);
-    const uid = cred.user.uid;
-
-    let accountStatus = "active";
-
-    if(role==="driver"){
-      accountStatus = "pending";
-    }
-
-    await setDoc(doc(db,"users",uid),{
-      fullName,
-      email,
-      role,
-      accountStatus,
-      createdAt:serverTimestamp()
-    });
-
-    if(role==="driver"){
-      alert("Compte créé. En attente d'approbation par l'administration.");
-      location.href="login.html";
-    }else{
-      location.href="espace-client.html";
-    }
-
-  }catch(e){
-    alert("Erreur lors de la création du compte");
-  }
+alert("Compte créé. Vérifiez votre email avant connexion.");
+location.href="login.html";
 };
 </script>
 
