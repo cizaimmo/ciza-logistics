@@ -937,18 +937,23 @@ async function mainAction(){
 
   // picked_up -> in_transit (si OTP absent, générer)
   if(st==="picked_up"){
-    const otpExisting = data.otpCode || data.deliveryOtp || data.deliveryOTP || null;
-    let patch = { status:"in_transit", transitAt:serverTimestamp() };
-    if(!otpExisting){
-      const otp = Math.floor(1000 + Math.random()*9000).toString();
-      patch.otpCode = otp;
-      patch.otpGeneratedAt = serverTimestamp();
-      // Note: selon ton flow, l’admin/expéditeur peut communiquer ce code au client.
-      alert("OTP généré : " + otp);
-    }
-    await updateDoc(doc(db,"shipments",selectedShipmentId), patch);
-    return;
+  const otpExisting = data.otpCode || data.deliveryOtp || data.deliveryOTP || null;
+
+  let patch = { 
+    status:"in_transit", 
+    transitAt:serverTimestamp() 
+  };
+
+  if(!otpExisting){
+    const otp = Math.floor(1000 + Math.random()*9000).toString();
+    patch.otpCode = otp;
+    patch.otpGeneratedAt = serverTimestamp();
+    // OTP généré automatiquement (invisible chauffeur)
   }
+
+  await updateDoc(doc(db,"shipments",selectedShipmentId), patch);
+  return;
+}
 
   // in_transit -> delivered (OTP + online + proximity + photo + signature)
   if(st==="in_transit"){
