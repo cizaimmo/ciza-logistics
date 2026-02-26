@@ -4,111 +4,173 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CizaLogistics | Création de Compte</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
 <style>
 :root{--gold:#D4AF37;}
-body{
-margin:0;font-family:Inter;
-background:radial-gradient(circle at top,#111,#000);
-color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;
-}
-.card{
-width:95%;max-width:460px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(20px);
-border-radius:28px;padding:40px 30px;
-border:1px solid rgba(212,175,55,0.25);
-}
+body{margin:0;font-family:Inter;background:radial-gradient(circle at top,#111,#000);color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;}
+.card{width:95%;max-width:460px;background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:28px;padding:40px 30px;border:1px solid rgba(212,175,55,0.25);}
 .logo{text-align:center;margin-bottom:25px;}
 .logo img{width:150px;}
 h2{text-align:center;margin-bottom:25px;}
-input,select{
-width:100%;padding:14px;margin-top:12px;
-border-radius:16px;border:1px solid rgba(255,255,255,0.1);
-background:#111;color:#fff;
-}
-button{
-width:100%;padding:15px;margin-top:20px;
-border-radius:16px;border:none;font-weight:900;
-background:var(--gold);color:#000;
-}
+input,select{width:100%;padding:14px;margin-top:12px;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:#111;color:#fff;}
+button{width:100%;padding:15px;margin-top:20px;border-radius:16px;border:none;font-weight:900;background:var(--gold);color:#000;cursor:pointer;}
 .note{margin-top:15px;font-size:12px;color:#bbb;text-align:center;}
+.small{font-size:12px;color:#bbb;margin-top:8px;}
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
 <div class="card">
+  <div class="logo">
+    <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/893e5582023cca6493a2a462843ad9d01286b82b/logo.png">
+  </div>
 
-<div class="logo">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/893e5582023cca6493a2a462843ad9d01286b82b/logo.png">
-</div>
+  <h2>Créer un compte sécurisé</h2>
 
-<h2>Créer un compte sécurisé</h2>
+  <input type="text" id="fullName" placeholder="Nom complet">
+  <input type="email" id="email" placeholder="Adresse email">
+  <input type="tel" id="phone" placeholder="Numéro de téléphone (+257XXXXXXXX)">
+  <input type="password" id="password" placeholder="Mot de passe">
 
-<input type="text" id="fullName" placeholder="Nom complet">
-<input type="email" id="email" placeholder="Adresse email">
-<input type="password" id="password" placeholder="Mot de passe">
+  <select id="role">
+    <option value="client">Client</option>
+    <option value="driver">Chauffeur</option>
+  </select>
 
-<select id="role">
-<option value="client">Client</option>
-<option value="driver">Chauffeur</option>
-</select>
+  <button id="signupBtn">Créer le compte</button>
 
-<button id="signupBtn">Créer le compte</button>
+  <div id="otpSection" class="hidden">
+    <input type="text" id="otpCode" placeholder="Entrer le code SMS">
+    <button id="verifyOtpBtn">Vérifier le code</button>
+  </div>
 
-<div class="note">
-Les comptes Chauffeur nécessitent validation par l'administration.
-</div>
+  <div class="note">
+    Les comptes Chauffeur nécessitent validation manuelle (pending → approved).
+  </div>
 
+  <div id="recaptcha-container"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  sendEmailVerification,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app=initializeApp({
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
-});
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-document.getElementById("signupBtn").onclick=async()=>{
-
-const fullName=document.getElementById("fullName").value.trim();
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-const role=document.getElementById("role").value;
-
-if(!fullName || !email || !password){
-alert("Tous les champs sont obligatoires.");
-return;
-}
-
-const cred=await createUserWithEmailAndPassword(auth,email,password);
-await sendEmailVerification(cred.user);
-
-// ✅ CLIENT APPROVED DIRECT
-let accountStatus = "approved";
-
-if(role === "driver"){
-accountStatus = "pending";
-}
-
-await setDoc(doc(db,"users",cred.user.uid),{
-fullName,
-email,
-role,
-accountStatus,
-createdAt:serverTimestamp()
+const app = initializeApp({
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
 });
 
-alert("Compte créé. Vérifiez votre email avant connexion.");
-location.href="login.html";
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let confirmationResult = null;
+let tempData = null;
+
+// Validation format téléphone Burundi/Rwanda (+257 ou +250)
+function isValidPhone(phone){
+  const regex = /^\+(257|250)\d{8}$/;
+  return regex.test(phone);
+}
+
+// Init reCAPTCHA invisible
+window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+  size: 'invisible'
+});
+
+document.getElementById("signupBtn").onclick = async () => {
+
+  const fullName = document.getElementById("fullName").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+
+  if(!fullName || !email || !password){
+    alert("Tous les champs sont obligatoires.");
+    return;
+  }
+
+  // 🚚 Chauffeur : téléphone obligatoire + format
+  if(role === "driver"){
+    if(!phone){
+      alert("Numéro obligatoire pour chauffeur.");
+      return;
+    }
+    if(!isValidPhone(phone)){
+      alert("Format invalide. Exemple: +257799000000");
+      return;
+    }
+
+    try{
+      // Envoyer SMS OTP
+      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      tempData = { fullName, email, password, phone, role };
+      document.getElementById("otpSection").classList.remove("hidden");
+      alert("Code SMS envoyé.");
+    }catch(e){
+      alert("Erreur SMS: " + e.message);
+    }
+
+    return;
+  }
+
+  // 👤 CLIENT (simple)
+  try{
+    const cred = await createUserWithEmailAndPassword(auth,email,password);
+    await sendEmailVerification(cred.user);
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      fullName,
+      email,
+      phone: phone || null,
+      role,
+      accountStatus:"approved",
+      createdAt:serverTimestamp()
+    });
+
+    alert("Compte client créé. Vérifiez votre email.");
+    location.href="login.html";
+
+  }catch(e){
+    alert("Erreur: "+e.message);
+  }
+};
+
+// 🔐 Vérification OTP chauffeur
+document.getElementById("verifyOtpBtn").onclick = async () => {
+  const code = document.getElementById("otpCode").value.trim();
+
+  try{
+    const result = await confirmationResult.confirm(code);
+
+    // Créer email/password après vérif téléphone
+    const cred = await createUserWithEmailAndPassword(auth,tempData.email,tempData.password);
+    await sendEmailVerification(cred.user);
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      fullName: tempData.fullName,
+      email: tempData.email,
+      phone: tempData.phone,
+      role: "driver",
+      accountStatus:"pending",
+      createdAt:serverTimestamp()
+    });
+
+    alert("Compte chauffeur créé. En attente de validation.");
+    location.href="login.html";
+
+  }catch(e){
+    alert("Code incorrect.");
+  }
 };
 </script>
 
