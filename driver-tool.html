@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Ciza Logistics Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@zxing/library@0.20.0"></script>
+
+<style>
+:root{
+  --gold:#D4AF37;
+  --black:#000;
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --ok:#16a34a;
+  --warn:#f59e0b;
+  --bad:#dc2626;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter;background:var(--bg);}
+
+.header{
+  background:#000;
+  color:#fff;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.brand{color:var(--gold);font-weight:900;font-size:18px;}
+
+.header-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.badge{
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  background:var(--ok);
+}
+
+.badge.red{background:var(--bad);}
+.badge.gold{background:var(--gold);color:#000;}
+
+.logout{
+  background:var(--gold);
+  border:none;
+  padding:8px 14px;
+  border-radius:12px;
+  font-weight:900;
+}
+
+.container{
+  width:95%;
+  max-width:1200px;
+  margin:20px auto 80px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+}
+
+@media(min-width:900px){
+  .grid{grid-template-columns:1.1fr 0.9fr;}
+}
+
+.card{
+  background:var(--card);
+  padding:18px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.06);
+}
+
+.section-title{
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  margin-top:12px;
+}
+
+.btn.dark{background:#111;color:#fff;}
+.btn.gold{background:var(--gold);}
+.btn.red{background:var(--bad);color:#fff;}
+
+.actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+@media(min-width:768px){
+  .actions{flex-direction:row;}
+  .btn{flex:1;width:auto;}
+}
+
+video{width:100%;border-radius:16px;}
+
+.shipment-item{
+  border:1px solid #eee;
+  padding:12px;
+  border-radius:14px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.shipment-item.active{
+  border:2px solid var(--gold);
+}
+
+#map{
+  height:280px;
+  border-radius:16px;
+  margin-top:12px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  margin-top:10px;
+}
+
+canvas{
+  width:100%;
+  height:160px;
+  border:1px solid #ccc;
+  border-radius:14px;
+  margin-top:10px;
+  touch-action:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="brand">🚚 Ciza Logistics Driver</div>
+  <div class="header-row">
+    <span class="badge" id="connectionBadge">En ligne</span>
+    <span class="badge gold" id="deliveryCounter">0</span>
+    <button class="logout" id="logoutBtn">Déconnexion</button>
+  </div>
+</div>
+
+<div class="container">
+<div class="grid">
+
+<div>
+
+<div class="card">
+<div class="section-title">📷 Scanner Colis</div>
+<video id="scanVideo" playsinline></video>
+<div class="actions">
+<button class="btn dark" id="startScan">Scanner</button>
+<button class="btn red" id="stopScan">Stop</button>
+</div>
+</div>
+
+<div class="card">
+<div class="section-title">📦 Mes Colis</div>
+<div id="shipmentList">Chargement...</div>
+</div>
+
+</div>
+
+<div>
+
+<div class="card">
+<div class="section-title">📦 Détails</div>
+<div id="shipmentDetails">Sélectionne un colis</div>
+<div id="map"></div>
+<button class="btn gold" id="mainAction" style="display:none;">Action</button>
+</div>
+
+<div class="card" id="deliverySecurity" style="display:none;">
+<div class="section-title">🔐 Confirmation</div>
+<input id="otpInput" placeholder="Code OTP">
+<input type="file" id="photoInput" accept="image/*" capture="environment">
+<canvas id="signatureCanvas"></canvas>
+<button class="btn red" id="failBtn">Échec Livraison</button>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const app=initializeApp({
+ apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+ authDomain:"ciza-logistics.firebaseapp.com",
+ projectId:"ciza-logistics",
+ storageBucket:"ciza-logistics.appspot.com"
+});
+
+const db=getFirestore(app);
+const auth=getAuth(app);
+const storage=getStorage(app);
+
+let currentUser=null;
+let selectedShipment=null;
+let selectedId=null;
+
+let lastLat=null,lastLng=null,lastAccuracy=null;
+let lastTrackTime=0,lastTrackLat=null,lastTrackLng=null;
+
+let map=L.map('map').setView([-3.3731,29.9189],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let driverMarker,destinationMarker,routeLayer;
+
+/* GPS */
+navigator.geolocation.watchPosition(pos=>{
+ lastLat=pos.coords.latitude;
+ lastLng=pos.coords.longitude;
+ lastAccuracy=pos.coords.accuracy;
+
+ if(driverMarker) driverMarker.setLatLng([lastLat,lastLng]);
+ else driverMarker=L.marker([lastLat,lastLng]).addTo(map);
+
+ maybePushTracking();
+},{enableHighAccuracy:true});
+
+/* AUTH */
+onAuthStateChanged(auth,user=>{
+ if(!user){location.href="login.html";return;}
+ currentUser=user;
+ listenShipments();
+});
+
+/* LOGOUT */
+document.getElementById("logoutBtn").onclick=async()=>{
+ await signOut(auth);
+ location.href="login.html";
+};
+
+/* LISTEN SHIPMENTS */
+function listenShipments(){
+ const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
+ onSnapshot(q,snap=>{
+  let shipments=[];
+  snap.forEach(docSnap=>{
+   const d=docSnap.data();
+   if(["assigned","picked_up","in_transit"].includes(d.status)){
+     d.id=docSnap.id;
+     shipments.push(d);
+   }
+  });
+
+  shipments=optimizeRouteHybrid(shipments);
+
+  let html="";
+  shipments.forEach(d=>{
+   html+=`
+   <div class="shipment-item ${d.id===selectedId?"active":""}" onclick="selectShipment('${d.id}')">
+     <strong>${d.trackingCode||d.id}</strong><br>
+     ${d.fromCity||""} → ${d.toCity||""}<br>
+     ${d.senderName||d.receiverName||""}
+   </div>`;
+  });
+
+  document.getElementById("shipmentList").innerHTML=html||"Aucun colis";
+ });
+}
+
+/* SELECT */
+window.selectShipment=async function(id){
+ const snap=await getDoc(doc(db,"shipments",id));
+ if(!snap.exists()) return;
+ selectedShipment=snap.data();
+ selectedId=id;
+ renderDetails(selectedShipment);
+};
+
+/* DETAILS */
+function renderDetails(d){
+ document.getElementById("shipmentDetails").innerHTML=`
+ <strong>${d.trackingCode||selectedId}</strong><br>
+ 📍 ${d.fromCity||""} → ${d.toCity||""}<br>
+ 👤 ${d.senderName||d.receiverName||""}<br>
+ 📞 ${d.senderPhone||d.receiverPhone||""}
+ `;
+
+ if(d.toLat&&d.toLng){
+  if(destinationMarker) destinationMarker.setLatLng([d.toLat,d.toLng]);
+  else destinationMarker=L.marker([d.toLat,d.toLng]).addTo(map);
+ }
+
+ calculateRoute();
+ document.getElementById("mainAction").style.display="block";
+ document.getElementById("deliverySecurity").style.display=(d.status==="in_transit")?"block":"none";
+}
+
+/* DISTANCE */
+function distance(a,b,c,d){
+ const R=6371;
+ const dLat=(c-a)*Math.PI/180;
+ const dLon=(d-b)*Math.PI/180;
+ const x=Math.sin(dLat/2)**2+
+ Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
+ Math.sin(dLon/2)**2;
+ return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))*1000;
+}
+
+/* TRACKING */
+async function maybePushTracking(){
+ if(!selectedShipment||!["picked_up","in_transit"].includes(selectedShipment.status)) return;
+ if(Date.now()-lastTrackTime<10000) return;
+ if(lastTrackLat&&distance(lastTrackLat,lastTrackLng,lastLat,lastLng)<20) return;
+
+ await addDoc(collection(db,"shipments",selectedId,"tracking"),{
+  lat:lastLat,lng:lastLng,accuracy:lastAccuracy,
+  timestamp:serverTimestamp(),driverId:currentUser.uid
+ });
+
+ lastTrackTime=Date.now();
+ lastTrackLat=lastLat;
+ lastTrackLng=lastLng;
+}
+
+/* ROUTE + SMART ETA */
+async function calculateRoute(){
+ if(!selectedShipment||!lastLat) return;
+ const url=`https://router.project-osrm.org/route/v1/driving/${lastLng},${lastLat};${selectedShipment.toLng},${selectedShipment.toLat}?overview=false`;
+ const res=await fetch(url);
+ const data=await res.json();
+ if(!data.routes?.length) return;
+
+ const route=data.routes[0];
+ const km=route.distance/1000;
+ const eta=Math.max(1,Math.round((km/30)*60));
+
+ document.getElementById("shipmentDetails").innerHTML+=`<br><br>🧠 ETA : <b>${eta} min</b>`;
+}
+
+/* OPTIMISATION IA */
+function optimizeRouteHybrid(shipments){
+ if(!lastLat) return shipments;
+ return shipments.sort((a,b)=>{
+  const da=distance(lastLat,lastLng,a.toLat,a.toLng);
+  const db=distance(lastLat,lastLng,b.toLat,b.toLng);
+  return da-db;
+ });
+}
+
+/* SIGNATURE */
+const signatureCanvas=document.getElementById("signatureCanvas");
+const ctx=signatureCanvas.getContext("2d");
+let drawing=false,hasInk=false;
+signatureCanvas.addEventListener("mousedown",()=>drawing=true);
+signatureCanvas.addEventListener("mouseup",()=>drawing=false);
+signatureCanvas.addEventListener("mousemove",e=>{
+ if(!drawing)return;
+ ctx.lineWidth=2;
+ ctx.lineCap="round";
+ ctx.lineTo(e.offsetX,e.offsetY);
+ ctx.stroke();
+ hasInk=true;
+});
+function signatureEmpty(){return !hasInk;}
+
+/* MAIN ACTION */
+document.getElementById("mainAction").onclick=async()=>{
+ if(!selectedShipment||!navigator.onLine) return alert("Connexion requise");
+
+ if(selectedShipment.status==="assigned"){
+  await updateDoc(doc(db,"shipments",selectedId),{
+   status:"picked_up",pickedUpAt:serverTimestamp()
+  });
+ }
+ else if(selectedShipment.status==="picked_up"){
+  await updateDoc(doc(db,"shipments",selectedId),{
+   status:"in_transit",transitAt:serverTimestamp()
+  });
+ }
+ else if(selectedShipment.status==="in_transit"){
+  const otp=document.getElementById("otpInput").value;
+  if(otp!==selectedShipment.otpCode) return alert("OTP incorrect");
+
+  if(distance(lastLat,lastLng,selectedShipment.toLat,selectedShipment.toLng)>100)
+   return alert("Trop loin du point");
+
+  const photo=document.getElementById("photoInput").files[0];
+  if(!photo) return alert("Photo obligatoire");
+  if(signatureEmpty()) return alert("Signature obligatoire");
+
+  const photoRef=ref(storage,"deliveries/"+selectedId+"/photo.jpg");
+  await uploadBytes(photoRef,photo);
+  const photoURL=await getDownloadURL(photoRef);
+
+  const sigBlob=await new Promise(res=>signatureCanvas.toBlob(res,"image/png"));
+  const sigRef=ref(storage,"deliveries/"+selectedId+"/signature.png");
+  await uploadBytes(sigRef,sigBlob);
+  const sigURL=await getDownloadURL(sigRef);
+
+  await updateDoc(doc(db,"shipments",selectedId),{
+   status:"delivered",
+   deliveryPhoto:photoURL,
+   receiverSignature:sigURL,
+   deliveredAt:serverTimestamp()
+  });
+
+  alert("Livraison confirmée");
+ }
+};
+
+/* FAIL */
+document.getElementById("failBtn").onclick=async()=>{
+ if(!navigator.onLine) return alert("Connexion requise");
+ await updateDoc(doc(db,"shipments",selectedId),{
+  status:"failed",failedAt:serverTimestamp()
+ });
+ alert("Échec enregistré");
+};
+
+/* SCANNER */
+let reader=null;
+document.getElementById("startScan").onclick=async()=>{
+ reader=new ZXing.BrowserMultiFormatReader();
+ const devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
+ if(!devices.length) return alert("Caméra introuvable");
+ await reader.decodeFromVideoDevice(devices[devices.length-1].deviceId,"scanVideo",async(result)=>{
+  if(result){
+   const id=result.getText().trim();
+   reader.reset();
+   selectShipment(id);
+  }
+ });
+};
+document.getElementById("stopScan").onclick=()=>{ if(reader) reader.reset(); };
+
+/* OFFLINE BADGE */
+window.addEventListener("offline",()=>{
+ document.getElementById("connectionBadge").classList.add("red");
+ document.getElementById("connectionBadge").innerText="Hors ligne";
+});
+window.addEventListener("online",()=>{
+ document.getElementById("connectionBadge").classList.remove("red");
+ document.getElementById("connectionBadge").innerText="En ligne";
+});
+
+</script>
+</body>
+</html>
