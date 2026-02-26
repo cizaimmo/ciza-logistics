@@ -8,43 +8,109 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
 <style>
-:root{--gold:#D4AF37;}
+:root{
+  --gold:#D4AF37;
+}
 *{box-sizing:border-box}
 body{
-margin:0;font-family:Inter;
-background:radial-gradient(circle at top,#111,#000);
-color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;
+  margin:0;
+  font-family:Inter;
+  background:radial-gradient(circle at top,#111,#000);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
 .card{
-width:95%;max-width:440px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(20px);
-border-radius:28px;padding:40px 30px;
-border:1px solid rgba(212,175,55,0.25);
-box-shadow:0 25px 60px rgba(0,0,0,0.6);
+  width:95%;
+  max-width:450px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(25px);
+  border-radius:30px;
+  padding:45px 30px;
+  border:1px solid rgba(212,175,55,0.25);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
 }
-.logo{text-align:center;margin-bottom:25px;}
-.logo img{width:160px;}
-.title{text-align:center;font-weight:800;font-size:18px;margin-bottom:5px;}
-.subtitle{text-align:center;font-size:13px;color:#bbb;margin-bottom:25px;}
+.logo{text-align:center;margin-bottom:30px;}
+.logo img{width:170px;}
+.title{
+  text-align:center;
+  font-weight:900;
+  font-size:18px;
+  margin-bottom:6px;
+}
+.subtitle{
+  text-align:center;
+  font-size:13px;
+  color:#bbb;
+  margin-bottom:30px;
+}
 input{
-width:100%;padding:14px;margin-top:12px;
-border-radius:16px;border:1px solid rgba(255,255,255,0.1);
-background:#111;color:#fff;
+  width:100%;
+  padding:15px;
+  margin-top:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:#111;
+  color:#fff;
+  font-size:14px;
 }
 button{
-width:100%;padding:15px;margin-top:18px;
-border-radius:16px;border:none;font-weight:900;cursor:pointer;
+  width:100%;
+  padding:16px;
+  margin-top:20px;
+  border-radius:18px;
+  border:none;
+  font-weight:900;
+  cursor:pointer;
+  font-size:15px;
 }
-.btn-login{background:var(--gold);color:#000;}
-.btn-create{background:transparent;border:1px solid rgba(255,255,255,0.15);color:#fff;}
-.support{margin-top:28px;font-size:12px;text-align:center;color:#aaa;line-height:1.6;}
-.support a{color:#25D366;font-weight:700;text-decoration:none;}
-#loginMessage{margin-top:15px;padding:12px;border-radius:14px;font-size:13px;display:none;text-align:center;}
+.btn-login{
+  background:var(--gold);
+  color:#000;
+}
+.btn-create{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;
+}
+#loginMessage{
+  margin-top:15px;
+  padding:12px;
+  border-radius:14px;
+  font-size:13px;
+  display:none;
+  text-align:center;
+}
+#resendBtn{
+  display:none;
+  margin-top:12px;
+  background:transparent;
+  border:1px solid rgba(212,175,55,0.4);
+  color:#D4AF37;
+  padding:12px;
+  border-radius:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+.support{
+  margin-top:30px;
+  font-size:12px;
+  text-align:center;
+  color:#aaa;
+  line-height:1.7;
+}
+.support a{
+  color:#25D366;
+  font-weight:700;
+  text-decoration:none;
+}
 </style>
 </head>
 
 <body>
+
 <div class="card">
 
 <div class="logo">
@@ -61,6 +127,7 @@ border-radius:16px;border:none;font-weight:900;cursor:pointer;
 <button class="btn-create" onclick="location.href='signup.html'">Créer un compte</button>
 
 <div id="loginMessage"></div>
+<button id="resendBtn">Renvoyer l'email de vérification</button>
 
 <div class="support">
 Support client WhatsApp<br><br>
@@ -74,13 +141,13 @@ Burundi / Rwanda:
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
 });
 
 const auth = getAuth(app);
@@ -89,12 +156,17 @@ const db = getFirestore(app);
 let failedAttempts=0;
 let lockUntil=null;
 
-function showMessage(text){
-const box=document.getElementById("loginMessage");
-box.style.display="block";
-box.style.background="rgba(220,38,38,0.15)";
-box.style.border="1px solid rgba(220,38,38,0.4)";
-box.innerHTML=text;
+function showMessage(text,type="error"){
+  const box=document.getElementById("loginMessage");
+  box.style.display="block";
+  if(type==="error"){
+    box.style.background="rgba(220,38,38,0.15)";
+    box.style.border="1px solid rgba(220,38,38,0.4)";
+  }else{
+    box.style.background="rgba(22,163,74,0.15)";
+    box.style.border="1px solid rgba(22,163,74,0.4)";
+  }
+  box.innerHTML=text;
 }
 
 document.getElementById("loginBtn").onclick=async()=>{
@@ -108,35 +180,66 @@ const email=document.getElementById("email").value;
 const password=document.getElementById("password").value;
 
 try{
-const cred=await signInWithEmailAndPassword(auth,email,password);
 
-if(!cred.user.emailVerified){
-showMessage("Email non vérifié.");
+const cred=await signInWithEmailAndPassword(auth,email,password);
+const snap=await getDoc(doc(db,"users",cred.user.uid));
+
+if(!snap.exists()){
+showMessage("Compte introuvable.");
 return;
 }
 
-const snap=await getDoc(doc(db,"users",cred.user.uid));
-if(!snap.exists()){showMessage("Compte introuvable.");return;}
-
 const data=snap.data();
 
+/* ADMIN DIRECT */
+if(data.role==="admin"){
+location.href="admin-parcel.html";
+return;
+}
+
+if(data.role==="super_admin"){
+location.href="super-admin.html";
+return;
+}
+
+/* CLIENT & DRIVER → EMAIL OBLIGATOIRE */
+if(!cred.user.emailVerified){
+showMessage("Email non vérifié.");
+document.getElementById("resendBtn").style.display="block";
+return;
+}
+
+/* DRIVER → DOIT ÊTRE APPROVED */
 if(data.role==="driver" && data.accountStatus!=="approved"){
 showMessage("Compte chauffeur en attente d'approbation.");
 return;
 }
 
+/* REDIRECTION */
 if(data.role==="client") location.href="espace-client.html";
 else if(data.role==="driver") location.href="driver-tool.html";
-else if(data.role==="admin") location.href="admin-parcel.html";
-else if(data.role==="super_admin") location.href="super-admin.html";
 
 }catch(e){
+
 failedAttempts++;
 if(failedAttempts>=5){
 lockUntil=Date.now()+60000;
 failedAttempts=0;
+showMessage("Compte verrouillé 60 secondes.");
+return;
 }
+
 showMessage("Email ou mot de passe incorrect.");
+}
+};
+
+/* RENVOI EMAIL */
+document.getElementById("resendBtn").onclick=async()=>{
+try{
+await sendEmailVerification(auth.currentUser);
+showMessage("Email renvoyé.","success");
+}catch(e){
+showMessage("Erreur lors du renvoi.");
 }
 };
 </script>
