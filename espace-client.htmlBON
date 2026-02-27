@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ciza Logistics | Espace Client</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{
@@ -16,217 +20,259 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-background:var(--black);
-font-family:Inter;
-color:#fff;
-}
+body{background:var(--black);font-family:Inter;color:#fff}
 
+/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:20px;
+padding:18px;
 border-bottom:1px solid var(--border);
+position:sticky;top:0;background:#000;z-index:1000;
 }
 
-.header h1{
-color:var(--gold);
-font-size:18px;
-}
+.logo-title{display:flex;flex-direction:column;}
+.logo-title h1{color:var(--gold);font-size:18px;}
+.client-info{font-size:12px;color:#aaa;margin-top:4px;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.actions{display:flex;gap:10px;align-items:center;}
 
 .logout{
-background:transparent;
-border:1px solid var(--border);
-color:var(--gold);
-padding:8px 14px;
-border-radius:12px;
-cursor:pointer;
-font-weight:900;
+background:transparent;border:1px solid var(--border);
+color:var(--gold);padding:8px 14px;border-radius:12px;
+cursor:pointer;font-weight:900;
 }
 
-.container{
-width:95%;
-max-width:1100px;
-margin:30px auto;
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;}
+.hamburger span{width:22px;height:2px;background:var(--gold);display:block;}
+
+@media(max-width:768px){
+.hamburger{display:flex;}
 }
 
-.kpi-row{
+/* MOBILE MENU */
+.mobile-menu{
+position:fixed;top:0;right:-100%;width:260px;height:100%;
+background:#111;border-left:1px solid var(--border);
+padding:20px;transition:0.3s;z-index:2000;
+}
+.mobile-menu.open{right:0;}
+.mobile-menu a{display:block;margin-bottom:14px;color:#fff;text-decoration:none;font-weight:700;}
+.overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.6);
+display:none;z-index:1500;
+}
+.overlay.show{display:block;}
+
+/* CLOCK */
+.clock{text-align:center;padding:8px;font-size:13px;color:#aaa;border-bottom:1px solid var(--border);}
+
+/* KPIs */
+.kpis{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-gap:14px;
-margin-bottom:25px;
+grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+gap:12px;
+padding:20px;
 }
-
 .kpi{
 background:var(--soft);
 border:1px solid var(--border);
-padding:18px;
-border-radius:18px;
-text-align:center;
+border-radius:16px;
+padding:15px;text-align:center;
 }
+.kpi b{color:var(--gold);font-size:20px;display:block;margin-bottom:6px;}
 
-.kpi b{
-color:var(--gold);
-font-size:20px;
-display:block;
-margin-bottom:5px;
-}
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
-}
-
-.tab{
-padding:10px 18px;
-border-radius:999px;
-border:1px solid var(--border);
-cursor:pointer;
-font-weight:800;
-font-size:13px;
-}
-
-.tab.active{
-background:var(--gold);
-color:#000;
-}
-
+/* CARDS */
+.container{width:95%;max-width:1100px;margin:10px auto 40px;}
 .card{
 background:var(--soft);
 border:1px solid var(--border);
 border-radius:22px;
-padding:20px;
-margin-bottom:18px;
-transition:0.2s;
+padding:20px;margin-bottom:20px;
 }
 
-.card:hover{
-transform:translateY(-2px);
-}
-
-.badge{
-display:inline-block;
-padding:6px 12px;
-border-radius:999px;
-font-size:11px;
-font-weight:900;
-margin-top:6px;
-}
-
-.created{background:#636e72;}
-.assigned{background:#0984e3;}
-.in_transit{background:#6c5ce7;}
-.delivered{background:#00b894;}
-
-.price{
-color:var(--gold);
-font-weight:900;
-margin-top:10px;
-}
+.price{color:var(--gold);font-weight:900;margin-top:8px;}
 
 .timeline{
 display:flex;
 gap:8px;
-margin-top:12px;
-flex-wrap:wrap;
-font-size:11px;
+margin-top:10px;
+overflow-x:auto;
+padding-bottom:6px;
 }
 
 .step{
-padding:6px 10px;
-border-radius:12px;
+padding:6px 12px;
+border-radius:20px;
 border:1px solid rgba(255,255,255,0.1);
-opacity:0.4;
+opacity:0.3;
+white-space:nowrap;
+font-size:12px;
 }
 
 .step.active{
 background:var(--gold);
 color:#000;
 opacity:1;
+font-weight:800;
+box-shadow:0 0 10px rgba(212,175,55,0.6);
+}
+
+.progress-bar{
+height:4px;
+background:rgba(255,255,255,0.1);
+border-radius:10px;
+margin-top:8px;
+overflow:hidden;
+}
+.progress-fill{
+height:100%;
+background:var(--gold);
+width:0%;
+transition:width 0.4s ease;
 }
 
 .driver-box{
-margin-top:15px;
+margin-top:12px;
 padding:12px;
 background:rgba(255,255,255,0.04);
 border-radius:16px;
 font-size:13px;
+line-height:1.65;
+}
+.driver-box b{color:var(--gold);}
+.driver-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.call-btn{
+padding:10px 12px;border-radius:12px;border:none;cursor:pointer;
+font-weight:900;background:var(--gold);color:#000;
+}
+.outline-btn{
+padding:10px 12px;border-radius:12px;border:1px solid var(--border);
+cursor:pointer;font-weight:900;background:transparent;color:var(--gold);
+text-decoration:none;display:inline-flex;align-items:center;gap:8px;
 }
 
-.driver-box b{
-color:var(--gold);
+.map-box{
+margin-top:12px;
+height:240px;
+border-radius:16px;
+overflow:hidden;
+border:1px solid var(--border);
+background:#0b0b0c;
 }
+@media(min-width:900px){
+.map-box{height:280px;}
+}
+
+.eta-box{
+margin-top:10px;
+font-size:13px;
+color:#ccc;
+line-height:1.6;
+padding:10px 12px;
+border:1px solid rgba(255,255,255,0.08);
+border-radius:14px;
+background:rgba(255,255,255,0.02);
+}
+.eta-box b{color:#fff;}
 
 .otp-box{
 margin-top:12px;
 background:rgba(212,175,55,0.15);
 border:1px solid var(--gold);
-padding:14px;
-border-radius:16px;
-text-align:center;
+padding:14px;border-radius:16px;text-align:center;
 }
+.otp-code{font-size:22px;font-weight:900;letter-spacing:3px;color:var(--gold);}
 
-.otp-code{
-font-size:22px;
-font-weight:900;
-letter-spacing:3px;
-color:var(--gold);
+.rating{margin-top:12px;}
+.star{font-size:20px;cursor:pointer;color:#555;}
+.star.active{color:var(--gold);}
+
+.invoice-btn{
+margin-top:12px;padding:10px 14px;border-radius:12px;
+background:var(--gold);border:none;font-weight:900;cursor:pointer;
+width:100%;
 }
+@media(min-width:520px){.invoice-btn{width:auto;}}
 
 .proof{
 margin-top:12px;
-font-size:13px;
+padding:12px;
+border:1px solid rgba(255,255,255,0.08);
+border-radius:16px;
+background:rgba(255,255,255,0.02);
 }
+.proof-title{font-weight:900;color:var(--gold);font-size:13px;margin-bottom:8px;}
+.proof img{max-width:100%;border-radius:12px;margin-top:8px;border:1px solid rgba(255,255,255,0.08);}
 
-.proof img{
-max-width:100%;
-border-radius:12px;
-margin-top:6px;
+/* LEAFLET ICON (CAR) */
+.car-pin{
+width:44px;height:44px;border-radius:16px;
+background:rgba(212,175,55,0.18);
+border:1px solid rgba(212,175,55,0.55);
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+backdrop-filter:blur(6px);
 }
-
-button.call{
-margin-top:8px;
-padding:6px 12px;
-border-radius:12px;
-background:var(--gold);
-border:none;
-font-weight:900;
-cursor:pointer;
+.car-pin span{
+font-size:20px;
+filter:drop-shadow(0 0 10px rgba(212,175,55,0.35));
+}
+.car-pulse{
+position:absolute;inset:-10px;
+border-radius:24px;
+border:1px solid rgba(212,175,55,0.35);
+animation:pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse{
+0%{transform:scale(0.92);opacity:0.35;}
+60%{transform:scale(1.16);opacity:0.08;}
+100%{transform:scale(1.20);opacity:0;}
 }
 </style>
 </head>
+
 <body>
 
 <div class="header">
+<div class="logo-title">
 <h1>Espace Client</h1>
+<div class="client-info" id="clientInfo">Chargement...</div>
+</div>
+<div class="actions">
+<div class="hamburger" id="hamburger">
+<span></span><span></span><span></span>
+</div>
 <button class="logout" id="logoutBtn">Déconnexion</button>
+</div>
+</div>
+
+<div class="clock">🕒 <span id="liveClock"></span></div>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="#">Dashboard</a>
+<a href="#">Mes Colis</a>
+<a href="https://wa.me/25779945007" target="_blank">Support WhatsApp</a>
+<a href="#" id="mobileLogout">Déconnexion</a>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="kpis">
+<div class="kpi"><b id="kpiActive">0</b>Actifs</div>
+<div class="kpi"><b id="kpiTransit">0</b>Transit</div>
+<div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
+<div class="kpi"><b id="kpiTotal">0</b>Total BIF</div>
 </div>
 
 <div class="container">
-
-<div class="kpi-row">
-<div class="kpi"><b id="kpiActive">0</b>Actifs</div>
-<div class="kpi"><b id="kpiTransit">0</b>En transit</div>
-<div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
-<div class="kpi"><b id="kpiTotalSpent">0</b>Total dépensé</div>
-</div>
-
-<div class="tabs">
-<div class="tab active" data-tab="active">Actifs</div>
-<div class="tab" data-tab="delivered">Livrés</div>
-<div class="tab" data-tab="all">Tous</div>
-</div>
-
 <div id="list"></div>
-
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig={
@@ -239,140 +285,324 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-const list=document.getElementById("list");
-const tabs=document.querySelectorAll(".tab");
+/* ================= CLOCK ================= */
+function updateClock(){
+const now=new Date();
+document.getElementById("liveClock").innerText=
+now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);updateClock();
 
-let currentTab="active";
-let allShipments=[];
-
-tabs.forEach(tab=>{
-tab.onclick=()=>{
-tabs.forEach(t=>t.classList.remove("active"));
-tab.classList.add("active");
-currentTab=tab.dataset.tab;
-render();
+/* ================= MENU ================= */
+document.getElementById("hamburger").onclick=()=>{
+document.getElementById("mobileMenu").classList.add("open");
+document.getElementById("overlay").classList.add("show");
 };
+document.getElementById("overlay").onclick=()=>{
+document.getElementById("mobileMenu").classList.remove("open");
+document.getElementById("overlay").classList.remove("show");
+};
+
+/* ================= LOGOUT ================= */
+document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
+document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
+
+/* ================= MAPS STATE ================= */
+const MAPS = {};        // MAPS[shipmentId] = leafletMap
+const DRIVER = {};      // DRIVER[shipmentId] = marker
+const DEST = {};        // DEST[shipmentId] = marker
+const LINE = {};        // LINE[shipmentId] = polyline
+
+function num(v){ const n=Number(v); return Number.isFinite(n) ? n : null; }
+
+function haversine(lat1,lon1,lat2,lon2){
+const R=6371000;
+const toRad=x=>x*Math.PI/180;
+const dLat=toRad(lat2-lat1);
+const dLon=toRad(lon2-lon1);
+const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
+function carIcon(){
+return L.divIcon({
+className:"",
+html:`<div style="position:relative;width:44px;height:44px;">
+<div class="car-pulse"></div>
+<div class="car-pin"><span>🚗</span></div>
+</div>`,
+iconSize:[44,44],
+iconAnchor:[22,22]
 });
+}
 
-document.getElementById("logoutBtn").onclick=async()=>{
-await signOut(auth);
-location.href="login.html";
-};
+function animateMarker(marker, toLat, toLng){
+if(!marker) return;
+const start = marker.getLatLng();
+const end = L.latLng(toLat,toLng);
 
-onAuthStateChanged(auth,user=>{
+const duration = 700;
+let startTime = null;
+
+function frame(ts){
+if(!startTime) startTime=ts;
+let p=(ts-startTime)/duration;
+if(p>1) p=1;
+
+const lat=start.lat+(end.lat-start.lat)*p;
+const lng=start.lng+(end.lng-start.lng)*p;
+marker.setLatLng([lat,lng]);
+
+if(p<1) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+}
+
+function ensureMap(shipmentId, driverLat, driverLng, destLat, destLng){
+const mapId="map_"+shipmentId;
+const el=document.getElementById(mapId);
+if(!el) return;
+
+if(!MAPS[shipmentId]){
+MAPS[shipmentId]=L.map(mapId,{zoomControl:false,attributionControl:false}).setView([driverLat,driverLng],15);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(MAPS[shipmentId]);
+
+DRIVER[shipmentId]=L.marker([driverLat,driverLng],{icon:carIcon()}).addTo(MAPS[shipmentId]);
+DEST[shipmentId]=L.marker([destLat,destLng]).addTo(MAPS[shipmentId]);
+LINE[shipmentId]=L.polyline([[driverLat,driverLng],[destLat,destLng]],{color:"#D4AF37",weight:4,opacity:0.8}).addTo(MAPS[shipmentId]);
+
+MAPS[shipmentId].fitBounds(LINE[shipmentId].getBounds(),{padding:[40,40]});
+setTimeout(()=>{ try{ MAPS[shipmentId].invalidateSize(); }catch(e){} },120);
+return;
+}
+
+/* update map */
+animateMarker(DRIVER[shipmentId],driverLat,driverLng);
+LINE[shipmentId].setLatLngs([[driverLat,driverLng],[destLat,destLng]]);
+}
+
+/* ================= UI ================= */
+function formatStatusLabel(s){
+if(!s) return "—";
+if(s==="created") return "Créé";
+if(s==="assigned") return "Assigné";
+if(s==="in_transit") return "En transit";
+if(s==="delivered") return "Livré";
+return s;
+}
+
+function buildTimeline(d){
+let steps=["created","assigned","in_transit","near","delivered"];
+let labels=["📦 Créé","👨‍✈️ Assigné","🚗 Transit","📍 À proximité","✅ Livré"];
+
+let progressIndex=steps.indexOf(d.status);
+if(d.status==="in_transit" && d.distanceMeters && Number(d.distanceMeters)<=100){
+progressIndex=3;
+}
+if(progressIndex<0) progressIndex=0;
+
+let timelineHTML="";
+labels.forEach((label,i)=>{
+timelineHTML+=`<div class="step ${i<=progressIndex?"active":""}">${label}</div>`;
+});
+let progressPercent=(progressIndex/(steps.length-1))*100;
+
+return { timelineHTML, progressPercent };
+}
+
+function createCardHTML(d){
+const tracking = d.trackingCode || d.id;
+const price = (Number(d.finalPrice||0)).toLocaleString("fr-FR")+" BIF";
+const statusLabel = formatStatusLabel(d.status);
+
+const { timelineHTML, progressPercent } = buildTimeline(d);
+
+const showDriver = !!d.driverName;
+const showOtp = (d.status==="in_transit" && (d.deliveryOTP || d.otpCode));
+const otpValue = (d.deliveryOTP || d.otpCode || "");
+const showProof = (d.status==="delivered" && (d.deliveryPhoto || d.signatureUrl));
+
+const canMap = (
+d.status==="in_transit" &&
+num(d.driverLat)!=null && num(d.driverLng)!=null &&
+(num(d.destinationLat)!=null && num(d.destinationLng)!=null)
+);
+
+const mapBlock = canMap ? `<div class="map-box" id="map_${d.id}"></div>` : "";
+
+const etaBlock = canMap ? `<div class="eta-box" id="eta_${d.id}">Calcul ETA...</div>` : "";
+
+const driverBlock = showDriver ? `
+<div class="driver-box">
+<b>👨‍✈️ ${d.driverName}</b><br>
+${d.driverPhone?`📞 <a href="tel:${d.driverPhone}" style="color:#D4AF37;font-weight:900;text-decoration:none;">${d.driverPhone}</a><br>`:""}
+${d.driverPlate?`🚗 Plaque : <b style="color:#fff;">${d.driverPlate}</b><br>`:""}
+${d.driverRating?`⭐ Note : <b style="color:#fff;">${d.driverRating}/5</b><br>`:""}
+🟢 Statut : <b style="color:#fff;">${statusLabel}</b>
+<div class="driver-actions">
+${d.driverPhone?`<button class="call-btn" onclick="window.location.href='tel:${d.driverPhone}'">📞 Appeler</button>`:""}
+<a class="outline-btn" href="tracking.html?code=${encodeURIComponent(tracking)}">📍 Ouvrir suivi</a>
+</div>
+</div>` : "";
+
+const otpBlock = showOtp ? `
+<div class="otp-box">
+<div style="font-weight:900;margin-bottom:6px;">Code OTP (donnez au chauffeur à l’arrivée)</div>
+<div class="otp-code">${String(otpValue)}</div>
+<div style="margin-top:6px;color:#e8e8e8;font-size:12px;line-height:1.5;">✅ Sécurité : ce code confirme la livraison.</div>
+</div>` : "";
+
+let ratingSection="";
+if(d.status==="delivered" && !d.clientRating){
+ratingSection=`
+<div class="rating">
+<div style="font-weight:900;color:#ccc;margin-bottom:6px;">Noter le chauffeur :</div>
+${[1,2,3,4,5].map(i=>`<span class="star" onclick="rate('${d.id}',${i})">★</span>`).join("")}
+</div>`;
+}
+
+const proofBlock = showProof ? `
+<div class="proof">
+<div class="proof-title">Proof of Delivery</div>
+${d.deliveryPhoto?`<div style="font-size:12px;color:#cfcfcf;">📷 Photo de livraison</div><img src="${d.deliveryPhoto}" alt="Photo livraison">`:""}
+${d.signatureUrl?`<div style="font-size:12px;color:#cfcfcf;margin-top:10px;">✍️ Signature</div><img src="${d.signatureUrl}" alt="Signature">`:""}
+</div>` : "";
+
+return `
+<div class="card" data-id="${d.id}">
+<b>${tracking}</b>
+<div style="margin-top:6px;color:#bbb;font-size:12px;">Statut : <b style="color:#fff;">${statusLabel}</b></div>
+<div class="price">${price}</div>
+
+<div class="timeline">${timelineHTML}</div>
+<div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%"></div></div>
+
+${driverBlock}
+${mapBlock}
+${etaBlock}
+${otpBlock}
+${proofBlock}
+${ratingSection}
+
+<button class="invoice-btn" onclick="generateInvoice('${d.id}','${tracking}','${d.finalPrice||0}')">
+🧾 Télécharger facture
+</button>
+</div>
+`;
+}
+
+function updateEta(shipmentId, driverLat, driverLng, destLat, destLng){
+const box=document.getElementById("eta_"+shipmentId);
+if(!box) return;
+
+const dist = haversine(driverLat,driverLng,destLat,destLng);
+const AVG_SPEED_KMH = 35;
+const speedMs = (AVG_SPEED_KMH*1000)/3600;
+const etaSec = Math.max(0, Math.floor(dist / speedMs));
+const mins = Math.floor(etaSec/60);
+const arrival = new Date(Date.now() + etaSec*1000);
+
+let proximity = "🚗 En route";
+if(dist<=100) proximity="🟢 Chauffeur arrivé / très proche";
+else if(dist<=500) proximity="🟡 Chauffeur à proximité";
+
+box.innerHTML = `
+<div>${proximity}</div>
+<div>📏 Distance : <b>${Math.round(dist)} m</b></div>
+<div>⏳ Temps estimé : <b>${mins} min</b></div>
+<div>🕓 Arrivée prévue : <b>${arrival.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</b></div>
+`;
+}
+
+/* ================= FIRESTORE LISTENER ================= */
+onAuthStateChanged(auth,async user=>{
 if(!user){location.href="login.html";return;}
+
+const userSnap=await getDoc(doc(db,"users",user.uid));
+if(userSnap.exists()){
+const u=userSnap.data();
+document.getElementById("clientInfo").innerText=
+(u.fullName || u.name || user.email || "Client") + " • " + (u.phone||"");
+}else{
+document.getElementById("clientInfo").innerText = (user.email||"Client");
+}
 
 const q=query(collection(db,"shipments"),where("ownerUid","==",user.uid));
 
-onSnapshot(q,snap=>{
-allShipments=[];
-snap.forEach(doc=>allShipments.push({id:doc.id,...doc.data()}));
-updateKPIs();
-render();
-});
+onSnapshot(q,(snap)=>{
+let active=0,transit=0,delivered=0,total=0;
+
+const list=document.getElementById("list");
+list.innerHTML="";
+
+const rows=[];
+snap.forEach(ds=>{
+rows.push({id:ds.id,...ds.data()});
 });
 
-function updateKPIs(){
-let active=0, transit=0, delivered=0, total=0;
+/* affichage stable : plus récents d'abord si createdAt existe, sinon ordre Firestore */
+rows.sort((a,b)=>{
+try{
+const ta = a.createdAt?.seconds ? a.createdAt.seconds : 0;
+const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
+return tb-ta;
+}catch(e){return 0;}
+});
 
-allShipments.forEach(d=>{
-if(d.status!=="delivered") active++;
-if(d.status==="in_transit") transit++;
-if(d.status==="delivered") delivered++;
+rows.forEach(d=>{
+if(d.status!=="delivered")active++;
+if(d.status==="in_transit")transit++;
+if(d.status==="delivered")delivered++;
 total+=Number(d.finalPrice||0);
+
+list.insertAdjacentHTML("beforeend", createCardHTML(d));
+
+/* Map + ETA (uniquement si coords présents) */
+const dl=num(d.driverLat), dln=num(d.driverLng), el=num(d.destinationLat), eln=num(d.destinationLng);
+if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
+ensureMap(d.id, dl, dln, el, eln);
+updateEta(d.id, dl, dln, el, eln);
+}
 });
 
 document.getElementById("kpiActive").innerText=active;
 document.getElementById("kpiTransit").innerText=transit;
 document.getElementById("kpiDelivered").innerText=delivered;
-document.getElementById("kpiTotalSpent").innerText=total.toLocaleString("fr-FR")+" BIF";
-}
+document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR");
 
-function render(){
-list.innerHTML="";
-
-let filtered=allShipments.filter(d=>{
-if(currentTab==="active") return d.status!=="delivered";
-if(currentTab==="delivered") return d.status==="delivered";
-return true;
+},(err)=>{
+console.error(err);
+document.getElementById("list").innerHTML =
+`<div class="card"><b style="color:#ff6b6b">Erreur lecture</b><div style="margin-top:8px;color:#ccc;font-size:13px;line-height:1.6;">
+Accès refusé ou index Firestore manquant.<br>Pour le test, mets les rules en mode open temporairement, puis on sécurise après.
+</div></div>`;
+});
 });
 
-filtered.forEach(d=>{
-list.innerHTML+=createCard(d);
-});
-}
+/* ================= RATING + INVOICE ================= */
+window.rate=async(id,stars)=>{
+await updateDoc(doc(db,"shipments",id),{clientRating:stars});
+alert("Merci pour votre note !");
+};
 
-function createCard(d){
-let timeline=`
-<div class="timeline">
-<div class="step ${d.status==="created"||d.status==="assigned"||d.status==="in_transit"||d.status==="delivered"?"active":""}">Créé</div>
-<div class="step ${d.status==="assigned"||d.status==="in_transit"||d.status==="delivered"?"active":""}">Assigné</div>
-<div class="step ${d.status==="in_transit"||d.status==="delivered"?"active":""}">Transit</div>
-<div class="step ${d.status==="delivered"?"active":""}">Livré</div>
-</div>
-`;
+window.generateInvoice=(id,tracking,price)=>{
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
 
-let driverSection="";
-if(d.driverName){
-driverSection=`
-<div class="driver-box">
-<b>Chauffeur:</b> ${d.driverName}<br>
-${d.driverPlate?"🚗 "+d.driverPlate+"<br>":""}
-${d.driverRating?"⭐ "+d.driverRating+"<br>":""}
-${d.driverPhone?`<button class="call" onclick="window.location='tel:${d.driverPhone}'">Appeler</button>`:""}
-</div>
-`;
-}
+doc.setFontSize(18);
+doc.text("Ciza Logistics - Facture",20,20);
 
-let etaSection="";
-if(d.status==="in_transit"){
-if(d.distanceMeters<=100){
-etaSection="🟢 Chauffeur arrivé à destination";
-}
-else if(d.distanceMeters<=500){
-etaSection="🟡 Chauffeur à proximité";
-}
-else if(d.etaMinutes){
-etaSection="🚗 Arrivée estimée : "+d.etaMinutes+" min";
-}
-else{
-etaSection="🚗 En route";
-}
-}
+doc.setFontSize(12);
+doc.text("Tracking: "+tracking,20,40);
+doc.text("Prix total: "+Number(price||0).toLocaleString("fr-FR")+" BIF",20,50);
+doc.text("Date: "+new Date().toLocaleDateString("fr-FR"),20,60);
 
-let otpSection="";
-if(d.deliveryOTP && d.status==="in_transit"){
-otpSection=`
-<div class="otp-box">
-Code de réception
-<div class="otp-code">${d.deliveryOTP}</div>
-</div>
-`;
-}
+doc.setFontSize(10);
+doc.text("Document genere automatiquement - Ciza Logistics",20,75);
 
-let proofSection="";
-if(d.status==="delivered"){
-proofSection=`
-<div class="proof">
-${d.deliveryPhoto?`<img src="${d.deliveryPhoto}">`:""}
-${d.signatureUrl?`<img src="${d.signatureUrl}">`:""}
-</div>
-`;
-}
+doc.save("facture_"+tracking+".pdf");
+};
 
-return `
-<div class="card">
-<b>${d.trackingCode||d.id}</b>
-<div class="badge ${d.status||"created"}">${(d.status||"created").toUpperCase()}</div>
-<div class="price">${(Number(d.finalPrice||0)).toLocaleString("fr-FR")} BIF</div>
-${timeline}
-${driverSection}
-${etaSection}
-${otpSection}
-${proofSection}
-</div>
-`;
-}
 </script>
 </body>
 </html>
