@@ -251,10 +251,12 @@ animation:pulse 1.2s infinite ease-in-out;
 <div class="clock">🕒 <span id="liveClock"></span></div>
 
 <div class="mobile-menu" id="mobileMenu">
-<a href="#">Dashboard</a>
-<a href="#">Mes Colis</a>
-<a href="https://wa.me/25779945007" target="_blank">Support WhatsApp</a>
-<a href="#" id="mobileLogout">Déconnexion</a>
+<a href="espace-client.html">🏠 Voir mes colis</a>
+<a href="parcel.html">➕ Créer un envoi</a>
+<a href="tracking.html">📍 Suivre un colis</a>
+<a href="account.html">👤 Mon compte</a>
+<a href="https://wa.me/25779945097" target="_blank">💬 Support</a>
+<a href="#" id="mobileLogout">🚪 Déconnexion</a>
 </div>
 <div class="overlay" id="overlay"></div>
 
@@ -294,15 +296,25 @@ now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'nume
 setInterval(updateClock,1000);updateClock();
 
 /* ================= MENU ================= */
+const mobileMenu=document.getElementById("mobileMenu");
+const overlay=document.getElementById("overlay");
+
 document.getElementById("hamburger").onclick=()=>{
-document.getElementById("mobileMenu").classList.add("open");
-document.getElementById("overlay").classList.add("show");
-};
-document.getElementById("overlay").onclick=()=>{
-document.getElementById("mobileMenu").classList.remove("open");
-document.getElementById("overlay").classList.remove("show");
+mobileMenu.classList.add("open");
+overlay.classList.add("show");
 };
 
+overlay.onclick=()=>{
+mobileMenu.classList.remove("open");
+overlay.classList.remove("show");
+};
+
+document.addEventListener("keydown",(e)=>{
+if(e.key==="Escape"){
+mobileMenu.classList.remove("open");
+overlay.classList.remove("show");
+}
+});
 /* ================= LOGOUT ================= */
 document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
 document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
