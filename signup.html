@@ -106,13 +106,14 @@ document.getElementById("signupBtn").onclick = async () => {
       return;
     }
     if(!isValidPhone(phone)){
-      alert("Format invalide. Exemple: +257799000000");
+      alert("Format invalide. Utilisez le format international : +XXXXXXXXXXX");
       return;
     }
 
     try{
       // Envoyer SMS OTP
-      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      const cleanedPhone = phone.replace(/\s|-/g,"");
+confirmationResult = await signInWithPhoneNumber(auth, cleanedPhone, window.recaptchaVerifier);
       tempData = { fullName, email, password, phone, role };
       document.getElementById("otpSection").classList.remove("hidden");
       alert("Code SMS envoyé.");
