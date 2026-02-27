@@ -1,20 +1,20 @@
 {
-  "name": "Ciza Group | Division Logistics ERP",
-  "short_name": "Ciza ERP",
-  "description": "Plateforme interne de gestion logistique - Colis, Chauffeurs, Paiements, Bureau.",
-  "start_url": "./login.html",
-  "scope": "./",
+  "name": "Ciza Logistics",
+  "short_name": "Ciza",
+  "start_url": "/login.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#0b0b0c",
+  "theme_color": "#0b0b0c",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
