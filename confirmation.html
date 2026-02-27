@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmation Paiement | Ciza Logistics</title>
+<title>Confirmation | Ciza Logistics</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -18,140 +17,203 @@
 --soft:#121214;
 --border:rgba(212,175,55,0.25);
 --muted:#9a9aa3;
+--danger:#ff6b6b;
+--ok:#1dd1a1;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter;background:var(--black);color:#fff}
 
-/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:16px 20px;
-background:#000;
+padding:16px;
 border-bottom:1px solid var(--border);
+background:#000;
 position:sticky;top:0;z-index:1000;
 }
-
-.logo{color:var(--gold);font-weight:900}
+.header img{height:55px}
 .header-actions{display:flex;gap:10px}
-
-.header-btn{
+.header button{
 background:transparent;
 border:1px solid var(--border);
-color:#fff;
-padding:8px 14px;
+color:var(--gold);
+padding:8px 12px;
 border-radius:12px;
-font-size:12px;
 cursor:pointer;
+font-weight:800;
 }
 
-.wrapper{padding:30px 20px 60px;max-width:800px;margin:auto}
+.container{width:95%;max-width:900px;margin:25px auto 60px}
 
 .card{
-background:linear-gradient(180deg,#151518,#0d0d0f);
-border:1px solid rgba(212,175,55,0.4);
-border-radius:28px;
-padding:30px;
-box-shadow:0 25px 80px rgba(0,0,0,0.7);
+background:var(--soft);
+border:1px solid var(--border);
+border-radius:22px;
+padding:20px;
+margin-bottom:20px;
 }
 
-.title{text-align:center;margin-bottom:20px}
-.title h1{color:var(--gold);font-size:22px;font-weight:900}
-
-.divider{
-height:1px;
-background:linear-gradient(to right,transparent,rgba(212,175,55,0.6),transparent);
-margin:22px 0;
+.tracking{
+text-align:center;
+}
+.tracking-code{
+font-weight:900;
+font-size:18px;
+color:var(--gold);
+}
+.amount{
+font-size:26px;
+font-weight:900;
+margin-top:10px;
 }
 
-.tracking{text-align:center}
-.code{color:var(--gold);font-weight:900;font-size:16px}
-.amount{font-size:34px;font-weight:900;margin-top:8px}
+.map-box{
+margin-top:15px;
+height:260px;
+border-radius:18px;
+overflow:hidden;
+border:1px solid var(--border);
+}
 
-#qrBox{display:flex;justify-content:center;margin-top:20px}
-#map{height:280px;margin-top:25px;border-radius:20px}
+.eta-box{
+margin-top:12px;
+font-size:13px;
+line-height:1.7;
+color:#ccc;
+}
 
-.route-info{text-align:center;margin-top:12px;font-size:14px;color:#ccc}
+.operator-grid{
+display:grid;
+gap:12px;
+margin-top:15px;
+}
 
-.input-group{margin-top:20px}
-.input-group label{font-size:11px;color:var(--muted);font-weight:800}
+.operator{
+padding:16px;
+border-radius:18px;
+background:#111;
+border:1px solid rgba(255,255,255,0.08);
+cursor:pointer;
+transition:.3s;
+}
+
+.operator.active{
+border:2px solid var(--gold);
+box-shadow:0 0 18px rgba(212,175,55,0.5);
+}
+
+.operator b{color:var(--gold)}
+
+.input-group{
+margin-top:15px;
+}
+
+.input-group label{
+font-size:11px;
+text-transform:uppercase;
+color:var(--muted);
+font-weight:800;
+}
+
 .input-group input{
 width:100%;
+padding:14px;
 margin-top:6px;
-padding:15px;
 background:#101012;
-border:1px solid rgba(255,255,255,0.08);
-border-radius:16px;
+border:1px solid rgba(255,255,255,0.1);
+border-radius:14px;
 color:#fff;
-font-size:14px;
 }
 
 .btn{
+margin-top:18px;
 width:100%;
-margin-top:25px;
-padding:18px;
+padding:15px;
 background:var(--gold);
 border:none;
-border-radius:24px;
+border-radius:18px;
 font-weight:900;
 color:#000;
 cursor:pointer;
-font-size:15px;
 }
 
-.btn:disabled{opacity:.6;cursor:not-allowed}
+.small-actions{
+margin-top:15px;
+display:flex;
+gap:10px;
+}
 
-.pdf-btn{
-background:#000;
+.small-actions button{
+flex:1;
+padding:12px;
+border-radius:14px;
+border:1px solid var(--border);
+background:transparent;
 color:var(--gold);
-border:1px solid var(--gold);
+font-weight:800;
+cursor:pointer;
 }
 
-.status-box{
-margin-top:18px;
-text-align:center;
+.message{
+margin-top:10px;
 font-weight:800;
-font-size:13px;
-color:#D4AF37;
 }
+.ok{color:var(--ok)}
+.error{color:var(--danger)}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<div class="logo">Ciza Logistics</div>
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
 <div class="header-actions">
-<button class="header-btn" onclick="location.href='espace-client.html'">Retour</button>
-<button class="header-btn" id="logoutBtn">Déconnexion</button>
+<button onclick="location.href='dashboard.html'">Espace client</button>
+<button id="logoutBtn">Déconnexion</button>
 </div>
 </div>
 
-<div class="wrapper">
+<div class="container">
+
+<div class="card tracking">
+<div class="tracking-code" id="trackingCode">...</div>
+<div class="amount" id="amountBox">...</div>
+</div>
+
 <div class="card">
-
-<div class="title">
-<h1>Finalisation du paiement</h1>
+<div id="map" class="map-box"></div>
+<div class="eta-box" id="etaBox"></div>
 </div>
 
-<div class="tracking">
-<div class="code" id="trackingCode"></div>
-<div class="amount" id="amountBox"></div>
+<div class="card">
+<h3 style="color:var(--gold)">Choisissez votre opérateur</h3>
+
+<div class="operator-grid">
+<div class="operator" data-method="EcoCash">
+<b>EcoCash</b><br>
+Numéro entreprise : 79967336
 </div>
 
-<div id="qrBox"></div>
+<div class="operator" data-method="Lumicash">
+<b>Lumicash</b><br>
+Numéro entreprise : 76890282
+</div>
 
-<div id="map"></div>
-<div class="route-info" id="routeInfo"></div>
+<div class="operator" data-method="eNoti">
+<b>eNoti</b><br>
+Numéro entreprise : 678383938
+</div>
 
-<button class="btn pdf-btn" id="pdfBtn">🧾 Télécharger facture provisoire</button>
-
-<div class="divider"></div>
+<div class="operator" data-method="Office">
+<b>Paiement au bureau</b><br>
+Appelez : 79945007
+</div>
+</div>
 
 <div class="input-group">
-<label>Référence transaction</label>
+<label>Référence de transaction</label>
 <input id="paymentReference">
 </div>
 
@@ -162,12 +224,19 @@ color:#D4AF37;
 
 <button class="btn" id="submitBtn">Envoyer la référence</button>
 
-<div class="status-box" id="statusBox"></div>
+<div class="message" id="messageBox"></div>
+
+<div class="small-actions">
+<button onclick="generateInvoice()">Télécharger facture</button>
+<button onclick="location.href='dashboard.html'">Retour</button>
+</div>
 
 </div>
+
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -177,113 +246,119 @@ apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
 projectId:"ciza-logistics"
 });
+
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-document.getElementById("logoutBtn").onclick=async()=>{
-await signOut(auth);
-location.href="login.html";
-};
+document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 
-const tracking=new URLSearchParams(window.location.search).get("tracking");
+const tracking=new URLSearchParams(location.search).get("tracking");
+
 let shipmentData=null;
+let selectedMethod=null;
 
-onAuthStateChanged(auth,async user=>{
-if(!user||!tracking){location.href="login.html";return;}
+function haversine(lat1,lon1,lat2,lon2){
+const R=6371;
+const dLat=(lat2-lat1)*Math.PI/180;
+const dLon=(lon2-lon1)*Math.PI/180;
+const a=Math.sin(dLat/2)**2+
+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+Math.sin(dLon/2)**2;
+return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
+onAuthStateChanged(auth, async user=>{
+if(!user){location.href="login.html";return;}
 
 const snap=await getDoc(doc(db,"shipments",tracking));
-if(!snap.exists()) return;
+if(!snap.exists()){return;}
 
-shipmentData=snap.data();
-if(shipmentData.ownerUid!==user.uid){location.href="login.html";return;}
+const data=snap.data();
+if(data.ownerUid!==user.uid){location.href="dashboard.html";return;}
+
+shipmentData=data;
 
 document.getElementById("trackingCode").innerText="Tracking : "+tracking;
-document.getElementById("amountBox").innerText=(shipmentData.finalPrice||0).toLocaleString("fr-FR")+" BIF";
+document.getElementById("amountBox").innerText=
+(data.finalPrice||0).toLocaleString("fr-FR")+" BIF";
 
-generateQR();
-initMap();
+if(data.pickupLat && data.destinationLat){
+const map=L.map("map").setView([data.pickupLat,data.pickupLng],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
 
-if(shipmentData.paymentStatus==="pending_verification"){
-lockForm();
+const p1=[data.pickupLat,data.pickupLng];
+const p2=[data.destinationLat,data.destinationLng];
+
+L.marker(p1).addTo(map);
+L.marker(p2).addTo(map);
+
+const line=L.polyline([p1,p2],{color:"#D4AF37",weight:4}).addTo(map);
+map.fitBounds(line.getBounds());
+
+const distance=haversine(p1[0],p1[1],p2[0],p2[1]);
+const speed=35;
+const timeMin=Math.round((distance/speed)*60);
+const arrival=new Date(Date.now()+timeMin*60000);
+
+document.getElementById("etaBox").innerHTML=
+`Distance : <b>${distance.toFixed(2)} km</b><br>
+Temps estimé : <b>${timeMin} min</b><br>
+Arrivée estimée : <b>${arrival.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</b>`;
 }
 });
 
-function generateQR(){
-new QRCode(document.getElementById("qrBox"),{
-text:window.location.origin+"/tracking.html?tracking="+tracking,
-width:140,height:140,colorDark:"#D4AF37",colorLight:"#0b0b0c"
-});
-}
-
-async function initMap(){
-if(!shipmentData.fromLat||!shipmentData.toLat) return;
-
-const map=L.map('map').setView([shipmentData.fromLat,shipmentData.fromLng],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-L.marker([shipmentData.fromLat,shipmentData.fromLng]).addTo(map);
-L.marker([shipmentData.toLat,shipmentData.toLng]).addTo(map);
-
-const url=`https://router.project-osrm.org/route/v1/driving/${shipmentData.fromLng},${shipmentData.fromLat};${shipmentData.toLng},${shipmentData.toLat}?overview=full&geometries=geojson`;
-const res=await fetch(url);
-const data=await res.json();
-
-if(data.routes.length){
-const route=data.routes[0];
-const coords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
-const line=L.polyline(coords,{color:"#D4AF37",weight:5}).addTo(map);
-map.fitBounds(line.getBounds(),{padding:[20,20]});
-
-const km=(route.distance/1000).toFixed(2);
-const min=Math.round(route.duration/60);
-document.getElementById("routeInfo").innerText="🚗 "+km+" km • ⏱ "+min+" min estimé";
-}
-}
-
-function generateStamp(){
-const random=Math.random().toString(36).substring(2,7).toUpperCase();
-return "CZL-"+new Date().getFullYear()+"-"+tracking+"-"+random;
-}
-
-document.getElementById("pdfBtn").onclick=()=>{
-const { jsPDF } = window.jspdf;
-const pdf=new jsPDF();
-const stamp=generateStamp();
-
-pdf.setFontSize(40);
-pdf.setTextColor(212,175,55);
-pdf.text("PROVISOIRE",35,150,{angle:45});
-
-pdf.setTextColor(0,0,0);
-pdf.setFontSize(18);
-pdf.text("Ciza Logistics",20,20);
-pdf.setFontSize(12);
-pdf.text("Tracking: "+tracking,20,40);
-pdf.text("Montant: "+shipmentData.finalPrice+" BIF",20,50);
-pdf.text("Route: "+(shipmentData.fromCity||"")+" → "+(shipmentData.toCity||""),20,60);
-pdf.text("Cachet numérique: "+stamp,20,75);
-
-pdf.save("facture_provisoire_"+tracking+".pdf");
+document.querySelectorAll(".operator").forEach(op=>{
+op.onclick=()=>{
+document.querySelectorAll(".operator").forEach(o=>o.classList.remove("active"));
+op.classList.add("active");
+selectedMethod=op.dataset.method;
 };
+});
 
 document.getElementById("submitBtn").onclick=async()=>{
+const msg=document.getElementById("messageBox");
+msg.className="message";
+
+if(!selectedMethod){msg.innerText="Choisissez un opérateur.";msg.classList.add("error");return;}
+
 await updateDoc(doc(db,"shipments",tracking),{
-status:"payment_under_review",
-paymentStatus:"pending_verification",
+paymentMethodSelected:selectedMethod,
 paymentReference:document.getElementById("paymentReference").value,
 paymentPhone:document.getElementById("paymentPhone").value,
+status:"payment_under_review",
 referenceSubmittedAt:serverTimestamp()
 });
-lockForm();
+
+msg.innerText="Référence envoyée. En validation par l’équipe logistique.";
+msg.classList.add("ok");
 };
 
-function lockForm(){
-document.getElementById("submitBtn").disabled=true;
-document.getElementById("paymentReference").disabled=true;
-document.getElementById("paymentPhone").disabled=true;
-document.getElementById("statusBox").innerText="Référence envoyée. Paiement en cours de vérification.";
-}
-</script>
+window.generateInvoice=()=>{
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
 
+doc.setFontSize(26);
+doc.setTextColor(220,220,220);
+doc.text("CIZA LOGISTICS",35,120,{angle:45});
+
+doc.setTextColor(0,0,0);
+doc.setFontSize(18);
+doc.text("FACTURE PROVISOIRE",20,20);
+
+doc.setFontSize(12);
+doc.text("Tracking : "+tracking,20,40);
+doc.text("Montant : "+(shipmentData.finalPrice||0)+" BIF",20,50);
+
+doc.setTextColor(200,0,0);
+doc.text("Document non officiel. Paiement en cours de validation.",20,70);
+
+doc.setTextColor(0,0,0);
+doc.text("Ciza Logistics – Division Ciza Group",20,90);
+doc.text("Ce document n'est pas une facture fiscale.",20,100);
+
+doc.save("facture_"+tracking+".pdf");
+};
+
+</script>
 </body>
 </html>
