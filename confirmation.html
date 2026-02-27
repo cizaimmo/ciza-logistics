@@ -3,9 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmation paiement | Ciza Logistics</title>
+<title>Confirmation Paiement | Ciza Logistics</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{
@@ -13,278 +17,152 @@
 --black:#0b0b0c;
 --soft:#121214;
 --border:rgba(212,175,55,0.25);
---field:#101012;
 --muted:#9a9aa3;
---danger:#ff6b6b;
---ok:#1dd1a1;
 }
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:'Inter',sans-serif;
-background:var(--black);
-color:#fff;
-}
+body{font-family:Inter;background:var(--black);color:#fff}
 
 /* HEADER */
 .header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px 20px;
 background:#000;
 border-bottom:1px solid var(--border);
-padding:20px 15px;
-display:flex;
-justify-content:center;
-}
-.header img{
-height:70px;
-}
-@media(min-width:900px){
-.header img{
-height:110px; /* plus grand que bouton */
-}
+position:sticky;top:0;z-index:1000;
 }
 
-/* HERO */
-.hero{
-padding:35px 20px 25px;
-text-align:center;
-border-bottom:1px solid var(--border);
-}
-.hero h1{
-color:var(--gold);
-font-size:22px;
-font-weight:900;
-}
-.hero p{
-font-size:13px;
-margin-top:10px;
-color:rgba(255,255,255,0.85);
-line-height:1.7;
-max-width:700px;
-margin-left:auto;
-margin-right:auto;
+.logo{color:var(--gold);font-weight:900}
+.header-actions{display:flex;gap:10px}
+
+.header-btn{
+background:transparent;
+border:1px solid var(--border);
+color:#fff;
+padding:8px 14px;
+border-radius:12px;
+font-size:12px;
+cursor:pointer;
 }
 
-/* CONTAINER */
-.container{
-padding:30px 18px 60px;
-max-width:900px;
-margin:auto;
-}
+.wrapper{padding:30px 20px 60px;max-width:800px;margin:auto}
 
 .card{
-background:var(--soft);
-border:1px solid var(--border);
-border-radius:22px;
-padding:25px;
+background:linear-gradient(180deg,#151518,#0d0d0f);
+border:1px solid rgba(212,175,55,0.4);
+border-radius:28px;
+padding:30px;
+box-shadow:0 25px 80px rgba(0,0,0,0.7);
 }
 
-/* TRACKING */
-.tracking{
-text-align:center;
-margin-bottom:20px;
-}
-.tracking-code{
-color:var(--gold);
-font-weight:900;
-font-size:18px;
-}
-.amount{
-font-size:24px;
-font-weight:900;
-margin-top:8px;
-}
-.status{
-display:inline-block;
-padding:6px 14px;
-border-radius:999px;
-background:#000;
-border:1px solid var(--border);
-margin-top:10px;
-font-size:11px;
+.title{text-align:center;margin-bottom:20px}
+.title h1{color:var(--gold);font-size:22px;font-weight:900}
+
+.divider{
+height:1px;
+background:linear-gradient(to right,transparent,rgba(212,175,55,0.6),transparent);
+margin:22px 0;
 }
 
-/* COUNTDOWN */
-.countdown{
-margin-top:8px;
-font-size:12px;
-color:var(--muted);
-}
+.tracking{text-align:center}
+.code{color:var(--gold);font-weight:900;font-size:16px}
+.amount{font-size:34px;font-weight:900;margin-top:8px}
 
-/* PAYMENT */
-.payment-grid{
-display:grid;
-grid-template-columns:1fr;
-gap:16px;
-margin-top:25px;
-}
-@media(min-width:700px){
-.payment-grid{
-grid-template-columns:repeat(3,1fr);
-}
-}
+#qrBox{display:flex;justify-content:center;margin-top:20px}
+#map{height:280px;margin-top:25px;border-radius:20px}
 
-.pay-card{
-background:#111;
-border:1px solid rgba(255,255,255,0.08);
-border-radius:18px;
-padding:20px;
-cursor:pointer;
-transition:.3s;
-text-align:center;
-}
-.pay-card.active{
-border:2px solid var(--gold);
-background:#000;
-}
-.pay-card img{
-height:45px;
-margin-bottom:12px;
-}
-.pay-card .number{
-font-weight:800;
-margin-bottom:10px;
-}
-.copy-btn{
-background:var(--gold);
-border:none;
-border-radius:12px;
-padding:6px 14px;
-font-weight:800;
-cursor:pointer;
-}
+.route-info{text-align:center;margin-top:12px;font-size:14px;color:#ccc}
 
-/* INPUT PREMIUM */
-.input-group{
-margin-top:20px;
-}
-.input-group label{
-font-size:11px;
-text-transform:uppercase;
-color:var(--muted);
-font-weight:800;
-letter-spacing:.8px;
-}
+.input-group{margin-top:20px}
+.input-group label{font-size:11px;color:var(--muted);font-weight:800}
 .input-group input{
 width:100%;
-padding:15px;
 margin-top:6px;
-background:var(--field);
-border:1px solid rgba(255,255,255,0.1);
+padding:15px;
+background:#101012;
+border:1px solid rgba(255,255,255,0.08);
 border-radius:16px;
 color:#fff;
 font-size:14px;
 }
-.input-group input:focus{
-border-color:var(--gold);
-outline:none;
-box-shadow:0 0 0 2px rgba(212,175,55,0.15);
-}
 
-/* INFO */
-.info-box{
-margin-top:20px;
-background:rgba(212,175,55,0.08);
-border:1px solid rgba(212,175,55,0.25);
-border-radius:16px;
-padding:16px;
-font-size:12px;
-line-height:1.7;
-color:#f5e7b5;
-}
-
-/* BUTTON */
 .btn{
 width:100%;
-padding:16px;
+margin-top:25px;
+padding:18px;
 background:var(--gold);
 border:none;
-border-radius:18px;
+border-radius:24px;
 font-weight:900;
 color:#000;
-margin-top:22px;
 cursor:pointer;
 font-size:15px;
 }
-.btn:disabled{
-opacity:.5;
-cursor:not-allowed;
+
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+.pdf-btn{
+background:#000;
+color:var(--gold);
+border:1px solid var(--gold);
 }
 
-/* MESSAGE */
-.message{
-margin-top:14px;
-font-size:13px;
+.status-box{
+margin-top:18px;
+text-align:center;
 font-weight:800;
+font-size:13px;
+color:#D4AF37;
 }
-.message.error{color:var(--danger)}
-.message.ok{color:var(--ok)}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png">
+<div class="logo">Ciza Logistics</div>
+<div class="header-actions">
+<button class="header-btn" onclick="location.href='espace-client.html'">Retour</button>
+<button class="header-btn" id="logoutBtn">Déconnexion</button>
+</div>
 </div>
 
-<section class="hero">
-<h1>Finalisez votre paiement</h1>
-<p>
-Effectuez le paiement via l’un des opérateurs ci-dessous.
-Votre envoi sera validé après vérification sécurisée par notre équipe.
-</p>
-</section>
-
-<div class="container">
+<div class="wrapper">
 <div class="card">
 
+<div class="title">
+<h1>Finalisation du paiement</h1>
+</div>
+
 <div class="tracking">
-<div class="tracking-code" id="trackingCode">...</div>
-<div class="amount" id="amountBox">...</div>
-<div class="status" id="statusBadge">Chargement...</div>
-<div class="countdown" id="countdown"></div>
+<div class="code" id="trackingCode"></div>
+<div class="amount" id="amountBox"></div>
 </div>
 
-<div class="payment-grid">
-<div class="pay-card" data-method="EcoCash">
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Ecocash_logo.png">
-<div class="number">+257 79 94 50 05</div>
-<button class="copy-btn" data-number="+25779945005">Copier</button>
-</div>
+<div id="qrBox"></div>
 
-<div class="pay-card" data-method="Lumicash">
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Lumicash_logo.png">
-<div class="number">+257 76 00 79 85</div>
-<button class="copy-btn" data-number="+25776007985">Copier</button>
-</div>
+<div id="map"></div>
+<div class="route-info" id="routeInfo"></div>
 
-<div class="pay-card" data-method="eNoti">
-<img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/E_Noti_logo.png">
-<div class="number">+257 75 89 05 58</div>
-<button class="copy-btn" data-number="+25775890558">Copier</button>
-</div>
-</div>
+<button class="btn pdf-btn" id="pdfBtn">🧾 Télécharger facture provisoire</button>
+
+<div class="divider"></div>
 
 <div class="input-group">
-<label>Référence de transaction</label>
+<label>Référence transaction</label>
 <input id="paymentReference">
 </div>
 
 <div class="input-group">
-<label>Numéro utilisé pour paiement</label>
-<input id="paymentPhone" inputmode="numeric">
-</div>
-
-<div class="info-box">
-<strong>Information :</strong><br>
-• Validation manuelle sécurisée.<br>
-• Délai estimé : 5 à 15 minutes.<br>
-• Les paiements sont automatiquement rapprochés avec le tracking.<br>
-• Toute incohérence peut entraîner suspension du compte.
+<label>Numéro utilisé</label>
+<input id="paymentPhone">
 </div>
 
 <button class="btn" id="submitBtn">Envoyer la référence</button>
 
-<div class="message" id="messageBox"></div>
+<div class="status-box" id="statusBox"></div>
 
 </div>
 </div>
@@ -292,7 +170,7 @@ Votre envoi sera validé après vérification sécurisée par notre équipe.
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -302,84 +180,109 @@ projectId:"ciza-logistics"
 const db=getFirestore(app);
 const auth=getAuth(app);
 
+document.getElementById("logoutBtn").onclick=async()=>{
+await signOut(auth);
+location.href="login.html";
+};
+
 const tracking=new URLSearchParams(window.location.search).get("tracking");
-let selectedMethod=null;
-
-function mapStatus(status){
-switch(status){
-case "created": return "En attente paiement";
-case "payment_under_review": return "Vérification en cours";
-case "paid": return "Paiement validé";
-default: return "En attente";
-}
-}
-
-function startCountdown(ts){
-if(!ts) return;
-const end=new Date(ts.seconds*1000+30*60*1000);
-const el=document.getElementById("countdown");
-const interval=setInterval(()=>{
-const now=new Date();
-const diff=end-now;
-if(diff<=0){clearInterval(interval);el.innerText="Validation en cours...";return;}
-const m=Math.floor(diff/60000);
-const s=Math.floor((diff%60000)/1000);
-el.innerText="⏱ "+m+":"+String(s).padStart(2,"0");
-},1000);
-}
+let shipmentData=null;
 
 onAuthStateChanged(auth,async user=>{
-if(!user){location.href="login.html";return;}
+if(!user||!tracking){location.href="login.html";return;}
+
 const snap=await getDoc(doc(db,"shipments",tracking));
-if(!snap.exists()){return;}
-const data=snap.data();
-if(data.ownerUid!==user.uid){return;}
+if(!snap.exists()) return;
+
+shipmentData=snap.data();
+if(shipmentData.ownerUid!==user.uid){location.href="login.html";return;}
 
 document.getElementById("trackingCode").innerText="Tracking : "+tracking;
-document.getElementById("amountBox").innerText=(data.finalPrice||0).toLocaleString("fr-FR")+" BIF";
-document.getElementById("statusBadge").innerText=mapStatus(data.status);
-if(data.referenceSubmittedAt) startCountdown(data.referenceSubmittedAt);
+document.getElementById("amountBox").innerText=(shipmentData.finalPrice||0).toLocaleString("fr-FR")+" BIF";
+
+generateQR();
+initMap();
+
+if(shipmentData.paymentStatus==="pending_verification"){
+lockForm();
+}
 });
 
-document.querySelectorAll(".pay-card").forEach(card=>{
-card.addEventListener("click",()=>{
-document.querySelectorAll(".pay-card").forEach(c=>c.classList.remove("active"));
-card.classList.add("active");
-selectedMethod=card.dataset.method;
+function generateQR(){
+new QRCode(document.getElementById("qrBox"),{
+text:window.location.origin+"/tracking.html?tracking="+tracking,
+width:140,height:140,colorDark:"#D4AF37",colorLight:"#0b0b0c"
 });
-});
+}
 
-document.querySelectorAll(".copy-btn").forEach(btn=>{
-btn.addEventListener("click",(e)=>{
-e.stopPropagation();
-navigator.clipboard.writeText(btn.dataset.number);
-btn.innerText="Copié ✓";
-setTimeout(()=>btn.innerText="Copier",1500);
-});
-});
+async function initMap(){
+if(!shipmentData.fromLat||!shipmentData.toLat) return;
 
-document.getElementById("submitBtn").addEventListener("click",async()=>{
-const msg=document.getElementById("messageBox");
-msg.className="message";
+const map=L.map('map').setView([shipmentData.fromLat,shipmentData.fromLng],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-if(!selectedMethod){msg.innerText="Sélectionnez un opérateur.";msg.classList.add("error");return;}
+L.marker([shipmentData.fromLat,shipmentData.fromLng]).addTo(map);
+L.marker([shipmentData.toLat,shipmentData.toLng]).addTo(map);
 
-const ref=document.getElementById("paymentReference").value.trim();
-const phone=document.getElementById("paymentPhone").value.trim();
-if(!ref||!phone){msg.innerText="Entrez référence et numéro.";msg.classList.add("error");return;}
+const url=`https://router.project-osrm.org/route/v1/driving/${shipmentData.fromLng},${shipmentData.fromLat};${shipmentData.toLng},${shipmentData.toLat}?overview=full&geometries=geojson`;
+const res=await fetch(url);
+const data=await res.json();
 
+if(data.routes.length){
+const route=data.routes[0];
+const coords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+const line=L.polyline(coords,{color:"#D4AF37",weight:5}).addTo(map);
+map.fitBounds(line.getBounds(),{padding:[20,20]});
+
+const km=(route.distance/1000).toFixed(2);
+const min=Math.round(route.duration/60);
+document.getElementById("routeInfo").innerText="🚗 "+km+" km • ⏱ "+min+" min estimé";
+}
+}
+
+function generateStamp(){
+const random=Math.random().toString(36).substring(2,7).toUpperCase();
+return "CZL-"+new Date().getFullYear()+"-"+tracking+"-"+random;
+}
+
+document.getElementById("pdfBtn").onclick=()=>{
+const { jsPDF } = window.jspdf;
+const pdf=new jsPDF();
+const stamp=generateStamp();
+
+pdf.setFontSize(40);
+pdf.setTextColor(212,175,55);
+pdf.text("PROVISOIRE",35,150,{angle:45});
+
+pdf.setTextColor(0,0,0);
+pdf.setFontSize(18);
+pdf.text("Ciza Logistics",20,20);
+pdf.setFontSize(12);
+pdf.text("Tracking: "+tracking,20,40);
+pdf.text("Montant: "+shipmentData.finalPrice+" BIF",20,50);
+pdf.text("Route: "+(shipmentData.fromCity||"")+" → "+(shipmentData.toCity||""),20,60);
+pdf.text("Cachet numérique: "+stamp,20,75);
+
+pdf.save("facture_provisoire_"+tracking+".pdf");
+};
+
+document.getElementById("submitBtn").onclick=async()=>{
 await updateDoc(doc(db,"shipments",tracking),{
 status:"payment_under_review",
 paymentStatus:"pending_verification",
-paymentMethodSelected:selectedMethod,
-paymentReference:ref,
-paymentPhone:phone,
+paymentReference:document.getElementById("paymentReference").value,
+paymentPhone:document.getElementById("paymentPhone").value,
 referenceSubmittedAt:serverTimestamp()
 });
+lockForm();
+};
 
-msg.innerText="Référence envoyée. Validation en cours.";
-msg.classList.add("ok");
-});
+function lockForm(){
+document.getElementById("submitBtn").disabled=true;
+document.getElementById("paymentReference").disabled=true;
+document.getElementById("paymentPhone").disabled=true;
+document.getElementById("statusBox").innerText="Référence envoyée. Paiement en cours de vérification.";
+}
 </script>
 
 </body>
