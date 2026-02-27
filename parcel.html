@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ciza Parcel | Livraison Nationale</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">l
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -1188,69 +1188,95 @@ isSubmitting=false;
 
 /* ================= SMART ROUTE MAP ================= */
 
-let pickupLat=null;
-let pickupLng=null;
-let destLat=null;
-let destLng=null;
+let pickupLat = null;
+let pickupLng = null;
+let destLat = null;
+let destLng = null;
 
-const routeMap = L.map('routeMap').setView([-3.3822,29.3644],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(routeMap);
+const routeMap = L.map('routeMap').setView([-3.3822, 29.3644], 12);
 
-let pickupMarker=null;
-let destMarker=null;
-let routeLine=null;
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+}).addTo(routeMap);
 
+let pickupMarker = null;
+let destMarker = null;
+let routeLine = null;
+
+/* ----------- GEOCODING ----------- */
 async function geocodeAddress(address){
-try{
-const url=`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-const res=await fetch(url);
-const data=await res.json();
-if(data && data.length>0){
-return {
-lat: parseFloat(data[0].lat),
-lng: parseFloat(data[0].lon)
-};
-}
-}catch(e){}
-return null;
+    try{
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if(data && data.length > 0){
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
+    }catch(e){}
+    return null;
 }
 
+/* ----------- ROUTE UPDATE ----------- */
 async function updateRouteMap(){
 
-if(!originProvince.value || !destProvince.value) return;
+    if(!originProvince.value || !destProvince.value) return;
 
-const originText = `${originQuartier.value || ""}, ${originProvince.value}, Burundi`;
-const destText = `${destQuartier.value || ""}, ${destProvince.value}, Burundi`;
+    const countryLabel = country.value === "RW" ? "Rwanda" : "Burundi";
 
-const originCoords = await geocodeAddress(originText);
-const destCoords = await geocodeAddress(destText);
+    const originText = `
+        ${originQuartier.value || ""}
+        ${originProvince.value}
+        ${countryLabel}
+    `;
 
-if(!originCoords || !destCoords) return;
+    const destText = `
+        ${destQuartier.value || ""}
+        ${destProvince.value}
+        ${countryLabel}
+    `;
 
-pickupLat = originCoords.lat;
-pickupLng = originCoords.lng;
-destLat = destCoords.lat;
-destLng = destCoords.lng;
+    const originCoords = await geocodeAddress(originText);
+    const destCoords   = await geocodeAddress(destText);
 
-if(pickupMarker) routeMap.removeLayer(pickupMarker);
-if(destMarker) routeMap.removeLayer(destMarker);
-if(routeLine) routeMap.removeLayer(routeLine);
+    if(!originCoords || !destCoords) return;
 
-pickupMarker = L.marker([pickupLat,pickupLng]).addTo(routeMap);
-destMarker = L.marker([destLat,destLng]).addTo(routeMap);
+    pickupLat = originCoords.lat;
+    pickupLng = originCoords.lng;
+    destLat   = destCoords.lat;
+    destLng   = destCoords.lng;
 
-routeLine = L.polyline(
-[[pickupLat,pickupLng],[destLat,destLng]],
-{color:"#D4AF37",weight:4}
-).addTo(routeMap);
+    if(pickupMarker) routeMap.removeLayer(pickupMarker);
+    if(destMarker)   routeMap.removeLayer(destMarker);
+    if(routeLine)    routeMap.removeLayer(routeLine);
 
-routeMap.fitBounds(routeLine.getBounds(),{padding:[40,40]});
+    pickupMarker = L.marker([pickupLat, pickupLng]).addTo(routeMap);
+    destMarker   = L.marker([destLat, destLng]).addTo(routeMap);
+
+    routeLine = L.polyline(
+        [
+            [pickupLat, pickupLng],
+            [destLat, destLng]
+        ],
+        {
+            color: "#D4AF37",
+            weight: 4
+        }
+    ).addTo(routeMap);
+
+    routeMap.fitBounds(routeLine.getBounds(), {
+        padding: [40, 40]
+    });
 }
 
-originProvince.addEventListener("change",updateRouteMap);
-originQuartier.addEventListener("change",updateRouteMap);
-destProvince.addEventListener("change",updateRouteMap);
-destQuartier.addEventListener("change",updateRouteMap);
+/* ----------- EVENTS ----------- */
+originProvince.addEventListener("change", updateRouteMap);
+originQuartier.addEventListener("change", updateRouteMap);
+destProvince.addEventListener("change", updateRouteMap);
+destQuartier.addEventListener("change", updateRouteMap);
 /* INIT (page) */
 applyPhonePrefix(country.value);
 loadProvinces();
