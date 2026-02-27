@@ -1,9 +1,12 @@
 const CACHE_NAME = "ciza-logistics-v3";
 
 const CORE_ASSETS = [
-  "./login.html",
+     "./login.html",
+    "./creat.html",
+   "./espace-client.html",
   "./driver-tool.html",
-  "./admin/admin-parcel.html"
+"./admin/admin-parcel.html",
+   
 ];
 
 // INSTALL
