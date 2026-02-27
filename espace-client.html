@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciza Logistics | Espace Client</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root{
+--gold:#D4AF37;
+--black:#0b0b0c;
+--soft:#121214;
+--border:rgba(212,175,55,0.25);
+--muted:#9a9aa3;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--black);font-family:Inter;color:#fff}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px;
+border-bottom:1px solid var(--border);
+position:sticky;top:0;background:#000;z-index:1000;
+}
+
+.logo-title{
+display:flex;flex-direction:column;
+}
+
+.logo-title h1{color:var(--gold);font-size:18px;}
+.client-info{font-size:12px;color:#aaa;margin-top:4px;}
+
+.actions{display:flex;gap:10px;align-items:center;}
+
+.logout{
+background:transparent;border:1px solid var(--border);
+color:var(--gold);padding:8px 14px;border-radius:12px;
+cursor:pointer;font-weight:900;
+}
+
+.hamburger{
+display:none;flex-direction:column;gap:4px;
+cursor:pointer;
+}
+.hamburger span{width:22px;height:2px;background:var(--gold);display:block;}
+
+@media(max-width:768px){
+.hamburger{display:flex;}
+}
+
+/* MOBILE MENU */
+.mobile-menu{
+position:fixed;top:0;right:-100%;width:260px;height:100%;
+background:#111;border-left:1px solid var(--border);
+padding:20px;transition:0.3s;z-index:2000;
+}
+.mobile-menu.open{right:0;}
+.mobile-menu a{display:block;margin-bottom:14px;color:#fff;text-decoration:none;font-weight:700;}
+.overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.6);
+display:none;z-index:1500;
+}
+.overlay.show{display:block;}
+
+/* CLOCK */
+.clock{text-align:center;padding:8px;font-size:13px;color:#aaa;border-bottom:1px solid var(--border);}
+
+/* KPIs */
+.kpis{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+gap:12px;
+padding:20px;
+}
+.kpi{
+background:var(--soft);
+border:1px solid var(--border);
+border-radius:16px;
+padding:15px;text-align:center;
+}
+.kpi b{color:var(--gold);font-size:20px;display:block;margin-bottom:6px;}
+
+/* CARDS */
+.container{width:95%;max-width:1100px;margin:10px auto 40px;}
+.card{
+background:var(--soft);
+border:1px solid var(--border);
+border-radius:22px;
+padding:20px;margin-bottom:20px;
+}
+
+.price{color:var(--gold);font-weight:900;margin-top:8px;}
+
+.timeline{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;font-size:11px;}
+.step{padding:6px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);opacity:0.4;}
+.step.active{background:var(--gold);color:#000;opacity:1;}
+
+.driver-box{margin-top:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:16px;font-size:13px;}
+
+.map-box{margin-top:12px;height:240px;border-radius:16px;overflow:hidden;border:1px solid var(--border);}
+
+.otp-box{margin-top:12px;background:rgba(212,175,55,0.15);border:1px solid var(--gold);padding:14px;border-radius:16px;text-align:center;}
+.otp-code{font-size:22px;font-weight:900;letter-spacing:3px;color:var(--gold);}
+
+.rating{margin-top:12px;}
+.star{font-size:20px;cursor:pointer;color:#555;}
+.star.active{color:var(--gold);}
+
+.invoice-btn{
+margin-top:12px;padding:8px 14px;border-radius:12px;
+background:var(--gold);border:none;font-weight:900;cursor:pointer;
+}
+
+.proof img{max-width:100%;border-radius:12px;margin-top:6px;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="logo-title">
+<h1>Espace Client</h1>
+<div class="client-info" id="clientInfo">Chargement...</div>
+</div>
+<div class="actions">
+<div class="hamburger" id="hamburger">
+<span></span><span></span><span></span>
+</div>
+<button class="logout" id="logoutBtn">Déconnexion</button>
+</div>
+</div>
+
+<div class="clock">🕒 <span id="liveClock"></span></div>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="#">Dashboard</a>
+<a href="#">Mes Colis</a>
+<a href="https://wa.me/25779945007" target="_blank">Support WhatsApp</a>
+<a href="#" id="mobileLogout">Déconnexion</a>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="kpis">
+<div class="kpi"><b id="kpiActive">0</b>Actifs</div>
+<div class="kpi"><b id="kpiTransit">0</b>Transit</div>
+<div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
+<div class="kpi"><b id="kpiTotal">0</b>Total BIF</div>
+</div>
+
+<div class="container">
+<div id="list"></div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+const list=document.getElementById("list");
+
+function updateClock(){
+const now=new Date();
+document.getElementById("liveClock").innerText=
+now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);updateClock();
+
+document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
+document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
+
+document.getElementById("hamburger").onclick=()=>{
+document.getElementById("mobileMenu").classList.add("open");
+document.getElementById("overlay").classList.add("show");
+};
+document.getElementById("overlay").onclick=()=>{
+document.getElementById("mobileMenu").classList.remove("open");
+document.getElementById("overlay").classList.remove("show");
+};
+
+onAuthStateChanged(auth,async user=>{
+if(!user){location.href="login.html";return;}
+
+const userSnap=await getDoc(doc(db,"users",user.uid));
+if(userSnap.exists()){
+const u=userSnap.data();
+document.getElementById("clientInfo").innerText=
+u.fullName+" • "+(u.phone||"");
+}
+
+const q=query(collection(db,"shipments"),where("ownerUid","==",user.uid));
+onSnapshot(q,snap=>{
+let active=0,transit=0,delivered=0,total=0;
+list.innerHTML="";
+snap.forEach(doc=>{
+const d={id:doc.id,...doc.data()};
+if(d.status!=="delivered")active++;
+if(d.status==="in_transit")transit++;
+if(d.status==="delivered")delivered++;
+total+=Number(d.finalPrice||0);
+list.innerHTML+=createCard(d);
+});
+document.getElementById("kpiActive").innerText=active;
+document.getElementById("kpiTransit").innerText=transit;
+document.getElementById("kpiDelivered").innerText=delivered;
+document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR");
+});
+});
+
+function createCard(d){
+
+let ratingSection="";
+if(d.status==="delivered" && !d.clientRating){
+ratingSection=`
+<div class="rating">
+Noter le chauffeur :
+${[1,2,3,4,5].map(i=>`<span class="star" onclick="rate('${d.id}',${i})">★</span>`).join("")}
+</div>`;
+}
+
+return `
+<div class="card">
+<b>${d.trackingCode||d.id}</b>
+<div class="price">${(Number(d.finalPrice||0)).toLocaleString("fr-FR")} BIF</div>
+<div class="timeline">
+<div class="step ${["created","assigned","in_transit","delivered"].includes(d.status)?"active":""}">📦 Créé</div>
+<div class="step ${["assigned","in_transit","delivered"].includes(d.status)?"active":""}">👨‍✈️ Assigné</div>
+<div class="step ${["in_transit","delivered"].includes(d.status)?"active":""}">🚗 Transit</div>
+<div class="step ${d.status==="delivered"?"active":""}">✅ Livré</div>
+</div>
+
+${d.driverName?`<div class="driver-box">
+<b>👨‍✈️ ${d.driverName}</b><br>
+${d.driverPhone?`📞 <a href="tel:${d.driverPhone}" style="color:#D4AF37">${d.driverPhone}</a><br>`:""}
+${d.driverPlate?`🚗 ${d.driverPlate}<br>`:""}
+${d.driverRating?`⭐ ${d.driverRating}/5<br>`:""}
+</div>`:""}
+
+${ratingSection}
+
+<button class="invoice-btn" onclick="generateInvoice('${d.id}','${d.trackingCode}','${d.finalPrice}')">
+🧾 Télécharger facture
+</button>
+
+</div>
+`;
+}
+
+window.rate=async(id,stars)=>{
+await updateDoc(doc(db,"shipments",id),{clientRating:stars});
+alert("Merci pour votre note !");
+};
+
+window.generateInvoice=(id,tracking,price)=>{
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
+doc.setFontSize(18);
+doc.text("Ciza Logistics - Facture",20,20);
+doc.setFontSize(12);
+doc.text("Tracking: "+tracking,20,40);
+doc.text("Prix: "+Number(price).toLocaleString("fr-FR")+" BIF",20,50);
+doc.text("Date: "+new Date().toLocaleDateString("fr-FR"),20,60);
+doc.save("facture_"+tracking+".pdf");
+};
+
+</script>
+</body>
+</html>
