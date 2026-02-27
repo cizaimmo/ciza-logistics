@@ -6,6 +6,9 @@
 <title>Ciza Parcel | Livraison Nationale</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 :root{
@@ -428,6 +431,16 @@ font-size:11px;background:#000;
 </div>
 </div>
 
+<div style="margin-top:18px;">
+<label>Sélectionnez point exact de départ</label>
+<div id="pickupMap" style="height:200px;border-radius:16px;border:1px solid var(--border);"></div>
+</div>
+
+<div style="margin-top:18px;">
+<label>Sélectionnez point exact de destination</label>
+<div id="destMap" style="height:200px;border-radius:16px;border:1px solid var(--border);"></div>
+</div>
+  
 <div class="small-note">Si province = <b>Bujumbura</b>, la liste de <b>38 quartiers</b> s’affiche (M d’abord, puis A-Z). Sinon : “—”.</div>
 </div>
 
@@ -647,53 +660,69 @@ hamburgerBtn.addEventListener("click",()=>{document.body.classList.contains("men
 menuOverlay.addEventListener("click",closeMenu);
 mmClose.addEventListener("click",closeMenu);
 
-/* ================= AUTH GUARD ================= */
+/* ================= AUTH GUARD (PRODUCTION) ================= */
 async function ensureClientRole(user){
+try{
 const uSnap = await getDoc(doc(db,"users",user.uid));
+
 if(!uSnap.exists()){
 await signOut(auth);
-go("login.html");
+location.replace(withBase("login.html"));
 return false;
 }
-const u=uSnap.data();
+
+const u = uSnap.data() || {};
+
+if(u.accountStatus==="suspended"){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
+
+if(u.role!=="client"){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
 
 const nm=(u.fullName || u.name || user.email || "Client");
 clientName.innerText=nm;
 mmClientName.innerText=nm;
 
-if(u.accountStatus==="suspended"){
-alert("Compte suspendu.");
-await signOut(auth);
-go("login.html");
-return false;
-}
-if(u.role!=="client"){
-alert("Accès refusé.");
-await signOut(auth);
-go("login.html");
-return false;
-}
-
 logoutBtn.style.display="inline-block";
 logoutMobile.style.display="inline-block";
 document.querySelector(".user-chip").style.display="flex";
+
 return true;
+
+}catch(e){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
 }
 
 onAuthStateChanged(auth, async (user)=>{
-if(!user){go("login.html");return;}
+if(!user){location.replace(withBase("login.html"));return;}
 currentUser=user;
+
 const ok = await ensureClientRole(user);
-if(ok){
+if(!ok) return;
+
 applyPhonePrefix(country.value);
 loadProvinces();
 applyServiceRules(true);
 updateSummary();
-}
 });
 
-logoutBtn.addEventListener("click",async()=>{await signOut(auth);go("login.html");});
-logoutMobile.addEventListener("click",async()=>{await signOut(auth);go("login.html");});
+logoutBtn.addEventListener("click",async()=>{
+try{ await signOut(auth); }catch(e){}
+location.replace(withBase("login.html"));
+});
+logoutMobile.addEventListener("click",async()=>{
+try{ await signOut(auth); }catch(e){}
+location.replace(withBase("login.html"));
+});
 
 /* ================= PHONE HELPERS ================= */
 function enforceNumericPhone(input){
@@ -709,11 +738,6 @@ if(receiverPhone.value.trim()==="" || receiverPhone.value.startsWith("+")) recei
 }
 senderPhone.addEventListener("input",()=>enforceNumericPhone(senderPhone));
 receiverPhone.addEventListener("input",()=>enforceNumericPhone(receiverPhone));
-country.addEventListener("change",()=>{
-applyPhonePrefix(country.value);
-loadProvinces();
-updateSummary();
-});
 
 /* ================= PROVINCES + 38 QUARTIERS ================= */
 const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
@@ -728,6 +752,7 @@ const quartiersBuj38=[
 "Ngagara","Ngagara II","Ngagara III","Nyabugete","Nyakabiga","Rohero I","Rohero II","Rohero III",
 "Ruziba","Rweza","Sororezo"
 ];
+
 function sortMFirst(list){
 const m=list.filter(x=>x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
 const rest=list.filter(x=>!x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
@@ -736,12 +761,15 @@ return [...m,...rest];
 function loadProvinces(){
 const c = country.value;
 const list = c==="RW" ? provincesRW : provincesBI;
+
 originProvince.innerHTML=`<option value="">Sélectionner</option>`;
 destProvince.innerHTML=`<option value="">Sélectionner</option>`;
+
 list.slice().sort((a,b)=>a.localeCompare(b,"fr")).forEach(p=>{
 originProvince.innerHTML+=`<option value="${p}">${p}</option>`;
 destProvince.innerHTML+=`<option value="${p}">${p}</option>`;
 });
+
 originQuartier.innerHTML=`<option value="">—</option>`;
 destQuartier.innerHTML=`<option value="">—</option>`;
 }
@@ -755,12 +783,19 @@ qEl.innerHTML+=`<option value="${q}">${q}</option>`;
 qEl.innerHTML=`<option value="—">—</option>`;
 }
 }
+
 originProvince.addEventListener("change",()=>{bindQuartiers(originProvince,originQuartier);updateSummary();});
 destProvince.addEventListener("change",()=>{bindQuartiers(destProvince,destQuartier);updateSummary();});
 originQuartier.addEventListener("change",updateSummary);
 destQuartier.addEventListener("change",updateSummary);
 originLandmark.addEventListener("input",updateSummary);
 destLandmark.addEventListener("input",updateSummary);
+
+country.addEventListener("change",()=>{
+applyPhonePrefix(country.value);
+loadProvinces();
+updateSummary();
+});
 
 /* ================= SERVICE -> FORM LOGIC ================= */
 function setRequired(el, on){
@@ -920,6 +955,7 @@ updateSummary();
 }
 
 service.addEventListener("change",()=>{applyServiceRules(false);});
+
 senderType.addEventListener("change",()=>{
 const t = senderType.value;
 const showInternal = (t==="commerce" || t==="pharmacie" || t==="restaurant");
@@ -968,7 +1004,7 @@ Sensibilité: ${sensTxt}`;
 }
 
 [
-frequency,priority,internalRef,
+service,frequency,priority,internalRef,
 originProvince,destProvince,originQuartier,destQuartier,originLandmark,destLandmark,
 senderName,senderPhone,receiverName,receiverPhone,
 goodsType,weightValue,declaredValue,paymentMethod,content,notes,nonDangerous,
@@ -987,13 +1023,24 @@ for(let i=0;i<8;i++) code+=chars[Math.floor(Math.random()*chars.length)];
 return code;
 }
 
-/* ================= PRICING ================= */
+/* ================= PRICING (DYNAMIC / GLOBAL) ================= */
+function countrySuffix(cty){ return (cty==="RW") ? "rw" : "bi"; }
+
 async function loadPricing(cty){
-const id = cty==="RW" ? "parcel_rw" : "parcel_bi";
-const snap = await getDoc(doc(db,"pricing",id));
-if(!snap.exists()) throw new Error("Configuration tarifaire introuvable.");
-return { id, data:snap.data() };
+const s = (service.value || "parcel").toLowerCase();
+const suffix = countrySuffix(cty);
+const primaryId = `${s}_${suffix}`;
+
+let snap = await getDoc(doc(db,"pricing",primaryId));
+if(snap.exists()) return { id: primaryId, data: snap.data() };
+
+const legacyId = (cty==="RW") ? "parcel_rw" : "parcel_bi";
+snap = await getDoc(doc(db,"pricing",legacyId));
+if(snap.exists()) return { id: legacyId, data: snap.data() };
+
+throw new Error("Configuration tarifaire introuvable.");
 }
+
 function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
 
 /* ================= SUBMIT ================= */
@@ -1001,9 +1048,47 @@ function showError(msg){errorMsg.innerText=msg; okMsg.style.display="none"; okMs
 function showOk(msg){okMsg.style.display="block"; okMsg.innerText=msg; errorMsg.innerText="";}
 function setLoading(on){loader.style.display = on ? "block" : "none"; submitBtn.disabled = on;}
 
-goTrackingBtn.addEventListener("click",()=>{go("tracking.html");});
+goTrackingBtn.addEventListener("click",()=>{location.href = withBase("tracking.html");});
+
+ updateSummary();
+
+/* ================= MAP INIT ================= */
+
+let pickupLat=null;
+let pickupLng=null;
+let destLat=null;
+let destLng=null;
+
+const pickupMap = L.map('pickupMap').setView([-3.3822,29.3644],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(pickupMap);
+let pickupMarker;
+
+pickupMap.on("click", function(e){
+pickupLat = e.latlng.lat;
+pickupLng = e.latlng.lng;
+if(pickupMarker) pickupMap.removeLayer(pickupMarker);
+pickupMarker = L.marker([pickupLat,pickupLng]).addTo(pickupMap);
+});
+
+const destMap = L.map('destMap').setView([-3.3822,29.3644],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(destMap);
+let destMarker;
+
+destMap.on("click", function(e){
+destLat = e.latlng.lat;
+destLng = e.latlng.lng;
+if(destMarker) destMap.removeLayer(destMarker);
+destMarker = L.marker([destLat,destLng]).addTo(destMap);
+});
+
+/* ================= SUBMIT ================= */
+submitBtn.addEventListener("click", async ()=>{ 
+let isSubmitting=false;
 
 submitBtn.addEventListener("click", async ()=>{
+if(isSubmitting) return;
+isSubmitting=true;
+
 showError("");
 setLoading(true);
 
@@ -1016,8 +1101,12 @@ if(!originProvince.value || !destProvince.value) throw new Error("Sélectionnez 
 if(originProvince.value==="Bujumbura" && !originQuartier.value) throw new Error("Sélectionnez le quartier de départ.");
 if(destProvince.value==="Bujumbura" && !destQuartier.value) throw new Error("Sélectionnez le quartier de destination.");
 
+  if(!pickupLat || !pickupLng) throw new Error("Sélectionnez le point exact de départ sur la carte.");
+if(!destLat || !destLng) throw new Error("Sélectionnez le point exact de destination sur la carte.");
 if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les infos expéditeur.");
 if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les infos destinataire.");
+
+if(senderPhone.value.length < 8 || receiverPhone.value.length < 8) throw new Error("Numéro de téléphone invalide.");
 
 if(!goodsType.value) throw new Error("Sélectionnez la marchandise.");
 if(!weightValue.value) throw new Error("Poids / quantité requis.");
@@ -1033,11 +1122,20 @@ throw new Error("Référence interne requise (Business).");
 const cty = country.value || "BI";
 
 /* pricing (dynamic) */
-const pricingPack = await loadPricing(cty);
-const pricing = pricingPack.data;
+let pricingPack;
+try{
+pricingPack = await loadPricing(cty);
+}catch(e){
+throw new Error("Configuration tarifaire non trouvée. Contactez l'administration.");
+}
+const pricing = pricingPack.data || {};
+if(pricing.urbanBase===undefined || pricing.interBase===undefined) throw new Error("Tarification incomplète.");
 
 /* tracking */
 const tracking = generateTracking(cty);
+const shipmentRef = doc(db,"shipments",tracking);
+const existing = await getDoc(shipmentRef);
+if(existing.exists()) throw new Error("Erreur génération tracking. Réessayez.");
 
 /* base: même province vs inter-province */
 const originSameDest = (originProvince.value === destProvince.value);
@@ -1057,7 +1155,8 @@ base:Math.round(base),
 weightExtra:Math.round(weightExtra),
 insurance:Math.round(insurance),
 fuel:Math.round(fuel),
-pricingVersion: pricing.pricingVersion || pricingPack.id || "parcel_dynamic_v1"
+pricingId: pricingPack.id,
+pricingVersion: pricing.pricingVersion || pricingPack.id || "pricing_v1"
 };
 
 const senderProfile={
@@ -1072,13 +1171,18 @@ sensitiveProduct: !!sensSensitive.checked
 }
 };
 
-await setDoc(doc(db,"shipments",tracking),{
+await setDoc(shipmentRef,{
 trackingCode: tracking,
 
 service: service.value,
 serviceLabel: (SERVICES[service.value]?.label || "Parcel"),
 country: cty,
 
+pickupLat,
+pickupLng,
+destinationLat: destLat,
+destinationLng: destLng,
+  
 ownerUid: currentUser.uid,
 uid: currentUser.uid,
 
@@ -1118,15 +1222,19 @@ createdAt: serverTimestamp()
 });
 
 showOk("Envoi créé. Redirection…");
-go("confirmation.html?tracking=" + encodeURIComponent(tracking));
+location.replace(withBase("confirmation.html?tracking=" + encodeURIComponent(tracking)));
 
 }catch(e){
 showError(e.message || "Erreur inconnue.");
+}finally{
 setLoading(false);
+isSubmitting=false;
 }
 });
 
-/* INIT */
+/* INIT (page) */
+applyPhonePrefix(country.value);
+loadProvinces();
 applyServiceRules(true);
 updateSummary();
 </script>
