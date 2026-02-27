@@ -3,76 +3,198 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Espace Client | Ciza Logistics</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>Ciza Logistics | Espace Client</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
 <style>
+:root{
+--gold:#D4AF37;
+--black:#0b0b0c;
+--soft:#121214;
+--border:rgba(212,175,55,0.25);
+--muted:#9a9aa3;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-margin:0;
-background:#0b0b0c;
+background:var(--black);
 font-family:Inter;
 color:#fff;
 }
+
 .header{
-padding:20px;
-border-bottom:1px solid rgba(212,175,55,0.2);
 display:flex;
 justify-content:space-between;
 align-items:center;
+padding:20px;
+border-bottom:1px solid var(--border);
 }
-h1{
-color:#D4AF37;
-margin:0;
+
+.header h1{
+color:var(--gold);
 font-size:18px;
 }
-.container{
-width:95%;
-max-width:900px;
-margin:30px auto;
-}
-.card{
-background:#121214;
-border:1px solid rgba(212,175,55,0.2);
-padding:18px;
-border-radius:18px;
-margin-bottom:18px;
-}
-.badge{
-padding:6px 12px;
-border-radius:999px;
-font-size:12px;
+
+.logout{
+background:transparent;
+border:1px solid var(--border);
+color:var(--gold);
+padding:8px 14px;
+border-radius:12px;
+cursor:pointer;
 font-weight:900;
 }
-.created{background:#636e72;}
-.in_transit{background:#0984e3;}
-.delivered{background:#00b894;}
-.price{
-color:#D4AF37;
+
+.container{
+width:95%;
+max-width:1100px;
+margin:30px auto;
+}
+
+.kpi-row{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+gap:14px;
+margin-bottom:25px;
+}
+
+.kpi{
+background:var(--soft);
+border:1px solid var(--border);
+padding:18px;
+border-radius:18px;
+text-align:center;
+}
+
+.kpi b{
+color:var(--gold);
+font-size:20px;
+display:block;
+margin-bottom:5px;
+}
+
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
+.tab{
+padding:10px 18px;
+border-radius:999px;
+border:1px solid var(--border);
+cursor:pointer;
+font-weight:800;
+font-size:13px;
+}
+
+.tab.active{
+background:var(--gold);
+color:#000;
+}
+
+.card{
+background:var(--soft);
+border:1px solid var(--border);
+border-radius:22px;
+padding:20px;
+margin-bottom:18px;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-2px);
+}
+
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+font-size:11px;
 font-weight:900;
 margin-top:6px;
 }
-.otp{
-background:#6c5ce7;
-display:inline-block;
+
+.created{background:#636e72;}
+.assigned{background:#0984e3;}
+.in_transit{background:#6c5ce7;}
+.delivered{background:#00b894;}
+
+.price{
+color:var(--gold);
+font-weight:900;
 margin-top:10px;
 }
-button{
-background:#D4AF37;
-border:none;
-padding:8px 14px;
+
+.timeline{
+display:flex;
+gap:8px;
+margin-top:12px;
+flex-wrap:wrap;
+font-size:11px;
+}
+
+.step{
+padding:6px 10px;
 border-radius:12px;
+border:1px solid rgba(255,255,255,0.1);
+opacity:0.4;
+}
+
+.step.active{
+background:var(--gold);
+color:#000;
+opacity:1;
+}
+
+.driver-box{
+margin-top:15px;
+padding:12px;
+background:rgba(255,255,255,0.04);
+border-radius:16px;
+font-size:13px;
+}
+
+.driver-box b{
+color:var(--gold);
+}
+
+.otp-box{
+margin-top:12px;
+background:rgba(212,175,55,0.15);
+border:1px solid var(--gold);
+padding:14px;
+border-radius:16px;
+text-align:center;
+}
+
+.otp-code{
+font-size:22px;
+font-weight:900;
+letter-spacing:3px;
+color:var(--gold);
+}
+
+.proof{
+margin-top:12px;
+font-size:13px;
+}
+
+.proof img{
+max-width:100%;
+border-radius:12px;
+margin-top:6px;
+}
+
+button.call{
+margin-top:8px;
+padding:6px 12px;
+border-radius:12px;
+background:var(--gold);
+border:none;
 font-weight:900;
 cursor:pointer;
-}
-.logout{
-background:transparent;
-border:1px solid rgba(212,175,55,0.3);
-color:#D4AF37;
-}
-.debug{
-font-size:11px;
-opacity:0.6;
-margin-top:5px;
 }
 </style>
 </head>
@@ -83,85 +205,174 @@ margin-top:5px;
 <button class="logout" id="logoutBtn">Déconnexion</button>
 </div>
 
-<div class="container" id="list"></div>
+<div class="container">
+
+<div class="kpi-row">
+<div class="kpi"><b id="kpiActive">0</b>Actifs</div>
+<div class="kpi"><b id="kpiTransit">0</b>En transit</div>
+<div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
+<div class="kpi"><b id="kpiTotalSpent">0</b>Total dépensé</div>
+</div>
+
+<div class="tabs">
+<div class="tab active" data-tab="active">Actifs</div>
+<div class="tab" data-tab="delivered">Livrés</div>
+<div class="tab" data-tab="all">Tous</div>
+</div>
+
+<div id="list"></div>
+
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain: "ciza-logistics.firebaseapp.com",
-projectId: "ciza-logistics"
+const firebaseConfig={
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-const list = document.getElementById("list");
+const list=document.getElementById("list");
+const tabs=document.querySelectorAll(".tab");
 
-document.getElementById("logoutBtn").onclick = async()=>{
+let currentTab="active";
+let allShipments=[];
+
+tabs.forEach(tab=>{
+tab.onclick=()=>{
+tabs.forEach(t=>t.classList.remove("active"));
+tab.classList.add("active");
+currentTab=tab.dataset.tab;
+render();
+};
+});
+
+document.getElementById("logoutBtn").onclick=async()=>{
 await signOut(auth);
 location.href="login.html";
 };
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth,user=>{
+if(!user){location.href="login.html";return;}
 
-if(!user){
-location.href="login.html";
-return;
+const q=query(collection(db,"shipments"),where("ownerUid","==",user.uid));
+
+onSnapshot(q,snap=>{
+allShipments=[];
+snap.forEach(doc=>allShipments.push({id:doc.id,...doc.data()}));
+updateKPIs();
+render();
+});
+});
+
+function updateKPIs(){
+let active=0, transit=0, delivered=0, total=0;
+
+allShipments.forEach(d=>{
+if(d.status!=="delivered") active++;
+if(d.status==="in_transit") transit++;
+if(d.status==="delivered") delivered++;
+total+=Number(d.finalPrice||0);
+});
+
+document.getElementById("kpiActive").innerText=active;
+document.getElementById("kpiTransit").innerText=transit;
+document.getElementById("kpiDelivered").innerText=delivered;
+document.getElementById("kpiTotalSpent").innerText=total.toLocaleString("fr-FR")+" BIF";
 }
 
-console.log("UID CONNECTÉ :", user.uid);
-
-const q = query(
-collection(db,"shipments"),
-where("ownerUid","==",user.uid)
-);
-
-onSnapshot(q,(snap)=>{
-
+function render(){
 list.innerHTML="";
 
-if(snap.empty){
-list.innerHTML="<div class='card'>Aucun colis trouvé.</div>";
-return;
+let filtered=allShipments.filter(d=>{
+if(currentTab==="active") return d.status!=="delivered";
+if(currentTab==="delivered") return d.status==="delivered";
+return true;
+});
+
+filtered.forEach(d=>{
+list.innerHTML+=createCard(d);
+});
 }
 
-snap.forEach(docSnap=>{
-const d = docSnap.data();
-
-list.innerHTML += `
-<div class="card">
-<b>${d.trackingCode || docSnap.id}</b>
-
-<div class="badge ${d.status || "created"}">
-${(d.status || "created").toUpperCase()}
-</div>
-
-<div class="price">
-Prix: ${d.finalPrice || 0} BIF
-</div>
-
-${d.deliveryOTP ? `
-<div class="badge otp">
-OTP: ${d.deliveryOTP}
-</div>` : ""}
-
-<div class="debug">
-ownerUid: ${d.ownerUid}
-</div>
-
+function createCard(d){
+let timeline=`
+<div class="timeline">
+<div class="step ${d.status==="created"||d.status==="assigned"||d.status==="in_transit"||d.status==="delivered"?"active":""}">Créé</div>
+<div class="step ${d.status==="assigned"||d.status==="in_transit"||d.status==="delivered"?"active":""}">Assigné</div>
+<div class="step ${d.status==="in_transit"||d.status==="delivered"?"active":""}">Transit</div>
+<div class="step ${d.status==="delivered"?"active":""}">Livré</div>
 </div>
 `;
-});
 
-});
+let driverSection="";
+if(d.driverName){
+driverSection=`
+<div class="driver-box">
+<b>Chauffeur:</b> ${d.driverName}<br>
+${d.driverPlate?"🚗 "+d.driverPlate+"<br>":""}
+${d.driverRating?"⭐ "+d.driverRating+"<br>":""}
+${d.driverPhone?`<button class="call" onclick="window.location='tel:${d.driverPhone}'">Appeler</button>`:""}
+</div>
+`;
+}
 
-});
+let etaSection="";
+if(d.status==="in_transit"){
+if(d.distanceMeters<=100){
+etaSection="🟢 Chauffeur arrivé à destination";
+}
+else if(d.distanceMeters<=500){
+etaSection="🟡 Chauffeur à proximité";
+}
+else if(d.etaMinutes){
+etaSection="🚗 Arrivée estimée : "+d.etaMinutes+" min";
+}
+else{
+etaSection="🚗 En route";
+}
+}
+
+let otpSection="";
+if(d.deliveryOTP && d.status==="in_transit"){
+otpSection=`
+<div class="otp-box">
+Code de réception
+<div class="otp-code">${d.deliveryOTP}</div>
+</div>
+`;
+}
+
+let proofSection="";
+if(d.status==="delivered"){
+proofSection=`
+<div class="proof">
+${d.deliveryPhoto?`<img src="${d.deliveryPhoto}">`:""}
+${d.signatureUrl?`<img src="${d.signatureUrl}">`:""}
+</div>
+`;
+}
+
+return `
+<div class="card">
+<b>${d.trackingCode||d.id}</b>
+<div class="badge ${d.status||"created"}">${(d.status||"created").toUpperCase()}</div>
+<div class="price">${(Number(d.finalPrice||0)).toLocaleString("fr-FR")} BIF</div>
+${timeline}
+${driverSection}
+${etaSection}
+${otpSection}
+${proofSection}
+</div>
+`;
+}
 </script>
-
 </body>
 </html>
