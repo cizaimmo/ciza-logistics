@@ -6,6 +6,9 @@
 <title>Ciza Parcel | Livraison Nationale</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 :root{
@@ -428,6 +431,16 @@ font-size:11px;background:#000;
 </div>
 </div>
 
+<div style="margin-top:18px;">
+<label>Sélectionnez point exact de départ</label>
+<div id="pickupMap" style="height:200px;border-radius:16px;border:1px solid var(--border);"></div>
+</div>
+
+<div style="margin-top:18px;">
+<label>Sélectionnez point exact de destination</label>
+<div id="destMap" style="height:200px;border-radius:16px;border:1px solid var(--border);"></div>
+</div>
+  
 <div class="small-note">Si province = <b>Bujumbura</b>, la liste de <b>38 quartiers</b> s’affiche (M d’abord, puis A-Z). Sinon : “—”.</div>
 </div>
 
@@ -1037,6 +1050,39 @@ function setLoading(on){loader.style.display = on ? "block" : "none"; submitBtn.
 
 goTrackingBtn.addEventListener("click",()=>{location.href = withBase("tracking.html");});
 
+ updateSummary();
+
+/* ================= MAP INIT ================= */
+
+let pickupLat=null;
+let pickupLng=null;
+let destLat=null;
+let destLng=null;
+
+const pickupMap = L.map('pickupMap').setView([-3.3822,29.3644],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(pickupMap);
+let pickupMarker;
+
+pickupMap.on("click", function(e){
+pickupLat = e.latlng.lat;
+pickupLng = e.latlng.lng;
+if(pickupMarker) pickupMap.removeLayer(pickupMarker);
+pickupMarker = L.marker([pickupLat,pickupLng]).addTo(pickupMap);
+});
+
+const destMap = L.map('destMap').setView([-3.3822,29.3644],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(destMap);
+let destMarker;
+
+destMap.on("click", function(e){
+destLat = e.latlng.lat;
+destLng = e.latlng.lng;
+if(destMarker) destMap.removeLayer(destMarker);
+destMarker = L.marker([destLat,destLng]).addTo(destMap);
+});
+
+/* ================= SUBMIT ================= */
+submitBtn.addEventListener("click", async ()=>{ 
 let isSubmitting=false;
 
 submitBtn.addEventListener("click", async ()=>{
@@ -1055,6 +1101,8 @@ if(!originProvince.value || !destProvince.value) throw new Error("Sélectionnez 
 if(originProvince.value==="Bujumbura" && !originQuartier.value) throw new Error("Sélectionnez le quartier de départ.");
 if(destProvince.value==="Bujumbura" && !destQuartier.value) throw new Error("Sélectionnez le quartier de destination.");
 
+  if(!pickupLat || !pickupLng) throw new Error("Sélectionnez le point exact de départ sur la carte.");
+if(!destLat || !destLng) throw new Error("Sélectionnez le point exact de destination sur la carte.");
 if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les infos expéditeur.");
 if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les infos destinataire.");
 
@@ -1130,6 +1178,11 @@ service: service.value,
 serviceLabel: (SERVICES[service.value]?.label || "Parcel"),
 country: cty,
 
+pickupLat,
+pickupLng,
+destinationLat: destLat,
+destinationLng: destLng,
+  
 ownerUid: currentUser.uid,
 uid: currentUser.uid,
 
