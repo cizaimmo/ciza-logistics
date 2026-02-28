@@ -536,7 +536,20 @@ function startGPS(){
     lastLng = pos.coords.longitude;
     lastAccuracy = pos.coords.accuracy;
     lastSpeed = pos.coords.speed || 0;
-
+    
+try{
+  await updateDoc(doc(db,"users",currentUser.uid),{
+    liveLocation:{
+      lat:lastLat,
+      lng:lastLng,
+      accuracy:lastAccuracy ?? null,
+      speed:lastSpeed ?? null,
+      updatedAt:serverTimestamp()
+    }
+  });
+}catch(e){
+  console.log("LiveLocation update error:", e);
+  
     if(driverMarker){
       driverMarker.setLatLng([lastLat,lastLng]);
     }else{
