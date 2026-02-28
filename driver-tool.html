@@ -1155,10 +1155,11 @@ async function loadWeeklyPerformance(){
     Astuce : avec le tracking live, admin/client voient l’historique horodaté.
   `;
 }
-
+  
 /* =========================
-   SCANNER PRO (ZXing)
+   SCANNER PRO (ZXing) FIX PERMISSION
 ========================= */
+
 let codeReader = null;
 let scanActive = false;
 
@@ -1168,64 +1169,63 @@ document.getElementById("startScanBtn").onclick = async()=>{
     armSoundOnce();
 
     if(!window.ZXing){
-      alert("Scanner indisponible (ZXing). Vérifie l’internet.");
+      alert("Scanner indisponible (ZXing).");
       return;
     }
 
+    // 🔥 FORCER DEMANDE PERMISSION CAMERA
+    await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+
     scanActive = true;
+
     const video = document.getElementById("scanVideo");
     codeReader = new ZXing.BrowserMultiFormatReader();
 
-    const devices = await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
-    const deviceId = (devices && devices.length) ? devices[devices.length-1].deviceId : null;
+    await codeReader.decodeFromVideoDevice(
+      null,
+      video,
+      async(result, err)=>{
 
-    if(!deviceId){
-      alert("Caméra introuvable");
-      scanActive=false;
-      return;
-    }
+        if(result){
+          const text = (result.getText() || "").trim();
+          if(!text) return;
 
-    await codeReader.decodeFromVideoDevice(deviceId, video, async(result, err)=>{
-      if(result){
-        const text = (result.getText() || "").trim();
-        if(!text) return;
+          try{ codeReader.reset(); }catch(e){}
+          scanActive=false;
 
-        // Stop scanning after a hit
-        try{ codeReader.reset(); }catch(e){}
-        scanActive=false;
+          const snap = await getDoc(doc(db,"shipments",text));
 
-        // Try open shipment by docId
-        const snap = await getDoc(doc(db,"shipments",text));
-        if(!snap.exists()){
-          alert("Colis introuvable: " + text);
-          return;
+          if(!snap.exists()){
+            alert("Colis introuvable: " + text);
+            return;
+          }
+
+          const d = snap.data() || {};
+
+          if(d.assignedDriverId && d.assignedDriverId !== currentUser.uid){
+            alert("Colis assigné à un autre chauffeur.");
+            return;
+          }
+
+          if(!d.assignedDriverId){
+            await updateDoc(doc(db,"shipments",text),{
+              assignmentRequestFrom: currentUser.uid,
+              assignmentRequestAt: serverTimestamp()
+            });
+            alert("Demande d’assignation envoyée.");
+            return;
+          }
+
+          vibrateAndBeep();
+          await selectShipmentInternal(text, true);
         }
-
-        const d = snap.data() || {};
-        if(d.assignedDriverId && d.assignedDriverId !== currentUser.uid){
-          alert("Colis assigné à un autre chauffeur.");
-          return;
-        }
-
-        // si pas assigné, demander assignation admin
-        if(!d.assignedDriverId){
-          await updateDoc(doc(db,"shipments",text),{
-            assignmentRequestFrom: currentUser.uid,
-            assignmentRequestAt: serverTimestamp()
-          });
-          alert("Demande d’assignation envoyée à l’administration.");
-          return;
-        }
-
-        vibrateAndBeep();
-        await selectShipmentInternal(text, true);
       }
-    });
+    );
 
   }catch(e){
-    console.log(e);
+    console.log("SCAN ERROR:", e);
     scanActive=false;
-    alert("Erreur scanner");
+    alert("Erreur scanner (permission ou caméra).");
   }
 };
 
