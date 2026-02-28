@@ -1150,11 +1150,16 @@ receiverPhone: receiverPhone.value.trim(),
 fromProvince: originProvince.value,
 fromQuartier: originProvince.value==="Bujumbura" ? (originQuartier.value || "—") : "—",
 fromLandmark: originLandmark.value.trim() || null,
-
+    
 toProvince: destProvince.value,
 toQuartier: destProvince.value==="Bujumbura" ? (destQuartier.value || "—") : "—",
 toLandmark: destLandmark.value.trim() || null,
 
+fromLat: pickupLat || null,
+fromLng: pickupLng || null,
+toLat: destLat || null,
+toLng: destLng || null,
+  
 goodsType: goodsType.value,
 weightOrQty: w,
 declaredValue: declared>0 ? declared : null,
