@@ -538,7 +538,7 @@ function startGPS(){
     lastSpeed = pos.coords.speed || 0;
     
 try{
-  await setDoc(doc(db,"users",currentUser.uid),{
+  await updateDoc(doc(db,"users",currentUser.uid),{
     liveLocation:{
       lat:lastLat,
       lng:lastLng,
@@ -546,7 +546,7 @@ try{
       speed:lastSpeed ?? null,
       updatedAt:serverTimestamp()
     }
-  }, { merge:true });
+  });
 }catch(e){
   console.log("LiveLocation update error:", e);
 }
