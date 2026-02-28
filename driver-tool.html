@@ -404,10 +404,13 @@ function renderShipmentCard(d){
   </div>
   `;
 }
-
 /* =========================
    SELECT SHIPMENT
 ========================= */
+
+window.selectShipment = function(id){
+  selectShipmentInternal(id);
+};
 
 async function selectShipmentInternal(id){
 
@@ -423,6 +426,7 @@ async function selectShipmentInternal(id){
   const navBtn = document.getElementById("navBtn");
   const archiveBtn = document.getElementById("archiveBtn");
   const securityPanel = document.getElementById("deliverySecurity");
+  const mainBtn = document.getElementById("mainActionBtn");
 
   /* =========================
      RESET VISUAL STATE
@@ -432,6 +436,7 @@ async function selectShipmentInternal(id){
   navBtn.style.display = "none";
   archiveBtn.style.display = "none";
   securityPanel.style.display = "none";
+  mainBtn.style.display = "none";
 
   /* =========================
      HEADER
@@ -458,17 +463,32 @@ async function selectShipmentInternal(id){
   `;
 
   /* =========================
-     LOGIQUE PRO STRICTE
+     LOGIQUE ÉTAPES MÉTIER
   ========================= */
 
-  // Navigation uniquement en transit
-  if(st==="in_transit"){
-    navBtn.style.display = "block";
-    navBtn.classList.add("nav-ready"); // animation pulse
-    securityPanel.style.display = "block";
+  if(st==="assigned"){
+    mainBtn.style.display = "block";
+    mainBtn.textContent = "📦 Marquer comme récupéré";
   }
 
-  // Archive uniquement en delivered
+  if(st==="picked_up"){
+    mainBtn.style.display = "block";
+    mainBtn.textContent = "🚚 Démarrer le transit";
+  }
+
+  if(st==="in_transit"){
+    mainBtn.style.display = "block";
+    mainBtn.textContent = "✅ Finaliser livraison";
+
+    navBtn.style.display = "block";
+    navBtn.classList.add("nav-ready");
+
+    securityPanel.style.display = "block";
+
+    // 🔥 Calcul route automatique
+    calculateRoute_OSRM();
+  }
+
   if(st==="delivered"){
     archiveBtn.style.display = "block";
   }
