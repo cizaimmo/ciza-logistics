@@ -12,202 +12,129 @@
 
 <title>Ciza Driver</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- Scanner pro QR + Code128 (ZXing UMD) -->
-<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
 :root{
   --gold:#D4AF37;
-  --black:#000;
-  --bg:#f3f4f6;
-  --card:#fff;
+  --gold-soft:#f6edd2;
+  --black:#0b0b0b;
+  --bg:#f7f7f7;
+  --card:#ffffff;
   --muted:#6b7280;
-
-  --ok:#16a34a;
-  --warn:#f59e0b;
-  --bad:#dc2626;
-  --blue:#2563eb;
-  --purple:#7c3aed;
+  --ok:#1f8f3a;
+  --warn:#ffb300;
+  --bad:#c62828;
 }
 
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
-a{color:inherit}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  margin:0;
+  font-family:Inter;
+  background:var(--bg);
+  color:#111;
+}
 
+/* HEADER */
 .header{
-  background:rgba(0,0,0,0.96);
+  background:linear-gradient(90deg,#000,#111);
   color:#fff;
-  padding:14px 14px;
+  padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   position:sticky;
   top:0;
-  z-index:10;
-  backdrop-filter: blur(10px);
+  z-index:1000;
+  border-bottom:3px solid var(--gold);
 }
 
-.brand{color:var(--gold);font-weight:900;font-size:16px;line-height:1.1;}
-.driverName{font-size:12px;color:#e5e7eb;margin-top:4px;}
+.brand{color:var(--gold);font-weight:900;}
+.driverName{font-size:13px;color:#d1d5db;margin-top:6px;}
 
-.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+.header-right{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.icon-btn{
+  background:#1a1a1a;
+  border:1px solid rgba(255,255,255,0.1);
+  color:#fff;
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  font-size:18px;
+  cursor:pointer;
+}
 
 .badge{
-  padding:6px 12px;
+  padding:8px 14px;
   border-radius:999px;
-  font-weight:900;
+  font-weight:800;
   font-size:12px;
   background:var(--ok);
   color:#fff;
-  white-space:nowrap;
 }
-
-.badge.warn{background:var(--warn);color:#000;}
-.badge.bad{background:var(--bad);color:#fff;}
-.badge.gold{background:var(--gold);color:#000;}
-.badge.dark{background:#111;color:#fff;}
-.badge.blue{background:var(--blue);color:#fff;}
-.badge.purple{background:var(--purple);color:#fff;}
 
 .logout-btn{
   background:var(--gold);
   border:none;
-  padding:7px 12px;
+  padding:10px 16px;
   border-radius:12px;
   font-weight:900;
   cursor:pointer;
 }
 
-.container{width:95%;max-width:1100px;margin:16px auto 80px auto;}
-
+/* LAYOUT */
+.container{width:95%;max-width:1200px;margin:20px auto;}
 .card{
   background:var(--card);
-  border-radius:18px;
-  padding:16px;
-  margin:14px 0;
-  box-shadow:0 12px 26px rgba(0,0,0,0.06);
+  border-radius:14px;
+  padding:18px;
+  border:1px solid rgba(0,0,0,0.06);
+  margin-bottom:18px;
 }
 
-.section-title{
-  font-weight:900;
-  margin:0 0 10px 0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
+.section-title{font-weight:900;margin-bottom:14px;}
+.small{font-size:12px;color:var(--muted);}
 
-.small{font-size:12px;color:var(--muted)}
-.hr{height:1px;background:rgba(0,0,0,0.08);margin:12px 0}
-
-.grid{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:14px;
-}
-@media(min-width:900px){
-  .grid{grid-template-columns: 1.1fr 0.9fr;}
-}
-
+/* SHIPMENT */
 .shipment-card{
-  border:1px solid rgba(212,175,55,0.35);
-  border-radius:16px;
-  padding:14px;
-  margin:10px 0;
-  background:linear-gradient(180deg,#fff,#fafafa);
-}
-
-.shipment-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:flex-start;
-}
-
-.track{
-  font-weight:900;
-}
-.routeLine{
-  margin-top:4px;
-  font-size:13px;
-}
-.metaLine{margin-top:6px;font-size:13px;color:#111}
-.actionsRow{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:10px;
-}
-
-.btn{
-  border:none;
-  border-radius:14px;
-  padding:12px 14px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-.btn.full{width:100%;}
-.btn.dark{background:#111;color:#fff;}
-.btn.gold{background:var(--gold);color:#000;}
-.btn.ghost{background:rgba(0,0,0,0.06);color:#111;}
-.btn.whatsapp{background:#25D366;color:#fff;}
-.btn.red{background:var(--bad);color:#fff;}
-
-input{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid rgba(0,0,0,0.12);
-  margin-top:10px;
-  font-family:Inter;
-}
-
-#map{height:280px;border-radius:16px;margin-top:10px;}
-
-canvas{
-  border:1px solid rgba(0,0,0,0.15);
-  border-radius:14px;
-  width:100%;
-  height:160px;
-  margin-top:10px;
-  touch-action:none;
+  border:1px solid rgba(0,0,0,0.08);
+  border-left:5px solid var(--gold);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:14px;
   background:#fff;
 }
 
-.fade-in{animation:fadeIn .35s ease-in-out;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-.videoWrap{
-  border-radius:16px;
-  overflow:hidden;
-  background:#000;
+.shipment-card.active{
+  background:var(--gold-soft);
+  border-left:5px solid #000;
 }
-video{width:100%;display:block;}
 
-.kpiBox{
-  background:#000;
-  color:#fff;
-  border-radius:16px;
-  padding:14px;
-}
-.kpiRow{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:13px;}
-.kpiRow b{color:var(--gold);}
+.actionsRow{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
 
-@media (prefers-color-scheme: dark){
-  body{background:#0f1115;color:#fff;}
-  .card{background:#151821;box-shadow:none;border:1px solid rgba(255,255,255,0.06);}
-  .shipment-card{background:linear-gradient(180deg,#151821,#12151d);border-color:rgba(212,175,55,0.35);}
-  .hr{background:rgba(255,255,255,0.12);}
-  input{background:#0f1115;color:#fff;border:1px solid rgba(255,255,255,0.14);}
-  canvas{background:#0f1115;border:1px solid rgba(255,255,255,0.14);}
-  .btn.ghost{background:rgba(255,255,255,0.10);color:#fff;}
-  .small{color:#b8c0cc;}
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:14px 16px;
+  font-weight:900;
+  cursor:pointer;
+  min-height:48px;
 }
+
+.btn.dark{background:#000;color:#fff;}
+.btn.gold{background:var(--gold);color:#000;}
+.btn.red{background:var(--bad);color:#fff;}
+.btn.full{width:100%;}
+
+#map{height:300px;border-radius:14px;margin-top:14px;}
 </style>
 </head>
 
@@ -218,1045 +145,177 @@ video{width:100%;display:block;}
     <div class="brand">🚚 Ciza Driver</div>
     <div class="driverName" id="driverName">Chargement...</div>
   </div>
-
   <div class="header-right">
+    <button class="icon-btn" id="notifyBtn">🔔</button>
+    <button class="icon-btn" id="navBtn">🧭</button>
     <span class="badge" id="connectionStatus">En ligne</span>
     <span class="badge" id="gpsStatus">GPS OK</span>
-    <span class="badge gold" id="deliveryCounter">0</span>
-    <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+    <span class="badge" id="deliveryCounter">0</span>
+    <button class="logout-btn" id="logoutBtn">🚪 Déconnexion</button>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="grid">
+<div class="card">
+  <div class="section-title">🟡 À traiter</div>
+  <div id="assignedList"></div>
+</div>
 
-    <!-- LISTES COLIS -->
-    <div>
+<div class="card">
+  <div class="section-title">🟢 Livrés</div>
+  <div id="deliveredList"></div>
+</div>
 
-      <div class="card">
-        <div class="section-title">
-          <span>📷 Scanner colis (QR + Code128)</span>
-          <span class="small">Caméra arrière</span>
-        </div>
+<div class="card">
+  <div class="section-title">📦 Détails & Navigation</div>
+  <div id="map"></div>
+</div>
 
-        <div class="videoWrap">
-          <video id="scanVideo" playsinline></video>
-        </div>
-
-        <div class="actionsRow">
-          <button class="btn dark" id="startScanBtn">Scanner</button>
-          <button class="btn ghost" id="stopScanBtn">Stop</button>
-        </div>
-
-        <div class="small" style="margin-top:10px;">
-          Le code doit correspondre à l’ID du document <b>shipments/{id}</b> (comme avant).
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <span>🟡 À traiter</span>
-          <span class="badge blue" id="countAssigned">0</span>
-        </div>
-        <div id="assignedList"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <span>🔵 En transit</span>
-          <span class="badge purple" id="countTransit">0</span>
-        </div>
-        <div id="transitList"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <span>🟢 Livrés aujourd’hui</span>
-          <span class="badge" id="countDelivered">0</span>
-        </div>
-        <div id="deliveredList"></div>
-      </div>
-
-    </div>
-
-    <!-- DÉTAILS + MAP + ACTIONS -->
-    <div>
-
-      <div class="card" id="detailsCard">
-        <div class="section-title">
-          <span>📦 Détails & Navigation</span>
-          <span class="small" id="selectedHint">Sélectionne un colis</span>
-        </div>
-
-        <div id="shipmentDetails">Aucun colis sélectionné</div>
-        <div class="hr"></div>
-
-        <div class="small" id="etaInfo">—</div>
-        <div id="map"></div>
-
-        <div class="actionsRow">
-          <button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
-        </div>
-      </div>
-
-      <div class="card" id="deliverySecurity" style="display:none;">
-        <div class="section-title">
-          <span>🔐 Finalisation (obligatoire)</span>
-          <span class="small">OTP • Photo • Signature</span>
-        </div>
-
-        <input type="text" id="otpInput" placeholder="Entrer OTP client">
-        <input type="file" accept="image/*" capture="environment" id="photoInput">
-
-        <canvas id="signatureCanvas"></canvas>
-
-        <div class="actionsRow">
-          <button class="btn ghost" id="clearSignature">Effacer signature</button>
-          <button class="btn dark" id="recenterBtn">Recentrer carte</button>
-        </div>
-
-        <div class="small" style="margin-top:8px;">
-          Livraison possible uniquement si vous êtes à <b>&lt; 100m</b> du point de destination.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <span>📊 Performance</span>
-          <span class="small">Jour + 7 jours</span>
-        </div>
-
-        <div class="kpiBox" id="kpiBox">Chargement...</div>
-        <div class="hr"></div>
-        <div class="small" id="weeklyBox">Chargement...</div>
-      </div>
-
-    </div>
-
-  </div>
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   getFirestore, collection, query, where, onSnapshot,
-  doc, getDoc, getDocs, updateDoc, addDoc,
-  serverTimestamp, enableIndexedDbPersistence
+  doc, getDoc, getDocs, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-/* =========================
-   FIREBASE INIT
-========================= */
 const app = initializeApp({
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
   authDomain:"ciza-logistics.firebaseapp.com",
-  projectId:"ciza-logistics",
-  storageBucket:"ciza-logistics.appspot.com"
+  projectId:"ciza-logistics"
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-/* Offline persistence (mode hors ligne) */
-enableIndexedDbPersistence(db).catch((err)=>{
-  console.log("Offline persistence error:", err?.code || err);
-});
+let currentUser=null;
+let selectedShipmentId=null;
+let selectedShipment=null;
 
-/* =========================
-   GLOBAL STATE
-========================= */
-let currentUser = null;
-let driverData = null;
-
-let selectedShipmentId = null;
-let selectedShipment = null;
-
-let lastLat=null, lastLng=null, lastAccuracy=null, lastSpeed=0;
-
+let map=L.map('map').setView([-3.3731,29.9189],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
 let driverMarker=null;
 let destinationMarker=null;
-let routeLayer=null;
 
-let lastShipmentIds = new Set();
-let soundArmed = false;
-
-let lastTrackPushAt = 0;
-let lastTrackLat = null;
-let lastTrackLng = null;
-
-/* Sound (sera joué seulement après une interaction utilisateur) */
-const notificationSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-notificationSound.volume = 0.35;
-
-/* =========================
-   MAP
-========================= */
-let map = L.map('map').setView([-3.3731,29.9189], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-
-function recenterMap(){
-  if(driverMarker){
-    map.setView(driverMarker.getLatLng(), 14);
-  }
-}
-document.getElementById("recenterBtn").onclick = recenterMap;
-
-/* =========================
-   UI HELPERS
-========================= */
-function setConnBadge(state){
-  const b = document.getElementById("connectionStatus");
-  if(state==="online"){ b.textContent="En ligne"; b.className="badge"; }
-  if(state==="offline"){ b.textContent="Hors ligne"; b.className="badge bad"; }
-  if(state==="sync"){ b.textContent="Synchronisation..."; b.className="badge warn"; }
-}
-
-function setGPSBadge(acc){
-  const b = document.getElementById("gpsStatus");
-  if(acc == null){
-    b.textContent="GPS —"; b.className="badge warn"; return;
-  }
-  if(acc > 30){
-    b.textContent="GPS FAIBLE"; b.className="badge bad";
-  }else{
-    b.textContent="GPS OK"; b.className="badge";
-  }
-}
-
-function armSoundOnce(){
-  if(soundArmed) return;
-  soundArmed = true;
-  // petit "warmup" silencieux (certaines plateformes bloquent; on se contente d'armer)
-}
-window.addEventListener("click", armSoundOnce, { once:true });
-
-function vibrateAndBeep(){
-  if("vibrate" in navigator) navigator.vibrate([200,100,200]);
-  if(soundArmed){
-    notificationSound.currentTime = 0;
-    notificationSound.play().catch(()=>{});
-  }
-}
-
-function whatsappLink(phone){
-  const p = (phone||"").toString().replace(/[^\d]/g,"");
-  if(!p) return null;
-  return `https://wa.me/${p}`;
-}
-
-function safeText(v){ return (v==null) ? "" : String(v); }
-
-function statusBadge(status){
-  const s = (status||"").toString();
-  if(s==="assigned") return `<span class="badge blue">ASSIGNÉ</span>`;
-  if(s==="picked_up") return `<span class="badge warn">RAMASSÉ</span>`;
-  if(s==="in_transit") return `<span class="badge purple">EN TRANSIT</span>`;
-  if(s==="delivered") return `<span class="badge">LIVRÉ</span>`;
-  if(s==="failed") return `<span class="badge bad">ÉCHEC</span>`;
-  return `<span class="badge dark">${safeText(s).toUpperCase()}</span>`;
-}
-
-function formatDate(ts){
-  try{
-    if(!ts) return "";
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString()+" "+d.toLocaleTimeString();
-  }catch(e){ return ""; }
-}
-
-function isToday(ts){
-  try{
-    if(!ts || !ts.toDate) return false;
-    const d=ts.toDate();
-    const now=new Date();
-    return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate();
-  }catch(e){ return false; }
-}
-
-/* =========================
-   AUTH
-========================= */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-
-  currentUser = user;
-
-  const snap = await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists()){
-    await signOut(auth);
-    location.href="login.html";
-    return;
-  }
-
-  driverData = snap.data() || {};
-  if(driverData.role !== "driver" || driverData.accountStatus !== "approved"){
-    alert("Accès refusé");
-    await signOut(auth);
-    location.href="login.html";
-    return;
-  }
-
-  document.getElementById("driverName").textContent = driverData.fullName || "Driver";
-
-  startGPS();
-  listenShipmentsMulti();
-  loadKPI();
-  loadWeeklyPerformance();
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){location.href="login.html";return;}
+  currentUser=user;
+  listenShipments();
 });
 
-document.getElementById("logoutBtn").onclick = async()=>{
+document.getElementById("logoutBtn").onclick=async()=>{
   await signOut(auth);
   location.href="login.html";
 };
 
-/* =========================
-   GPS + LIVE TRACKING
-========================= */
-function calcDistKm(lat1,lon1,lat2,lon2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+
-    Math.cos(lat1*Math.PI/180)*
-    Math.cos(lat2*Math.PI/180)*
-    Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
+function listenShipments(){
+  const q=query(collection(db,"shipments"),
+  where("assignedDriverId","==",currentUser.uid));
 
-function startGPS(){
-  navigator.geolocation.watchPosition(async(pos)=>{
-    lastLat = pos.coords.latitude;
-    lastLng = pos.coords.longitude;
-    lastAccuracy = pos.coords.accuracy;
-    lastSpeed = pos.coords.speed || 0;
-    
-    if(driverMarker){
-      driverMarker.setLatLng([lastLat,lastLng]);
-    }else{
-      driverMarker = L.marker([lastLat,lastLng]).addTo(map);
-      map.setView([lastLat,lastLng], 13);
-    }
+  onSnapshot(q,(snap)=>{
+    let assigned=[];
+    let delivered=[];
 
-    setGPSBadge(lastAccuracy);
-
-    updateETA_UI();
-    await maybePushTrackingPoint(); // tracking historique (si colis sélectionné & en transit/picked_up)
-  }, (err)=>{
-    console.log("GPS error:", err);
-    setGPSBadge(null);
-  }, { enableHighAccuracy:true, maximumAge:2000, timeout:15000 });
-}
-
-/* Tracking historique: shipments/{id}/tracking/{autoId} */
-async function maybePushTrackingPoint(){
-  try{
-    if(!navigator.onLine) return;
-    if(!selectedShipment) return;
-    if(!selectedShipmentId) return;
-
-    const st = (selectedShipment.status||"").toString();
-    if(!(st==="picked_up" || st==="in_transit")) return;
-
-    if(selectedShipment.assignedDriverId && selectedShipment.assignedDriverId !== currentUser.uid) return;
-    if(lastLat==null || lastLng==null) return;
-
-    const now = Date.now();
-    const minIntervalMs = 10000; // 10s
-    const minMoveM = 20; // 20m
-
-    let movedM = 999999;
-    if(lastTrackLat!=null && lastTrackLng!=null){
-      movedM = calcDistKm(lastTrackLat,lastTrackLng,lastLat,lastLng) * 1000;
-    }
-
-    if((now - lastTrackPushAt) < minIntervalMs && movedM < minMoveM){
-      return;
-    }
-
-    await addDoc(collection(db,"shipments",selectedShipmentId,"tracking"),{
-      lat:lastLat,
-      lng:lastLng,
-      accuracy:lastAccuracy ?? null,
-      speed:lastSpeed ?? null,
-      timestamp:serverTimestamp(),
-      driverId: currentUser.uid
+    snap.forEach(docSnap=>{
+      const d=docSnap.data();
+      d.id=docSnap.id;
+      if(d.archivedByDriver) return;
+      if(d.status==="assigned") assigned.push(d);
+      if(d.status==="delivered") delivered.push(d);
     });
 
-    lastTrackPushAt = now;
-    lastTrackLat = lastLat;
-    lastTrackLng = lastLng;
-
-  }catch(e){
-    console.log("Tracking push error:", e);
-  }
+    renderList("assignedList",assigned);
+    renderList("deliveredList",delivered);
+    document.getElementById("deliveryCounter").textContent=delivered.length;
+  });
 }
 
-/* =========================
-   ROUTE OPTIMIZATION (OSRM)
-========================= */
-async function calculateRoute_OSRM(){
-  try{
-    if(!selectedShipment || !lastLat || !selectedShipment.toLat || !selectedShipment.toLng) return;
-
-    const url = `https://router.project-osrm.org/route/v1/driving/${lastLng},${lastLat};${selectedShipment.toLng},${selectedShipment.toLat}?overview=full&geometries=geojson`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-    if(!data.routes || !data.routes.length) return;
-
-    const route = data.routes[0];
-    const coords = route.geometry.coordinates.map(c=>[c[1],c[0]]);
-
-    if(routeLayer){ map.removeLayer(routeLayer); routeLayer=null; }
-    routeLayer = L.polyline(coords, { color:"#D4AF37", weight:5, opacity:0.95 }).addTo(map);
-
-    // Fit bounds (soft)
-    try{ map.fitBounds(routeLayer.getBounds(), { padding:[20,20] }); }catch(e){}
-
-    const distanceKm = (route.distance/1000);
-    const durationMin = Math.round(route.duration/60);
-
-    // Affichage ETA réel (route)
-    document.getElementById("etaInfo").innerHTML =
-      `🚗 Route: <b>${distanceKm.toFixed(2)} km</b> • ⏱ <b>${durationMin} min</b> • 🎯 ${Math.round(lastAccuracy||0)} m`;
-
-  }catch(e){
-    console.log("OSRM error:", e);
-  }
+function renderList(id,list){
+  const el=document.getElementById(id);
+  if(!list.length){el.innerHTML="<div class='small'>Aucun colis.</div>";return;}
+  el.innerHTML=list.map(d=>renderCard(d)).join("");
 }
 
-/* Fallback ETA simple (si OSRM pas dispo) */
-function updateETA_UI(){
-  if(!selectedShipment || lastLat==null || selectedShipment.toLat==null || selectedShipment.toLng==null){
-    return;
-  }
-  const d = calcDistKm(lastLat,lastLng,selectedShipment.toLat,selectedShipment.toLng);
-  const eta = (d/30)*60; // 30km/h
-  // Ne pas écraser si OSRM vient d'écrire (OSRM sera rappelé aussi)
-  if(!routeLayer){
-    document.getElementById("etaInfo").innerHTML =
-      `📏 ${d.toFixed(2)} km • ⏱ ${eta.toFixed(0)} min • 🎯 ${Math.round(lastAccuracy||0)} m`;
-  }
-}
-
-/* =========================
-   OFFLINE BADGES
-========================= */
-window.addEventListener("offline", ()=> setConnBadge("offline"));
-window.addEventListener("online", ()=>{
-  setConnBadge("sync");
-  setTimeout(()=> setConnBadge("online"), 1800);
-});
-
-/* =========================
-   MULTI-SHIPMENTS LISTENER
-========================= */
-function renderShipmentCard(d){
-  const st = (d.status||"").toString();
-
-  // Contact dynamique
-  let contactName="", contactPhone="";
-  let callLabel="📞 Appel";
-  if(st==="assigned"){
-    contactName = d.senderName || "";
-    contactPhone = d.senderPhone || "";
-    callLabel="📞 Expéditeur";
-  }else{
-    contactName = d.receiverName || d.receiverFullName || "";
-    contactPhone = d.receiverPhone || "";
-    callLabel="📞 Destinataire";
-  }
-
-  const wa = whatsappLink(contactPhone);
-
-  const addr = d.destinationAddress || d.toAddress || d.toAddressLine || "";
-  const rep = d.repereDestination || d.destinationNote || d.deliveryNote || "";
-
-  // Timeline courte
-  const timeline = `
-    <div class="small" style="margin-top:8px;line-height:1.5;">
-      ${d.assignedAt ? "🟡 Assigné : "+formatDate(d.assignedAt)+"<br>" : ""}
-      ${d.pickedUpAt ? "🔵 Ramassé : "+formatDate(d.pickedUpAt)+"<br>" : ""}
-      ${d.transitAt ? "🟣 Transit : "+formatDate(d.transitAt)+"<br>" : ""}
-      ${d.deliveredAt ? "🟢 Livré : "+formatDate(d.deliveredAt)+"<br>" : ""}
-    </div>`;
-
-  // Bouton étape
-  let stepText = "Sélectionner";
-  if(st==="assigned") stepText="Confirmer prise en charge";
-  if(st==="picked_up") stepText="Démarrer livraison";
-  if(st==="in_transit") stepText="Confirmer livraison";
-
+function renderCard(d){
+  const activeClass=selectedShipmentId===d.id?"active":"";
   return `
-  <div class="shipment-card">
-    <div class="shipment-top">
-      <div>
-        <div class="track">${safeText(d.trackingCode||d.id)}</div>
-        <div class="routeLine">📍 ${safeText(d.fromCity||"")} → ${safeText(d.toCity||"")}</div>
-      </div>
-      <div>${statusBadge(st)}</div>
-    </div>
-
-    <div class="metaLine">👤 ${safeText(contactName)}</div>
-
+  <div class="shipment-card ${activeClass}">
+    <div><b>${d.trackingCode||d.id}</b></div>
+    <div class="small">📍 ${d.fromCity||""} → ${d.toCity||""}</div>
     <div class="actionsRow">
-      ${contactPhone ? `<a class="btn ghost" style="text-decoration:none" href="tel:${safeText(contactPhone)}">${callLabel}</a>` : ``}
-      ${wa ? `<a class="btn whatsapp" style="text-decoration:none" target="_blank" href="${wa}">WhatsApp</a>` : ``}
-      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir détails</button>
+      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir</button>
+      ${d.status==="assigned"?`<button class="btn gold full" onclick="confirmPickup('${d.id}')">Confirmer prise en charge</button>`:""}
+      ${d.status==="delivered"?`<button class="btn red full" onclick="archiveShipment('${d.id}')">🗂 Archiver</button>`:""}
     </div>
-
-    ${addr || rep ? `<div class="small" style="margin-top:10px;">🏠 ${safeText(addr)}<br>📝 ${safeText(rep)}</div>` : ``}
-
-    ${timeline}
-
-    <button class="btn gold full" style="margin-top:10px;" onclick="quickAction('${d.id}')">${stepText}</button>
   </div>`;
 }
 
-/* Expose functions */
-window.selectShipment = async function(id){
-  await selectShipmentInternal(id, true);
-}
+window.selectShipment=async function(id){
+  const snap=await getDoc(doc(db,"shipments",id));
+  if(!snap.exists())return;
+  selectedShipmentId=id;
+  selectedShipment=snap.data();
+  renderAfterSelect();
 
-window.quickAction = async function(id){
-  // Sélection + action principale
-  await selectShipmentInternal(id, false);
-  await mainAction();
-}
-
-/* Listen shipments assigned to driver */
-function listenShipmentsMulti(){
-  const q = query(collection(db,"shipments"), where("assignedDriverId","==",currentUser.uid));
-
-  onSnapshot(q, (snap)=>{
-    const assigned = [];
-    const transit = [];
-    const deliveredToday = [];
-    const allActiveIds = new Set();
-
-    snap.forEach(docSnap=>{
-      const d = docSnap.data() || {};
-      d.id = docSnap.id;
-
-      const st = (d.status||"").toString();
-
-      // Actifs pour notifs
-      if(st==="assigned" || st==="picked_up" || st==="in_transit"){
-        allActiveIds.add(d.id);
-      }
-
-      if(st==="assigned" || st==="picked_up") assigned.push(d);
-      else if(st==="in_transit") transit.push(d);
-      else if(st==="delivered" && isToday(d.deliveredAt)) deliveredToday.push(d);
-    });
-
-    // Notifs: nouveau colis actif
-    let hasNew = false;
-    allActiveIds.forEach(id=>{
-      if(!lastShipmentIds.has(id)) hasNew = true;
-    });
-    if(hasNew) vibrateAndBeep();
-    lastShipmentIds = allActiveIds;
-
-    // Render lists
-    document.getElementById("assignedList").innerHTML = assigned.map(renderShipmentCard).join("") || `<div class="small">Aucun colis.</div>`;
-    document.getElementById("transitList").innerHTML = transit.map(renderShipmentCard).join("") || `<div class="small">Aucun colis.</div>`;
-    document.getElementById("deliveredList").innerHTML = deliveredToday.map(renderShipmentCard).join("") || `<div class="small">Aucun colis.</div>`;
-
-    // Counts
-    document.getElementById("countAssigned").textContent = assigned.length;
-    document.getElementById("countTransit").textContent = transit.length;
-    document.getElementById("countDelivered").textContent = deliveredToday.length;
-
-    // Header deliveries today
-    document.getElementById("deliveryCounter").textContent = deliveredToday.length;
-
-    // Si un colis sélectionné est mis à jour, refresh sélection
-    if(selectedShipmentId){
-      const found = [...assigned, ...transit, ...deliveredToday].find(x=>x.id===selectedShipmentId);
-      if(found){
-        selectedShipment = found;
-        refreshSelectedUI(false);
-      }
-    }
-  });
-}
-
-/* =========================
-   SELECTED SHIPMENT UI
-========================= */
-async function selectShipmentInternal(id, animate){
-  const snap = await getDoc(doc(db,"shipments",id));
-  if(!snap.exists()){
-    alert("Colis introuvable.");
-    return;
-  }
-
-  const d = snap.data() || {};
-  d.id = snap.id;
-
-  // sécurité assignation
-  if(d.assignedDriverId && d.assignedDriverId !== currentUser.uid){
-    alert("Ce colis est assigné à un autre chauffeur.");
-    return;
-  }
-
-  selectedShipmentId = d.id;
-  selectedShipment = d;
-
-  // reset route layer
-  if(routeLayer){ map.removeLayer(routeLayer); routeLayer=null; }
-
-  refreshSelectedUI(animate);
-
-  // Marker destination
-  if(d.toLat && d.toLng){
+  if(selectedShipment.toLat){
     if(destinationMarker){
-      destinationMarker.setLatLng([d.toLat,d.toLng]);
+      destinationMarker.setLatLng([selectedShipment.toLat,selectedShipment.toLng]);
     }else{
-      destinationMarker = L.marker([d.toLat,d.toLng]).addTo(map);
+      destinationMarker=L.marker([selectedShipment.toLat,selectedShipment.toLng]).addTo(map);
     }
   }
+};
 
-  // OSRM route
-  calculateRoute_OSRM();
-
-  // Arm tracking state
-  lastTrackPushAt = 0;
-  lastTrackLat = null;
-  lastTrackLng = null;
+function renderAfterSelect(){
+  document.querySelectorAll(".shipment-card")
+    .forEach(c=>c.classList.remove("active"));
+  setTimeout(()=>{
+    document.querySelectorAll(".shipment-card")
+    .forEach(c=>{
+      if(c.innerHTML.includes(selectedShipmentId))
+        c.classList.add("active");
+    });
+  },50);
 }
 
-function refreshSelectedUI(animate){
-  const d = selectedShipment;
-  if(!d){
-    document.getElementById("shipmentDetails").textContent = "Aucun colis sélectionné";
-    document.getElementById("mainActionBtn").style.display="none";
-    document.getElementById("deliverySecurity").style.display="none";
-    document.getElementById("selectedHint").textContent = "Sélectionne un colis";
-    return;
-  }
+window.confirmPickup=async function(id){
+  await updateDoc(doc(db,"shipments",id),{
+    status:"picked_up",
+    pickedUpAt:serverTimestamp()
+  });
+};
 
-  const st = (d.status||"").toString();
+window.archiveShipment=async function(id){
+  await updateDoc(doc(db,"shipments",id),{
+    archivedByDriver:true,
+    archivedAt:serverTimestamp()
+  });
+};
 
-  let contactName="", contactPhone="";
-  if(st==="assigned"){
-    contactName = d.senderName || "";
-    contactPhone = d.senderPhone || "";
+document.getElementById("navBtn").onclick=()=>{
+  if(!selectedShipment)return alert("Sélectionne un colis");
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedShipment.toLat},${selectedShipment.toLng}`,"_blank");
+};
+
+document.getElementById("notifyBtn").onclick=()=>{
+  document.getElementById("assignedList").scrollIntoView({behavior:"smooth"});
+};
+
+navigator.geolocation.watchPosition(pos=>{
+  const lat=pos.coords.latitude;
+  const lng=pos.coords.longitude;
+  if(driverMarker){
+    driverMarker.setLatLng([lat,lng]);
   }else{
-    contactName = d.receiverName || d.receiverFullName || "";
-    contactPhone = d.receiverPhone || "";
+    driverMarker=L.marker([lat,lng]).addTo(map);
+    map.setView([lat,lng],13);
   }
-
-  const wa = whatsappLink(contactPhone);
-  const addr = d.destinationAddress || d.toAddress || d.toAddressLine || "";
-  const rep = d.repereDestination || d.destinationNote || d.deliveryNote || "";
-
-  document.getElementById("selectedHint").textContent = `Sélectionné: ${safeText(d.trackingCode||d.id)}`;
-
-  const html = `
-    <div class="${animate ? "fade-in" : ""}">
-      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
-        <div>
-          <div style="font-weight:900;font-size:16px;">${safeText(d.trackingCode||d.id)}</div>
-          <div class="small">📍 ${safeText(d.fromCity||"")} → ${safeText(d.toCity||"")}</div>
-        </div>
-        <div>${statusBadge(st)}</div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="small">👤 ${safeText(contactName)}</div>
-      <div class="actionsRow" style="margin-top:10px;">
-        ${contactPhone ? `<a class="btn ghost" style="text-decoration:none" href="tel:${safeText(contactPhone)}">📞 Appeler</a>` : ``}
-        ${wa ? `<a class="btn whatsapp" style="text-decoration:none" target="_blank" href="${wa}">WhatsApp</a>` : ``}
-        <button class="btn ghost" onclick="recenterMap()">Recentrer</button>
-      </div>
-
-      ${(addr||rep) ? `<div class="small" style="margin-top:10px;">🏠 ${safeText(addr)}<br>📝 ${safeText(rep)}</div>` : ``}
-    </div>
-  `;
-
-  const container = document.getElementById("shipmentDetails");
-  container.innerHTML = html;
-  if(animate){
-    container.classList.add("fade-in");
-    setTimeout(()=>container.classList.remove("fade-in"), 350);
-  }
-
-  // Action button text
-  const btn = document.getElementById("mainActionBtn");
-  btn.style.display = "block";
-  if(st==="assigned") btn.textContent = "Confirmer prise en charge";
-  else if(st==="picked_up") btn.textContent = "Démarrer livraison";
-  else if(st==="in_transit") btn.textContent = "Confirmer livraison";
-  else btn.textContent = "Action";
-
-  // Security panel only for in_transit
-  document.getElementById("deliverySecurity").style.display = (st==="in_transit") ? "block" : "none";
-
-  // Update ETA
-  updateETA_UI();
-}
-
-/* =========================
-   ACTIONS
-========================= */
-document.getElementById("mainActionBtn").onclick = mainAction;
-
-async function mainAction(){
-  if(!selectedShipmentId || !selectedShipment) return;
-
-  // reload fresh
-  const snap = await getDoc(doc(db,"shipments",selectedShipmentId));
-  if(!snap.exists()) return;
-  const data = snap.data() || {};
-  const st = (data.status||"").toString();
-
-  // sécurité assignation
-  if(data.assignedDriverId && data.assignedDriverId !== currentUser.uid){
-    alert("Non autorisé.");
-    return;
-  }
-
-  // assigned -> picked_up
-  if(st==="assigned"){
-    await updateDoc(doc(db,"shipments",selectedShipmentId),{
-      status:"picked_up",
-      pickedUpAt:serverTimestamp()
-    });
-    return;
-  }
-
-  // picked_up -> in_transit (si OTP absent, générer)
-  if(st==="picked_up"){
-  const otpExisting = data.otpCode || data.deliveryOtp || data.deliveryOTP || null;
-
-  let patch = { 
-    status:"in_transit", 
-    transitAt:serverTimestamp() 
-  };
-
-  if(!otpExisting){
-    const otp = Math.floor(1000 + Math.random()*9000).toString();
-    patch.otpCode = otp;
-    patch.otpGeneratedAt = serverTimestamp();
-    // OTP généré automatiquement (invisible chauffeur)
-  }
-
-  await updateDoc(doc(db,"shipments",selectedShipmentId), patch);
-  return;
-}
-
-  // in_transit -> delivered (OTP + online + proximity + photo + signature)
-  if(st==="in_transit"){
-
-    if(!navigator.onLine){
-      alert("Connexion requise pour confirmer la livraison");
-      return;
-    }
-
-    if(lastLat==null || lastLng==null){
-      alert("GPS non disponible");
-      return;
-    }
-
-    if(!(data.toLat && data.toLng)){
-      alert("Destination GPS manquante");
-      return;
-    }
-
-    const distM = calcDistKm(lastLat,lastLng,data.toLat,data.toLng)*1000;
-    if(distM > 100){
-      alert("Vous êtes trop loin du point de livraison ("+Math.round(distM)+"m)");
-      return;
-    }
-
-    const enteredOtp = (document.getElementById("otpInput").value || "").trim();
-    const otp = (data.otpCode || data.deliveryOtp || data.deliveryOTP || "").toString().trim();
-
-    if(!otp){
-      alert("OTP manquant sur le colis (admin)");
-      return;
-    }
-    if(enteredOtp !== otp){
-      alert("OTP incorrect");
-      return;
-    }
-
-    const photo = document.getElementById("photoInput").files[0];
-    if(!photo){
-      alert("Photo obligatoire");
-      return;
-    }
-
-    // Signature: vérifier qu'il y a du tracé
-    if(signatureIsEmpty()){
-      alert("Signature obligatoire");
-      return;
-    }
-
-    // Upload photo
-    const photoRef = ref(storage, `deliveries/${selectedShipmentId}/photo.jpg`);
-    await uploadBytes(photoRef, photo);
-    const photoURL = await getDownloadURL(photoRef);
-
-    // Upload signature PNG
-    const sigBlob = await canvasToBlob(signatureCanvas);
-    const sigRef = ref(storage, `deliveries/${selectedShipmentId}/signature.png`);
-    await uploadBytes(sigRef, sigBlob);
-    const sigURL = await getDownloadURL(sigRef);
-
-    await updateDoc(doc(db,"shipments",selectedShipmentId),{
-      status:"delivered",
-      deliveryPhoto:photoURL,
-      receiverSignature:sigURL,
-      deliveryLocation:{ lat:lastLat, lng:lastLng, accuracy:lastAccuracy ?? null },
-      deliveredAt:serverTimestamp()
-    });
-
-    alert("Livraison confirmée ✅");
-    // clear inputs
-    document.getElementById("otpInput").value = "";
-    document.getElementById("photoInput").value = "";
-    clearSignatureCanvas();
-    loadKPI();
-    loadWeeklyPerformance();
-  }
-}
-
-/* =========================
-   SIGNATURE (mobile fix)
-========================= */
-const signatureCanvas = document.getElementById("signatureCanvas");
-const sigCtx = signatureCanvas.getContext("2d");
-let drawing=false;
-let lastPos=null;
-let hasInk=false;
-
-function resizeSignatureCanvas(){
-  const rect = signatureCanvas.getBoundingClientRect();
-  const ratio = Math.max(window.devicePixelRatio || 1, 1);
-  signatureCanvas.width = Math.floor(rect.width * ratio);
-  signatureCanvas.height = Math.floor(rect.height * ratio);
-  sigCtx.setTransform(ratio,0,0,ratio,0,0);
-  sigCtx.lineWidth = 2;
-  sigCtx.lineCap = "round";
-}
-resizeSignatureCanvas();
-window.addEventListener("resize", resizeSignatureCanvas);
-
-function getPos(e){
-  const rect = signatureCanvas.getBoundingClientRect();
-  if(e.touches && e.touches[0]){
-    return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
-  }
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-}
-
-function drawTo(pos){
-  if(!lastPos){ lastPos = pos; return; }
-  sigCtx.beginPath();
-  sigCtx.moveTo(lastPos.x, lastPos.y);
-  sigCtx.lineTo(pos.x, pos.y);
-  sigCtx.stroke();
-  lastPos = pos;
-  hasInk = true;
-}
-
-signatureCanvas.addEventListener("mousedown",(e)=>{drawing=true; lastPos=getPos(e);});
-signatureCanvas.addEventListener("mousemove",(e)=>{ if(!drawing) return; drawTo(getPos(e)); });
-signatureCanvas.addEventListener("mouseup",()=>{drawing=false; lastPos=null;});
-signatureCanvas.addEventListener("mouseleave",()=>{drawing=false; lastPos=null;});
-
-signatureCanvas.addEventListener("touchstart",(e)=>{drawing=true; lastPos=getPos(e); e.preventDefault();},{passive:false});
-signatureCanvas.addEventListener("touchmove",(e)=>{ if(!drawing) return; drawTo(getPos(e)); e.preventDefault();},{passive:false});
-signatureCanvas.addEventListener("touchend",()=>{drawing=false; lastPos=null;},{passive:true});
-
-document.getElementById("clearSignature").onclick = clearSignatureCanvas;
-
-function clearSignatureCanvas(){
-  sigCtx.clearRect(0,0,signatureCanvas.width,signatureCanvas.height);
-  hasInk=false;
-}
-function signatureIsEmpty(){
-  return !hasInk;
-}
-async function canvasToBlob(c){
-  return new Promise(resolve=>{
-    c.toBlob(b=>resolve(b), "image/png", 0.95);
-  });
-}
-
-/* =========================
-   KPI (DAY) + PAYMENT
-========================= */
-async function loadKPI(){
-  const today=new Date();
-  today.setHours(0,0,0,0);
-
-  const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
-  const snap=await getDocs(q);
-
-  let delivered=0;
-  let failed=0;
-
-  snap.forEach(docSnap=>{
-    const d=docSnap.data()||{};
-    if(d.status==="delivered" && d.deliveredAt?.toDate && d.deliveredAt.toDate()>=today) delivered++;
-    if(d.status==="failed") failed++;
-  });
-
-  // settings/logistics.paymentPerDelivery (modifiable sans code)
-  let payment = 0;
-  try{
-    const settingsSnap = await getDoc(doc(db,"settings","logistics"));
-    payment = settingsSnap.exists() ? (settingsSnap.data()?.paymentPerDelivery || 0) : 0;
-  }catch(e){ payment = 0; }
-
-  const total = delivered * payment;
-
-  document.getElementById("kpiBox").innerHTML = `
-    <div class="kpiRow"><span>📦 Livraisons (aujourd’hui)</span><b>${delivered}</b></div>
-    <div class="kpiRow"><span>❌ Échecs</span><b>${failed}</b></div>
-    <div class="kpiRow"><span>💰 Paiement unitaire</span><b>${payment} BIF</b></div>
-    <div class="kpiRow"><span>💵 Total à payer (jour)</span><b>${total} BIF</b></div>
-  `;
-}
-
-/* KPI weekly */
-async function loadWeeklyPerformance(){
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate()-7);
-
-  const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
-  const snap=await getDocs(q);
-
-  let delivered=0;
-  let km=0;
-
-  snap.forEach(docSnap=>{
-    const d=docSnap.data()||{};
-    if(d.status==="delivered" && d.deliveredAt?.toDate && d.deliveredAt.toDate()>=sevenDaysAgo){
-      delivered++;
-      // si tu stockes une distance ailleurs, on peut l’ajouter; sinon on garde simple
-    }
-  });
-
-  document.getElementById("weeklyBox").innerHTML = `
-    📆 7 jours : <b>${delivered}</b> livraison(s).<br>
-    Astuce : avec le tracking live, admin/client voient l’historique horodaté.
-  `;
-}
-  
-/* =========================
-   SCANNER PRO (ZXing) FIX PERMISSION
-========================= */
-
-let codeReader = null;
-let scanActive = false;
-
-document.getElementById("startScanBtn").onclick = async()=>{
-  try{
-    if(scanActive) return;
-    armSoundOnce();
-
-    if(!window.ZXing){
-      alert("Scanner indisponible (ZXing).");
-      return;
-    }
-
-    // 🔥 FORCER DEMANDE PERMISSION CAMERA
-    await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-
-    scanActive = true;
-
-    const video = document.getElementById("scanVideo");
-    codeReader = new ZXing.BrowserMultiFormatReader();
-
-    await codeReader.decodeFromVideoDevice(
-      null,
-      video,
-      async(result, err)=>{
-
-        if(result){
-          const text = (result.getText() || "").trim();
-          if(!text) return;
-
-          try{ codeReader.reset(); }catch(e){}
-          scanActive=false;
-
-          const snap = await getDoc(doc(db,"shipments",text));
-
-          if(!snap.exists()){
-            alert("Colis introuvable: " + text);
-            return;
-          }
-
-          const d = snap.data() || {};
-
-          if(d.assignedDriverId && d.assignedDriverId !== currentUser.uid){
-            alert("Colis assigné à un autre chauffeur.");
-            return;
-          }
-
-          if(!d.assignedDriverId){
-            await updateDoc(doc(db,"shipments",text),{
-              assignmentRequestFrom: currentUser.uid,
-              assignmentRequestAt: serverTimestamp()
-            });
-            alert("Demande d’assignation envoyée.");
-            return;
-          }
-
-          vibrateAndBeep();
-          await selectShipmentInternal(text, true);
-        }
-      }
-    );
-
-  }catch(e){
-    console.log("SCAN ERROR:", e);
-    scanActive=false;
-    alert("Erreur scanner (permission ou caméra).");
-  }
-};
-
-document.getElementById("stopScanBtn").onclick = ()=>{
-  try{ if(codeReader) codeReader.reset(); }catch(e){}
-  scanActive=false;
-};
-
-/* =========================
-   PWA
-========================= */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("./sw.js").catch(()=>{});
-}
-
-/* =========================
-   ONLINE/OFFLINE alerts (soft)
-========================= */
-window.addEventListener("offline", ()=>{ /* pas d’alert intrusive */ });
-window.addEventListener("online", ()=>{ /* idem */ });
-
-/* =========================
-   Auto-calculate route periodically
-========================= */
-setInterval(()=>{
-  if(selectedShipment && lastLat!=null && selectedShipment.toLat!=null && navigator.onLine){
-    calculateRoute_OSRM();
-  }
-}, 15000);
+});
 
 </script>
-
 </body>
 </html>
