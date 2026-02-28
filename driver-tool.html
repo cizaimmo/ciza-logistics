@@ -409,10 +409,6 @@ function renderShipmentCard(d){
    SELECT SHIPMENT
 ========================= */
 
-window.selectShipment = async function(id){
-  await selectShipmentInternal(id);
-}
-
 async function selectShipmentInternal(id){
 
   const snap = await getDoc(doc(db,"shipments",id));
@@ -424,8 +420,29 @@ async function selectShipmentInternal(id){
   const d = selectedShipment;
   const st = (d.status||"").toString();
 
+  const navBtn = document.getElementById("navBtn");
+  const archiveBtn = document.getElementById("archiveBtn");
+  const securityPanel = document.getElementById("deliverySecurity");
+
+  /* =========================
+     RESET VISUAL STATE
+  ========================= */
+
+  navBtn.classList.remove("nav-ready");
+  navBtn.style.display = "none";
+  archiveBtn.style.display = "none";
+  securityPanel.style.display = "none";
+
+  /* =========================
+     HEADER
+  ========================= */
+
   document.getElementById("selectedHint").textContent =
-    "Sélectionné : "+(d.trackingCode||id);
+    "Sélectionné : " + (d.trackingCode||id);
+
+  /* =========================
+     DÉTAILS CHAUFFEUR COMPLETS
+  ========================= */
 
   document.getElementById("shipmentDetails").innerHTML = `
     <b>${d.trackingCode||id}</b><br>
@@ -440,22 +457,22 @@ async function selectShipmentInternal(id){
     📝 <b>Notes admin :</b> ${d.adminNote||"—"}
   `;
 
-  const navBtn = document.getElementById("navBtn");
-  const archiveBtn = document.getElementById("archiveBtn");
+  /* =========================
+     LOGIQUE PRO STRICTE
+  ========================= */
 
-  navBtn.classList.remove("nav-ready");
-
-  navBtn.style.display =
-    (st==="picked_up" || st==="in_transit") ? "block" : "none";
-
-  archiveBtn.style.display =
-    (st==="delivered") ? "block" : "none";
-
+  // Navigation uniquement en transit
   if(st==="in_transit"){
-    navBtn.classList.add("nav-ready"); // 🔥 pulse activé
+    navBtn.style.display = "block";
+    navBtn.classList.add("nav-ready"); // animation pulse
+    securityPanel.style.display = "block";
+  }
+
+  // Archive uniquement en delivered
+  if(st==="delivered"){
+    archiveBtn.style.display = "block";
   }
 }
-
 /* =========================
    NAVIGATION
 ========================= */
