@@ -2130,25 +2130,34 @@ function initMapOnce(){
 
   mapInitialized=true;
 
-  // Drivers live
-  onSnapshot(collection(db,"driversLive"), (snap)=>{
+  
+  // Drivers live (via users.liveLocation)
+onSnapshot(
+  query(collection(db,"users"), where("role","==","driver")),
+  (snap)=>{
     const seen = new Set();
+
     snap.forEach(ds=>{
       const d = ds.data();
       const id = ds.id;
-      seen.add(id);
 
-      const lat = Number(d.lat);
-      const lng = Number(d.lng);
+      const lat = Number(d.liveLocation?.lat);
+      const lng = Number(d.liveLocation?.lng);
+
       if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
-      driversLiveCache.set(id, { lat, lng, fullName: (d.fullName||d.name||id) });
+      seen.add(id);
 
-      const nm = d.fullName || d.name || id;
+      const nm = d.fullName || d.name || d.email || id;
+
+      driversLiveCache.set(id, { lat, lng, fullName: nm });
+
       if(driverMarkers[id]){
         driverMarkers[id].setLatLng([lat,lng]);
       }else{
-        driverMarkers[id] = L.marker([lat,lng]).addTo(map).bindPopup(`🚚 ${safe(nm)}`);
+        driverMarkers[id] = L.marker([lat,lng])
+          .addTo(map)
+          .bindPopup(`🚚 ${nm}`);
       }
     });
 
@@ -2160,12 +2169,11 @@ function initMapOnce(){
       }
     });
 
-    // If tracking selected shipment, refresh route with latest driver position
     if(selectedShipmentId){
       scheduleRouteRecompute("driversUpdate");
     }
-  });
-
+  }
+);
   // UI listeners
   trackShipmentSelect.addEventListener("change", ()=>{
     selectedShipmentId = trackShipmentSelect.value || null;
