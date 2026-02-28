@@ -15,46 +15,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
 :root{
   --gold:#D4AF37;
-  --black:#000;
   --bg:#f3f4f6;
   --card:#fff;
   --muted:#6b7280;
   --ok:#16a34a;
   --warn:#f59e0b;
   --bad:#dc2626;
-  --blue:#2563eb;
-  --purple:#7c3aed;
 }
 
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 
 .header{
-  background:rgba(0,0,0,0.96);
+  background:#000;
   color:#fff;
   padding:16px 20px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
 }
 
 .brand{color:var(--gold);font-weight:900;font-size:16px;}
-.driverName{font-size:12px;color:#e5e7eb;margin-top:4px;}
+.driverName{font-size:12px;color:#ddd;}
 
-.header-right{
-  display:flex;
-  gap:16px;
-  align-items:center;
-  flex-wrap:wrap;
-}
+.header-right{display:flex;gap:16px;align-items:center;}
 
 .badge{
   padding:6px 12px;
@@ -66,10 +54,6 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 }
 
 .badge.gold{background:var(--gold);color:#000;}
-.badge.warn{background:var(--warn);color:#000;}
-.badge.bad{background:var(--bad);}
-.badge.blue{background:var(--blue);}
-.badge.purple{background:var(--purple);}
 
 .logout-btn{
   background:var(--gold);
@@ -90,20 +74,9 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
   box-shadow:0 12px 26px rgba(0,0,0,0.06);
 }
 
-.section-title{
-  font-weight:900;
-  margin-bottom:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+.section-title{font-weight:900;margin-bottom:14px;}
 
-.actionsRow{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:14px;
-}
+.actionsRow{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;}
 
 .btn{
   border:none;
@@ -116,8 +89,6 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 .btn.full{width:100%;}
 .btn.dark{background:#111;color:#fff;}
 .btn.gold{background:var(--gold);color:#000;}
-.btn.ghost{background:#eee;}
-.btn.red{background:var(--bad);color:#fff;}
 
 input{
   width:100%;
@@ -129,23 +100,13 @@ input{
 
 #map{height:300px;border-radius:16px;margin-top:12px;}
 
-canvas{
-  border:1px solid rgba(0,0,0,0.15);
-  border-radius:14px;
-  width:100%;
-  height:160px;
-  margin-top:10px;
-  background:#fff;
-}
-
+.small{font-size:12px;color:var(--muted);}
 .shipment-card{
   border:1px solid rgba(212,175,55,0.35);
   border-radius:16px;
   padding:14px;
   margin-bottom:12px;
 }
-
-.small{font-size:12px;color:var(--muted);}
 </style>
 </head>
 
@@ -158,7 +119,6 @@ canvas{
   </div>
   <div class="header-right">
     <span class="badge" id="connectionStatus">En ligne</span>
-    <span class="badge" id="gpsStatus">GPS OK</span>
     <span class="badge gold" id="deliveryCounter">0</span>
     <button class="logout-btn" id="logoutBtn">Déconnexion</button>
   </div>
@@ -166,7 +126,6 @@ canvas{
 
 <div class="container">
 
-<!-- LISTES -->
 <div class="card">
   <div class="section-title">🟡 À traiter</div>
   <div id="assignedList"></div>
@@ -178,11 +137,10 @@ canvas{
 </div>
 
 <div class="card">
-  <div class="section-title">🟢 Livrés aujourd’hui</div>
+  <div class="section-title">🟢 Livrés</div>
   <div id="deliveredList"></div>
 </div>
 
-<!-- DETAILS -->
 <div class="card">
   <div class="section-title">
     📦 Détails & Navigation
@@ -190,42 +148,32 @@ canvas{
   </div>
 
   <div id="shipmentDetails">Aucun colis sélectionné</div>
-
   <div id="map"></div>
 
   <div class="actionsRow">
     <button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
-    <button class="btn dark full" id="navBtn" style="display:none;">🧭 Ouvrir Navigation</button>
+    <button class="btn dark full" id="navBtn" style="display:none;">🧭 Navigation</button>
   </div>
 </div>
 
-<!-- FINALISATION -->
 <div class="card" id="deliverySecurity" style="display:none;">
   <div class="section-title">🔐 Finalisation livraison</div>
-
   <input type="text" id="otpInput" placeholder="Entrer OTP client">
   <input type="file" accept="image/*" capture="environment" id="photoInput">
-
-  <canvas id="signatureCanvas"></canvas>
-
-  <div class="actionsRow">
-    <button class="btn ghost" id="clearSignature">Effacer signature</button>
-  </div>
 </div>
 
-</div><script type="module">
+</div>
+
+<script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-  getFirestore, collection, query, where, onSnapshot,
-  doc, getDoc, updateDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getFirestore, collection, query, where, onSnapshot,
+  doc, getDoc, updateDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-/* =========================
-   FIREBASE
-========================= */
 const app = initializeApp({
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
   authDomain:"ciza-logistics.firebaseapp.com",
@@ -233,23 +181,22 @@ const app = initializeApp({
   storageBucket:"ciza-logistics.appspot.com"
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+const db=getFirestore(app);
+const auth=getAuth(app);
+const storage=getStorage(app);
 
-/* =========================
-   GLOBAL STATE
-========================= */
 let currentUser=null;
 let selectedShipment=null;
 let selectedShipmentId=null;
 let lastLat=null,lastLng=null;
 
-/* =========================
-   AUTH
-========================= */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){ location.href="login.html"; return; }
+let map=L.map('map').setView([-3.3731,29.9189],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+let driverMarker=null;
+let destinationMarker=null;
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){location.href="login.html";return;}
   currentUser=user;
   startGPS();
   listenShipments();
@@ -260,17 +207,6 @@ document.getElementById("logoutBtn").onclick=async()=>{
   location.href="login.html";
 };
 
-/* =========================
-   MAP
-========================= */
-let map=L.map('map').setView([-3.3731,29.9189],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-let driverMarker=null;
-let destinationMarker=null;
-
-/* =========================
-   GPS
-========================= */
 function startGPS(){
   navigator.geolocation.watchPosition(pos=>{
     lastLat=pos.coords.latitude;
@@ -285,16 +221,12 @@ function startGPS(){
   });
 }
 
-/* =========================
-   LISTEN SHIPMENTS
-========================= */
 function listenShipments(){
   const q=query(collection(db,"shipments"),
-    where("assignedDriverId","==",currentUser.uid)
-  );
+    where("assignedDriverId","==",currentUser.uid));
 
   onSnapshot(q,snap=>{
-    let assigned=[], transit=[], delivered=[];
+    let assigned=[],transit=[],delivered=[];
 
     snap.forEach(docSnap=>{
       const d=docSnap.data();
@@ -302,25 +234,18 @@ function listenShipments(){
 
       if(d.archivedByDriver) return;
 
-      if(d.status==="assigned"||d.status==="picked_up")
-        assigned.push(d);
-      else if(d.status==="in_transit")
-        transit.push(d);
-      else if(d.status==="delivered")
-        delivered.push(d);
+      if(d.status==="assigned"||d.status==="picked_up") assigned.push(d);
+      else if(d.status==="in_transit") transit.push(d);
+      else if(d.status==="delivered") delivered.push(d);
     });
 
     renderList("assignedList",assigned);
     renderList("transitList",transit);
     renderList("deliveredList",delivered);
-
     document.getElementById("deliveryCounter").textContent=delivered.length;
   });
 }
 
-/* =========================
-   RENDER
-========================= */
 function renderList(id,list){
   const el=document.getElementById(id);
   if(!list.length){el.innerHTML="<div class='small'>Aucun colis.</div>";return;}
@@ -336,12 +261,9 @@ function renderList(id,list){
   `).join("");
 }
 
-/* =========================
-   SELECT
-========================= */
 window.selectShipment=async function(id){
   const snap=await getDoc(doc(db,"shipments",id));
-  if(!snap.exists()) return;
+  if(!snap.exists())return;
 
   selectedShipmentId=id;
   selectedShipment=snap.data();
@@ -349,10 +271,9 @@ window.selectShipment=async function(id){
   document.getElementById("selectedHint").innerText=
     "Sélectionné : "+(selectedShipment.trackingCode||id);
 
-  document.getElementById("shipmentDetails").innerHTML=`
-    <b>${selectedShipment.trackingCode||id}</b><br>
-    📍 ${selectedShipment.fromCity||""} → ${selectedShipment.toCity||""}
-  `;
+  document.getElementById("shipmentDetails").innerHTML=
+    `<b>${selectedShipment.trackingCode||id}</b><br>
+     📍 ${selectedShipment.fromCity||""} → ${selectedShipment.toCity||""}`;
 
   if(selectedShipment.toLat && selectedShipment.toLng){
     if(destinationMarker){
@@ -365,104 +286,56 @@ window.selectShipment=async function(id){
   refreshButtons(selectedShipment.status);
 };
 
-/* =========================
-   MAIN ACTION
-========================= */
 document.getElementById("mainActionBtn").onclick=async()=>{
   if(!selectedShipmentId) return;
 
-  const ref=doc(db,"shipments",selectedShipmentId);
-  const snap=await getDoc(ref);
-  if(!snap.exists()) return;
+  const refDoc=doc(db,"shipments",selectedShipmentId);
+  const snap=await getDoc(refDoc);
+  if(!snap.exists())return;
 
   const data=snap.data();
 
   if(data.status==="assigned"){
-    await updateDoc(ref,{
-      status:"picked_up",
-      pickedUpAt:serverTimestamp()
-    });
+    await updateDoc(refDoc,{status:"picked_up",pickedUpAt:serverTimestamp()});
   }
-
   else if(data.status==="picked_up"){
-    await updateDoc(ref,{
-      status:"in_transit",
-      transitAt:serverTimestamp()
-    });
+    await updateDoc(refDoc,{status:"in_transit",transitAt:serverTimestamp()});
   }
-
   else if(data.status==="in_transit"){
-    await finalizeDelivery(ref,data);
+    await finalizeDelivery(refDoc,data);
   }
 };
 
-/* =========================
-   FINAL DELIVERY
-========================= */
-async function finalizeDelivery(ref,data){
-
+async function finalizeDelivery(refDoc,data){
   const otp=document.getElementById("otpInput").value.trim();
-  if(otp!==(data.otpCode||"")){
-    alert("OTP incorrect");
-    return;
-  }
+  if(otp!==(data.otpCode||"")){alert("OTP incorrect");return;}
 
   const photo=document.getElementById("photoInput").files[0];
-  if(!photo){ alert("Photo obligatoire"); return; }
-
-  const photoRef=refStorage(`deliveries/${selectedShipmentId}/photo.jpg`);
-}
-
-function refStorage(path){
-  return ref(storage,path);
-}
-
-async function finalizeDelivery(ref,data){
-
-  const otp=document.getElementById("otpInput").value.trim();
-  if(otp!==(data.otpCode||"")){
-    alert("OTP incorrect");
-    return;
-  }
-
-  const photo=document.getElementById("photoInput").files[0];
-  if(!photo){ alert("Photo obligatoire"); return; }
+  if(!photo){alert("Photo obligatoire");return;}
 
   const photoRef=ref(storage,`deliveries/${selectedShipmentId}/photo.jpg`);
   await uploadBytes(photoRef,photo);
   const photoURL=await getDownloadURL(photoRef);
 
-  await updateDoc(ref,{
+  await updateDoc(refDoc,{
     status:"delivered",
     deliveredAt:serverTimestamp(),
     deliveryPhoto:photoURL
   });
 
   alert("Livraison confirmée ✅");
-
-  document.getElementById("deliverySecurity").style.display="none";
 }
 
-/* =========================
-   NAVIGATION
-========================= */
 document.getElementById("navBtn").onclick=function(){
-  if(!selectedShipment||!selectedShipment.toLat||!selectedShipment.toLng){
-    alert("Destination indisponible");
-    return;
-  }
-  if(!lastLat||!lastLng){
-    alert("GPS indisponible");
-    return;
-  }
+  if(!selectedShipment||!selectedShipment.toLat||!selectedShipment.toLng)return;
+  if(!lastLat||!lastLng)return;
 
-  const url=`https://www.google.com/maps/dir/?api=1&origin=${lastLat},${lastLng}&destination=${selectedShipment.toLat},${selectedShipment.toLng}`;
-  window.open(url,"_blank");
+  window.open(
+    `https://www.google.com/maps/dir/?api=1&origin=${lastLat},${lastLng}&destination=${selectedShipment.toLat},${selectedShipment.toLng}`,
+    "_blank"
+  );
 };
 
-/* =========================
-   BUTTON VISIBILITY
-========================= */
 function refreshButtons(status){
   const main=document.getElementById("mainActionBtn");
   const nav=document.getElementById("navBtn");
