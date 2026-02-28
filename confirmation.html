@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -248,21 +248,22 @@ document.getElementById("paymentStatus").innerText="Paiement confirmé ✔";
 });
 });
 
-window.submitPayment=async function(){
-const phone=document.getElementById("paymentPhone").value.trim();
-const refNum=document.getElementById("paymentRef").value.trim();
-if(!phone || !refNum) return alert("Veuillez compléter les informations.");
+window.submitPayment = async function(){
+  const phone=document.getElementById("paymentPhone").value.trim();
+  const refNum=document.getElementById("paymentRef").value.trim();
+  if(!phone || !refNum) return alert("Veuillez compléter les informations.");
 
-await updateDoc(doc(db,"shipments",tracking),{
-paymentPhoneUsed:phone,
-paymentReference:refNum,
-paymentSubmittedAt:serverTimestamp(),
-paymentStatus:"pending_verification"
-});
+  await updateDoc(doc(db,"shipments",tracking),{
+    status:"payment_under_review",
+    paymentStatus:"pending_verification",
+    paymentPhone:phone,
+    paymentReference:refNum,
+    referenceSubmittedAt:serverTimestamp()
+  });
 
-document.getElementById("payBtn").disabled=true;
-document.getElementById("successMsg").innerHTML=
-"<div style='color:#1dd1a1;font-weight:800;text-align:center;margin-top:10px'>Paiement envoyé ✔</div>";
+  document.getElementById("payBtn").disabled=true;
+  document.getElementById("successMsg").innerHTML=
+  "<div style='color:#1dd1a1;font-weight:800;text-align:center;margin-top:10px'>Paiement envoyé ✔</div>";
 }
 
 window.generatePDF=function(){
