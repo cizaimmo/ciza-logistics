@@ -24,7 +24,6 @@
   --bg:#f3f4f6;
   --card:#fff;
   --muted:#6b7280;
-
   --ok:#16a34a;
   --warn:#f59e0b;
   --bad:#dc2626;
@@ -38,13 +37,13 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 .header{
   background:rgba(0,0,0,0.96);
   color:#fff;
-  padding:14px;
+  padding:16px 20px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   position:sticky;
   top:0;
-  z-index:10;
+  z-index:1000;
 }
 
 .brand{color:var(--gold);font-weight:900;font-size:16px;}
@@ -52,7 +51,7 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 
 .header-right{
   display:flex;
-  gap:14px;
+  gap:16px;
   align-items:center;
   flex-wrap:wrap;
 }
@@ -66,6 +65,12 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
   color:#fff;
 }
 
+.badge.gold{background:var(--gold);color:#000;}
+.badge.warn{background:var(--warn);color:#000;}
+.badge.bad{background:var(--bad);}
+.badge.blue{background:var(--blue);}
+.badge.purple{background:var(--purple);}
+
 .logout-btn{
   background:var(--gold);
   border:none;
@@ -75,85 +80,43 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
   cursor:pointer;
 }
 
-.container{width:95%;max-width:1100px;margin:16px auto 80px auto;}
+.container{width:95%;max-width:1200px;margin:20px auto;}
 
 .card{
   background:var(--card);
   border-radius:18px;
   padding:18px;
-  margin:16px 0;
+  margin-bottom:18px;
   box-shadow:0 12px 26px rgba(0,0,0,0.06);
 }
 
 .section-title{
   font-weight:900;
-  margin:0 0 12px 0;
+  margin-bottom:14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
-.small{font-size:12px;color:var(--muted)}
-.hr{height:1px;background:rgba(0,0,0,0.08);margin:14px 0}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
-@media(min-width:900px){
-  .grid{grid-template-columns:1.1fr 0.9fr;}
-}
-
-/* SHIPMENT CARD */
-.shipment-card{
-  border:1px solid rgba(212,175,55,0.35);
-  border-radius:16px;
-  padding:16px;
-  margin:12px 0;
-  background:linear-gradient(180deg,#fff,#fafafa);
-  transition:all .2s ease;
-}
-
-/* SELECTION VISUELLE */
-.shipment-card.active{
-  border:2px solid var(--gold);
-  box-shadow:0 0 0 4px rgba(212,175,55,0.25);
-  transform:translateY(-2px);
-}
-
-.shipment-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-}
-
-.track{font-weight:900;}
-.routeLine{margin-top:4px;font-size:13px;}
-.metaLine{margin-top:6px;font-size:13px;}
-
 .actionsRow{
   display:flex;
-  gap:14px;
+  gap:12px;
   flex-wrap:wrap;
-  margin-top:12px;
+  margin-top:14px;
 }
 
 .btn{
   border:none;
   border-radius:14px;
-  padding:13px 16px;
+  padding:12px 16px;
   font-weight:900;
   cursor:pointer;
-  min-height:46px;
 }
 
 .btn.full{width:100%;}
 .btn.dark{background:#111;color:#fff;}
 .btn.gold{background:var(--gold);color:#000;}
-.btn.ghost{background:rgba(0,0,0,0.06);color:#111;}
-.btn.whatsapp{background:#25D366;color:#fff;}
+.btn.ghost{background:#eee;}
 .btn.red{background:var(--bad);color:#fff;}
 
 input{
@@ -162,10 +125,9 @@ input{
   border-radius:14px;
   border:1px solid rgba(0,0,0,0.12);
   margin-top:10px;
-  font-family:Inter;
 }
 
-#map{height:280px;border-radius:16px;margin-top:10px;}
+#map{height:300px;border-radius:16px;margin-top:12px;}
 
 canvas{
   border:1px solid rgba(0,0,0,0.15);
@@ -176,16 +138,14 @@ canvas{
   background:#fff;
 }
 
-/* ARCHIVES */
-.archive-item{
-  font-size:13px;
-  padding:8px 0;
-  border-bottom:1px solid rgba(0,0,0,0.08);
+.shipment-card{
+  border:1px solid rgba(212,175,55,0.35);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
 }
 
-.archive-item:last-child{
-  border-bottom:none;
-}
+.small{font-size:12px;color:var(--muted);}
 </style>
 </head>
 
@@ -196,90 +156,75 @@ canvas{
     <div class="brand">🚚 Ciza Driver</div>
     <div class="driverName" id="driverName">Chargement...</div>
   </div>
-
   <div class="header-right">
     <span class="badge" id="connectionStatus">En ligne</span>
     <span class="badge" id="gpsStatus">GPS OK</span>
-    <span class="badge" id="deliveryCounter">0</span>
+    <span class="badge gold" id="deliveryCounter">0</span>
     <button class="logout-btn" id="logoutBtn">Déconnexion</button>
   </div>
 </div>
 
 <div class="container">
-<div class="grid">
 
 <!-- LISTES -->
-<div>
-
 <div class="card">
-<div class="section-title">
-<span>🟡 À traiter</span>
-<span class="badge" id="countAssigned">0</span>
-</div>
-<div id="assignedList"></div>
+  <div class="section-title">🟡 À traiter</div>
+  <div id="assignedList"></div>
 </div>
 
 <div class="card">
-<div class="section-title">
-<span>🔵 En transit</span>
-<span class="badge" id="countTransit">0</span>
-</div>
-<div id="transitList"></div>
+  <div class="section-title">🔵 En transit</div>
+  <div id="transitList"></div>
 </div>
 
 <div class="card">
-<div class="section-title">
-<span>🟢 Livrés aujourd’hui</span>
-<span class="badge" id="countDelivered">0</span>
-</div>
-<div id="deliveredList"></div>
-</div>
-
-<!-- ARCHIVES -->
-<div class="card">
-<div class="section-title">
-<span>🗂 Archives</span>
-<span class="badge" id="countArchived">0</span>
-</div>
-<div id="archivedList"></div>
-</div>
-
+  <div class="section-title">🟢 Livrés aujourd’hui</div>
+  <div id="deliveredList"></div>
 </div>
 
 <!-- DETAILS -->
-<div>
-<div class="card" id="detailsCard">
-<div class="section-title">
-<span>📦 Détails & Navigation</span>
-<span class="small" id="selectedHint">Sélectionne un colis</span>
+<div class="card">
+  <div class="section-title">
+    📦 Détails & Navigation
+    <span id="selectedHint">Sélectionne un colis</span>
+  </div>
+
+  <div id="shipmentDetails">Aucun colis sélectionné</div>
+
+  <div id="map"></div>
+
+  <div class="actionsRow">
+    <button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
+    <button class="btn dark full" id="navBtn" style="display:none;">🧭 Ouvrir Navigation</button>
+  </div>
 </div>
 
-<div id="shipmentDetails">Aucun colis sélectionné</div>
-<div class="hr"></div>
-<div id="map"></div>
+<!-- FINALISATION -->
+<div class="card" id="deliverySecurity" style="display:none;">
+  <div class="section-title">🔐 Finalisation livraison</div>
 
-<div class="actionsRow">
-<button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
-</div>
+  <input type="text" id="otpInput" placeholder="Entrer OTP client">
+  <input type="file" accept="image/*" capture="environment" id="photoInput">
+
+  <canvas id="signatureCanvas"></canvas>
+
+  <div class="actionsRow">
+    <button class="btn ghost" id="clearSignature">Effacer signature</button>
+  </div>
 </div>
 
-</div>
+</div><script type="module">
 
-</div>
-</div>
-  
-  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   getFirestore, collection, query, where, onSnapshot,
-  doc, getDoc, getDocs, updateDoc, addDoc,
-  serverTimestamp, enableIndexedDbPersistence
+  doc, getDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 /* =========================
-   FIREBASE INIT
+   FIREBASE
 ========================= */
 const app = initializeApp({
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -292,74 +237,20 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-enableIndexedDbPersistence(db).catch(()=>{});
-
 /* =========================
    GLOBAL STATE
 ========================= */
 let currentUser=null;
-let driverData=null;
-
-let selectedShipmentId=null;
 let selectedShipment=null;
-
-let lastLat=null,lastLng=null,lastAccuracy=null,lastSpeed=0;
-let driverMarker=null,destinationMarker=null,routeLayer=null;
-
-let lastShipmentIds=new Set();
-let lastTrackPushAt=0,lastTrackLat=null,lastTrackLng=null;
-
-/* =========================
-   MAP
-========================= */
-let map=L.map('map').setView([-3.3731,29.9189],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-
-function recenterMap(){
-  if(driverMarker) map.setView(driverMarker.getLatLng(),14);
-}
-window.recenterMap=recenterMap;
-
-/* =========================
-   HELPERS
-========================= */
-function safeText(v){return (v==null)?"":String(v);}
-function formatDate(ts){
-  try{ if(!ts)return""; const d=ts.toDate?ts.toDate():new Date(ts);
-  return d.toLocaleDateString()+" "+d.toLocaleTimeString(); }catch{return"";}
-}
-function isToday(ts){
-  try{ if(!ts||!ts.toDate)return false;
-  const d=ts.toDate(),n=new Date();
-  return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
-  }catch{return false;}
-}
-function whatsappLink(p){
-  const s=(p||"").toString().replace(/[^\d]/g,"");
-  return s?`https://wa.me/${s}`:null;
-}
-function statusBadge(s){
-  if(s==="assigned")return`<span class="badge blue">ASSIGNÉ</span>`;
-  if(s==="picked_up")return`<span class="badge warn">RAMASSÉ</span>`;
-  if(s==="in_transit")return`<span class="badge purple">EN TRANSIT</span>`;
-  if(s==="delivered")return`<span class="badge">LIVRÉ</span>`;
-  return`<span class="badge">${safeText(s)}</span>`;
-}
+let selectedShipmentId=null;
+let lastLat=null,lastLng=null;
 
 /* =========================
    AUTH
 ========================= */
-onAuthStateChanged(auth,async(user)=>{
-  if(!user){location.href="login.html";return;}
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){ location.href="login.html"; return; }
   currentUser=user;
-
-  const snap=await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists()){location.href="login.html";return;}
-  driverData=snap.data()||{};
-  if(driverData.role!=="driver"){location.href="login.html";return;}
-
-  document.getElementById("driverName").textContent=driverData.fullName||"Driver";
-
   startGPS();
   listenShipments();
 });
@@ -370,16 +261,24 @@ document.getElementById("logoutBtn").onclick=async()=>{
 };
 
 /* =========================
+   MAP
+========================= */
+let map=L.map('map').setView([-3.3731,29.9189],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+let driverMarker=null;
+let destinationMarker=null;
+
+/* =========================
    GPS
 ========================= */
 function startGPS(){
   navigator.geolocation.watchPosition(pos=>{
     lastLat=pos.coords.latitude;
     lastLng=pos.coords.longitude;
-    lastAccuracy=pos.coords.accuracy;
 
-    if(driverMarker) driverMarker.setLatLng([lastLat,lastLng]);
-    else{
+    if(driverMarker){
+      driverMarker.setLatLng([lastLat,lastLng]);
+    }else{
       driverMarker=L.marker([lastLat,lastLng]).addTo(map);
       map.setView([lastLat,lastLng],13);
     }
@@ -387,34 +286,35 @@ function startGPS(){
 }
 
 /* =========================
-   LISTENER
+   LISTEN SHIPMENTS
 ========================= */
 function listenShipments(){
-  const q=query(collection(db,"shipments"),where("assignedDriverId","==",currentUser.uid));
+  const q=query(collection(db,"shipments"),
+    where("assignedDriverId","==",currentUser.uid)
+  );
 
-  onSnapshot(q,(snap)=>{
-    const assigned=[],transit=[],deliveredToday=[],archived=[];
+  onSnapshot(q,snap=>{
+    let assigned=[], transit=[], delivered=[];
 
     snap.forEach(docSnap=>{
-      const d=docSnap.data()||{};
+      const d=docSnap.data();
       d.id=docSnap.id;
 
-      if(d.status==="assigned"||d.status==="picked_up")assigned.push(d);
-      else if(d.status==="in_transit")transit.push(d);
-      else if(d.status==="delivered"&&isToday(d.deliveredAt)&&!d.archivedByDriver)deliveredToday.push(d);
-      else if(d.status==="delivered"&&d.archivedByDriver)archived.push(d);
+      if(d.archivedByDriver) return;
+
+      if(d.status==="assigned"||d.status==="picked_up")
+        assigned.push(d);
+      else if(d.status==="in_transit")
+        transit.push(d);
+      else if(d.status==="delivered")
+        delivered.push(d);
     });
 
     renderList("assignedList",assigned);
     renderList("transitList",transit);
-    renderDelivered(deliveredToday);
-    renderArchives(archived);
+    renderList("deliveredList",delivered);
 
-    document.getElementById("countAssigned").textContent=assigned.length;
-    document.getElementById("countTransit").textContent=transit.length;
-    document.getElementById("countDelivered").textContent=deliveredToday.length;
-    document.getElementById("countArchived").textContent=archived.length;
-    document.getElementById("deliveryCounter").textContent=deliveredToday.length;
+    document.getElementById("deliveryCounter").textContent=delivered.length;
   });
 }
 
@@ -423,58 +323,17 @@ function listenShipments(){
 ========================= */
 function renderList(id,list){
   const el=document.getElementById(id);
-  el.innerHTML=list.length?list.map(renderCard).join(""):`<div class="small">Aucun colis.</div>`;
-}
+  if(!list.length){el.innerHTML="<div class='small'>Aucun colis.</div>";return;}
 
-function renderDelivered(list){
-  const el=document.getElementById("deliveredList");
-  el.innerHTML=list.length?list.map(d=>{
-    return renderCard(d,true);
-  }).join(""):`<div class="small">Aucun colis.</div>`;
-}
-
-function renderArchives(list){
-  const el=document.getElementById("archivedList");
-  el.innerHTML=list.length?list.map(d=>`
-    <div class="archive-item">
-      📦 ${safeText(d.trackingCode||d.id)} • ${formatDate(d.deliveredAt)}
-    </div>
-  `).join(""):`<div class="small">Aucune archive.</div>`;
-}
-
-function renderCard(d,isDelivered=false){
-  const activeClass=(selectedShipmentId===d.id)?"active":"";
-  const st=(d.status||"").toString();
-
-  const contactName=st==="assigned"?d.senderName:d.receiverName||d.receiverFullName||"";
-  const contactPhone=st==="assigned"?d.senderPhone:d.receiverPhone||"";
-  const wa=whatsappLink(contactPhone);
-
-  return`
-  <div class="shipment-card ${activeClass}">
-    <div class="shipment-top">
-      <div>
-        <div class="track">${safeText(d.trackingCode||d.id)}</div>
-        <div class="routeLine">📍 ${safeText(d.fromCity)} → ${safeText(d.toCity)}</div>
+  el.innerHTML=list.map(d=>`
+    <div class="shipment-card">
+      <b>${d.trackingCode||d.id}</b><br>
+      📍 ${d.fromCity||""} → ${d.toCity||""}
+      <div class="actionsRow">
+        <button class="btn dark" onclick="selectShipment('${d.id}')">Voir</button>
       </div>
-      <div>${statusBadge(st)}</div>
     </div>
-
-    <div class="metaLine">👤 ${safeText(contactName)}</div>
-
-    <div class="actionsRow">
-      ${contactPhone?`<a class="btn ghost" href="tel:${contactPhone}">📞</a>`:""}
-      ${wa?`<a class="btn whatsapp" target="_blank" href="${wa}">WhatsApp</a>`:""}
-      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir</button>
-    </div>
-
-    ${isDelivered?`
-      <button class="btn red full" style="margin-top:10px;" onclick="archiveShipment('${d.id}')">
-        🗂 Archiver
-      </button>
-    `:""}
-
-  </div>`;
+  `).join("");
 }
 
 /* =========================
@@ -482,58 +341,157 @@ function renderCard(d,isDelivered=false){
 ========================= */
 window.selectShipment=async function(id){
   const snap=await getDoc(doc(db,"shipments",id));
-  if(!snap.exists())return;
+  if(!snap.exists()) return;
+
   selectedShipmentId=id;
   selectedShipment=snap.data();
-  refreshSelectedUI();
-};
 
-function refreshSelectedUI(){
-  document.querySelectorAll(".shipment-card")
-    .forEach(c=>c.classList.remove("active"));
-  setTimeout(()=>{
-    document.querySelectorAll(".shipment-card")
-      .forEach(c=>{
-        if(c.innerHTML.includes(selectedShipmentId))
-          c.classList.add("active");
-      });
-  },50);
+  document.getElementById("selectedHint").innerText=
+    "Sélectionné : "+(selectedShipment.trackingCode||id);
 
-  if(!selectedShipment)return;
-
-  const d=selectedShipment;
   document.getElementById("shipmentDetails").innerHTML=`
-    <b>${safeText(d.trackingCode||d.id)}</b><br>
-    📍 ${safeText(d.fromCity)} → ${safeText(d.toCity)}
-    <div class="actionsRow" style="margin-top:10px;">
-      ${d.toLat?`<button class="btn ghost" onclick="openNav()">🧭 Navigation</button>`:""}
-      <button class="btn ghost" onclick="recenterMap()">📍 Recentrer</button>
-    </div>
+    <b>${selectedShipment.trackingCode||id}</b><br>
+    📍 ${selectedShipment.fromCity||""} → ${selectedShipment.toCity||""}
   `;
-}
+
+  if(selectedShipment.toLat && selectedShipment.toLng){
+    if(destinationMarker){
+      destinationMarker.setLatLng([selectedShipment.toLat,selectedShipment.toLng]);
+    }else{
+      destinationMarker=L.marker([selectedShipment.toLat,selectedShipment.toLng]).addTo(map);
+    }
+  }
+
+  refreshButtons(selectedShipment.status);
+};
 
 /* =========================
-   ARCHIVE
+   MAIN ACTION
 ========================= */
-window.archiveShipment=async function(id){
-  await updateDoc(doc(db,"shipments",id),{
-    archivedByDriver:true,
-    archivedAt:serverTimestamp()
-  });
+document.getElementById("mainActionBtn").onclick=async()=>{
+  if(!selectedShipmentId) return;
+
+  const ref=doc(db,"shipments",selectedShipmentId);
+  const snap=await getDoc(ref);
+  if(!snap.exists()) return;
+
+  const data=snap.data();
+
+  if(data.status==="assigned"){
+    await updateDoc(ref,{
+      status:"picked_up",
+      pickedUpAt:serverTimestamp()
+    });
+  }
+
+  else if(data.status==="picked_up"){
+    await updateDoc(ref,{
+      status:"in_transit",
+      transitAt:serverTimestamp()
+    });
+  }
+
+  else if(data.status==="in_transit"){
+    await finalizeDelivery(ref,data);
+  }
 };
+
+/* =========================
+   FINAL DELIVERY
+========================= */
+async function finalizeDelivery(ref,data){
+
+  const otp=document.getElementById("otpInput").value.trim();
+  if(otp!==(data.otpCode||"")){
+    alert("OTP incorrect");
+    return;
+  }
+
+  const photo=document.getElementById("photoInput").files[0];
+  if(!photo){ alert("Photo obligatoire"); return; }
+
+  const photoRef=refStorage(`deliveries/${selectedShipmentId}/photo.jpg`);
+}
+
+function refStorage(path){
+  return ref(storage,path);
+}
+
+async function finalizeDelivery(ref,data){
+
+  const otp=document.getElementById("otpInput").value.trim();
+  if(otp!==(data.otpCode||"")){
+    alert("OTP incorrect");
+    return;
+  }
+
+  const photo=document.getElementById("photoInput").files[0];
+  if(!photo){ alert("Photo obligatoire"); return; }
+
+  const photoRef=ref(storage,`deliveries/${selectedShipmentId}/photo.jpg`);
+  await uploadBytes(photoRef,photo);
+  const photoURL=await getDownloadURL(photoRef);
+
+  await updateDoc(ref,{
+    status:"delivered",
+    deliveredAt:serverTimestamp(),
+    deliveryPhoto:photoURL
+  });
+
+  alert("Livraison confirmée ✅");
+
+  document.getElementById("deliverySecurity").style.display="none";
+}
 
 /* =========================
    NAVIGATION
 ========================= */
-window.openNav=function(){
-  if(!selectedShipment||!selectedShipment.toLat)return;
-  window.open(
-    `https://www.google.com/maps/dir/?api=1&destination=${selectedShipment.toLat},${selectedShipment.toLng}`,
-    "_blank"
-  );
+document.getElementById("navBtn").onclick=function(){
+  if(!selectedShipment||!selectedShipment.toLat||!selectedShipment.toLng){
+    alert("Destination indisponible");
+    return;
+  }
+  if(!lastLat||!lastLng){
+    alert("GPS indisponible");
+    return;
+  }
+
+  const url=`https://www.google.com/maps/dir/?api=1&origin=${lastLat},${lastLng}&destination=${selectedShipment.toLat},${selectedShipment.toLng}`;
+  window.open(url,"_blank");
 };
 
-</script>
+/* =========================
+   BUTTON VISIBILITY
+========================= */
+function refreshButtons(status){
+  const main=document.getElementById("mainActionBtn");
+  const nav=document.getElementById("navBtn");
+  const sec=document.getElementById("deliverySecurity");
 
+  main.style.display="block";
+
+  if(status==="assigned"){
+    main.innerText="Confirmer prise en charge";
+    nav.style.display="none";
+    sec.style.display="none";
+  }
+  else if(status==="picked_up"){
+    main.innerText="Démarrer livraison";
+    nav.style.display="block";
+    sec.style.display="none";
+  }
+  else if(status==="in_transit"){
+    main.innerText="Confirmer livraison";
+    nav.style.display="block";
+    sec.style.display="block";
+  }
+  else{
+    main.style.display="none";
+    nav.style.display="none";
+    sec.style.display="none";
+  }
+}
+
+</script>
 </body>
 </html>
