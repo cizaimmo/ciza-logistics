@@ -7,6 +7,9 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  
 <style>
 :root{
 --gold:#D4AF37;
@@ -428,6 +431,10 @@ font-size:11px;background:#000;
 </div>
 </div>
 
+<div style="margin-top:16px;">
+<div id="routeMap" style="height:260px;border-radius:18px;border:1px solid rgba(212,175,55,0.25);"></div>
+</div>
+  
 <div class="small-note">Si province = <b>Bujumbura</b>, la liste de <b>38 quartiers</b> s’affiche (M d’abord, puis A-Z). Sinon : “—”.</div>
 </div>
 
@@ -1179,6 +1186,97 @@ isSubmitting=false;
 }
 });
 
+/* ================= SMART ROUTE MAP ================= */
+
+let pickupLat = null;
+let pickupLng = null;
+let destLat = null;
+let destLng = null;
+
+const routeMap = L.map('routeMap').setView([-3.3822, 29.3644], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+}).addTo(routeMap);
+
+let pickupMarker = null;
+let destMarker = null;
+let routeLine = null;
+
+/* ----------- GEOCODING ----------- */
+async function geocodeAddress(address){
+    try{
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if(data && data.length > 0){
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
+    }catch(e){}
+    return null;
+}
+
+/* ----------- ROUTE UPDATE ----------- */
+async function updateRouteMap(){
+
+    if(!originProvince.value || !destProvince.value) return;
+
+    const countryLabel = country.value === "RW" ? "Rwanda" : "Burundi";
+
+    const originText = `
+        ${originQuartier.value || ""}
+        ${originProvince.value}
+        ${countryLabel}
+    `;
+
+    const destText = `
+        ${destQuartier.value || ""}
+        ${destProvince.value}
+        ${countryLabel}
+    `;
+
+    const originCoords = await geocodeAddress(originText);
+    const destCoords   = await geocodeAddress(destText);
+
+    if(!originCoords || !destCoords) return;
+
+    pickupLat = originCoords.lat;
+    pickupLng = originCoords.lng;
+    destLat   = destCoords.lat;
+    destLng   = destCoords.lng;
+
+    if(pickupMarker) routeMap.removeLayer(pickupMarker);
+    if(destMarker)   routeMap.removeLayer(destMarker);
+    if(routeLine)    routeMap.removeLayer(routeLine);
+
+    pickupMarker = L.marker([pickupLat, pickupLng]).addTo(routeMap);
+    destMarker   = L.marker([destLat, destLng]).addTo(routeMap);
+
+    routeLine = L.polyline(
+        [
+            [pickupLat, pickupLng],
+            [destLat, destLng]
+        ],
+        {
+            color: "#D4AF37",
+            weight: 4
+        }
+    ).addTo(routeMap);
+
+    routeMap.fitBounds(routeLine.getBounds(), {
+        padding: [40, 40]
+    });
+}
+
+/* ----------- EVENTS ----------- */
+originProvince.addEventListener("change", updateRouteMap);
+originQuartier.addEventListener("change", updateRouteMap);
+destProvince.addEventListener("change", updateRouteMap);
+destQuartier.addEventListener("change", updateRouteMap);
 /* INIT (page) */
 applyPhonePrefix(country.value);
 loadProvinces();
