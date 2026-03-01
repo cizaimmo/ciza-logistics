@@ -304,11 +304,26 @@ canvas{
   <div id="shipmentDetails">Aucun colis sélectionné</div>
   <div id="map"></div>
 
-  <div class="actionsRow">
-    <button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
-    <button class="btn dark full" id="navBtn" style="display:none;">🧭 Navigation</button>
-    <button class="btn red full" id="archiveBtn" style="display:none;">📦 Archiver</button>
-  </div>
+<div class="actionsRow">
+
+  <button class="btn gold full" id="mainActionBtn" style="display:none;">
+    🚀 Action principale
+  </button>
+
+  <button class="btn dark full" id="navBtn" style="display:none;">
+    🧭 Navigation
+  </button>
+
+  <button class="btn red full" id="archiveBtn" style="display:none;">
+    📦 Archiver
+  </button>
+
+  <button class="btn full" id="issueBtn"
+    style="display:none;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;font-weight:900;">
+    ⚠️ Signaler un problème
+  </button>
+
+</div>
 </div>
 
 <!-- FINALISATION -->
@@ -531,7 +546,7 @@ async function selectShipmentInternal(id){
   archiveBtn.style.display = "none";
   securityPanel.style.display = "none";
   mainBtn.style.display = "none";
-
+document.getElementById("issueBtn").style.display = "none";
   /* =========================
      HEADER
   ========================= */
@@ -635,19 +650,22 @@ document.getElementById("shipmentDetails").innerHTML = `
     mainBtn.textContent = "🚚 Démarrer le transit";
   }
 
-  if(st==="in_transit"){
-    mainBtn.style.display = "block";
-    mainBtn.textContent = "✅ Finaliser livraison";
+if(st==="in_transit"){
 
-    navBtn.style.display = "block";
-    navBtn.classList.add("nav-ready");
+  mainBtn.style.display = "block";
+  mainBtn.textContent = "✅ Finaliser livraison";
 
-    securityPanel.style.display = "block";
+  navBtn.style.display = "block";
+  navBtn.classList.add("nav-ready");
 
-    // 🔥 Calcul route automatique
-    calculateRoute_OSRM();
-  }
+  securityPanel.style.display = "block";
 
+  // 🔥 Nouveau bouton problème
+  document.getElementById("issueBtn").style.display = "block";
+
+  calculateRoute_OSRM();
+}
+   
   if(st==="delivered"){
     archiveBtn.style.display = "block";
   }
