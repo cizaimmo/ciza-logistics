@@ -1222,29 +1222,36 @@ window.showCizaModal = function(message){
   if(!modal || !msg) return;
 
   msg.innerText = message;
+
+  // Afficher + rendre cliquable
   modal.style.display = "flex";
   modal.style.pointerEvents = "auto";
+
+  // IMPORTANT: sinon overlay invisible bloque tout
+  modal.style.opacity = "1";
 };
 
 window.closeCizaModal = function(){
   const modal = document.getElementById("cizaModal");
   if(!modal) return;
 
-  modal.style.display = "none";
+  // Cacher + rendre non cliquable
+  modal.style.opacity = "0";
   modal.style.pointerEvents = "none";
+  modal.style.display = "none";
 };
-   
+
 /* =========================
    GLOBAL ALERT OVERRIDE
 ========================= */
 
 window.alert = function(message){
-  showCizaModal(message);
-};  
-   
+  window.showCizaModal(message);
+};
+
 </script>
 
- <!-- =========================
+<!-- =========================
      CIZA GLOBAL ALERT MODAL
 ========================= -->
 <div id="cizaModal" style="
@@ -1258,7 +1265,7 @@ display:none;
 pointer-events:none;
 opacity:0;
 ">
-   
+
   <div style="
   background:linear-gradient(145deg,#111,#1b1b1b);
   padding:28px;
@@ -1282,7 +1289,7 @@ opacity:0;
     style="margin-bottom:22px;font-size:15px;line-height:1.5;">
     </div>
 
-    <button onclick="closeCizaModal()"
+    <button type="button" onclick="closeCizaModal()"
     style="
     background:#D4AF37;
     color:#000;
@@ -1295,7 +1302,7 @@ opacity:0;
     </button>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>
