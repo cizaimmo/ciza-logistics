@@ -457,41 +457,67 @@ async function selectShipmentInternal(id){
      DÉTAILS CHAUFFEUR COMPLETS
   ========================= */
 
-  document.getElementById("shipmentDetails").innerHTML = `
-<div style="background:#16181d;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);color:#f2f2f2;">
-  <div style="font-weight:900;font-size:18px;color:var(--gold);letter-spacing:0.5px;">
+ document.getElementById("shipmentDetails").innerHTML = `
+<div style="background:#16181d;border-radius:22px;padding:22px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+
+  <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:20px;">
     📦 ${d.trackingCode || id}
   </div>
 
-  <div style="margin-top:10px;opacity:0.95;line-height:1.55;">
-    🚚 <b style="color:#fff;">Chauffeur :</b> ${d.driverName || "Non assigné"}<br>
-    ☎️ <b style="color:#fff;">Téléphone chauffeur :</b> ${d.driverPhone || "—"}<br>
-    🚗 <b style="color:#fff;">Plaque :</b> ${d.driverPlate || "—"}<br><br>
+  <!-- 🚚 Chauffeur -->
+  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
+    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+      🚚 Chauffeur
+    </div>
+    <div>👤 ${d.driverName || "Non assigné"}</div>
+    <div>📞 ${d.driverPhone || "—"}</div>
+    <div>🚗 ${d.driverPlate || "—"}</div>
+  </div>
 
-    🏠 <b style="color:#fff;">Départ :</b><br>
-    <span style="color:#d1d5db;">
+  <!-- 🏠 Départ -->
+  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
+    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+      🏠 Départ
+    </div>
+    <div>
       ${d.fromProvince || "—"}
       ${d.fromCommune ? " / " + d.fromCommune : ""}
       ${d.fromQuartier ? " / " + d.fromQuartier : ""}
-      ${d.fromLandmark ? " — " + d.fromLandmark : ""}
-    </span>
-    <br><br>
+    </div>
+    <div style="opacity:0.7;margin-top:6px;">
+      📍 ${d.fromLandmark || "—"}
+    </div>
+  </div>
 
-    🎯 <b style="color:#fff;">Destination :</b><br>
-    <span style="color:#d1d5db;">
+  <!-- 🎯 Destination -->
+  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
+    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+      🎯 Destination
+    </div>
+    <div>
       ${d.toProvince || "—"}
       ${d.toCommune ? " / " + d.toCommune : ""}
       ${d.toQuartier ? " / " + d.toQuartier : ""}
-      ${d.toLandmark ? " — " + d.toLandmark : ""}
-    </span>
-    <br><br>
-
-    👤 <b style="color:#fff;">Contact :</b> ${d.receiverName || d.senderName || "—"}<br>
-    📞 <b style="color:#fff;">Téléphone :</b> ${d.receiverPhone || d.senderPhone || "—"}<br>
-    📝 <b style="color:#fff;">Notes admin :</b> ${d.adminNote || "—"}
+    </div>
+    <div style="opacity:0.7;margin-top:6px;">
+      📍 ${d.toLandmark || "—"}
+    </div>
   </div>
+
+  <!-- 👤 Contact -->
+  <div style="background:#1e222b;padding:16px;border-radius:14px;">
+    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+      👤 Contact
+    </div>
+    <div>👤 ${d.receiverName || d.senderName || "—"}</div>
+    <div>📞 ${d.receiverPhone || d.senderPhone || "—"}</div>
+    <div style="margin-top:8px;opacity:0.6;">
+      📝 ${d.adminNote || "—"}
+    </div>
+  </div>
+
 </div>
-`;
+`; 
   /* =========================
      LOGIQUE ÉTAPES MÉTIER
   ========================= */
