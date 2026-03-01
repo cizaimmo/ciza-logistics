@@ -156,6 +156,26 @@ canvas{
 </style>
 </head>
 
+<body>
+
+<body>
+
+<!-- MENU OVERLAY -->
+<div id="sideMenu" style="
+position:fixed;
+top:0;
+right:-280px;
+width:280px;
+height:100%;
+background:#111;
+box-shadow:-5px 0 20px rgba(0,0,0,0.6);
+transition:0.3s;
+z-index:9999;
+padding:20px;
+display:flex;
+flex-direction:column;
+">
+
   <div style="font-weight:900;color:#D4AF37;margin-bottom:25px;font-size:18px;">
     🚚 Menu Chauffeur
   </div>
@@ -181,24 +201,8 @@ canvas{
   </button>
 
 </div>
-  
-<body>
 
-<!-- MENU OVERLAY -->
-<div id="sideMenu" style="
-position:fixed;
-top:0;
-right:-280px;
-width:280px;
-height:100%;
-background:#111;
-box-shadow:-5px 0 20px rgba(0,0,0,0.6);
-transition:0.3s;
-z-index:9999;
-padding:20px;
-display:flex;
-flex-direction:column;
-">
+<div class="header">
    
 <div class="header">
   <div>
@@ -637,7 +641,7 @@ window.restoreShipment = async function(id){
   });
 };
 
-   
+   /* =========================
    DISTANCE CALC
 ========================= */
 
