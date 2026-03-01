@@ -1219,20 +1219,28 @@ function showCizaModal(message){
   const modal = document.getElementById("cizaModal");
   const msg = document.getElementById("cizaModalMessage");
 
-  if(!modal || !msg){
-    console.error("Ciza modal not found.");
-    return;
-  }
+  if(!modal || !msg) return;
 
   msg.innerText = message;
+
+  // Activer modal
   modal.style.display = "flex";
+  modal.style.pointerEvents = "auto";
+  modal.style.opacity = "1";
 }
 
 function closeCizaModal(){
   const modal = document.getElementById("cizaModal");
-  if(modal){
+  if(!modal) return;
+
+  // Désactiver interactions immédiatement
+  modal.style.pointerEvents = "none";
+  modal.style.opacity = "0";
+
+  // Retirer du flux après transition
+  setTimeout(()=>{
     modal.style.display = "none";
-  }
+  }, 150);
 }
 
 /* =========================
@@ -1259,7 +1267,7 @@ display:none;
 pointer-events:none;
 opacity:0;
 ">
-
+   
   <div style="
   background:linear-gradient(145deg,#111,#1b1b1b);
   padding:28px;
