@@ -36,18 +36,20 @@ body{
   background:var(--bg);
   color:#eaeaea;
 }
+
 .header{
-  background:rgba(0,0,0,0.96);
-  color:#fff;
-  padding:14px;
+  background:linear-gradient(90deg,#000,#111 60%,#000);
+  border-bottom:1px solid rgba(212,175,55,0.2);
+  box-shadow:0 6px 20px rgba(0,0,0,0.6);
+  padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   position:sticky;
   top:0;
   z-index:10;
-}
-
+}   
+   
 .brand{color:var(--gold);font-weight:900;font-size:16px;}
 .driverName{font-size:12px;color:#e5e7eb;margin-top:4px;}
 
@@ -75,20 +77,21 @@ body{
 }
 
 .container{width:95%;max-width:1100px;margin:16px auto 80px auto;}
-
+   
 .card{
-  background:var(--card);
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:15px;
-  box-shadow:0 6px 25px rgba(0,0,0,0.5);
+  background:linear-gradient(145deg,#171a22,#1f2430);
+  border-radius:22px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.05);
-  transition:0.2s ease;
+  transition:0.25s ease;
 }
 
 .card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 10px 35px rgba(0,0,0,0.7);
+  transform:translateY(-4px);
 }
 .section-title{
   font-weight:900;
@@ -113,7 +116,18 @@ body{
 }
 
 .btn.full{width:100%;}
-.btn.dark{background:#111;color:#fff;}
+.btn.dark{
+  background:linear-gradient(135deg,#000,#1a1a1a);
+  color:#fff;
+  border:1px solid rgba(212,175,55,0.2);
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  transition:0.2s ease;
+}
+
+.btn.dark:hover{
+  transform:scale(1.03);
+  border-color:var(--gold);
+}
 .btn.gold{background:var(--gold);color:#000;}
 .btn.red{background:var(--bad);color:#fff;}
 .btn.restore{background:#2563eb;color:#fff;}
@@ -188,6 +202,19 @@ canvas{
   display:block;
 }
 
+.shipment-card{
+  padding:16px;
+  margin-top:14px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(212,175,55,0.15);
+}
+
+.shipment-card b{
+  font-size:18px;
+  letter-spacing:1px;
+  color:#fff;
+}
    
 </style>
    
