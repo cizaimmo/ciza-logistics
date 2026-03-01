@@ -1210,7 +1210,92 @@ document.getElementById("deleteAccountBtn").onclick = async()=>{
     alert("Reconnectez-vous pour supprimer le compte.");
   }
 };
-  
+
+ /* =========================
+   CIZA MODAL FUNCTIONS
+========================= */
+
+function showCizaModal(message){
+  const modal = document.getElementById("cizaModal");
+  const msg = document.getElementById("cizaModalMessage");
+
+  if(!modal || !msg){
+    console.error("Ciza modal not found.");
+    return;
+  }
+
+  msg.innerText = message;
+  modal.style.display = "flex";
+}
+
+function closeCizaModal(){
+  const modal = document.getElementById("cizaModal");
+  if(modal){
+    modal.style.display = "none";
+  }
+}
+
+/* =========================
+   GLOBAL ALERT OVERRIDE
+========================= */
+
+window.alert = function(message){
+  showCizaModal(message);
+};  
+   
 </script>
+
+ <!-- =========================
+     CIZA GLOBAL ALERT MODAL
+========================= -->
+<div id="cizaModal" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+backdrop-filter:blur(6px);
+z-index:9999;
+align-items:center;
+justify-content:center;
+">
+
+  <div style="
+  background:linear-gradient(145deg,#111,#1b1b1b);
+  padding:28px;
+  border-radius:20px;
+  width:85%;
+  max-width:400px;
+  text-align:center;
+  border:1px solid rgba(212,175,55,0.3);
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+  ">
+
+    <div style="
+    font-weight:800;
+    font-size:18px;
+    margin-bottom:12px;
+    color:#D4AF37;">
+      🚚 Ciza Logistics
+    </div>
+
+    <div id="cizaModalMessage"
+    style="margin-bottom:22px;font-size:15px;line-height:1.5;">
+    </div>
+
+    <button onclick="closeCizaModal()"
+    style="
+    background:#D4AF37;
+    color:#000;
+    font-weight:700;
+    padding:10px 20px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;">
+      OK
+    </button>
+
+  </div>
+</div>  
+
 </body>
 </html>
