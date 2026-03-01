@@ -1218,11 +1218,10 @@ document.getElementById("deleteAccountBtn").onclick = async()=>{
 window.showCizaModal = function(message){
   const modal = document.getElementById("cizaModal");
   const msg = document.getElementById("cizaModalMessage");
+
   if(!modal || !msg) return;
 
   msg.innerText = message;
-
-  // afficher
   modal.style.display = "flex";
   modal.style.pointerEvents = "auto";
 };
@@ -1231,20 +1230,10 @@ window.closeCizaModal = function(){
   const modal = document.getElementById("cizaModal");
   if(!modal) return;
 
-  // cacher
   modal.style.display = "none";
   modal.style.pointerEvents = "none";
 };
-
-// Bonus: cliquer sur le fond ferme aussi
-window.addEventListener("DOMContentLoaded", ()=>{
-  const modal = document.getElementById("cizaModal");
-  if(!modal) return;
-  modal.addEventListener("click", (e)=>{
-    if(e.target === modal) window.closeCizaModal();
-  });
-});
-
+   
 /* =========================
    GLOBAL ALERT OVERRIDE
 ========================= */
