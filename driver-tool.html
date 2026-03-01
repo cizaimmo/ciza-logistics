@@ -453,9 +453,17 @@ async function selectShipmentInternal(id){
     <b>${d.trackingCode||id}</b><br>
     📍 ${d.fromCity||""} → ${d.toCity||""}<br><br>
 
-    🏠 <b>Adresse départ :</b> ${d.fromAddress||d.pickupAddress||"—"}<br>
-    🎯 <b>Adresse destination :</b> ${d.destinationAddress||d.toAddress||"—"}<br>
-    📌 <b>Repère :</b> ${d.repereDestination||d.destinationNote||"—"}<br><br>
+🏠 <b>Adresse départ :</b>
+${d.fromProvince||""}
+${d.fromCommune? " / "+d.fromCommune : ""}
+${d.fromQuartier? " / "+d.fromQuartier : ""}<br>
+📌 ${d.fromLandmark||"—"}<br>
+
+🎯 <b>Adresse destination :</b>
+${d.toProvince||""}
+${d.toCommune? " / "+d.toCommune : ""}
+${d.toQuartier? " / "+d.toQuartier : ""}<br>
+📌 ${d.toLandmark||"—"}<br><br>
 
     👤 <b>Contact :</b> ${d.receiverName||d.senderName||"—"}<br>
     📞 <b>Téléphone :</b> ${d.receiverPhone||d.senderPhone||"—"}<br>
