@@ -19,21 +19,23 @@
 
 <style>
 :root{
-  --gold:#D4AF37;
-  --black:#000;
-  --bg:#f3f4f6;
-  --card:#fff;
-  --muted:#6b7280;
-  --ok:#16a34a;
-  --warn:#f59e0b;
-  --bad:#dc2626;
-  --blue:#2563eb;
-  --purple:#7c3aed;
+   --bg:#0f1115;
+   --card:#1a1d24;
+   --muted:#9ca3af;
+   --ok:#22c55e;
+   --warn:#facc15;
+   --bad:#ef4444;
+   --blue:#3b82f6;
+   --purple:#8b5cf6;
+   --gold:#D4AF37;
 }
-
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
-
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  background:var(--bg);
+  color:#eaeaea;
+}
 .header{
   background:rgba(0,0,0,0.96);
   color:#fff;
@@ -76,12 +78,18 @@ body{margin:0;font-family:Inter;background:var(--bg);color:#111;}
 
 .card{
   background:var(--card);
-  border-radius:18px;
-  padding:16px;
-  margin:14px 0;
-  box-shadow:0 12px 26px rgba(0,0,0,0.06);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 6px 25px rgba(0,0,0,0.5);
+  border:1px solid rgba(255,255,255,0.05);
+  transition:0.2s ease;
 }
 
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 35px rgba(0,0,0,0.7);
+}
 .section-title{
   font-weight:900;
   margin-bottom:10px;
@@ -450,26 +458,40 @@ async function selectShipmentInternal(id){
   ========================= */
 
   document.getElementById("shipmentDetails").innerHTML = `
-    <b>${d.trackingCode||id}</b><br>
-    📍 ${d.fromCity||""} → ${d.toCity||""}<br><br>
+<div style="background:#16181d;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);color:#f2f2f2;">
+  <div style="font-weight:900;font-size:18px;color:var(--gold);letter-spacing:0.5px;">
+    📦 ${d.trackingCode || id}
+  </div>
 
-🏠 <b>Adresse départ :</b>
-${d.fromProvince||""}
-${d.fromCommune? " / "+d.fromCommune : ""}
-${d.fromQuartier? " / "+d.fromQuartier : ""}<br>
-📌 ${d.fromLandmark||"—"}<br>
+  <div style="margin-top:10px;opacity:0.95;line-height:1.55;">
+    🚚 <b style="color:#fff;">Chauffeur :</b> ${d.driverName || "Non assigné"}<br>
+    ☎️ <b style="color:#fff;">Téléphone chauffeur :</b> ${d.driverPhone || "—"}<br>
+    🚗 <b style="color:#fff;">Plaque :</b> ${d.driverPlate || "—"}<br><br>
 
-🎯 <b>Adresse destination :</b>
-${d.toProvince||""}
-${d.toCommune? " / "+d.toCommune : ""}
-${d.toQuartier? " / "+d.toQuartier : ""}<br>
-📌 ${d.toLandmark||"—"}<br><br>
+    🏠 <b style="color:#fff;">Départ :</b><br>
+    <span style="color:#d1d5db;">
+      ${d.fromProvince || "—"}
+      ${d.fromCommune ? " / " + d.fromCommune : ""}
+      ${d.fromQuartier ? " / " + d.fromQuartier : ""}
+      ${d.fromLandmark ? " — " + d.fromLandmark : ""}
+    </span>
+    <br><br>
 
-    👤 <b>Contact :</b> ${d.receiverName||d.senderName||"—"}<br>
-    📞 <b>Téléphone :</b> ${d.receiverPhone||d.senderPhone||"—"}<br>
-    📝 <b>Notes admin :</b> ${d.adminNote||"—"}
-  `;
+    🎯 <b style="color:#fff;">Destination :</b><br>
+    <span style="color:#d1d5db;">
+      ${d.toProvince || "—"}
+      ${d.toCommune ? " / " + d.toCommune : ""}
+      ${d.toQuartier ? " / " + d.toQuartier : ""}
+      ${d.toLandmark ? " — " + d.toLandmark : ""}
+    </span>
+    <br><br>
 
+    👤 <b style="color:#fff;">Contact :</b> ${d.receiverName || d.senderName || "—"}<br>
+    📞 <b style="color:#fff;">Téléphone :</b> ${d.receiverPhone || d.senderPhone || "—"}<br>
+    📝 <b style="color:#fff;">Notes admin :</b> ${d.adminNote || "—"}
+  </div>
+</div>
+`;
   /* =========================
      LOGIQUE ÉTAPES MÉTIER
   ========================= */
