@@ -1474,8 +1474,11 @@ if(isProblemLocked(s)){
 
         ${s.status==="assigned" ? `<button class="primary" type="button" data-transit="${safe(s.id)}">Marquer en transit</button>` : ""}
 
-        ${s.status==="in_transit" ? `<button class="primary" type="button" data-delivered="${safe(s.id)}">Confirmer livraison</button>` : ""}
-
+  
+${s.status==="in_transit" && !isProblemLocked(s) ?
+`<button class="primary"
+type="button" data-delivered="${safe(s.id)}">Confirmer livraison</button>` : ""}
+    
         <button class="ghost" type="button" data-open-driver="${safe(s.assignedDriverId || "")}" ${s.assignedDriverId ? "" : "disabled"}>Dossier chauffeur</button>
 
         ${s.status==="delivered" ? `<button class="ghost" type="button" data-proof="${safe(s.id)}">📎 Preuve livraison</button>` : ""}
