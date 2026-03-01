@@ -323,6 +323,33 @@ canvas{
     ⚠️ Signaler un problème
   </button>
 
+<!-- PROBLEM REPORT -->
+<div id="problemPanel" style="display:none;margin-top:12px;padding:16px;border-radius:16px;background:#16181d;border:1px solid rgba(212,175,55,0.25);">
+
+  <div style="font-weight:800;color:#D4AF37;margin-bottom:10px;">
+    ⚠️ Signaler un problème
+  </div>
+
+  <select id="problemType" style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px;">
+    <option value="">-- Sélectionner un motif --</option>
+    <option value="client_absent">Client absent</option>
+    <option value="phone_unreachable">Téléphone injoignable</option>
+    <option value="wrong_address">Adresse incorrecte</option>
+    <option value="refused">Refus de réception</option>
+    <option value="damaged">Colis endommagé</option>
+    <option value="other">Autre</option>
+  </select>
+
+  <textarea id="problemNote"
+    placeholder="Commentaire (optionnel)"
+    style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px;"></textarea>
+
+  <button class="btn gold full" id="submitProblemBtn">
+    Envoyer le signalement
+  </button>
+
+</div>
+   
 </div>
 </div>
 
@@ -1045,6 +1072,51 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("./sw.js").catch(()=>{});
 }
 
+
+/* =========================
+   PROBLEM BUTTON
+========================= */
+
+const issueBtn = document.getElementById("issueBtn");
+const problemPanel = document.getElementById("problemPanel");
+
+issueBtn.onclick = function(){
+  problemPanel.style.display =
+    problemPanel.style.display === "block" ? "none" : "block";
+};   
+
+document.getElementById("submitProblemBtn").onclick = async function(){
+
+  if(!selectedShipmentId){
+    alert("Aucun colis sélectionné.");
+    return;
+  }
+
+  const type = document.getElementById("problemType").value;
+  const note = document.getElementById("problemNote").value.trim();
+
+  if(!type){
+    alert("Veuillez sélectionner un motif.");
+    return;
+  }
+
+  await updateDoc(doc(db,"shipments",selectedShipmentId),{
+    problemReport:{
+      type:type,
+      note:note,
+      createdAt:serverTimestamp(),
+      driverId:currentUser.uid,
+      status:"open"
+    }
+  });
+
+  alert("Problème signalé ✅");
+
+  document.getElementById("problemType").value="";
+  document.getElementById("problemNote").value="";
+  problemPanel.style.display="none";
+};
+   
 /* =========================
    SIDE MENU
 ========================= */
