@@ -153,11 +153,37 @@ canvas{
   touch-action:none;
   background:#fff;
 }
+
+
+#sideMenu{
+  right:-280px;
+  transition:0.3s ease;
+}
+
+#sideMenu.open{
+  right:0;
+}
+
+#menuOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(3px);
+  display:none;
+  z-index:9998;
+}
+
+#menuOverlay.show{
+  display:block;
+}
+   
 </style>
    
 </head>
 
 <body>
+
+<div id="menuOverlay"></div>   
 
 <!-- MENU OVERLAY -->
 <div id="sideMenu" style="
@@ -983,16 +1009,20 @@ if("serviceWorker" in navigator){
 const sideMenu = document.getElementById("sideMenu");
 const menuBtn = document.getElementById("menuBtn");
 
+const overlay = document.getElementById("menuOverlay");
+
 menuBtn.onclick = function(){
-  if(sideMenu.style.right === "0px"){
-    sideMenu.style.right = "-280px";
-  }else{
-    sideMenu.style.right = "0px";
-  }
+  sideMenu.classList.toggle("open");
+  overlay.classList.toggle("show");
+};
+
+overlay.onclick = function(){
+  closeMenu();
 };
 
 function closeMenu(){
-  sideMenu.style.right = "-280px";
+  sideMenu.classList.remove("open");
+  overlay.classList.remove("show");
 }
 
 window.openArchived = function(){
