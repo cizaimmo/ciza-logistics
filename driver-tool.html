@@ -679,16 +679,29 @@ document.getElementById("shipmentDetails").innerHTML = `
 
 if(st==="in_transit"){
 
+  // ✅ Bouton principal
   mainBtn.style.display = "block";
   mainBtn.textContent = "✅ Finaliser livraison";
 
+  // 🧭 Navigation
   navBtn.style.display = "block";
   navBtn.classList.add("nav-ready");
 
+  // 🔐 Sécurité (OTP + signature)
   securityPanel.style.display = "block";
 
-  // 🔥 Nouveau bouton problème
-  document.getElementById("issueBtn").style.display = "block";
+  // 🔴 Bouton signaler problème
+  const issueBtn = document.getElementById("issueBtn");
+  if(issueBtn){
+    issueBtn.style.display = "block";
+  }
+
+  // 🟡 Badge premium
+  const badge = document.getElementById("statusBadge");
+  if(badge){
+    badge.textContent = "🟡 En transit";
+    badge.style.display = "inline-block";
+  }
 
   calculateRoute_OSRM();
 }
