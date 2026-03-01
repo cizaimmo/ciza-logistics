@@ -478,7 +478,7 @@ function listenShipmentsMulti(){
     where("assignedDriverId","==",currentUser.uid)
   );
 
-  onSnapshot(q,(snap)=>{
+  onSnapshot(q, async (snap)=>{
 
     const assigned = [];
     const transit = [];
@@ -526,7 +526,7 @@ if(st === "delivered" && d.deliveredAt?.toDate){
     renderArchived(archived);
 
     document.getElementById("deliveryCounter").textContent = deliveredToday.length;
-    document.getElementById("countArchived").textContent = archived.length;
+    
   });
 }
 
