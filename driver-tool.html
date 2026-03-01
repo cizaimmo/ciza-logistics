@@ -478,18 +478,36 @@ function listenShipmentsMulti(){
     const deliveredToday = [];
     const archived = [];
 
-    snap.forEach(docSnap=>{
+ for(const docSnap of snap.docs){
 
       const d = docSnap.data() || {};
       d.id = docSnap.id;
 
-      if(d.archivedByDriver){
-        archived.push(d);
-        return;
-      }
-
+  if(d.archivedByDriver || d.autoArchived){
+  archived.push(d);
+  return;
+}
       const st = (d.status||"").toString();
+// ==========================
+// AUTO ARCHIVE AFTER 7 DAYS
+// ==========================
+if(st === "delivered" && d.deliveredAt?.toDate){
 
+  const deliveredDate = d.deliveredAt.toDate();
+  const now = new Date();
+  const diffDays = (now - deliveredDate) / (1000 * 60 * 60 * 24);
+
+  if(diffDays > 7 && !d.autoArchived){
+
+    await updateDoc(doc(db,"shipments",d.id),{
+  autoArchived:true,
+  autoArchivedAt:serverTimestamp(),
+  archiveReason:"auto_expired"
+});
+
+    return; // ne pas afficher
+  }
+}
       if(st==="assigned" || st==="picked_up") assigned.push(d);
       else if(st==="in_transit") transit.push(d);
       else if(st==="delivered") deliveredToday.push(d);
