@@ -1477,7 +1477,16 @@ if(isProblemLocked(s)){
   
 ${s.status==="in_transit" && !isProblemLocked(s) ?
 `<button class="primary"
-type="button" data-delivered="${safe(s.id)}">Confirmer livraison</button>` : ""}
+type="button" data-delivered="${safe(s.id)}">
+Confirmer livraison
+</button>` : ""}
+
+${isProblemLocked(s) ?
+`<button class="warning"
+type="button"
+data-resolve="${safe(s.id)}">
+Traiter signalement
+</button>` : ""}
     
         <button class="ghost" type="button" data-open-driver="${safe(s.assignedDriverId || "")}" ${s.assignedDriverId ? "" : "disabled"}>Dossier chauffeur</button>
 
@@ -2733,7 +2742,30 @@ if('serviceWorker' in navigator){
 }
 
 /* ================= DEFAULT VIEW ================= */
+
 showView("colis");
+
+
+// ==============================
+// ADMIN GLOBAL CLICK HANDLER
+// ==============================
+
+document.addEventListener("click", async (e)=>{
+
+  const resolveBtn = e.target.closest("[data-resolve]");
+  if(resolveBtn){
+    const id = resolveBtn.getAttribute("data-resolve");
+
+    await updateDoc(doc(db,"shipments",id),{
+      problemReported:false,
+      problemStatus:"resolved"
+    });
+
+    renderShipments();
+    return;
+  }
+
+});  
 </script>
 
 </body>
