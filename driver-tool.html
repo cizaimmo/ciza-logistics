@@ -582,7 +582,9 @@ async function selectShipmentInternal(id){
 
   const d = selectedShipment;
   const st = (d.status||"").toString();
-
+const isProblem =
+  d.problemReported === true &&
+  (d.problemStatus||"") === "pending";
   const navBtn = document.getElementById("navBtn");
   const archiveBtn = document.getElementById("archiveBtn");
   const securityPanel = document.getElementById("deliverySecurity");
@@ -702,7 +704,11 @@ document.getElementById("shipmentDetails").innerHTML = `
   }
 
 if(st==="in_transit"){
-
+if(isProblem){
+  alert("⚠️ Livraison bloquée : colis signalé.");
+  mainBtn.style.display = "none";
+  return;
+}
   // ✅ Bouton principal
   mainBtn.style.display = "block";
   mainBtn.textContent = "✅ Finaliser livraison";
@@ -1248,6 +1254,40 @@ window.closeCizaModal = function(){
 window.alert = function(message){
   window.showCizaModal(message);
 };
+
+/* =========================
+   PROBLEM REPORT SUBMIT
+========================= */
+
+window.submitProblemReport = async function(){
+
+  if(!selectedShipmentId){
+    alert("Aucun colis sélectionné.");
+    return;
+  }
+
+  const type = document.getElementById("problemType").value;
+  const note = document.getElementById("problemNote").value.trim();
+
+  if(!type){
+    alert("Veuillez sélectionner un motif.");
+    return;
+  }
+
+  await updateDoc(doc(db,"shipments",selectedShipmentId),{
+    problemReported:true,
+    problemStatus:"pending",
+    problemType:type,
+    problemNote:note,
+    problemReportedAt:serverTimestamp(),
+    problemReportedBy:currentUser.uid
+  });
+
+  alert("Colis signalé avec succès ✅");
+};
+   
+document.getElementById("submitProblemBtn")
+.addEventListener("click", submitProblemReport);   
 
 </script>
 
