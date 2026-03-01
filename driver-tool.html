@@ -906,7 +906,11 @@ document.getElementById("mainActionBtn").onclick = async function(){
 
   /* in_transit → delivered */
   if(st==="in_transit"){
-
+  // 🚨 BLOQUER SI COLIS SIGNALÉ
+  if(data.problemReport){
+    alert("Ce colis a été signalé. Livraison bloquée.");
+    return;
+  }
     if(!navigator.onLine){
       alert("Connexion requise.");
       return;
