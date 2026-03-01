@@ -539,14 +539,29 @@ function renderArchived(list){
 
 function renderShipmentCard(d){
 
+  const isProblem = !!d.problemReport;
+
   return `
-  <div class="shipment-card">
-    <b>${d.trackingCode||d.id}</b><br>
-    📍 ${d.fromCity||""} → ${d.toCity||""}
-    <div class="actionsRow">
-      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir détails</button>
+    <div class="shipment-card"
+         style="${isProblem ? 'background:#2a1414;border:2px solid #ff4d4d;' : ''}">
+      
+      <b>${d.trackingCode || d.id}</b><br>
+      📍 ${d.fromCity || ""} → ${d.toCity || ""}
+
+      ${isProblem ? `
+        <div style="color:#ff4d4d;font-weight:700;margin-top:6px;">
+          ⚠ Colis signalé
+        </div>
+      ` : ""}
+
+      <div class="actionsRow">
+        <button class="btn dark"
+        onclick="selectShipment('${d.id}')">
+          Voir détails
+        </button>
+      </div>
+
     </div>
-  </div>
   `;
 }
 /* =========================
