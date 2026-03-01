@@ -411,9 +411,13 @@ font-size:11px;background:#000;
 <label for="originProvince">Province / Ville</label>
 <select id="originProvince"></select>
 
+<label for="originCommune" style="margin-top:10px;">Commune</label>
+<select id="originCommune">
+  <option value="">Sélectionner commune</option>
+</select>
+
 <label for="originQuartier" style="margin-top:10px;">Quartier</label>
 <select id="originQuartier"><option value="">—</option></select>
-
 <label for="originLandmark" style="margin-top:10px;">Repère</label>
 <input id="originLandmark" placeholder="Ex: station, école, portail...">
 </div>
@@ -616,6 +620,9 @@ const sensSensitive=document.getElementById("sensSensitive");
 
 const originProvince=document.getElementById("originProvince");
 const destProvince=document.getElementById("destProvince");
+const originCommune = document.getElementById("originCommune");
+const destCommune = document.getElementById("destCommune");
+  
 const originQuartier=document.getElementById("originQuartier");
 const destQuartier=document.getElementById("destQuartier");
 const originLandmark=document.getElementById("originLandmark");
@@ -735,6 +742,15 @@ receiverPhone.addEventListener("input",()=>enforceNumericPhone(receiverPhone));
 
 /* ================= PROVINCES + 38 QUARTIERS ================= */
 const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
+
+const communesBI = {
+  "Bujumbura": ["Ntahangwa","Mukaza","Muha"],
+  "Gitega": ["Gitega","Makebuko","Mutaho"],
+  "Ngozi": ["Ngozi","Gashikanwa","Mwumba"],
+  "Rumonge": ["Rumonge","Buyengero","Burambi"],
+  "Makamba": ["Makamba","Kayogoro","Mabanda"]
+};
+  
 const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
 
 const quartiersBuj38=[
@@ -747,6 +763,7 @@ const quartiersBuj38=[
 "Ruziba","Rweza","Sororezo"
 ];
 
+  
 function sortMFirst(list){
 const m=list.filter(x=>x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
 const rest=list.filter(x=>!x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
@@ -769,6 +786,7 @@ destQuartier.innerHTML=`<option value="">—</option>`;
 }
 function bindQuartiers(provEl, qEl){
 qEl.innerHTML=`<option value="">—</option>`;
+
 if(provEl.value==="Bujumbura"){
 sortMFirst(quartiersBuj38).forEach(q=>{
 qEl.innerHTML+=`<option value="${q}">${q}</option>`;
@@ -778,6 +796,24 @@ qEl.innerHTML=`<option value="—">—</option>`;
 }
 }
 
+function loadCommunes(province, targetSelect){
+  targetSelect.innerHTML = `<option value="">Sélectionner commune</option>`;
+
+  if(communesBI[province]){
+    communesBI[province].forEach(commune=>{
+      targetSelect.innerHTML += `<option value="${commune}">${commune}</option>`;
+    });
+  }
+}
+
+originProvince.addEventListener("change", ()=>{
+  loadCommunes(originProvince.value, originCommune);
+});
+
+destProvince.addEventListener("change", ()=>{
+  loadCommunes(destProvince.value, destCommune);
+}); 
+    
 originProvince.addEventListener("change",()=>{bindQuartiers(originProvince,originQuartier);updateSummary();});
 destProvince.addEventListener("change",()=>{bindQuartiers(destProvince,destQuartier);updateSummary();});
 originQuartier.addEventListener("change",updateSummary);
