@@ -294,6 +294,13 @@ canvas{
   <div id="deliveredList"></div>
 </div>
 
+
+<!-- AJOUTER ICI -->
+<div class="card" id="archiveSection" style="display:none;">
+  <div class="section-title">📦 Archives</div>
+  <div id="archivedList"></div>
+</div>
+   
 <!-- DETAILS -->
 <div class="card">
   <div class="section-title">
@@ -1213,8 +1220,20 @@ function closeMenu(){
 }
 
 window.openArchived = function(){
+
   closeMenu();
-  alert("Affichage des colis archivés à implémenter.");
+
+  const section = document.getElementById("archiveSection");
+
+  if(section.style.display === "none"){
+    section.style.display = "block";
+    window.scrollTo({
+      top:document.body.scrollHeight,
+      behavior:"smooth"
+    });
+  }else{
+    section.style.display = "none";
+  }
 };
 
 window.openPrivacy = function(){
