@@ -456,69 +456,86 @@ async function selectShipmentInternal(id){
   /* =========================
      DÉTAILS CHAUFFEUR COMPLETS
   ========================= */
-
- document.getElementById("shipmentDetails").innerHTML = `
-<div style="background:#16181d;border-radius:22px;padding:22px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+document.getElementById("shipmentDetails").innerHTML = `
+<div style="background:#16181d;border-radius:22px;padding:22px;border:1px solid rgba(212,175,55,0.35);box-shadow:0 12px 35px rgba(0,0,0,0.6);">
 
   <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:20px;">
     📦 ${d.trackingCode || id}
   </div>
 
   <!-- 🚚 Chauffeur -->
-  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
-    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+  <div style="background:#1e222b;padding:16px;border-radius:16px;margin-bottom:16px;border:1px solid rgba(212,175,55,0.25);">
+    <div style="font-weight:800;margin-bottom:10px;color:var(--gold);">
       🚚 Chauffeur
     </div>
-    <div>👤 ${d.driverName || "Non assigné"}</div>
-    <div>📞 ${d.driverPhone || "—"}</div>
-    <div>🚗 ${d.driverPlate || "—"}</div>
+    <div>👤 <b>Nom :</b> ${d.driverName || "Non assigné"}</div>
+    <div>📞 <b>Téléphone :</b> ${d.driverPhone || "—"}</div>
+    <div>🚗 <b>Plaque :</b> ${d.driverPlate || "—"}</div>
   </div>
 
   <!-- 🏠 Départ -->
-  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
-    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+  <div style="background:#1e222b;padding:16px;border-radius:16px;margin-bottom:16px;border:1px solid rgba(212,175,55,0.25);">
+    <div style="font-weight:800;margin-bottom:10px;color:var(--gold);">
       🏠 Départ
     </div>
+
     <div>
-      ${d.fromProvince || "—"}
-      ${d.fromCommune ? " / " + d.fromCommune : ""}
-      ${d.fromQuartier ? " / " + d.fromQuartier : ""}
+      ${
+        d.fromAddress ||
+        d.pickupAddress ||
+        (
+          (d.fromProvince || "") +
+          (d.fromCommune ? " / " + d.fromCommune : "") +
+          (d.fromQuartier ? " / " + d.fromQuartier : "")
+        ) ||
+        "—"
+      }
     </div>
-    <div style="opacity:0.7;margin-top:6px;">
-      📍 ${d.fromLandmark || "—"}
+
+    <div style="opacity:0.75;margin-top:6px;">
+      📍 ${d.fromLandmark || d.repereDepart || "—"}
     </div>
   </div>
 
   <!-- 🎯 Destination -->
-  <div style="background:#1e222b;padding:16px;border-radius:14px;margin-bottom:16px;">
-    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+  <div style="background:#1e222b;padding:16px;border-radius:16px;margin-bottom:16px;border:1px solid rgba(212,175,55,0.25);">
+    <div style="font-weight:800;margin-bottom:10px;color:var(--gold);">
       🎯 Destination
     </div>
+
     <div>
-      ${d.toProvince || "—"}
-      ${d.toCommune ? " / " + d.toCommune : ""}
-      ${d.toQuartier ? " / " + d.toQuartier : ""}
+      ${
+        d.destinationAddress ||
+        d.toAddress ||
+        (
+          (d.toProvince || "") +
+          (d.toCommune ? " / " + d.toCommune : "") +
+          (d.toQuartier ? " / " + d.toQuartier : "")
+        ) ||
+        "—"
+      }
     </div>
-    <div style="opacity:0.7;margin-top:6px;">
-      📍 ${d.toLandmark || "—"}
+
+    <div style="opacity:0.75;margin-top:6px;">
+      📍 ${d.toLandmark || d.repereDestination || "—"}
     </div>
   </div>
 
   <!-- 👤 Contact -->
-  <div style="background:#1e222b;padding:16px;border-radius:14px;">
-    <div style="font-weight:700;margin-bottom:10px;opacity:0.85;">
+  <div style="background:#1e222b;padding:16px;border-radius:16px;border:1px solid rgba(212,175,55,0.25);">
+    <div style="font-weight:800;margin-bottom:10px;color:var(--gold);">
       👤 Contact
     </div>
-    <div>👤 ${d.receiverName || d.senderName || "—"}</div>
-    <div>📞 ${d.receiverPhone || d.senderPhone || "—"}</div>
-    <div style="margin-top:8px;opacity:0.6;">
-      📝 ${d.adminNote || "—"}
+    <div>👤 <b>Nom :</b> ${d.receiverName || d.senderName || "—"}</div>
+    <div>📞 <b>Téléphone :</b> ${d.receiverPhone || d.senderPhone || "—"}</div>
+    <div style="margin-top:8px;opacity:0.65;">
+      📝 <b>Note :</b> ${d.adminNote || "—"}
     </div>
   </div>
 
 </div>
-`; 
-  /* =========================
+`;
+   /* =========================
      LOGIQUE ÉTAPES MÉTIER
   ========================= */
 
