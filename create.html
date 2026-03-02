@@ -3,818 +3,1342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ciza Logistics | Espace Client</title>
+<title>Ciza Parcel | Livraison Nationale</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+  
 <style>
 :root{
 --gold:#D4AF37;
 --black:#0b0b0c;
---soft:#121214;
---border:rgba(212,175,55,0.25);
+--softBlack:#121214;
 --muted:#9a9aa3;
+--border:rgba(212,175,55,0.25);
+--radius:22px;
+--field:#101012;
+--danger:#ff6b6b;
+--ok:#1dd1a1;
+--white:#ffffff;
 }
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--black);color:#fff;overflow-x:hidden}
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--black);font-family:Inter;color:#fff}
+/* TOPBAR */
+.topbar{
+background:#000;border-bottom:1px solid var(--border);
+padding:9px 10px;text-align:center;color:var(--gold);
+font-size:12px;font-weight:800;letter-spacing:.4px;
+}
 
 /* HEADER */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:18px;
-border-bottom:1px solid var(--border);
-position:sticky;top:0;background:#000;z-index:1000;
+.main-header{
+position:sticky;top:0;background:rgba(0,0,0,0.90);
+backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+z-index:1200;
 }
-
-.logo-title{display:flex;flex-direction:column;}
-.logo-title h1{color:var(--gold);font-size:18px;}
-.client-info{font-size:12px;color:#aaa;margin-top:4px;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-.actions{display:flex;gap:10px;align-items:center;}
-
-.logout{
-background:transparent;border:1px solid var(--border);
-color:var(--gold);padding:8px 14px;border-radius:12px;
-cursor:pointer;font-weight:900;
+.header-inner{
+width:95%;max-width:1200px;margin:auto;display:flex;
+align-items:center;justify-content:space-between;padding:14px 0;gap:12px;
 }
-
-.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;}
-.hamburger span{width:22px;height:2px;background:var(--gold);display:block;}
-
-@media(max-width:768px){
-.hamburger{display:flex;}
+.logo{display:flex;align-items:center;gap:12px}
+.logo img{height:60px;filter:drop-shadow(0 0 12px rgba(212,175,55,0.28))}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-chip{
+display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;
+border:1px solid rgba(212,175,55,0.20);background:rgba(255,255,255,0.04);
+color:#fff;font-size:12px;white-space:nowrap;
 }
+.user-chip b{color:var(--gold)}
+.nav-desktop{display:flex;gap:22px;align-items:center}
+.nav-desktop a{
+text-decoration:none;color:#fff;font-size:13px;font-weight:900;letter-spacing:.2px;
+}
+.nav-desktop a:hover{color:var(--gold)}
+.btn-outline{border:1px solid var(--border);padding:8px 12px;border-radius:12px;color:var(--gold)!important}
+.logout-btn{
+background:transparent;border:1px solid var(--border);color:var(--gold);
+padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:900;
+}
+.logout-btn:hover{background:rgba(212,175,55,0.12)}
+
+/* HAMBURGER */
+.hamburger{
+display:none;flex-direction:column;gap:4px;background:transparent;border:none;cursor:pointer;
+width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);
+align-items:center;justify-content:center;
+}
+.hamburger span{width:20px;height:2px;background:var(--gold);display:block}
 
 /* MOBILE MENU */
 .mobile-menu{
-position:fixed;top:0;right:-100%;width:260px;height:100%;
-background:#111;border-left:1px solid var(--border);
-padding:20px;transition:0.3s;z-index:2000;
+position:fixed;top:0;right:-100%;width:280px;height:100%;
+background:#0d0e10;border-left:1px solid var(--border);
+padding:18px;display:flex;flex-direction:column;gap:10px;transition:.35s;z-index:2500;
 }
-.mobile-menu.open{right:0;}
-.mobile-menu a{display:block;margin-bottom:14px;color:#fff;text-decoration:none;font-weight:700;}
-.overlay{
-position:fixed;inset:0;background:rgba(0,0,0,0.6);
-display:none;z-index:1500;
+.mm-top{
+display:flex;align-items:center;justify-content:space-between;gap:10px;
+padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);
 }
-.overlay.show{display:block;}
-
-/* CLOCK */
-.clock{text-align:center;padding:8px;font-size:13px;color:#aaa;border-bottom:1px solid var(--border);}
-
-/* KPIs */
-.kpis{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-gap:12px;
-padding:20px;
+.mm-title{color:var(--gold);font-weight:900;font-size:13px;letter-spacing:.6px}
+.mm-close{
+width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,0.14);
+background:transparent;color:#fff;font-size:22px;cursor:pointer;
 }
-.kpi{
-background:var(--soft);
-border:1px solid var(--border);
-border-radius:16px;
-padding:15px;text-align:center;
+.mm-user{
+margin-top:8px;padding:12px;border-radius:18px;background:rgba(255,255,255,0.04);
+border:1px solid rgba(212,175,55,0.18);font-size:12px;line-height:1.6;
 }
-.kpi b{color:var(--gold);font-size:20px;display:block;margin-bottom:6px;}
-
-/* CARDS */
-.container{width:95%;max-width:1100px;margin:10px auto 40px;}
-.card{
-background:var(--soft);
-border:1px solid var(--border);
-border-radius:22px;
-padding:20px;margin-bottom:20px;
+.mm-user b{color:var(--gold)}
+.mobile-menu a{
+text-decoration:none;color:#fff;font-weight:900;padding:12px 14px;border-radius:16px;
+background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+text-transform:uppercase;font-size:12px;letter-spacing:.6px;
 }
-
-.price{color:var(--gold);font-weight:900;margin-top:8px;}
-
-.timeline{
-display:flex;
-gap:8px;
-margin-top:10px;
-overflow-x:auto;
-padding-bottom:6px;
+.mobile-menu a:hover{background:rgba(212,175,55,0.10);color:var(--gold)}
+.mm-actions{
+margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);
+display:flex;flex-direction:column;gap:10px;
 }
-
-.step{
-padding:6px 12px;
-border-radius:20px;
-border:1px solid rgba(255,255,255,0.1);
-opacity:0.3;
-white-space:nowrap;
-font-size:12px;
+.mm-foot{color:#8b8b8b;font-size:11px;text-align:center}
+.menu-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.65);
+opacity:0;pointer-events:none;transition:.25s;z-index:2400;
 }
+.menu-open .mobile-menu{right:0}
+.menu-open .menu-overlay{opacity:1;pointer-events:auto}
 
-.step.active{
-background:var(--gold);
-color:#000;
-opacity:1;
-font-weight:800;
-box-shadow:0 0 10px rgba(212,175,55,0.6);
-}
-
-.progress-bar{
-height:4px;
-background:rgba(255,255,255,0.1);
-border-radius:10px;
-margin-top:8px;
+/* HERO (IMAGE + OVERLAY) */
+.hero{
+position:relative;
+padding:36px 0 18px;
+border-bottom:1px solid var(--border);
+text-align:center;
 overflow:hidden;
 }
-.progress-fill{
-height:100%;
-background:var(--gold);
-width:0%;
-transition:width 0.4s ease;
+.hero::before{
+content:"";
+position:absolute;inset:0;
+background:
+linear-gradient(180deg,rgba(11,11,12,0.70),rgba(11,11,12,0.95)),
+url("https://raw.githubusercontent.com/cizaimmo/ciza-logistics/e3c40587e17d4f35695b7daf5fab9383dcd38bd1/ciza-percel.png");
+background-size:cover;
+background-position:center;
+filter:saturate(1.05);
+transform:scale(1.02);
+}
+.hero-inner{
+position:relative;
+width:95%;max-width:1100px;margin:auto;
+}
+.hero h1{color:var(--gold);font-size:28px;font-weight:900;letter-spacing:.2px}
+.hero p{
+margin:8px auto 0;max-width:860px;font-size:13px;line-height:1.6;
+color:rgba(255,255,255,0.82);padding:0 6px;
 }
 
-.driver-box{
-margin-top:12px;
-padding:12px;
-background:rgba(255,255,255,0.04);
-border-radius:16px;
-font-size:13px;
-line-height:1.65;
-}
-.driver-box b{color:var(--gold);}
-.driver-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.call-btn{
-padding:10px 12px;border-radius:12px;border:none;cursor:pointer;
-font-weight:900;background:var(--gold);color:#000;
-}
-.outline-btn{
-padding:10px 12px;border-radius:12px;border:1px solid var(--border);
-cursor:pointer;font-weight:900;background:transparent;color:var(--gold);
-text-decoration:none;display:inline-flex;align-items:center;gap:8px;
-}
-
-.map-box{
-margin-top:12px;
-height:240px;
-border-radius:16px;
-overflow:hidden;
+/* PAGE */
+.section{padding:22px 0 52px}
+.container{width:95%;max-width:1100px;margin:auto}
+.form-card{
+background:rgba(255,255,255,0.03);
 border:1px solid var(--border);
-background:#0b0b0c;
+border-radius:var(--radius);
+padding:18px;
+box-shadow:0 30px 90px rgba(0,0,0,0.35);
 }
+@media(min-width:720px){.form-card{padding:26px}}
+.block{margin-bottom:18px}
+.block-title{
+color:var(--gold);font-size:12px;margin-bottom:12px;font-weight:900;
+text-transform:uppercase;letter-spacing:1px;
+}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.grid.two{grid-template-columns:1fr}
+.grid.three{grid-template-columns:1fr}
 @media(min-width:900px){
-.map-box{height:280px;}
+.grid.two{grid-template-columns:1fr 1fr}
+.grid.three{grid-template-columns:1fr 1fr 1fr}
+.nav-desktop{display:flex}
+.hamburger{display:none}
+.user-chip{display:flex}
+}
+@media(max-width:899px){
+.nav-desktop{display:none}
+.hamburger{display:flex}
+.user-chip{display:none}
 }
 
-.eta-box{
-margin-top:10px;
-font-size:13px;
-color:#ccc;
-line-height:1.6;
-padding:10px 12px;
-border:1px solid rgba(255,255,255,0.08);
-border-radius:14px;
-background:rgba(255,255,255,0.02);
+/* INPUTS */
+label{
+display:block;font-size:11px;margin:0 0 6px;color:#e7e7ea;
+text-transform:uppercase;letter-spacing:.6px;font-weight:900;
 }
-.eta-box b{color:#fff;}
-
-.otp-box{
-margin-top:12px;
-background:rgba(212,175,55,0.15);
-border:1px solid var(--gold);
-padding:14px;border-radius:16px;text-align:center;
-}
-.otp-code{font-size:22px;font-weight:900;letter-spacing:3px;color:var(--gold);}
-
-.rating{margin-top:12px;}
-.star{font-size:20px;cursor:pointer;color:#555;}
-.star.active{color:var(--gold);}
-
-.invoice-btn{
-margin-top:12px;padding:10px 14px;border-radius:12px;
-background:var(--gold);border:none;font-weight:900;cursor:pointer;
+input,select,textarea{
 width:100%;
+padding:14px 14px;
+background:var(--field);
+border:1px solid rgba(255,255,255,0.10);
+border-radius:14px;
+color:#fff;
+outline:none;
+transition:.2s;
 }
-@media(min-width:520px){.invoice-btn{width:auto;}}
+textarea{min-height:92px;resize:none}
+input:focus,select:focus,textarea:focus{
+border-color:rgba(212,175,55,0.75);
+box-shadow:0 0 0 2px rgba(212,175,55,0.14);
+}
+.small-note{font-size:12px;color:rgba(255,255,255,0.72);margin-top:6px;line-height:1.55}
+.sep{
+height:1px;background:linear-gradient(to right,rgba(212,175,55,0),rgba(212,175,55,0.35),rgba(212,175,55,0));
+margin:14px 0;
+}
 
-.proof{
-margin-top:12px;
-padding:12px;
-border:1px solid rgba(255,255,255,0.08);
-border-radius:16px;
-background:rgba(255,255,255,0.02);
+/* CHECKBOX */
+.checkbox-line{
+display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:16px;
+background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
 }
-.proof-title{font-weight:900;color:var(--gold);font-size:13px;margin-bottom:8px;}
-.proof img{max-width:100%;border-radius:12px;margin-top:8px;border:1px solid rgba(255,255,255,0.08);}
+.checkbox-line input{width:18px;height:18px;margin-top:2px}
+.checkbox-line span{font-size:13px;color:rgba(255,255,255,0.90);line-height:1.45}
+.checkbox-line strong{color:var(--gold)}
 
-/* LEAFLET ICON (CAR) */
-.car-pin{
-width:44px;height:44px;border-radius:16px;
-background:rgba(212,175,55,0.18);
-border:1px solid rgba(212,175,55,0.55);
-display:flex;align-items:center;justify-content:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.35);
-backdrop-filter:blur(6px);
+/* SUMMARY */
+.summary{
+margin-top:10px;
+background:rgba(212,175,55,0.10);
+border:1px solid rgba(212,175,55,0.22);
+color:#f6e7b5;
+padding:12px 12px;
+border-radius:14px;
+font-size:13px;
+line-height:1.6;
+white-space:pre-line;
 }
-.car-pin span{
-font-size:20px;
-filter:drop-shadow(0 0 10px rgba(212,175,55,0.35));
+
+/* ACTIONS */
+.actions{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+@media(min-width:720px){.actions{flex-direction:row}}
+.primary-btn{
+flex:1;padding:16px;background:var(--gold);border:none;border-radius:18px;
+font-weight:900;color:#000;cursor:pointer;font-size:14px;
 }
-.car-pulse{
-position:absolute;inset:-10px;
-border-radius:24px;
-border:1px solid rgba(212,175,55,0.35);
-animation:pulse 1.2s infinite ease-in-out;
+.primary-btn:active{transform:scale(.99)}
+.secondary-btn{
+flex:1;padding:16px;background:transparent;border:1px solid rgba(255,255,255,0.14);
+border-radius:18px;font-weight:900;color:#fff;cursor:pointer;font-size:14px;
 }
-@keyframes pulse{
-0%{transform:scale(0.92);opacity:0.35;}
-60%{transform:scale(1.16);opacity:0.08;}
-100%{transform:scale(1.20);opacity:0;}
+.secondary-btn:hover{border-color:rgba(212,175,55,0.35);color:var(--gold)}
+.error{color:var(--danger);font-size:13px;margin-top:10px;font-weight:900}
+.ok{color:var(--ok);font-size:13px;margin-top:10px;font-weight:900}
+
+/* LOADER */
+.loader{display:none;margin-top:10px;text-align:center;color:var(--gold);font-weight:900;font-size:13px}
+
+/* FOOTER */
+.footer{
+border-top:1px solid var(--border);padding:26px 0;text-align:center;color:#bdbdbd;
+font-size:11px;background:#000;
 }
+.footer b{color:var(--gold)}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<div class="logo-title">
-<h1>Espace Client</h1>
-<div class="client-info" id="clientInfo">Chargement...</div>
+<div class="topbar">Service 24/7 • Support WhatsApp +257 79 94 50 07</div>
+
+<header class="main-header">
+<div class="header-inner">
+<div class="logo">
+<img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/4b1ea6a2d3697e3982880984ee31dca42d8c52fc/logo.png" alt="Ciza Logistics">
 </div>
-<div class="actions">
-<div class="hamburger" id="hamburger">
+
+<nav class="nav-desktop">
+<a href="index.html">Accueil</a>
+<a href="parcel.html" class="btn-outline">Créer envoi</a>
+<a href="tracking.html">Suivi</a>
+<a href="dashboard.html">Espace client</a>
+</nav>
+
+<div class="header-right">
+<div class="user-chip"><span>Client :</span> <b id="clientName">—</b></div>
+<button class="logout-btn" id="logoutBtn" style="display:none;">Déconnexion</button>
+<button class="hamburger" id="hamburgerBtn" aria-label="Menu">
 <span></span><span></span><span></span>
-</div>
-<button class="logout" id="logoutBtn">Déconnexion</button>
-<button class="outline-btn" id="toggleArchive">📂 Archivés</button>
-</div>
-</div>
-
-<div class="clock">🕒 <span id="liveClock"></span></div>
-
-<div class="mobile-menu" id="mobileMenu">
-<a href="espace-client.html">🏠 Voir mes colis</a>
-<a href="parcel.html">➕ Créer un envoi</a>
-<a href="tracking.html">📍 Suivre un colis</a>
-<a href="account.html">👤 Mon compte</a>
-<a href="https://wa.me/25779945097" target="_blank">💬 Support</a>
-<a href="#" id="mobileLogout">🚪 Déconnexion</a>
-</div>
-<div class="overlay" id="overlay"></div>
-
-<div class="kpis">
-<div class="kpi"><b id="kpiActive">0</b>Actifs</div>
-<div class="kpi"><b id="kpiTransit">0</b>Transit</div>
-<div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
-<div class="kpi"><b id="kpiTotal">0</b>Total BIF</div>
-</div>
-
-<div class="container">
-<div id="list"></div>
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
-};
-
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-const auth=getAuth(app);
-
-/* ================= CLOCK ================= */
-function updateClock(){
-const now=new Date();
-document.getElementById("liveClock").innerText=
-now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-setInterval(updateClock,1000);updateClock();
-
-/* ================= MENU ================= */
-const mobileMenu=document.getElementById("mobileMenu");
-const overlay=document.getElementById("overlay");
-
-document.getElementById("hamburger").onclick=()=>{
-mobileMenu.classList.add("open");
-overlay.classList.add("show");
-};
-
-overlay.onclick=()=>{
-mobileMenu.classList.remove("open");
-overlay.classList.remove("show");
-};
-
-document.addEventListener("keydown",(e)=>{
-if(e.key==="Escape"){
-mobileMenu.classList.remove("open");
-overlay.classList.remove("show");
-}
-});
-/* ================= LOGOUT ================= */
-document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
-document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
-document.getElementById("toggleArchive").onclick=()=>{
-  SHOW_ARCHIVED = !SHOW_ARCHIVED;
-  location.reload();
-};
-  
-/* ================= MAPS STATE ================= */
-let SHOW_ARCHIVED = false;
-const MAPS = {};        // MAPS[shipmentId] = leafletMap
-const DRIVER = {};      // DRIVER[shipmentId] = marker
-const DEST = {};        // DEST[shipmentId] = marker
-const LINE = {};        // LINE[shipmentId] = polyline
-
-function num(v){ const n=Number(v); return Number.isFinite(n) ? n : null; }
-
-function haversine(lat1,lon1,lat2,lon2){
-const R=6371000;
-const toRad=x=>x*Math.PI/180;
-const dLat=toRad(lat2-lat1);
-const dLon=toRad(lon2-lon1);
-const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
-
-function carIcon(){
-return L.divIcon({
-className:"",
-html:`<div style="position:relative;width:44px;height:44px;">
-<div class="car-pulse"></div>
-<div class="car-pin"><span>🚗</span></div>
-</div>`,
-iconSize:[44,44],
-iconAnchor:[22,22]
-});
-}
-
-function animateMarker(marker, toLat, toLng){
-if(!marker) return;
-const start = marker.getLatLng();
-const end = L.latLng(toLat,toLng);
-
-const duration = 700;
-let startTime = null;
-
-function frame(ts){
-if(!startTime) startTime=ts;
-let p=(ts-startTime)/duration;
-if(p>1) p=1;
-
-const lat=start.lat+(end.lat-start.lat)*p;
-const lng=start.lng+(end.lng-start.lng)*p;
-marker.setLatLng([lat,lng]);
-
-if(p<1) requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
-}
-
-function ensureMap(shipmentId, driverLat, driverLng, destLat, destLng){
-const mapId="map_"+shipmentId;
-const el=document.getElementById(mapId);
-if(!el) return;
-
-if(!MAPS[shipmentId]){
-MAPS[shipmentId]=L.map(mapId,{zoomControl:false,attributionControl:false}).setView([driverLat,driverLng],15);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(MAPS[shipmentId]);
-
-DRIVER[shipmentId]=L.marker([driverLat,driverLng],{icon:carIcon()}).addTo(MAPS[shipmentId]);
-DEST[shipmentId]=L.marker([destLat,destLng]).addTo(MAPS[shipmentId]);
-LINE[shipmentId]=L.polyline([[driverLat,driverLng],[destLat,destLng]],{color:"#D4AF37",weight:4,opacity:0.8}).addTo(MAPS[shipmentId]);
-
-MAPS[shipmentId].fitBounds(LINE[shipmentId].getBounds(),{padding:[40,40]});
-setTimeout(()=>{ try{ MAPS[shipmentId].invalidateSize(); }catch(e){} },120);
-return;
-}
-
-/* update map */
-animateMarker(DRIVER[shipmentId],driverLat,driverLng);
-LINE[shipmentId].setLatLngs([[driverLat,driverLng],[destLat,destLng]]);
-}
-
-/* ================= UI ================= */
-function formatStatusLabel(s){
-if(!s) return "—";
-if(s==="created") return "Créé";
-if(s==="assigned") return "Assigné";
-if(s==="in_transit") return "En transit";
-if(s==="delivered") return "Livré";
-return s;
-}
-
-function buildTimeline(d){
-let steps=["created","assigned","in_transit","near","delivered"];
-let labels=["📦 Créé","👨‍✈️ Assigné","🚗 Transit","📍 À proximité","✅ Livré"];
-
-let progressIndex=steps.indexOf(d.status);
-if(d.status==="in_transit" && d.distanceMeters && Number(d.distanceMeters)<=100){
-progressIndex=3;
-}
-if(progressIndex<0) progressIndex=0;
-
-let timelineHTML="";
-labels.forEach((label,i)=>{
-timelineHTML+=`<div class="step ${i<=progressIndex?"active":""}">${label}</div>`;
-});
-let progressPercent=(progressIndex/(steps.length-1))*100;
-
-return { timelineHTML, progressPercent };
-}
-
-function createCardHTML(d){
-const tracking = d.trackingCode || d.id;
-const price = (Number(d.finalPrice||0)).toLocaleString("fr-FR")+" BIF";
-const statusLabel = formatStatusLabel(d.status);
-
-const { timelineHTML, progressPercent } = buildTimeline(d);
-
-const showDriver = !!d.driverName;
-const showOtp = (d.status==="in_transit" && (d.deliveryOTP || d.otpCode));
-const otpValue = (d.deliveryOTP || d.otpCode || "");
-const showProof = (d.status==="delivered" && (d.deliveryPhoto || d.signatureUrl));
-
-const dl = num(
-  d.lastDriverLocation?.lat ?? d.driverLat
-);
-
-const dln = num(
-  d.lastDriverLocation?.lng ?? d.driverLng
-);
-
-const el = num(
-  d.toLat ?? d.destinationLat
-);
-
-const eln = num(
-  d.toLng ?? d.destinationLng
-);
-
-const canMap = (
-  d.status==="in_transit" &&
-  dl!=null && dln!=null && el!=null && eln!=null
-);
-
-const mapBlock = canMap ? `<div class="map-box" id="map_${d.id}"></div>` : "";
-
-const etaBlock = canMap ? `<div class="eta-box" id="eta_${d.id}">Calcul ETA...</div>` : "";
-
-const driverBlock = showDriver ? `
-<div class="driver-box">
-<b>👨‍✈️ ${d.driverName}</b><br>
-${d.driverPhone?`📞 <a href="tel:${d.driverPhone}" style="color:#D4AF37;font-weight:900;text-decoration:none;">${d.driverPhone}</a><br>`:""}
-${d.driverPlate?`🚗 Plaque : <b style="color:#fff;">${d.driverPlate}</b><br>`:""}
-${d.driverRating?`⭐ Note : <b style="color:#fff;">${d.driverRating}/5</b><br>`:""}
-🟢 Statut : <b style="color:#fff;">${statusLabel}</b>
-<div class="driver-actions">
-${d.driverPhone?`<button class="call-btn" onclick="window.location.href='tel:${d.driverPhone}'">📞 Appeler</button>`:""}
-<a class="outline-btn" href="tracking.html?code=${encodeURIComponent(tracking)}">📍 Ouvrir suivi</a>
-</div>
-</div>` : "";
-
-const otpBlock = showOtp ? `
-<div class="otp-box">
-<div style="font-weight:900;margin-bottom:6px;">Code OTP (donnez au chauffeur à l’arrivée)</div>
-<div class="otp-code">${String(otpValue)}</div>
-<div style="margin-top:6px;color:#e8e8e8;font-size:12px;line-height:1.5;">✅ Sécurité : ce code confirme la livraison.</div>
-</div>` : "";
-
-let ratingSection="";
-if(d.status==="delivered" && !d.clientRating){
-ratingSection=`
-<div class="rating">
-<div style="font-weight:900;color:#ccc;margin-bottom:6px;">Noter le chauffeur :</div>
-${[1,2,3,4,5].map(i=>`<span class="star" onclick="rate('${d.id}',${i})">★</span>`).join("")}
-</div>`;
-}
-
-const proofBlock = showProof ? `
-<div class="proof">
-<div class="proof-title">Proof of Delivery</div>
-${d.deliveryPhoto?`<div style="font-size:12px;color:#cfcfcf;">📷 Photo de livraison</div><img src="${d.deliveryPhoto}" alt="Photo livraison">`:""}
-${d.signatureUrl?`<div style="font-size:12px;color:#cfcfcf;margin-top:10px;">✍️ Signature</div><img src="${d.signatureUrl}" alt="Signature">`:""}
-</div>` : "";
-
-return `
-<div class="card" data-id="${d.id}">
-<b>${tracking}</b>
-<div style="margin-top:6px;color:#bbb;font-size:12px;">Statut : <b style="color:#fff;">${statusLabel}</b></div>
-<div class="price">${price}</div>
-
-<div class="timeline">${timelineHTML}</div>
-<div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%"></div></div>
-
-${driverBlock}
-${mapBlock}
-${etaBlock}
-${otpBlock}
-${proofBlock}
-${ratingSection}
-
-<button class="invoice-btn" onclick="generateInvoice('${d.id}','${tracking}','${d.finalPrice||0}')">
-🧾 Télécharger facture
 </button>
 </div>
-`;
-}
 
-function updateEta(shipmentId, driverLat, driverLng, destLat, destLng){
-const box=document.getElementById("eta_"+shipmentId);
-if(!box) return;
+</div>
+</header>
 
-const dist = haversine(driverLat,driverLng,destLat,destLng);
-const AVG_SPEED_KMH = 35;
-const speedMs = (AVG_SPEED_KMH*1000)/3600;
-const etaSec = Math.max(0, Math.floor(dist / speedMs));
-const mins = Math.floor(etaSec/60);
-const arrival = new Date(Date.now() + etaSec*1000);
+<div class="mobile-menu" id="mobileMenu">
+<div class="mm-top">
+<div class="mm-title">MENU</div>
+<button class="mm-close" id="mmClose">×</button>
+</div>
 
-let proximity = "🚗 En route";
-if(dist<=100) proximity="🟢 Chauffeur arrivé / très proche";
-else if(dist<=500) proximity="🟡 Chauffeur à proximité";
+<div class="mm-user">
+<div style="opacity:.85">Connecté :</div>
+<div style="margin-top:6px"><b id="mmClientName">—</b></div>
+</div>
 
-box.innerHTML = `
-<div>${proximity}</div>
-<div>📏 Distance : <b>${Math.round(dist)} m</b></div>
-<div>⏳ Temps estimé : <b>${mins} min</b></div>
-<div>🕓 Arrivée prévue : <b>${arrival.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</b></div>
-`;
-}
+<a href="index.html">Accueil</a>
+<a href="parcel.html">Créer envoi</a>
+<a href="tracking.html">Suivi</a>
+<a href="dashboard.html">Espace client</a>
 
-/* ================= FIRESTORE LISTENER ================= */
-onAuthStateChanged(auth,async user=>{
-if(!user){location.href="login.html";return;}
+<div class="mm-actions">
+<button class="logout-btn" id="logoutMobile" style="display:none;">Déconnexion</button>
+<div class="mm-foot">© 2026 Ciza Logistics</div>
+</div>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
 
-const userSnap=await getDoc(doc(db,"users",user.uid));
-if(userSnap.exists()){
-const u=userSnap.data();
-document.getElementById("clientInfo").innerText=
-(u.fullName || u.name || user.email || "Client") + " • " + (u.phone||"");
-}else{
-document.getElementById("clientInfo").innerText = (user.email||"Client");
-}
+<section class="hero">
+<div class="hero-inner">
+<h1>Ciza Parcel</h1>
+<p>Choisis le service, le formulaire s’adapte automatiquement (Food, Pharmacie, Business, Parcel). Localisation précise (Province + Quartier + Repère) et tarification dynamique via Firestore.</p>
+</div>
+</section>
 
-const q=query(collection(db,"shipments"),where("ownerUid","==",user.uid));
+<section class="section">
+<div class="container">
+<div class="form-card">
 
-onSnapshot(q,(snap)=>{
-let active=0,transit=0,delivered=0,total=0;
+<!-- SERVICE -->
+<div class="block">
+<div class="block-title">Service</div>
+<div class="grid three">
+<div>
+<label for="country">Pays</label>
+<select id="country">
+<option value="BI">🇧🇮 Burundi</option>
+<option value="RW">🇷🇼 Rwanda</option>
+</select>
+</div>
 
-const list=document.getElementById("list");
-list.innerHTML="";
+<div>
+<label for="service">Service</label>
+<select id="service">
+<option value="parcel">Parcel (Colis)</option>
+<option value="food">Food (Livraison alimentaire)</option>
+<option value="pharmacy">Pharmacie (Santé)</option>
+<option value="business">Business (Commerce)</option>
+<option value="documents">Documents (Express)</option>
+</select>
+</div>
 
-const rows=[];
-snap.forEach(ds=>{
-rows.push({id:ds.id,...ds.data()});
-});
+<div>
+<label for="priority">Priorité</label>
+<select id="priority">
+<option value="standard">Standard</option>
+<option value="express">Express</option>
+</select>
+</div>
+</div>
 
-/* affichage stable : plus récents d'abord si createdAt existe, sinon ordre Firestore */
-rows.sort((a,b)=>{
+<div class="small-note" id="serviceHint">Sélectionne un service : le type d’expéditeur et les marchandises s’adaptent.</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- PROFIL -->
+<div class="block">
+<div class="block-title">Profil d’expédition</div>
+
+<div class="grid three">
+<div>
+<label for="senderType">Type d’expéditeur</label>
+<select id="senderType">
+<option value="">Sélectionner</option>
+<option value="particulier">Particulier</option>
+<option value="commerce">Commerce</option>
+<option value="pharmacie">Pharmacie</option>
+<option value="restaurant">Restaurant</option>
+</select>
+</div>
+
+<div>
+<label for="frequency">Fréquence</label>
+<select id="frequency">
+<option value="">Sélectionner</option>
+<option value="occasionnel">Occasionnel</option>
+<option value="hebdomadaire">Hebdomadaire</option>
+<option value="quotidien">Quotidien</option>
+</select>
+</div>
+
+<div id="internalRefWrap" style="display:none;">
+<label for="internalRef">Référence interne</label>
+<input id="internalRef" placeholder="Ex: FACT-2026-015">
+</div>
+</div>
+
+<div id="sensitivityWrap" style="display:none;margin-top:12px;">
+<label>Sensibilité</label>
+<div class="grid three" style="gap:10px;">
+<div class="checkbox-line" style="padding:10px;border-radius:14px;">
+<input type="checkbox" id="sensFragile">
+<span><strong>Fragile</strong></span>
+</div>
+<div class="checkbox-line" style="padding:10px;border-radius:14px;">
+<input type="checkbox" id="sensTemp">
+<span><strong>Température</strong></span>
+</div>
+<div class="checkbox-line" style="padding:10px;border-radius:14px;">
+<input type="checkbox" id="sensSensitive">
+<span><strong>Sensible</strong></span>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="sep"></div>
+
+<!-- ROUTE -->
+<div class="block">
+<div class="block-title">Route & Localisation</div>
+
+<div class="grid two" style="margin-top:4px;">
+<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:14px;">
+<div style="color:var(--gold);font-weight:900;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Départ</div>
+<label for="originProvince">Province / Ville</label>
+<select id="originProvince"></select>
+
+<label for="originCommune" style="margin-top:10px;">Commune</label>
+<select id="originCommune">
+  <option value="">Sélectionner commune</option>
+</select>
+
+<label for="originQuartier" style="margin-top:10px;">Quartier</label>
+<select id="originQuartier"><option value="">—</option></select>
+<label for="originLandmark" style="margin-top:10px;">Repère</label>
+<input id="originLandmark" placeholder="Ex: station, école, portail...">
+</div>
+
+<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:14px;">
+<div style="color:var(--gold);font-weight:900;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Destination</div>
+<label for="destProvince">Province / Ville</label>
+<select id="destProvince"></select>
+
+<label for="destCommune" style="margin-top:10px;">Commune</label>
+<select id="destCommune">
+  <option value="">Sélectionner commune</option>
+</select>
+
+<label for="destQuartier" style="margin-top:10px;">Quartier</label>
+<select id="destQuartier"><option value="">—</option></select>
+
+<label for="destLandmark" style="margin-top:10px;">Repère</label>
+<input id="destLandmark" placeholder="Ex: marché, avenue, maison...">
+</div>
+</div>
+
+<div style="margin-top:16px;">
+<div id="routeMap" style="height:260px;border-radius:18px;border:1px solid rgba(212,175,55,0.25);"></div>
+</div>
+  
+<div class="small-note">Si province = <b>Bujumbura</b>, la liste de <b>38 quartiers</b> s’affiche (M d’abord, puis A-Z). Sinon : “—”.</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- CONTACTS -->
+<div class="block">
+<div class="block-title">Contacts</div>
+
+<div class="grid two">
+<div>
+<label for="senderName">Nom expéditeur</label>
+<input id="senderName" placeholder="Nom / Boutique">
+</div>
+
+<div>
+<label for="senderPhone">Téléphone expéditeur</label>
+<input id="senderPhone" inputmode="numeric" placeholder="+257XXXXXXXX" autocomplete="tel">
+</div>
+
+<div>
+<label for="receiverName">Nom destinataire</label>
+<input id="receiverName" placeholder="Nom / Boutique">
+</div>
+
+<div>
+<label for="receiverPhone">Téléphone destinataire</label>
+<input id="receiverPhone" inputmode="numeric" placeholder="+257XXXXXXXX" autocomplete="tel">
+</div>
+</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- MARCHANDISE -->
+<div class="block">
+<div class="block-title" id="goodsTitle">Marchandise</div>
+
+<div class="grid three">
+<div>
+<label for="goodsType" id="goodsTypeLabel">Type</label>
+<select id="goodsType">
+<option value="">Sélectionner</option>
+</select>
+</div>
+
+<div>
+<label for="weightValue" id="weightLabel">Poids estimé (kg)</label>
+<input id="weightValue" type="number" inputmode="numeric" placeholder="Ex: 1.5">
+<div class="small-note" id="dynamicHint">Champ requis.</div>
+</div>
+
+<div>
+<label for="paymentMethod">Mode de paiement</label>
+<select id="paymentMethod">
+<option value="">Sélectionner</option>
+<option value="Lumicash">Lumicash</option>
+<option value="EcoCash">EcoCash</option>
+<option value="eNoti">eNoti</option>
+<option value="COD">Paiement à la livraison</option>
+</select>
+</div>
+</div>
+
+<div class="grid two" style="margin-top:12px;">
+<div>
+<label for="declaredValue">Valeur déclarée (assurance)</label>
+<input id="declaredValue" type="number" inputmode="numeric" placeholder="Ex: 50000">
+<div class="small-note">Veuillez déclarer la valeur de votre marchandise pour assurance en cas de perte/dommage.</div>
+</div>
+
+<div>
+<label for="content">Description</label>
+<input id="content" placeholder="Ex: médicaments, repas, accessoires, documents...">
+</div>
+</div>
+
+<div style="margin-top:12px;">
+<label for="notes">Instructions (optionnel)</label>
+<textarea id="notes" placeholder="Ex: appeler avant, fragile, réception..."></textarea>
+</div>
+
+<div style="margin-top:12px;">
+<div class="checkbox-line">
+<input type="checkbox" id="nonDangerous">
+<span><strong>Matières non dangereuses</strong> : je confirme que cet envoi ne contient pas de produits interdits ou dangereux.</span>
+</div>
+</div>
+
+<label style="margin-top:14px;">Résumé</label>
+<div class="summary" id="summaryText">Complète le service, la route, les contacts et la marchandise…</div>
+
+</div>
+
+<div id="errorMsg" class="error"></div>
+<div id="okMsg" class="ok" style="display:none;"></div>
+<div class="loader" id="loader">Traitement en cours…</div>
+
+<div class="actions">
+<button class="primary-btn" id="submitBtn">Continuer vers confirmation</button>
+<button class="secondary-btn" id="goTrackingBtn" type="button">Aller au suivi</button>
+</div>
+
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<b>Ciza Logistics</b> • Division de Ciza Group — © 2026
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+/* ================= BASE PATH (ANTI-404 GitHub Pages) ================= */
+const BASE_PATH = (() => {
 try{
-const ta = a.createdAt?.seconds ? a.createdAt.seconds : 0;
-const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
-return tb-ta;
-}catch(e){return 0;}
-});
+const parts = location.pathname.split("/").filter(Boolean);
+if(location.hostname.endsWith("github.io") && parts.length>0) return "/" + parts[0];
+return "";
+}catch(e){return "";}
+})();
+function withBase(p){
+if(!p) return (BASE_PATH||"") + "/";
+if(p.startsWith("http://") || p.startsWith("https://")) return p;
+if(p.startsWith("/")) return (BASE_PATH||"") + p;
+return (BASE_PATH||"") + "/" + p;
+}
+function go(p){ location.href = withBase(p); }
+function fixHref(a, p){ a.setAttribute("href", withBase(p)); }
 
-for (const d of rows){
+/* ================= FIREBASE ================= */
+const firebaseConfig = {
+apiKey: "AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain: "ciza-logistics.firebaseapp.com",
+projectId: "ciza-logistics",
+storageBucket: "ciza-logistics.firebasestorage.app",
+messagingSenderId: "751524585771",
+appId: "1:751524585771:web:6720db623a0ef70f56e56e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-  if(d.status!=="delivered") active++;
-  if(d.status==="in_transit") transit++;
-  if(d.status==="delivered") delivered++;
+/* ================= FIX LINKS (ANTI-404) ================= */
+document.querySelectorAll('a[href="index.html"]').forEach(a=>fixHref(a,"index.html"));
+document.querySelectorAll('a[href="parcel.html"]').forEach(a=>fixHref(a,"parcel.html"));
+document.querySelectorAll('a[href="tracking.html"]').forEach(a=>fixHref(a,"tracking.html"));
+document.querySelectorAll('a[href="dashboard.html"]').forEach(a=>fixHref(a,"dashboard.html"));
 
-  // 🔵 Ne pas afficher si archivé
-if(!SHOW_ARCHIVED && d.archived === true) continue;
-if(SHOW_ARCHIVED && d.archived !== true) continue;
+/* ================= UI REFS ================= */
+const hamburgerBtn=document.getElementById("hamburgerBtn");
+const menuOverlay=document.getElementById("menuOverlay");
+const mmClose=document.getElementById("mmClose");
 
-  total += Number(d.finalPrice||0);
+const logoutBtn=document.getElementById("logoutBtn");
+const logoutMobile=document.getElementById("logoutMobile");
 
-  list.insertAdjacentHTML("beforeend", createCardHTML(d));
+const clientName=document.getElementById("clientName");
+const mmClientName=document.getElementById("mmClientName");
 
-  const dl = num(d.lastDriverLocation?.lat);
-  const dln = num(d.lastDriverLocation?.lng);
-  const el = num(d.toLat);
-  const eln = num(d.toLng);
+const country=document.getElementById("country");
+const service=document.getElementById("service");
+const priority=document.getElementById("priority");
+const serviceHint=document.getElementById("serviceHint");
 
-  if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
-    ensureMap(d.id, dl, dln, el, eln);
-    updateEta(d.id, dl, dln, el, eln);
-  }
+const senderType=document.getElementById("senderType");
+const frequency=document.getElementById("frequency");
+
+const internalRefWrap=document.getElementById("internalRefWrap");
+const internalRef=document.getElementById("internalRef");
+
+const sensitivityWrap=document.getElementById("sensitivityWrap");
+const sensFragile=document.getElementById("sensFragile");
+const sensTemp=document.getElementById("sensTemp");
+const sensSensitive=document.getElementById("sensSensitive");
+
+const originProvince=document.getElementById("originProvince");
+const destProvince=document.getElementById("destProvince");
+const originCommune = document.getElementById("originCommune");
+const destCommune = document.getElementById("destCommune");
+  
+const originQuartier=document.getElementById("originQuartier");
+const destQuartier=document.getElementById("destQuartier");
+const originLandmark=document.getElementById("originLandmark");
+const destLandmark=document.getElementById("destLandmark");
+
+const senderName=document.getElementById("senderName");
+const senderPhone=document.getElementById("senderPhone");
+const receiverName=document.getElementById("receiverName");
+const receiverPhone=document.getElementById("receiverPhone");
+
+const goodsTitle=document.getElementById("goodsTitle");
+const goodsTypeLabel=document.getElementById("goodsTypeLabel");
+const goodsType=document.getElementById("goodsType");
+const weightLabel=document.getElementById("weightLabel");
+const weightValue=document.getElementById("weightValue");
+const dynamicHint=document.getElementById("dynamicHint");
+const paymentMethod=document.getElementById("paymentMethod");
+const declaredValue=document.getElementById("declaredValue");
+const content=document.getElementById("content");
+const notes=document.getElementById("notes");
+const nonDangerous=document.getElementById("nonDangerous");
+
+const summaryText=document.getElementById("summaryText");
+const submitBtn=document.getElementById("submitBtn");
+const goTrackingBtn=document.getElementById("goTrackingBtn");
+const errorMsg=document.getElementById("errorMsg");
+const okMsg=document.getElementById("okMsg");
+const loader=document.getElementById("loader");
+
+let currentUser=null;
+
+/* ================= MENU ================= */
+function openMenu(){document.body.classList.add("menu-open");}
+function closeMenu(){document.body.classList.remove("menu-open");}
+hamburgerBtn.addEventListener("click",()=>{document.body.classList.contains("menu-open")?closeMenu():openMenu();});
+menuOverlay.addEventListener("click",closeMenu);
+mmClose.addEventListener("click",closeMenu);
+
+/* ================= AUTH GUARD (PRODUCTION) ================= */
+async function ensureClientRole(user){
+try{
+const uSnap = await getDoc(doc(db,"users",user.uid));
+
+if(!uSnap.exists()){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
 }
 
-document.getElementById("kpiActive").innerText=active;
-document.getElementById("kpiTransit").innerText=transit;
-document.getElementById("kpiDelivered").innerText=delivered;
-document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR");
+const u = uSnap.data() || {};
 
-},(err)=>{
-console.error(err);
-document.getElementById("list").innerHTML =
-`<div class="card"><b style="color:#ff6b6b">Erreur lecture</b><div style="margin-top:8px;color:#ccc;font-size:13px;line-height:1.6;">
-Accès refusé ou index Firestore manquant.<br>Pour le test, mets les rules en mode open temporairement, puis on sécurise après.
-</div></div>`;
-});
+if(u.accountStatus==="suspended"){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
+
+if(u.role!=="client"){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
+
+const nm=(u.fullName || u.name || user.email || "Client");
+clientName.innerText=nm;
+mmClientName.innerText=nm;
+
+logoutBtn.style.display="inline-block";
+logoutMobile.style.display="inline-block";
+document.querySelector(".user-chip").style.display="flex";
+
+return true;
+
+}catch(e){
+await signOut(auth);
+location.replace(withBase("login.html"));
+return false;
+}
+}
+
+onAuthStateChanged(auth, async (user)=>{
+if(!user){location.replace(withBase("login.html"));return;}
+currentUser=user;
+
+const ok = await ensureClientRole(user);
+if(!ok) return;
+
+applyPhonePrefix(country.value);
+loadProvinces();
+applyServiceRules(true);
+updateSummary();
 });
 
-/* ================= RATING + INVOICE ================= */
-window.rate=async(id,stars)=>{
-await updateDoc(doc(db,"shipments",id),{clientRating:stars});
-alert("Merci pour votre note !");
+logoutBtn.addEventListener("click",async()=>{
+try{ await signOut(auth); }catch(e){}
+location.replace(withBase("login.html"));
+});
+logoutMobile.addEventListener("click",async()=>{
+try{ await signOut(auth); }catch(e){}
+location.replace(withBase("login.html"));
+});
+
+/* ================= PHONE HELPERS ================= */
+function enforceNumericPhone(input){
+let v=input.value || "";
+v=v.replace(/[^\d+]/g,"");
+if(v.indexOf("+")>0){v=v.replace(/\+/g,"");}
+input.value=v;
+}
+function applyPhonePrefix(cty){
+const prefix = cty==="RW" ? "+250" : "+257";
+if(senderPhone.value.trim()==="" || senderPhone.value.startsWith("+")) senderPhone.value=prefix;
+if(receiverPhone.value.trim()==="" || receiverPhone.value.startsWith("+")) receiverPhone.value=prefix;
+}
+senderPhone.addEventListener("input",()=>enforceNumericPhone(senderPhone));
+receiverPhone.addEventListener("input",()=>enforceNumericPhone(receiverPhone));
+
+/* ================= PROVINCES + 38 QUARTIERS ================= */
+const provincesBI=["Bujumbura","Bujumbura Rural","Gitega","Ngozi","Muyinga","Kayanza","Kirundo","Rutana","Ruyigi","Cankuzo","Makamba","Bururi","Mwaro","Muramvya","Bubanza","Cibitoke","Karusi","Rumonge"];
+
+const communesBI = {
+  "Bujumbura": ["Ntahangwa","Mukaza","Muha"],
+  "Gitega": ["Gitega","Makebuko","Mutaho"],
+  "Ngozi": ["Ngozi","Gashikanwa","Mwumba"],
+  "Rumonge": ["Rumonge","Buyengero","Burambi"],
+  "Makamba": ["Makamba","Kayogoro","Mabanda"]
 };
   
+const provincesRW=["Kigali","Northern","Southern","Eastern","Western"];
 
-window.archiveManually = async(id)=>{
-  await updateDoc(doc(db,"shipments",id),{
-    archived:true,
-    archivedAt:new Date()
-  });
+const quartiersBuj38=[
+"Musaga","Mutanga Nord","Mutanga Sud","Mutakura",
+"Buyenzi","Bwiza","Buterere","Buterere II",
+"Carama","Cibitoke","Gatumba","Gihosha","Jabe","Kajaga","Kamenge","Kamenge II",
+"Kanyosha","Kanyosha II","Kanyosha III","Kanyosha IV",
+"Kibenga","Kigobe","Kinama","Kinindo","Kinanira I","Kinanira II","Kiriri",
+"Ngagara","Ngagara II","Ngagara III","Nyabugete","Nyakabiga","Rohero I","Rohero II","Rohero III",
+"Ruziba","Rweza","Sororezo"
+];
+
+  
+function sortMFirst(list){
+const m=list.filter(x=>x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
+const rest=list.filter(x=>!x.trim().toLowerCase().startsWith("m")).sort((a,b)=>a.localeCompare(b,"fr"));
+return [...m,...rest];
+}
+function loadProvinces(){
+const c = country.value;
+const list = c==="RW" ? provincesRW : provincesBI;
+
+originProvince.innerHTML=`<option value="">Sélectionner</option>`;
+destProvince.innerHTML=`<option value="">Sélectionner</option>`;
+
+list.slice().sort((a,b)=>a.localeCompare(b,"fr")).forEach(p=>{
+originProvince.innerHTML+=`<option value="${p}">${p}</option>`;
+destProvince.innerHTML+=`<option value="${p}">${p}</option>`;
+});
+
+originQuartier.innerHTML=`<option value="">—</option>`;
+destQuartier.innerHTML=`<option value="">—</option>`;
+}
+function bindQuartiers(provEl, qEl){
+qEl.innerHTML=`<option value="">—</option>`;
+
+if(provEl.value==="Bujumbura"){
+sortMFirst(quartiersBuj38).forEach(q=>{
+qEl.innerHTML+=`<option value="${q}">${q}</option>`;
+});
+}else{
+qEl.innerHTML=`<option value="—">—</option>`;
+}
+}
+
+function loadCommunes(province, targetSelect){
+  targetSelect.innerHTML = `<option value="">Sélectionner commune</option>`;
+
+  if(communesBI[province]){
+    communesBI[province].forEach(commune=>{
+      targetSelect.innerHTML += `<option value="${commune}">${commune}</option>`;
+    });
+  }
+}
+
+originProvince.addEventListener("change", ()=>{
+  loadCommunes(originProvince.value, originCommune);
+});
+
+destProvince.addEventListener("change", ()=>{
+  loadCommunes(destProvince.value, destCommune);
+}); 
+    
+originProvince.addEventListener("change",()=>{bindQuartiers(originProvince,originQuartier);updateSummary();});
+destProvince.addEventListener("change",()=>{bindQuartiers(destProvince,destQuartier);updateSummary();});
+originQuartier.addEventListener("change",updateSummary);
+destQuartier.addEventListener("change",updateSummary);
+originLandmark.addEventListener("input",updateSummary);
+destLandmark.addEventListener("input",updateSummary);
+
+country.addEventListener("change",()=>{
+applyPhonePrefix(country.value);
+loadProvinces();
+updateSummary();
+});
+
+/* ================= SERVICE -> FORM LOGIC ================= */
+function setRequired(el, on){
+if(on) el.setAttribute("required","required");
+else el.removeAttribute("required");
+}
+function resetSensitivity(){
+sensFragile.checked=false;
+sensTemp.checked=false;
+sensSensitive.checked=false;
+}
+const SERVICES = {
+parcel:{
+label:"Parcel (Colis)",
+lockSender:false,
+senderDefault:"",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:false,
+forcePriority:"",
+goodsTitle:"Marchandise",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"boite",t:"Boîte / Carton"},
+{v:"sac",t:"Sac"},
+{v:"enveloppe",t:"Enveloppe"},
+{v:"bidon",t:"Bidon / Liquide"}
+],
+weightMode:"weight"
+},
+food:{
+label:"Food (Livraison alimentaire)",
+lockSender:true,
+senderDefault:"restaurant",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:true,
+forcePriority:"express",
+goodsTitle:"Commande (Food)",
+goodsTypeLabel:"Catégorie",
+goodsOptions:[
+{v:"repas_chaud",t:"Repas chaud"},
+{v:"repas_froid",t:"Repas froid"},
+{v:"boissons",t:"Boissons"},
+{v:"patisserie",t:"Pâtisserie / Gâteau"},
+{v:"surgele",t:"Surgelé"}
+],
+weightMode:"qty"
+},
+pharmacy:{
+label:"Pharmacie (Santé)",
+lockSender:true,
+senderDefault:"pharmacie",
+showInternalRef:true,
+internalRefRequired:false,
+showSensitivity:true,
+forcePriority:"express",
+goodsTitle:"Envoi (Pharmacie)",
+goodsTypeLabel:"Catégorie",
+goodsOptions:[
+{v:"medicaments",t:"Médicaments"},
+{v:"ordonnance",t:"Ordonnance"},
+{v:"materiel",t:"Matériel médical"},
+{v:"parapharmacie",t:"Parapharmacie"}
+],
+weightMode:"weight"
+},
+business:{
+label:"Business (Commerce)",
+lockSender:true,
+senderDefault:"commerce",
+showInternalRef:true,
+internalRefRequired:true,
+showSensitivity:false,
+forcePriority:"",
+goodsTitle:"Marchandise (Business)",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"carton",t:"Carton"},
+{v:"sacs",t:"Sacs"},
+{v:"colis_multiple",t:"Colis multiple"},
+{v:"palette",t:"Palette"}
+],
+weightMode:"weight"
+},
+documents:{
+label:"Documents (Express)",
+lockSender:false,
+senderDefault:"particulier",
+showInternalRef:false,
+internalRefRequired:false,
+showSensitivity:false,
+forcePriority:"express",
+goodsTitle:"Documents",
+goodsTypeLabel:"Type",
+goodsOptions:[
+{v:"documents",t:"Documents"},
+{v:"enveloppe",t:"Enveloppe"}
+],
+weightMode:"weight"
+}
 };
 
-window.generateInvoice = async (id, tracking, price) => {
-  try{
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+function fillGoodsOptions(list){
+goodsType.innerHTML=`<option value="">Sélectionner</option>`;
+list.forEach(o=>{
+goodsType.innerHTML+=`<option value="${o.v}">${o.t}</option>`;
+});
+}
 
-    const shipmentSnap = await getDoc(doc(db,"shipments",id));
-    if(!shipmentSnap.exists()) return;
-    const d = shipmentSnap.data();
+function applyWeightMode(mode){
+if(mode==="qty"){
+weightLabel.innerText="Quantité";
+weightValue.placeholder="Ex: 2";
+dynamicHint.innerText="Quantité requise.";
+}else{
+weightLabel.innerText="Poids estimé (kg)";
+weightValue.placeholder="Ex: 1.5";
+dynamicHint.innerText="Poids requis.";
+}
+}
 
-    const amount = String(Number(price||0).toLocaleString("fr-FR"))
-      .replace(/\u202F/g," ")
-      .replace(/\u00A0/g," ");
+function applyServiceRules(init=false){
+const s = SERVICES[service.value] || SERVICES.parcel;
 
-    const invoiceNumber = "CL-" + Date.now();
-    const today = new Date().toLocaleDateString("fr-FR");
+serviceHint.innerText = "Service : " + s.label + " • Le formulaire s’adapte automatiquement.";
 
-    const clientName  = d.clientName  || d.ownerName  || d.senderName  || "Client";
-    const clientPhone = d.clientPhone || d.ownerPhone || d.senderPhone || "-";
+goodsTitle.innerText = s.goodsTitle;
+goodsTypeLabel.innerText = s.goodsTypeLabel;
+fillGoodsOptions(s.goodsOptions);
+applyWeightMode(s.weightMode);
 
-    /* ================= WATERMARK (ULTRA DISCRET) ================= */
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(70);
-    pdf.setTextColor(252);
-    pdf.text("CIZA",18,230,{angle:45});
-    pdf.text("LOGISTICS",40,250,{angle:45});
+if(s.forcePriority){
+priority.value = s.forcePriority;
+}
 
-    /* ================= HEADER ================= */
-    pdf.setFillColor(15,15,15);
-    pdf.rect(0,0,210,30,"F");
+if(s.lockSender){
+senderType.value = s.senderDefault || "";
+senderType.disabled = true;
+}else{
+senderType.disabled = false;
+if(init && s.senderDefault) senderType.value = s.senderDefault;
+}
 
-    pdf.setTextColor(212,175,55);
-    pdf.setFontSize(18);
-    pdf.text("CIZA LOGISTICS",18,18);
+const showInternal = !!s.showInternalRef;
+internalRefWrap.style.display = showInternal ? "block" : "none";
+if(!showInternal) internalRef.value="";
+setRequired(internalRef, !!s.internalRefRequired);
 
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(9);
-    pdf.setTextColor(230);
-    pdf.text("Division Logistique - Ciza Group",18,24);
+sensitivityWrap.style.display = s.showSensitivity ? "block" : "none";
+if(!s.showSensitivity) resetSensitivity();
+else{
+sensTemp.checked = true;
+}
 
-    /* ================= FACTURE INFO ================= */
-    pdf.setTextColor(0);
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(18);
-    pdf.text("FACTURE",145,50);
+updateSummary();
+}
 
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(10);
-    pdf.text("N° : "+invoiceNumber,145,58);
-    pdf.text("Date : "+today,145,64);
+service.addEventListener("change",()=>{applyServiceRules(false);});
 
-    /* ================= CLIENT BLOCK ================= */
-    pdf.setFillColor(245,245,245);
-    pdf.rect(18,45,110,35,"F");
-    pdf.setDrawColor(230);
-    pdf.rect(18,45,110,35,"S");
+senderType.addEventListener("change",()=>{
+const t = senderType.value;
+const showInternal = (t==="commerce" || t==="pharmacie" || t==="restaurant");
+internalRefWrap.style.display = showInternal ? "block" : "none";
+if(!showInternal) internalRef.value="";
+const showSens = (t==="pharmacie" || t==="restaurant");
+sensitivityWrap.style.display = showSens ? "block" : "none";
+if(!showSens) resetSensitivity();
+updateSummary();
+});
 
-    pdf.setFontSize(9);
-    pdf.setTextColor(120);
-    pdf.text("FACTURÉ À",23,55);
+/* ================= SUMMARY ================= */
+function safeVal(v){return (v===undefined||v===null||String(v).trim()==="")?"—":String(v).trim();}
+function updateSummary(){
+const c = country.value==="RW" ? "Rwanda" : "Burundi";
+const s = SERVICES[service.value]?.label || "Parcel";
+const op = safeVal(originProvince.value);
+const dp = safeVal(destProvince.value);
+const oq = safeVal(originQuartier.value);
+const dq = safeVal(destQuartier.value);
 
-    pdf.setTextColor(0);
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(11);
-    pdf.text(String(clientName),23,63);
+const st = safeVal(senderType.value);
+const fr = safeVal(frequency.value);
+const pr = safeVal(priority.value);
 
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(10);
-    pdf.text(String(clientPhone),23,69);
+const gt = safeVal(goodsType.value);
+const pm = safeVal(paymentMethod.value);
+const dv = declaredValue.value ? Number(declaredValue.value||0).toLocaleString("fr-FR") : "—";
+const wv = weightValue.value ? String(weightValue.value) : "—";
 
-    /* ================= ROUTE ================= */
-    pdf.setTextColor(0);
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(10);
-    pdf.text("Départ :",18,95);
-    pdf.text("Destination :",18,102);
+let sensTxt="—";
+if(sensitivityWrap.style.display==="block"){
+const arr=[];
+if(sensFragile.checked) arr.push("Fragile");
+if(sensTemp.checked) arr.push("Température");
+if(sensSensitive.checked) arr.push("Sensible");
+sensTxt = arr.length?arr.join(", "):"—";
+}
 
-    pdf.setFont("helvetica","normal");
-    pdf.text(String(d.fromProvince||"-"),42,95);
-    pdf.text(String(d.toProvince||"-"),50,102);
+summaryText.innerText =
+`Service: ${s}
+${c} • ${op} (${oq}) → ${dp} (${dq})
+Expéditeur: ${st} • Fréquence: ${fr} • Priorité: ${pr}
+Marchandise: ${gt} • Valeur déclarée: ${dv} • Poids/Qté: ${wv} • Paiement: ${pm}
+Sensibilité: ${sensTxt}`;
+}
 
-    /* ================= SEPARATOR ================= */
-    pdf.setDrawColor(220);
-    pdf.line(18,112,192,112);
+[
+service,frequency,priority,internalRef,
+originProvince,destProvince,originQuartier,destQuartier,originLandmark,destLandmark,
+senderName,senderPhone,receiverName,receiverPhone,
+goodsType,weightValue,declaredValue,paymentMethod,content,notes,nonDangerous,
+sensFragile,sensTemp,sensSensitive
+].forEach(el=>{
+if(!el) return;
+el.addEventListener("input",updateSummary);
+el.addEventListener("change",updateSummary);
+});
 
-    /* ================= TABLE ================= */
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(11);
-    pdf.text("Description",18,126);
-    pdf.text("Montant (BIF)",150,126);
+/* ================= TRACKING ================= */
+function generateTracking(cty){
+const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let code="CL-"+cty+"-";
+for(let i=0;i<8;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+return code;
+}
 
-    pdf.setDrawColor(230);
-    pdf.line(18,132,192,132);
+/* ================= PRICING (DYNAMIC / GLOBAL) ================= */
+function countrySuffix(cty){ return (cty==="RW") ? "rw" : "bi"; }
 
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(10);
-    pdf.text("Livraison nationale - "+tracking,18,145);
+async function loadPricing(cty){
+const s = (service.value || "parcel").toLowerCase();
+const suffix = countrySuffix(cty);
+const primaryId = `${s}_${suffix}`;
 
-    pdf.setFont("helvetica","bold");
-    pdf.text(amount+" BIF",150,145);
+let snap = await getDoc(doc(db,"pricing",primaryId));
+if(snap.exists()) return { id: primaryId, data: snap.data() };
 
-    pdf.setDrawColor(235);
-    pdf.line(18,154,192,154);
+const legacyId = (cty==="RW") ? "parcel_rw" : "parcel_bi";
+snap = await getDoc(doc(db,"pricing",legacyId));
+if(snap.exists()) return { id: legacyId, data: snap.data() };
 
-    /* ================= TOTAL + QR (BLOC STRUCTURÉ) ================= */
-    const boxX = 118, boxY = 162, boxW = 74, boxH = 62;
+throw new Error("Configuration tarifaire introuvable.");
+}
 
-    pdf.setFillColor(250,250,250);
-    pdf.rect(boxX,boxY,boxW,boxH,"F");
-    pdf.setDrawColor(230);
-    pdf.rect(boxX,boxY,boxW,boxH,"S");
+function num(v,def=0){const n=Number(v);return Number.isFinite(n)?n:def;}
 
-    /* Total bar */
-    pdf.setFillColor(212,175,55);
-    pdf.rect(boxX,boxY,boxW,16,"F");
+/* ================= SUBMIT ================= */
+function showError(msg){errorMsg.innerText=msg; okMsg.style.display="none"; okMsg.innerText="";}
+function showOk(msg){okMsg.style.display="block"; okMsg.innerText=msg; errorMsg.innerText="";}
+function setLoading(on){loader.style.display = on ? "block" : "none"; submitBtn.disabled = on;}
 
-    pdf.setTextColor(0);
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(12);
-    pdf.text("TOTAL : "+amount+" BIF",boxX+6,boxY+11);
+goTrackingBtn.addEventListener("click",()=>{location.href = withBase("tracking.html");});
 
-    /* QR label (timeline only) */
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(8);
-    pdf.setTextColor(90);
-    pdf.text("Scan pour le suivi de ton colis (timeline uniquement)",boxX+6,boxY+24);
+let isSubmitting=false;
 
-    /* ================= QR IMAGE ================= */
-    const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+encodeURIComponent(tracking);
-    const qrApi  = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data="+encodeURIComponent(qrData);
+submitBtn.addEventListener("click", async ()=>{
+if(isSubmitting) return;
+isSubmitting=true;
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = qrApi;
+showError("");
+setLoading(true);
 
-    await new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+try{
+if(!currentUser) throw new Error("Session expirée. Reconnectez-vous.");
+if(!service.value) throw new Error("Sélectionnez le service.");
+if(!senderType.value) throw new Error("Sélectionnez le type d’expéditeur.");
+if(!frequency.value) throw new Error("Sélectionnez la fréquence.");
+if(!originProvince.value || !destProvince.value) throw new Error("Sélectionnez la province de départ et destination.");
+if(originProvince.value==="Bujumbura" && !originQuartier.value) throw new Error("Sélectionnez le quartier de départ.");
+if(destProvince.value==="Bujumbura" && !destQuartier.value) throw new Error("Sélectionnez le quartier de destination.");
 
+if(!senderName.value.trim() || !senderPhone.value.trim()) throw new Error("Complétez les infos expéditeur.");
+if(!receiverName.value.trim() || !receiverPhone.value.trim()) throw new Error("Complétez les infos destinataire.");
+
+if(senderPhone.value.length < 8 || receiverPhone.value.length < 8) throw new Error("Numéro de téléphone invalide.");
+
+if(!goodsType.value) throw new Error("Sélectionnez la marchandise.");
+if(!weightValue.value) throw new Error("Poids / quantité requis.");
+if(num(weightValue.value)<=0) throw new Error("Poids / quantité invalide.");
+if(!paymentMethod.value) throw new Error("Sélectionnez un mode de paiement.");
+if(!content.value.trim()) throw new Error("Ajoutez une description courte.");
+if(!nonDangerous.checked) throw new Error("Veuillez confirmer 'matières non dangereuses'.");
+
+if(internalRefWrap.style.display==="block" && internalRef.hasAttribute("required") && !internalRef.value.trim()){
+throw new Error("Référence interne requise (Business).");
+}
+
+const cty = country.value || "BI";
+
+/* pricing (dynamic) */
+let pricingPack;
+try{
+pricingPack = await loadPricing(cty);
+}catch(e){
+throw new Error("Configuration tarifaire non trouvée. Contactez l'administration.");
+}
+const pricing = pricingPack.data || {};
+if(pricing.urbanBase===undefined || pricing.interBase===undefined) throw new Error("Tarification incomplète.");
+
+/* tracking */
+const tracking = generateTracking(cty);
+const shipmentRef = doc(db,"shipments",tracking);
+const existing = await getDoc(shipmentRef);
+if(existing.exists()) throw new Error("Erreur génération tracking. Réessayez.");
+
+/* base: même province vs inter-province */
+const originSameDest = (originProvince.value === destProvince.value);
+let base = originSameDest ? num(pricing.urbanBase) : num(pricing.interBase);
+
+const w = num(weightValue.value,1);
+const declared = num(declaredValue.value,0);
+
+const weightExtra = w>1 ? (w-1)*num(pricing.weightMultiplier) : 0;
+const insurance = declared>0 ? declared*(num(pricing.insurancePercent)/100) : 0;
+const fuel = (base+weightExtra)*(num(pricing.fuelPercent)/100);
+
+const finalPrice = Math.round(base + weightExtra + insurance + fuel);
+
+const priceBreakdown={
+base:Math.round(base),
+weightExtra:Math.round(weightExtra),
+insurance:Math.round(insurance),
+fuel:Math.round(fuel),
+pricingId: pricingPack.id,
+pricingVersion: pricing.pricingVersion || pricingPack.id || "pricing_v1"
+};
+
+const senderProfile={
+type: senderType.value,
+frequency: frequency.value,
+priority: priority.value,
+internalReference: (internalRefWrap.style.display==="block" && internalRef.value.trim()) ? internalRef.value.trim() : null,
+sensitivity:{
+fragile: !!sensFragile.checked,
+temperatureControlled: !!sensTemp.checked,
+sensitiveProduct: !!sensSensitive.checked
+}
+};
+
+await setDoc(shipmentRef,{
+trackingCode: tracking,
+
+service: service.value,
+serviceLabel: (SERVICES[service.value]?.label || "Parcel"),
+country: cty,
+
+ownerUid: currentUser.uid,
+uid: currentUser.uid,
+
+senderProfile,
+
+senderName: senderName.value.trim(),
+senderPhone: senderPhone.value.trim(),
+receiverName: receiverName.value.trim(),
+receiverPhone: receiverPhone.value.trim(),
+
+fromProvince: originProvince.value,
+fromCommune: originCommune ? originCommune.value : null,
+fromQuartier:
+originProvince.value==="Bujumbura"
+? (originQuartier.value || "—")
+: "—",
+fromLandmark:
+originLandmark.value.trim() || null,
+
+toProvince: destProvince.value,
+toCommune: destCommune ? destCommune.value : null,
+toQuartier:
+destProvince.value==="Bujumbura"
+? (destQuartier.value || "—")
+: "—",
+toLandmark:
+destLandmark.value.trim() || null,
+
+fromLat: pickupLat || null,
+fromLng: pickupLng || null,
+toLat: destLat || null,
+toLng: destLng || null,
+  
+goodsType: goodsType.value,
+weightOrQty: w,
+declaredValue: declared>0 ? declared : null,
+
+content: content.value.trim(),
+notes: notes.value.trim() || null,
+
+nonDangerous:true,
+
+paymentMethod: paymentMethod.value,
+paymentStatus:"unpaid",
+status:"created",
+
+priceCalculated:true,
+finalPrice,
+priceBreakdown,
+
+createdAt: serverTimestamp()
+});
+
+showOk("Envoi créé. Redirection…");
+location.replace(withBase("confirmation.html?tracking=" + encodeURIComponent(tracking)));
+
+}catch(e){
+showError(e.message || "Erreur inconnue.");
+}finally{
+setLoading(false);
+isSubmitting=false;
+}
+});
+
+/* ================= SMART ROUTE MAP ================= */
+
+let pickupLat = null;
+let pickupLng = null;
+let destLat = null;
+let destLng = null;
+
+const routeMap = L.map('routeMap').setView([-3.3822, 29.3644], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+}).addTo(routeMap);
+
+let pickupMarker = null;
+let destMarker = null;
+let routeLine = null;
+
+/* ----------- GEOCODING ----------- */
+async function geocodeAddress(address){
     try{
-      pdf.addImage(img,"PNG",boxX+17,boxY+28,40,40);
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if(data && data.length > 0){
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
     }catch(e){}
+    return null;
+}
 
-    /* ================= FOOTER ================= */
-    pdf.setFillColor(245,245,245);
-    pdf.rect(0,242,210,55,"F");
+/* ----------- ROUTE UPDATE ----------- */
+async function updateRouteMap(){
 
-    pdf.setTextColor(80);
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(8);
+    if(!originProvince.value || !destProvince.value) return;
 
-    pdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",18,252);
-    pdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",18,258);
-    pdf.text("Email : infos@cizagroup.com",18,264);
-    pdf.text("Burundi / Sous-Région : +25779945007 | International : +15145011431",18,270);
+    const countryLabel = country.value === "RW" ? "Rwanda" : "Burundi";
 
-    pdf.setFontSize(7);
-    pdf.setTextColor(100);
-    pdf.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et protégé.",18,279);
-    pdf.text("Toute reproduction ou diffusion non autorisée est interdite.",18,285);
+    const originText = `
+        ${originQuartier.value || ""}
+        ${originProvince.value}
+        ${countryLabel}
+    `;
 
-    /* ================= DOWNLOAD DIRECT (MOBILE FRIENDLY) ================= */
-    const filename = "Facture_"+tracking+".pdf";
-    const blob = pdf.output("blob");
-    const url = URL.createObjectURL(blob);
+    const destText = `
+        ${destQuartier.value || ""}
+        ${destProvince.value}
+        ${countryLabel}
+    `;
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{
-      try{ URL.revokeObjectURL(url); }catch(e){}
-      try{ a.remove(); }catch(e){}
-    },800);
+    const originCoords = await geocodeAddress(originText);
+    const destCoords   = await geocodeAddress(destText);
 
-  }catch(err){
-    console.error("generateInvoice error:", err);
-    alert("Impossible de générer la facture. Vérifie la connexion et réessaie.");
-  }
-};  
+    if(!originCoords || !destCoords) return;
 
+    pickupLat = originCoords.lat;
+    pickupLng = originCoords.lng;
+    destLat   = destCoords.lat;
+    destLng   = destCoords.lng;
+
+    if(pickupMarker) routeMap.removeLayer(pickupMarker);
+    if(destMarker)   routeMap.removeLayer(destMarker);
+    if(routeLine)    routeMap.removeLayer(routeLine);
+
+    pickupMarker = L.marker([pickupLat, pickupLng]).addTo(routeMap);
+    destMarker   = L.marker([destLat, destLng]).addTo(routeMap);
+
+    routeLine = L.polyline(
+        [
+            [pickupLat, pickupLng],
+            [destLat, destLng]
+        ],
+        {
+            color: "#D4AF37",
+            weight: 4
+        }
+    ).addTo(routeMap);
+
+    routeMap.fitBounds(routeLine.getBounds(), {
+        padding: [40, 40]
+    });
+}
+
+/* ----------- EVENTS ----------- */
+originProvince.addEventListener("change", updateRouteMap);
+originQuartier.addEventListener("change", updateRouteMap);
+destProvince.addEventListener("change", updateRouteMap);
+destQuartier.addEventListener("change", updateRouteMap);
+/* INIT (page) */
+applyPhonePrefix(country.value);
+loadProvinces();
+applyServiceRules(true);
+updateSummary();
 </script>
+
 </body>
 </html>
