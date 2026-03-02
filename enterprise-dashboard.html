@@ -2,121 +2,551 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portail Entreprise | Ciza Freight</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Ciza Freight | Portail Entreprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial;background:#f4f6f9;color:#111;}
-.container{width:95%;max-width:1200px;margin:auto;}
-
-header{background:#000;color:#fff;padding:20px;text-align:center;}
-header h1{color:#D4AF37;}
-
-.section{margin-top:30px;background:#fff;padding:25px;border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);}
-
-.freight-card{
-border:1px solid rgba(212,175,55,0.4);
-padding:20px;border-radius:16px;margin-bottom:15px;
+:root{
+  --gold:#D4AF37;
+  --black:#0b0b0c;
+  --soft:#121214;
+  --card:#141418;
+  --border:rgba(212,175,55,0.25);
+  --muted:#9a9aa3;
+  --ok:#2e7d32;
+  --bad:#c62828;
+  --warn:#b26a00;
 }
 
-button{
-padding:8px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:900;
-margin-right:10px;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--black);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:#fff;
 }
 
-.accept{background:#2e7d32;color:#fff;}
-.reject{background:#c62828;color:#fff;}
-.pay{background:#D4AF37;color:#000;}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:1000;
+  background:#000;
+}
+
+.brand{display:flex;flex-direction:column;gap:4px;}
+.brand h1{color:var(--gold);font-size:16px;letter-spacing:0.2px;}
+.brand .sub{color:#b9b9bf;font-size:12px;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.btn{
+  border:none;cursor:pointer;font-weight:900;
+  border-radius:12px;padding:9px 12px;
+}
+.btn.outline{
+  background:transparent;color:var(--gold);
+  border:1px solid var(--border);
+}
+.btn.gold{background:var(--gold);color:#000;}
+.btn.dark{
+  background:#0f0f12;color:#fff;border:1px solid rgba(255,255,255,0.08);
+}
+.btn.ok{background:var(--ok);color:#fff;}
+.btn.bad{background:var(--bad);color:#fff;}
+.btn.warn{background:var(--warn);color:#000;}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+
+.clock{
+  text-align:center;
+  padding:8px 12px;
+  font-size:12px;
+  color:#aaa;
+  border-bottom:1px solid var(--border);
+}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+  padding:16px;
+}
+.kpi{
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+}
+.kpi b{display:block;font-size:20px;color:var(--gold);margin-bottom:6px;}
+.kpi span{font-size:12px;color:#cfcfd6;}
+
+.container{width:95%;max-width:1200px;margin:10px auto 40px;}
+
+.topbar{
+  display:flex;gap:10px;flex-wrap:wrap;
+  align-items:center;justify-content:space-between;
+  margin:14px 0 10px;
+}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;}
+.tab{
+  padding:9px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.03);
+  color:#fff;font-weight:900;font-size:12px;
+  cursor:pointer;
+}
+.tab.active{
+  background:rgba(212,175,55,0.18);
+  border:1px solid rgba(212,175,55,0.55);
+  color:var(--gold);
+  box-shadow:0 0 14px rgba(212,175,55,0.25);
+}
+
+.search{
+  display:flex;gap:8px;align-items:center;
+  flex:1;max-width:360px;
+}
+.search input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:#0f0f12;
+  color:#fff;
+  outline:none;
+}
+.search input::placeholder{color:#777}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:12px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:14px;
+}
+.card-head{
+  display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+}
+.code{font-weight:900;color:#fff;font-size:14px;}
+.meta{color:#bdbdc6;font-size:12px;margin-top:6px;line-height:1.55;}
+.route{margin-top:8px;color:#d9d9df;font-size:12px;}
+.route b{color:#fff}
+.row{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.08);
+}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:900;
+  padding:6px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+}
+.chip.gold{border-color:rgba(212,175,55,0.55);background:rgba(212,175,55,0.12);color:var(--gold);}
+.chip.ok{border-color:rgba(46,125,50,0.55);background:rgba(46,125,50,0.14);color:#b7ffbf;}
+.chip.bad{border-color:rgba(198,40,40,0.55);background:rgba(198,40,40,0.14);color:#ffb6b6;}
+.chip.warn{border-color:rgba(178,106,0,0.55);background:rgba(178,106,0,0.16);color:#ffd59a;}
+
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.small{color:#aaa;font-size:12px;line-height:1.6;padding:10px 0;}
+.empty{
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  color:#cfcfd6;
+  line-height:1.65;
+}
+.note{
+  margin-top:10px;
+  font-size:12px;
+  color:#a9a9b2;
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding-top:10px;
+}
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>Portail Entreprise</h1>
-</header>
+<div class="header">
+  <div class="brand">
+    <h1>Portail Entreprise — Ciza Freight</h1>
+    <div class="sub" id="enterpriseInfo">Chargement...</div>
+  </div>
+  <div class="actions">
+    <button class="btn outline" id="toggleArchive">📂 Archivés</button>
+    <button class="btn outline" id="logoutBtn">Déconnexion</button>
+  </div>
+</div>
+
+<div class="clock">🕒 <span id="liveClock"></span></div>
+
+<div class="kpis">
+  <div class="kpi"><b id="kpiActive">0</b><span>Actifs</span></div>
+  <div class="kpi"><b id="kpiQuotes">0</b><span>Devis à valider</span></div>
+  <div class="kpi"><b id="kpiPay">0</b><span>Paiement requis</span></div>
+  <div class="kpi"><b id="kpiTotal">0</b><span>Total (BIF)</span></div>
+</div>
 
 <div class="container">
 
-<div class="section">
-<h2>Mes Transports Freight</h2>
-<div id="enterpriseFreightList"></div>
-</div>
+  <div class="topbar">
+    <div class="tabs">
+      <div class="tab active" data-tab="all">Tous</div>
+      <div class="tab" data-tab="quote_sent">Devis</div>
+      <div class="tab" data-tab="payment_requested">Paiement</div>
+      <div class="tab" data-tab="in_progress">En cours</div>
+      <div class="tab" data-tab="delivered">Livrés</div>
+    </div>
+
+    <div class="search">
+      <input id="searchInput" placeholder="Rechercher (tracking, ville, statut...)">
+    </div>
+  </div>
+
+  <div id="list" class="grid"></div>
+
+  <div class="note">
+    📌 Logique identique à Parcel : l’entreprise lit ses dossiers via <b>companyId == uid</b>.
+    Admin et chauffeur restent synchronisés sur le même document <b>shipments/{id}</b>.
+  </div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp({
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
-});
+const firebaseConfig={
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
+};
 
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-onAuthStateChanged(auth,(user)=>{
-if(!user){location.href="login.html";return;}
+/* =============== CLOCK =============== */
+function updateClock(){
+  const now=new Date();
+  document.getElementById("liveClock").innerText=
+    now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);updateClock();
 
-const q = query(
-collection(db,"shipments"),
-where("shipmentType","==","freight"),
-where("companyName","==",user.displayName)
-);
+/* =============== ARCHIVE TOGGLE (PERSIST) =============== */
+let SHOW_ARCHIVED = (localStorage.getItem("ciza_enterprise_archived")==="1");
+const toggleBtn = document.getElementById("toggleArchive");
+function refreshToggleLabel(){
+  toggleBtn.textContent = SHOW_ARCHIVED ? "📂 Archivés : ON" : "📂 Archivés";
+}
+refreshToggleLabel();
 
-onSnapshot(q,(snap)=>{
-let html="";
-
-snap.forEach(docSnap=>{
-const d=docSnap.data();
-
-html+=`
-<div class="freight-card">
-<strong>${d.trackingCode}</strong><br>
-${d.fromCity} → ${d.toCity}<br>
-Statut : ${d.status}<br>
-${d.quoteAmount ? `Devis : ${d.quoteAmount} BIF<br>` : ""}
-
-${d.status==="quote_sent" ? `
-<button class="accept" onclick="acceptQuote('${docSnap.id}')">Accepter</button>
-<button class="reject" onclick="rejectQuote('${docSnap.id}')">Refuser</button>
-` : ""}
-
-${d.status==="payment_requested" ? `
-<button class="pay">Procéder au paiement</button>
-` : ""}
-
-</div>
-`;
-});
-
-document.getElementById("enterpriseFreightList").innerHTML=html;
-
-});
-});
-
-window.acceptQuote = async function(id){
-await updateDoc(doc(db,"shipments",id),{
-status:"quote_accepted"
-});
-alert("Devis accepté");
+toggleBtn.onclick=()=>{
+  SHOW_ARCHIVED = !SHOW_ARCHIVED;
+  localStorage.setItem("ciza_enterprise_archived", SHOW_ARCHIVED ? "1" : "0");
+  refreshToggleLabel();
+  if(typeof window.__renderNow === "function") window.__renderNow();
 };
 
-window.rejectQuote = async function(id){
-await updateDoc(doc(db,"shipments",id),{
-status:"quote_rejected"
+/* =============== LOGOUT =============== */
+document.getElementById("logoutBtn").onclick=async()=>{
+  await signOut(auth);
+  location.href="login.html";
+};
+
+/* =============== UI STATE =============== */
+let ACTIVE_TAB = "all";
+let SEARCH = "";
+let ROWS = [];
+let PROFILE_COMPANY_NAME = "";
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    ACTIVE_TAB = t.getAttribute("data-tab") || "all";
+    if(typeof window.__renderNow === "function") window.__renderNow();
+  };
 });
-alert("Devis refusé");
+
+document.getElementById("searchInput").addEventListener("input",(e)=>{
+  SEARCH = (e.target.value||"").toLowerCase().trim();
+  if(typeof window.__renderNow === "function") window.__renderNow();
+});
+
+function formatMoney(v){
+  const n = Number(v||0);
+  return n.toLocaleString("fr-FR");
+}
+
+function statusChip(s){
+  const st = String(s||"").toLowerCase();
+  if(st==="quote_sent") return `<span class="chip warn">📑 Devis envoyé</span>`;
+  if(st==="quote_accepted") return `<span class="chip ok">✅ Devis accepté</span>`;
+  if(st==="quote_rejected") return `<span class="chip bad">⛔ Devis refusé</span>`;
+  if(st==="payment_requested") return `<span class="chip gold">💳 Paiement requis</span>`;
+  if(st==="assigned" || st==="picked_up") return `<span class="chip warn">🚚 Assigné</span>`;
+  if(st==="in_transit") return `<span class="chip gold">🚛 En transit</span>`;
+  if(st==="delivered") return `<span class="chip ok">✅ Livré</span>`;
+  return `<span class="chip">ℹ️ ${st || "—"}</span>`;
+}
+
+function matchesTab(d){
+  const st = String(d.status||"").toLowerCase();
+  if(ACTIVE_TAB==="all") return true;
+  if(ACTIVE_TAB==="in_progress"){
+    return (st==="assigned" || st==="picked_up" || st==="in_transit" || st==="quote_accepted");
+  }
+  return st === ACTIVE_TAB;
+}
+
+function matchesSearch(d){
+  if(!SEARCH) return true;
+  const blob = [
+    d.trackingCode, d.fromCity, d.toCity, d.status, d.companyName, d.companyId
+  ].map(x=>String(x||"").toLowerCase()).join(" ");
+  return blob.includes(SEARCH);
+}
+
+function createCard(d){
+  const tracking = d.trackingCode || d.id;
+  const from = d.fromCity || d.fromProvince || "-";
+  const to = d.toCity || d.toProvince || "-";
+
+  const quote = d.quoteAmount ? `${formatMoney(d.quoteAmount)} BIF` : "";
+  const final = d.finalPrice ? `${formatMoney(d.finalPrice)} BIF` : "";
+
+  const archived = (d.archivedByCompany===true || d.autoArchived===true);
+
+  const actions = [];
+
+  if(String(d.status||"").toLowerCase()==="quote_sent"){
+    actions.push(`<button class="btn ok" onclick="acceptQuote('${d.id}')">Accepter</button>`);
+    actions.push(`<button class="btn bad" onclick="rejectQuote('${d.id}')">Refuser</button>`);
+  }
+
+  if(String(d.status||"").toLowerCase()==="payment_requested"){
+    actions.push(`<button class="btn gold" onclick="payNow('${d.id}')">Procéder au paiement</button>`);
+  }
+
+  if(!archived){
+    actions.push(`<button class="btn outline" onclick="archiveCompany('${d.id}')">Archiver</button>`);
+  }else{
+    actions.push(`<button class="btn outline" onclick="restoreCompany('${d.id}')">Restaurer</button>`);
+  }
+
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="code">${tracking}</div>
+        <div class="meta">
+          ${statusChip(d.status)}
+          ${d.updatedAt?.toDate ? ` • MAJ : ${d.updatedAt.toDate().toLocaleString("fr-FR",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}` : ""}
+        </div>
+        <div class="route">📍 <b>${from}</b> → <b>${to}</b></div>
+        ${quote ? `<div class="meta">Devis : <b style="color:#fff">${quote}</b></div>` : ""}
+        ${final ? `<div class="meta">Montant : <b style="color:#fff">${final}</b></div>` : ""}
+      </div>
+      <div class="card-actions">${actions.join("")}</div>
+    </div>
+
+    <div class="row">
+      <div class="meta" style="color:#a9a9b2;">
+        Type : <b style="color:#fff;">Freight</b>
+        ${d.loadType ? ` • Marchandise : <b style="color:#fff">${d.loadType}</b>` : ""}
+      </div>
+      <div class="meta" style="text-align:right;">
+        ${d.assignedDriverId ? `Chauffeur assigné ✅` : `En attente chauffeur ⏳`}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* =============== ACTIONS METIER =============== */
+window.acceptQuote = async(id)=>{
+  await updateDoc(doc(db,"shipments",id),{
+    status:"quote_accepted",
+    quoteDecisionAt: new Date(),
+    quoteDecision:"accepted"
+  });
+  alert("Devis accepté ✅");
+};
+
+window.rejectQuote = async(id)=>{
+  await updateDoc(doc(db,"shipments",id),{
+    status:"quote_rejected",
+    quoteDecisionAt: new Date(),
+    quoteDecision:"rejected"
+  });
+  alert("Devis refusé ⛔");
+};
+
+window.payNow = async(id)=>{
+  alert("Paiement : on branche le module wallet après (étape suivante).");
+};
+
+window.archiveCompany = async(id)=>{
+  await updateDoc(doc(db,"shipments",id),{
+    archivedByCompany:true,
+    archivedByCompanyAt:new Date()
+  });
+};
+
+window.restoreCompany = async(id)=>{
+  await updateDoc(doc(db,"shipments",id),{
+    archivedByCompany:false
+  });
+};
+
+/* =============== LISTENER (SAME PRINCIPLE AS PARCEL) =============== */
+let unsub1=null, unsub2=null;
+
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){ location.href="login.html"; return; }
+
+  // Profile enterprise
+  try{
+    const us = await getDoc(doc(db,"users",user.uid));
+    if(us.exists()){
+      const u = us.data()||{};
+      PROFILE_COMPANY_NAME = String(u.companyName||u.fullName||u.name||user.displayName||"").trim();
+      document.getElementById("enterpriseInfo").innerText =
+        (PROFILE_COMPANY_NAME || user.email || "Entreprise") + " • " + (u.phone||"");
+    }else{
+      PROFILE_COMPANY_NAME = String(user.displayName||"").trim();
+      document.getElementById("enterpriseInfo").innerText = (user.email||"Entreprise");
+    }
+  }catch(e){
+    PROFILE_COMPANY_NAME = String(user.displayName||"").trim();
+    document.getElementById("enterpriseInfo").innerText = (user.email||"Entreprise");
+  }
+
+  // Primary query (recommended): companyId == uid
+  const q1 = query(
+    collection(db,"shipments"),
+    where("shipmentType","==","freight"),
+    where("companyId","==",user.uid)
+  );
+
+  // Fallback query (legacy): companyName == profile name (avoid empty pages)
+  // (Only used if companyName exists; we merge results)
+  let q2 = null;
+  if(PROFILE_COMPANY_NAME){
+    q2 = query(
+      collection(db,"shipments"),
+      where("shipmentType","==","freight"),
+      where("companyName","==",PROFILE_COMPANY_NAME)
+    );
+  }
+
+  const mergeAndRender = (arr1, arr2)=>{
+    const map = new Map();
+    (arr1||[]).forEach(d=>map.set(d.id,d));
+    (arr2||[]).forEach(d=>map.set(d.id,d));
+    ROWS = Array.from(map.values());
+
+    // Sort: recent first if createdAt exists
+    ROWS.sort((a,b)=>{
+      try{
+        const ta = a.createdAt?.seconds ? a.createdAt.seconds : 0;
+        const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
+        return tb-ta;
+      }catch(e){ return 0; }
+    });
+
+    if(typeof window.__renderNow === "function") window.__renderNow();
+  };
+
+  let rows1=[], rows2=[];
+  if(unsub1) try{unsub1();}catch(e){}
+  if(unsub2) try{unsub2();}catch(e){}
+
+  unsub1 = onSnapshot(q1,(snap)=>{
+    rows1 = snap.docs.map(ds=>({id:ds.id,...(ds.data()||{})}));
+    mergeAndRender(rows1, rows2);
+  },(err)=>{
+    console.error("enterprise q1 error", err);
+  });
+
+  if(q2){
+    unsub2 = onSnapshot(q2,(snap)=>{
+      rows2 = snap.docs.map(ds=>({id:ds.id,...(ds.data()||{})}));
+      mergeAndRender(rows1, rows2);
+    },(err)=>{
+      console.error("enterprise q2 error", err);
+    });
+  }
+
+});
+
+/* =============== RENDER =============== */
+window.__renderNow = function(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  let kActive=0, kQuotes=0, kPay=0, total=0;
+
+  const filtered = ROWS.filter(d=>{
+    const archived = (d.archivedByCompany===true || d.autoArchived===true);
+    if(!SHOW_ARCHIVED && archived) return false;
+    if(SHOW_ARCHIVED && !archived) return false;
+    if(!matchesTab(d)) return false;
+    if(!matchesSearch(d)) return false;
+    return true;
+  });
+
+  // KPI on non-archived rows (enterprise view)
+  ROWS.forEach(d=>{
+    const archived = (d.archivedByCompany===true || d.autoArchived===true);
+    if(archived) return;
+
+    const st = String(d.status||"").toLowerCase();
+    if(st!=="delivered") kActive++;
+    if(st==="quote_sent") kQuotes++;
+    if(st==="payment_requested") kPay++;
+    total += Number(d.finalPrice||d.quoteAmount||0);
+  });
+
+  document.getElementById("kpiActive").innerText = kActive;
+  document.getElementById("kpiQuotes").innerText = kQuotes;
+  document.getElementById("kpiPay").innerText = kPay;
+  document.getElementById("kpiTotal").innerText = total.toLocaleString("fr-FR");
+
+  if(!filtered.length){
+    list.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;">
+        <b style="color:var(--gold);">Aucun dossier Freight.</b><br><br>
+        • Vérifie que tes documents Freight ont bien <b>shipmentType="freight"</b><br>
+        • Recommandé : stocker <b>companyId = uid</b> (même logique que Parcel / ownerUid)<br>
+        • Mode compatibilité actif : on tente aussi <b>companyName</b> si présent.<br>
+        <div class="small" style="margin-top:10px;">
+          Si tu veux, on valide ensemble 1 document Firestore Freight et on aligne les champs.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = filtered.map(createCard).join("");
 };
 </script>
 
