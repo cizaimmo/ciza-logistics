@@ -635,24 +635,68 @@ window.archiveManually = async(id)=>{
   });
 };
   
-window.generateInvoice=(id,tracking,price)=>{
-const { jsPDF } = window.jspdf;
-const doc=new jsPDF();
+window.generateInvoice = async(id,tracking,price)=>{
 
-doc.setFontSize(18);
-doc.text("Ciza Logistics - Facture",20,20);
+  const { jsPDF } = window.jspdf;
+  const docPdf = new jsPDF();
 
-doc.setFontSize(12);
-doc.text("Tracking: "+tracking,20,40);
-doc.text("Prix total: "+Number(price||0).toLocaleString("fr-FR")+" BIF",20,50);
-doc.text("Date: "+new Date().toLocaleDateString("fr-FR"),20,60);
+  const invoiceNumber = "CL-" + Date.now();
+  const today = new Date().toLocaleDateString("fr-FR");
 
-doc.setFontSize(10);
-doc.text("Document genere automatiquement - Ciza Logistics",20,75);
+  /* HEADER */
+  docPdf.setFontSize(22);
+  docPdf.setTextColor(212,175,55);
+  docPdf.text("CIZA LOGISTICS",20,20);
 
-doc.save("facture_"+tracking+".pdf");
+  docPdf.setFontSize(10);
+  docPdf.setTextColor(120);
+  docPdf.text("Division Logistique - Ciza Group",20,27);
+
+  docPdf.setDrawColor(212,175,55);
+  docPdf.line(20,32,190,32);
+
+  /* INFOS FACTURE */
+  docPdf.setFontSize(12);
+  docPdf.setTextColor(0);
+
+  docPdf.text("Facture N° : "+invoiceNumber,20,45);
+  docPdf.text("Date : "+today,20,52);
+  docPdf.text("Tracking : "+tracking,20,65);
+
+  docPdf.line(20,75,190,75);
+
+  /* TABLE */
+  docPdf.setFontSize(12);
+  docPdf.text("Description",20,90);
+  docPdf.text("Montant (BIF)",150,90);
+
+  docPdf.line(20,95,190,95);
+
+  docPdf.setFontSize(11);
+  docPdf.text("Livraison nationale - "+tracking,20,108);
+  docPdf.text(Number(price||0).toLocaleString("fr-FR"),150,108);
+
+  docPdf.line(20,118,190,118);
+
+  docPdf.setFontSize(14);
+  docPdf.setTextColor(212,175,55);
+  docPdf.text("TOTAL : "+Number(price||0).toLocaleString("fr-FR")+" BIF",20,132);
+
+  /* FOOTER CORPORATE */
+  docPdf.setTextColor(90);
+  docPdf.setFontSize(9);
+
+  docPdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,155);
+  docPdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,162);
+  docPdf.text("Email : infos@cizagroup.com",20,168);
+  docPdf.text("Burundi / Sous-Région : +25779945007",20,174);
+  docPdf.text("International : +15145011431",20,180);
+
+  docPdf.setFontSize(8);
+  docPdf.text("Document généré automatiquement - Système sécurisé Ciza Logistics",20,192);
+
+  docPdf.save("Facture_"+tracking+".pdf");
 };
-
 </script>
 </body>
 </html>
