@@ -638,130 +638,117 @@ window.archiveManually = async(id)=>{
 window.generateInvoice = async(id,tracking,price)=>{
 
   const { jsPDF } = window.jspdf;
-  const docPdf = new jsPDF();
+  const doc = new jsPDF();
 
   const shipmentSnap = await getDoc(doc(db,"shipments",id));
   if(!shipmentSnap.exists()) return;
-
   const d = shipmentSnap.data();
 
-  /* ==== CLIENT DATA SAFE ==== */
-
-  let clientName =
-      d.clientName ||
-      d.ownerName ||
-      d.senderName ||
-      "Client";
-
-  let clientPhone =
-      d.clientPhone ||
-      d.ownerPhone ||
-      d.senderPhone ||
-      "-";
-
+  const amount = Number(price||0).toLocaleString("fr-FR");
   const invoiceNumber = "CL-" + Date.now();
   const today = new Date().toLocaleDateString("fr-FR");
 
-  /* ==== HEADER ==== */
+  const clientName = d.clientName || d.ownerName || d.senderName || "Client";
+  const clientPhone = d.clientPhone || d.ownerPhone || d.senderPhone || "-";
 
-  docPdf.setFillColor(10,10,10);
-  docPdf.rect(0,0,210,35,"F");
+  /* ================= WATERMARK ================= */
+  doc.setFontSize(60);
+  doc.setTextColor(230);
+  doc.text("CIZA LOGISTICS",105,150,{angle:45,align:"center"});
 
-  docPdf.setTextColor(212,175,55);
-  docPdf.setFontSize(20);
-  docPdf.text("CIZA LOGISTICS",20,20);
+  /* ================= HEADER ================= */
+  doc.setFillColor(10,10,10);
+  doc.rect(0,0,210,35,"F");
 
-  docPdf.setFontSize(9);
-  docPdf.setTextColor(230);
-  docPdf.text("Division Logistique - Ciza Group",20,28);
+  doc.setTextColor(212,175,55);
+  doc.setFontSize(20);
+  doc.text("CIZA LOGISTICS",20,20);
 
-  /* ==== FACTURE INFO ==== */
+  doc.setFontSize(9);
+  doc.setTextColor(230);
+  doc.text("Division Logistique - Ciza Group",20,28);
 
-  docPdf.setTextColor(0);
-  docPdf.setFontSize(12);
-  docPdf.text("FACTURE",150,50);
+  /* ================= FACTURE TITLE ================= */
+  doc.setTextColor(0);
+  doc.setFontSize(18);
+  doc.text("FACTURE",150,55);
 
-  docPdf.setFontSize(10);
-  docPdf.text("N° : "+invoiceNumber,140,60);
-  docPdf.text("Date : "+today,140,66);
+  doc.setFontSize(10);
+  doc.text("N° : "+invoiceNumber,150,65);
+  doc.text("Date : "+today,150,71);
 
-  /* ==== CLIENT BLOCK ==== */
+  /* ================= CLIENT BLOCK ================= */
+  doc.setFillColor(245,245,245);
+  doc.rect(20,50,100,40,"F");
 
-  docPdf.setDrawColor(220);
-  docPdf.rect(20,55,100,35);
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text("FACTURÉ À",25,60);
 
-  docPdf.setFontSize(11);
-  docPdf.text("Facturé à :",25,62);
+  doc.setFontSize(10);
+  doc.text(clientName,25,70);
+  doc.text(clientPhone,25,76);
 
-  docPdf.setFontSize(10);
-  docPdf.text(clientName,25,70);
-  docPdf.text(clientPhone,25,76);
+  /* ================= ROUTE ================= */
+  doc.setFontSize(10);
+  doc.text("Départ : "+(d.fromProvince||"-"),20,105);
+  doc.text("Destination : "+(d.toProvince||"-"),20,112);
 
-  /* ==== ROUTE ==== */
+  /* ================= TABLE ================= */
+  doc.setDrawColor(200);
+  doc.line(20,120,190,120);
 
-  docPdf.setFontSize(10);
-  docPdf.text("Départ : "+(d.fromProvince||"-"),20,100);
-  docPdf.text("Destination : "+(d.toProvince||"-"),20,106);
+  doc.setFontSize(11);
+  doc.text("Description",20,130);
+  doc.text("Montant (BIF)",150,130);
 
-  docPdf.line(20,115,190,115);
+  doc.line(20,135,190,135);
 
-  /* ==== TABLE ==== */
+  doc.setFontSize(10);
+  doc.text("Livraison nationale - "+tracking,20,145);
+  doc.text(amount+" BIF",150,145);
 
-  docPdf.setFontSize(11);
-  docPdf.text("Description",20,125);
-  docPdf.text("Montant (BIF)",150,125);
+  doc.line(20,152,190,152);
 
-  docPdf.line(20,130,190,130);
+  /* ================= TOTAL ================= */
+  doc.setFillColor(212,175,55);
+  doc.rect(120,165,70,18,"F");
 
-  docPdf.setFontSize(10);
-  docPdf.text("Livraison nationale - "+tracking,20,140);
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text("TOTAL : "+amount+" BIF",125,177);
 
-  const amount = Number(price||0).toLocaleString("fr-FR");
-  docPdf.text(amount+" BIF",150,140);
-
-  docPdf.line(20,148,190,148);
-
-  /* ==== TOTAL BOX ==== */
-
-  docPdf.setFillColor(212,175,55);
-  docPdf.rect(110,155,80,18,"F");
-
-  docPdf.setTextColor(0);
-  docPdf.setFontSize(12);
-  docPdf.text("TOTAL : "+amount+" BIF",115,167);
-
-  /* ==== QR CODE ==== */
-
+  /* ================= QR ================= */
   const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+tracking;
-
-  docPdf.setFontSize(8);
-  docPdf.setTextColor(100);
-  docPdf.text("Scanner pour vérifier :",20,170);
-
   const qrApi = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data="+encodeURIComponent(qrData);
 
   const img = new Image();
   img.src = qrApi;
 
-  await new Promise(resolve=>{
-    img.onload = resolve;
-  });
+  await new Promise(resolve=>{ img.onload = resolve; });
+  doc.addImage(img,"PNG",150,185,40,40);
 
-  docPdf.addImage(img, "PNG", 20, 175, 30, 30);
+  doc.setFontSize(8);
+  doc.setTextColor(100);
+  doc.text("Vérification digitale",150,180);
 
-  /* ==== FOOTER ==== */
+  /* ================= FOOTER ================= */
+  doc.setFillColor(240,240,240);
+  doc.rect(0,240,210,57,"F");
 
-  docPdf.setFontSize(8);
-  docPdf.setTextColor(120);
+  doc.setFontSize(8);
+  doc.setTextColor(90);
 
-  docPdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,210);
-  docPdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,216);
-  docPdf.text("Email : infos@cizagroup.com",20,222);
-  docPdf.text("Burundi : +25779945007 | International : +15145011431",20,228);
+  doc.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,250);
+  doc.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,256);
+  doc.text("Email : infos@cizagroup.com",20,262);
+  doc.text("Burundi : +25779945007 | International : +15145011431",20,268);
 
-  docPdf.text("CONFIDENTIALITÉ : Document strictement confidentiel.",20,236);
+  doc.setFontSize(7);
+  doc.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et protégé.",20,276);
+  doc.text("Toute reproduction ou diffusion non autorisée est interdite.",20,282);
 
-  docPdf.save("Facture_"+tracking+".pdf");
+  doc.save("Facture_"+tracking+".pdf");
 };
 </script>
 </body>
