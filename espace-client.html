@@ -634,7 +634,7 @@ window.archiveManually = async(id)=>{
     archivedAt:new Date()
   });
 };
-  
+
 window.generateInvoice = async(id,tracking,price)=>{
 
   const { jsPDF } = window.jspdf;
@@ -718,19 +718,40 @@ window.generateInvoice = async(id,tracking,price)=>{
   doc.setTextColor(0);
   doc.text("TOTAL : "+amount+" BIF",125,177);
 
-  /* ================= QR ================= */
+  /* ================= QR (SAFE ANTI-FREEZE) ================= */
   const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+tracking;
-  const qrApi = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data="+encodeURIComponent(qrData);
+  const qrApi  = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data="+encodeURIComponent(qrData);
 
-  const img = new Image();
-  img.src = qrApi;
+  try{
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = qrApi;
 
-  await new Promise(resolve=>{ img.onload = resolve; });
-  doc.addImage(img,"PNG",150,185,40,40);
+    await new Promise((resolve)=>{
+      const timer = setTimeout(resolve, 2500); // ✅ timeout anti-freeze
+      img.onload = ()=>{ clearTimeout(timer); resolve(); };
+      img.onerror = ()=>{ clearTimeout(timer); resolve(); };
+    });
 
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text("Vérification digitale",150,180);
+    if(img.naturalWidth > 0){
+      doc.addImage(img,"PNG",150,185,40,40);
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text("Vérification digitale",150,180);
+    }else{
+      doc.setDrawColor(180);
+      doc.rect(150,185,40,40);
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text("QR indisponible",152,207);
+    }
+  }catch(e){
+    doc.setDrawColor(180);
+    doc.rect(150,185,40,40);
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text("QR indisponible",152,207);
+  }
 
   /* ================= FOOTER ================= */
   doc.setFillColor(240,240,240);
@@ -750,6 +771,7 @@ window.generateInvoice = async(id,tracking,price)=>{
 
   doc.save("Facture_"+tracking+".pdf");
 };
+  
 </script>
 </body>
 </html>
