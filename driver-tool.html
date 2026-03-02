@@ -485,40 +485,37 @@ function listenShipmentsMulti(){
     const deliveredToday = [];
     const archived = [];
 
- for(const docSnap of snap.docs){
+for(const docSnap of snap.docs){
 
-      const d = docSnap.data() || {};
-      d.id = docSnap.id;
+  const d = docSnap.data() || {};
+  d.id = docSnap.id;
 
   if(d.archivedByDriver || d.autoArchived){
-  archived.push(d);
-  return;
-}
-      const st = (d.status||"").toString();
-// ==========================
-// AUTO ARCHIVE AFTER 7 DAYS
-// ==========================
-if(st === "delivered" && d.deliveredAt?.toDate){
-
-  const deliveredDate = d.deliveredAt.toDate();
-  const now = new Date();
-  const diffDays = (now - deliveredDate) / (1000 * 60 * 60 * 24);
-
-  if(diffDays > 7 && !d.autoArchived){
-
-    await updateDoc(doc(db,"shipments",d.id),{
-  autoArchived:true,
-  autoArchivedAt:serverTimestamp(),
-  archiveReason:"auto_expired"
-});
-
-    return; // ne pas afficher
+    archived.push(d);
+    continue;
   }
+
+  const st = (d.status||"").toString();
+
+  if(st === "delivered" && d.deliveredAt && d.deliveredAt.toDate){
+    const deliveredDate = d.deliveredAt.toDate();
+    const now = new Date();
+    const diffDays = (now - deliveredDate) / (1000*60*60*24);
+
+    if(diffDays > 7 && !d.autoArchived){
+      await updateDoc(doc(db,"shipments",d.id),{
+        autoArchived:true,
+        autoArchivedAt:serverTimestamp(),
+        archiveReason:"auto_expired"
+      });
+      continue;
+    }
+  }
+
+  if(st==="assigned" || st==="picked_up") assigned.push(d);
+  else if(st==="in_transit") transit.push(d);
+  else if(st==="delivered") deliveredToday.push(d);
 }
-      if(st==="assigned" || st==="picked_up") assigned.push(d);
-      else if(st==="in_transit") transit.push(d);
-      else if(st==="delivered") deliveredToday.push(d);
-    });
 
     render("assignedList",assigned);
     render("transitList",transit);
