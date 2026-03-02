@@ -570,7 +570,10 @@ total+=Number(d.finalPrice||0);
 list.insertAdjacentHTML("beforeend", createCardHTML(d));
 
 /* Map + ETA (uniquement si coords présents) */
-const dl=num(d.driverLat), dln=num(d.driverLng), el=num(d.destinationLat), eln=num(d.destinationLng);
+const dl = num(d.lastDriverLocation?.lat);
+const dln = num(d.lastDriverLocation?.lng);
+const el = num(d.toLat);
+const eln = num(d.toLng);
 if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
 ensureMap(d.id, dl, dln, el, eln);
 updateEta(d.id, dl, dln, el, eln);
