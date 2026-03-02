@@ -434,10 +434,25 @@ const showOtp = (d.status==="in_transit" && (d.deliveryOTP || d.otpCode));
 const otpValue = (d.deliveryOTP || d.otpCode || "");
 const showProof = (d.status==="delivered" && (d.deliveryPhoto || d.signatureUrl));
 
+const dl = num(
+  d.lastDriverLocation?.lat ?? d.driverLat
+);
+
+const dln = num(
+  d.lastDriverLocation?.lng ?? d.driverLng
+);
+
+const el = num(
+  d.toLat ?? d.destinationLat
+);
+
+const eln = num(
+  d.toLng ?? d.destinationLng
+);
+
 const canMap = (
-d.status==="in_transit" &&
-num(d.driverLat)!=null && num(d.driverLng)!=null &&
-(num(d.destinationLat)!=null && num(d.destinationLng)!=null)
+  d.status==="in_transit" &&
+  dl!=null && dln!=null && el!=null && eln!=null
 );
 
 const mapBlock = canMap ? `<div class="map-box" id="map_${d.id}"></div>` : "";
