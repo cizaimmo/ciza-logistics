@@ -645,90 +645,121 @@ window.generateInvoice = async(id,tracking,price)=>{
 
   const d = shipmentSnap.data();
 
+  /* ==== CLIENT DATA SAFE ==== */
+
+  let clientName =
+      d.clientName ||
+      d.ownerName ||
+      d.senderName ||
+      "Client";
+
+  let clientPhone =
+      d.clientPhone ||
+      d.ownerPhone ||
+      d.senderPhone ||
+      "-";
+
   const invoiceNumber = "CL-" + Date.now();
   const today = new Date().toLocaleDateString("fr-FR");
 
-  /* ================= HEADER ================= */
+  /* ==== HEADER ==== */
 
-  docPdf.setFillColor(15,15,15);
+  docPdf.setFillColor(10,10,10);
   docPdf.rect(0,0,210,35,"F");
 
   docPdf.setTextColor(212,175,55);
   docPdf.setFontSize(20);
   docPdf.text("CIZA LOGISTICS",20,20);
 
-  docPdf.setFontSize(10);
-  docPdf.setTextColor(200);
+  docPdf.setFontSize(9);
+  docPdf.setTextColor(230);
   docPdf.text("Division Logistique - Ciza Group",20,28);
 
-  /* ================= FACTURE INFO ================= */
+  /* ==== FACTURE INFO ==== */
 
   docPdf.setTextColor(0);
   docPdf.setFontSize(12);
-
   docPdf.text("FACTURE",150,50);
-  docPdf.setFontSize(10);
 
-  docPdf.text("Facture N° : "+invoiceNumber,140,60);
+  docPdf.setFontSize(10);
+  docPdf.text("N° : "+invoiceNumber,140,60);
   docPdf.text("Date : "+today,140,66);
 
-  /* ================= CLIENT ================= */
+  /* ==== CLIENT BLOCK ==== */
 
   docPdf.setDrawColor(220);
-  docPdf.rect(20,55,100,30);
+  docPdf.rect(20,55,100,35);
 
   docPdf.setFontSize(11);
   docPdf.text("Facturé à :",25,62);
 
   docPdf.setFontSize(10);
-  docPdf.text(d.clientName || "Client",25,70);
-  docPdf.text(d.clientPhone || "-",25,76);
+  docPdf.text(clientName,25,70);
+  docPdf.text(clientPhone,25,76);
 
-  /* ================= TABLE ================= */
-
-  docPdf.setDrawColor(212,175,55);
-  docPdf.line(20,95,190,95);
-
-  docPdf.setFontSize(11);
-  docPdf.text("Description",20,105);
-  docPdf.text("Montant (BIF)",150,105);
-
-  docPdf.line(20,110,190,110);
+  /* ==== ROUTE ==== */
 
   docPdf.setFontSize(10);
-  docPdf.text("Livraison nationale - "+tracking,20,122);
-  docPdf.text(Number(price||0).toLocaleString("fr-FR"),150,122);
+  docPdf.text("Départ : "+(d.fromProvince||"-"),20,100);
+  docPdf.text("Destination : "+(d.toProvince||"-"),20,106);
+
+  docPdf.line(20,115,190,115);
+
+  /* ==== TABLE ==== */
+
+  docPdf.setFontSize(11);
+  docPdf.text("Description",20,125);
+  docPdf.text("Montant (BIF)",150,125);
 
   docPdf.line(20,130,190,130);
 
-  /* ================= TOTAL ================= */
+  docPdf.setFontSize(10);
+  docPdf.text("Livraison nationale - "+tracking,20,140);
+
+  const amount = Number(price||0).toLocaleString("fr-FR");
+  docPdf.text(amount+" BIF",150,140);
+
+  docPdf.line(20,148,190,148);
+
+  /* ==== TOTAL BOX ==== */
 
   docPdf.setFillColor(212,175,55);
-  docPdf.rect(120,140,70,18,"F");
+  docPdf.rect(110,155,80,18,"F");
 
   docPdf.setTextColor(0);
   docPdf.setFontSize(12);
-  docPdf.text("TOTAL : "+Number(price||0).toLocaleString("fr-FR")+" BIF",125,152);
+  docPdf.text("TOTAL : "+amount+" BIF",115,167);
 
-  /* ================= FOOTER ================= */
+  /* ==== QR CODE ==== */
 
-  docPdf.setDrawColor(180);
-  docPdf.line(20,175,190,175);
+  const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+tracking;
 
-  docPdf.setFontSize(9);
-  docPdf.setTextColor(90);
+  docPdf.setFontSize(8);
+  docPdf.setTextColor(100);
+  docPdf.text("Scanner pour vérifier :",20,170);
 
-  docPdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,185);
-  docPdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,191);
-  docPdf.text("Email : infos@cizagroup.com",20,197);
-  docPdf.text("Burundi / Sous-Région : +25779945007 | International : +15145011431",20,203);
+  const qrApi = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data="+encodeURIComponent(qrData);
 
-  /* ================= CONFIDENTIALITE ================= */
+  const img = new Image();
+  img.src = qrApi;
+
+  await new Promise(resolve=>{
+    img.onload = resolve;
+  });
+
+  docPdf.addImage(img, "PNG", 20, 175, 30, 30);
+
+  /* ==== FOOTER ==== */
 
   docPdf.setFontSize(8);
   docPdf.setTextColor(120);
-  docPdf.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et destiné uniquement au client mentionné.",20,215);
-  docPdf.text("Toute reproduction ou diffusion sans autorisation écrite est interdite.",20,220);
+
+  docPdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,210);
+  docPdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,216);
+  docPdf.text("Email : infos@cizagroup.com",20,222);
+  docPdf.text("Burundi : +25779945007 | International : +15145011431",20,228);
+
+  docPdf.text("CONFIDENTIALITÉ : Document strictement confidentiel.",20,236);
 
   docPdf.save("Facture_"+tracking+".pdf");
 };
