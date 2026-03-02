@@ -288,6 +288,13 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
+/* ================= MAPS STATE ================= */
+let SHOW_ARCHIVED = (localStorage.getItem("ciza_show_archived")==="1");
+const MAPS = {};        // MAPS[shipmentId] = leafletMap
+const DRIVER = {};      // DRIVER[shipmentId] = marker
+const DEST = {};        // DEST[shipmentId] = marker
+const LINE = {};        // LINE[shipmentId] = polyline
+
 /* ================= CLOCK ================= */
 function updateClock(){
 const now=new Date();
@@ -316,21 +323,28 @@ mobileMenu.classList.remove("open");
 overlay.classList.remove("show");
 }
 });
+
 /* ================= LOGOUT ================= */
 document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
 document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
+
+/* ================= ARCHIVE TOGGLE (FIX) ================= */
+const toggleBtn = document.getElementById("toggleArchive");
+function refreshToggleLabel(){
+  toggleBtn.textContent = SHOW_ARCHIVED ? "📂 Archivés : ON" : "📂 Archivés";
+}
+refreshToggleLabel();
+
 document.getElementById("toggleArchive").onclick=()=>{
   SHOW_ARCHIVED = !SHOW_ARCHIVED;
-  location.reload();
+  localStorage.setItem("ciza_show_archived", SHOW_ARCHIVED ? "1" : "0");
+  refreshToggleLabel();
+  if(typeof window.__lastRowsRender === "function"){
+    window.__lastRowsRender();
+  }
 };
-  
-/* ================= MAPS STATE ================= */
-let SHOW_ARCHIVED = false;
-const MAPS = {};        // MAPS[shipmentId] = leafletMap
-const DRIVER = {};      // DRIVER[shipmentId] = marker
-const DEST = {};        // DEST[shipmentId] = marker
-const LINE = {};        // LINE[shipmentId] = polyline
 
+/* ================= MAPS HELPERS ================= */
 function num(v){ const n=Number(v); return Number.isFinite(n) ? n : null; }
 
 function haversine(lat1,lon1,lat2,lon2){
@@ -582,35 +596,42 @@ return tb-ta;
 }catch(e){return 0;}
 });
 
-for (const d of rows){
+window.__lastRowsRender = function(){
+  let active=0,transit=0,delivered=0,total=0;
+  const list=document.getElementById("list");
+  list.innerHTML="";
 
-  if(d.status!=="delivered") active++;
-  if(d.status==="in_transit") transit++;
-  if(d.status==="delivered") delivered++;
+  for (const d of rows){
 
-  // 🔵 Ne pas afficher si archivé
-if(!SHOW_ARCHIVED && d.archived === true) continue;
-if(SHOW_ARCHIVED && d.archived !== true) continue;
+    if(d.status!=="delivered") active++;
+    if(d.status==="in_transit") transit++;
+    if(d.status==="delivered") delivered++;
 
-  total += Number(d.finalPrice||0);
+    if(!SHOW_ARCHIVED && d.archived === true) continue;
+    if(SHOW_ARCHIVED && d.archived !== true) continue;
 
-  list.insertAdjacentHTML("beforeend", createCardHTML(d));
+    total += Number(d.finalPrice||0);
 
-  const dl = num(d.lastDriverLocation?.lat);
-  const dln = num(d.lastDriverLocation?.lng);
-  const el = num(d.toLat);
-  const eln = num(d.toLng);
+    list.insertAdjacentHTML("beforeend", createCardHTML(d));
 
-  if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
-    ensureMap(d.id, dl, dln, el, eln);
-    updateEta(d.id, dl, dln, el, eln);
+    const dl = num(d.lastDriverLocation?.lat ?? d.driverLat);
+    const dln = num(d.lastDriverLocation?.lng ?? d.driverLng);
+    const el = num(d.toLat ?? d.destinationLat);
+    const eln = num(d.toLng ?? d.destinationLng);
+
+    if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
+      ensureMap(d.id, dl, dln, el, eln);
+      updateEta(d.id, dl, dln, el, eln);
+    }
   }
-}
 
-document.getElementById("kpiActive").innerText=active;
-document.getElementById("kpiTransit").innerText=transit;
-document.getElementById("kpiDelivered").innerText=delivered;
-document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR");
+  document.getElementById("kpiActive").innerText=active;
+  document.getElementById("kpiTransit").innerText=transit;
+  document.getElementById("kpiDelivered").innerText=delivered;
+  document.getElementById("kpiTotal").innerText=total.toLocaleString("fr-FR");
+};
+
+window.__lastRowsRender();
 
 },(err)=>{
 console.error(err);
@@ -626,7 +647,6 @@ window.rate=async(id,stars)=>{
 await updateDoc(doc(db,"shipments",id),{clientRating:stars});
 alert("Merci pour votre note !");
 };
-  
 
 window.archiveManually = async(id)=>{
   await updateDoc(doc(db,"shipments",id),{
@@ -654,14 +674,12 @@ window.generateInvoice = async (id, tracking, price) => {
     const clientName  = d.clientName  || d.ownerName  || d.senderName  || "Client";
     const clientPhone = d.clientPhone || d.ownerPhone || d.senderPhone || "-";
 
-    /* ================= WATERMARK (ULTRA DISCRET) ================= */
     pdf.setFont("helvetica","bold");
     pdf.setFontSize(70);
     pdf.setTextColor(252);
     pdf.text("CIZA",18,230,{angle:45});
     pdf.text("LOGISTICS",40,250,{angle:45});
 
-    /* ================= HEADER ================= */
     pdf.setFillColor(15,15,15);
     pdf.rect(0,0,210,30,"F");
 
@@ -674,7 +692,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.setTextColor(230);
     pdf.text("Division Logistique - Ciza Group",18,24);
 
-    /* ================= FACTURE INFO ================= */
     pdf.setTextColor(0);
     pdf.setFont("helvetica","bold");
     pdf.setFontSize(18);
@@ -685,7 +702,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.text("N° : "+invoiceNumber,145,58);
     pdf.text("Date : "+today,145,64);
 
-    /* ================= CLIENT BLOCK ================= */
     pdf.setFillColor(245,245,245);
     pdf.rect(18,45,110,35,"F");
     pdf.setDrawColor(230);
@@ -704,7 +720,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.setFontSize(10);
     pdf.text(String(clientPhone),23,69);
 
-    /* ================= ROUTE ================= */
     pdf.setTextColor(0);
     pdf.setFont("helvetica","bold");
     pdf.setFontSize(10);
@@ -715,11 +730,9 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.text(String(d.fromProvince||"-"),42,95);
     pdf.text(String(d.toProvince||"-"),50,102);
 
-    /* ================= SEPARATOR ================= */
     pdf.setDrawColor(220);
     pdf.line(18,112,192,112);
 
-    /* ================= TABLE ================= */
     pdf.setFont("helvetica","bold");
     pdf.setFontSize(11);
     pdf.text("Description",18,126);
@@ -738,7 +751,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.setDrawColor(235);
     pdf.line(18,154,192,154);
 
-    /* ================= TOTAL + QR (BLOC STRUCTURÉ) ================= */
     const boxX = 118, boxY = 162, boxW = 74, boxH = 62;
 
     pdf.setFillColor(250,250,250);
@@ -746,7 +758,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.setDrawColor(230);
     pdf.rect(boxX,boxY,boxW,boxH,"S");
 
-    /* Total bar */
     pdf.setFillColor(212,175,55);
     pdf.rect(boxX,boxY,boxW,16,"F");
 
@@ -755,13 +766,11 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.setFontSize(12);
     pdf.text("TOTAL : "+amount+" BIF",boxX+6,boxY+11);
 
-    /* QR label (timeline only) */
     pdf.setFont("helvetica","normal");
     pdf.setFontSize(8);
     pdf.setTextColor(90);
     pdf.text("Scan pour le suivi de ton colis (timeline uniquement)",boxX+6,boxY+24);
 
-    /* ================= QR IMAGE ================= */
     const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+encodeURIComponent(tracking);
     const qrApi  = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data="+encodeURIComponent(qrData);
 
@@ -775,7 +784,6 @@ window.generateInvoice = async (id, tracking, price) => {
       pdf.addImage(img,"PNG",boxX+17,boxY+28,40,40);
     }catch(e){}
 
-    /* ================= FOOTER ================= */
     pdf.setFillColor(245,245,245);
     pdf.rect(0,242,210,55,"F");
 
@@ -793,7 +801,6 @@ window.generateInvoice = async (id, tracking, price) => {
     pdf.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et protégé.",18,279);
     pdf.text("Toute reproduction ou diffusion non autorisée est interdite.",18,285);
 
-    /* ================= DOWNLOAD DIRECT (MOBILE FRIENDLY) ================= */
     const filename = "Facture_"+tracking+".pdf";
     const blob = pdf.output("blob");
     const url = URL.createObjectURL(blob);
@@ -813,7 +820,7 @@ window.generateInvoice = async (id, tracking, price) => {
     console.error("generateInvoice error:", err);
     alert("Impossible de générer la facture. Vérifie la connexion et réessaie.");
   }
-};  
+};
 
 </script>
 </body>
