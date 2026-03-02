@@ -580,6 +580,29 @@ rows.forEach(d=>{
 if(d.status!=="delivered")active++;
 if(d.status==="in_transit")transit++;
 if(d.status==="delivered")delivered++;
+
+ // 🔵 ARCHIVAGE AUTOMATIQUE 7 JOURS
+if(d.status==="delivered" && !d.archived){
+  const deliveredAt = d.deliveredAt?.toDate?.();
+  if(deliveredAt){
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    if(Date.now() - deliveredAt.getTime() > sevenDays){
+      await updateDoc(docRef(db,"shipments",d.id),{
+        archived:true,
+        archivedAt:serverTimestamp()
+      });
+      return;
+    }
+  }
+}
+
+// 🔵 Ne pas afficher si archivé
+if(d.archived === true) return;
+
+total+=Number(d.finalPrice||0);
+
+list.insertAdjacentHTML("beforeend",
+  createCardHTML(d)); 
 total+=Number(d.finalPrice||0);
 
 list.insertAdjacentHTML("beforeend", createCardHTML(d));
