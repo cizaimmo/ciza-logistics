@@ -642,9 +642,9 @@ window.generateInvoice = async (id, tracking, price) => {
 
   const shipmentSnap = await getDoc(doc(db,"shipments",id));
   if(!shipmentSnap.exists()) return;
-  const d = shipmentSnap.data();
+  const d = shipmentSnap.data() || {};
 
-  const amount = String(Number(price||0).toLocaleString("fr-FR"))
+  const amount = String(Number(price || d.finalPrice || 0).toLocaleString("fr-FR"))
     .replace(/\u202F/g," ")
     .replace(/\u00A0/g," ");
 
@@ -654,79 +654,125 @@ window.generateInvoice = async (id, tracking, price) => {
   const clientName  = d.clientName  || d.ownerName  || d.senderName  || "Client";
   const clientPhone = d.clientPhone || d.ownerPhone || d.senderPhone || "-";
 
-  /* ================= WATERMARK DISCRET ================= */
-  pdf.setFontSize(75);
-  pdf.setTextColor(245);
-  pdf.text("CIZA LOGISTICS",30,220,{angle:45});
+  const fromLabel = d.fromProvince || d.fromCity || d.fromCommune || d.fromQuarter || "-";
+  const toLabel   = d.toProvince   || d.toCity   || d.toCommune   || d.toQuarter   || "-";
+
+  /* ================= WATERMARK (TRÈS DISCRET) ================= */
+  pdf.setTextColor(248);
+  pdf.setFont("helvetica","bold");
+  pdf.setFontSize(58);
+  pdf.text("CIZA", 22, 210, { angle: 45 });
+  pdf.setFontSize(32);
+  pdf.text("LOGISTICS", 62, 245, { angle: 45 });
 
   /* ================= HEADER ================= */
   pdf.setFillColor(15,15,15);
-  pdf.rect(0,0,210,30,"F");
+  pdf.rect(0,0,210,32,"F");
 
   pdf.setTextColor(212,175,55);
   pdf.setFontSize(18);
-  pdf.text("CIZA LOGISTICS",20,18);
+  pdf.setFont("helvetica","bold");
+  pdf.text("CIZA LOGISTICS",20,19);
 
   pdf.setFontSize(9);
   pdf.setTextColor(230);
-  pdf.text("Division Logistique - Ciza Group",20,24);
+  pdf.setFont("helvetica","normal");
+  pdf.text("Division Logistique - Ciza Group",20,26);
 
-  /* ================= FACTURE INFO ================= */
+  /* ================= FACTURE INFO (droite) ================= */
   pdf.setTextColor(0);
+  pdf.setFont("helvetica","bold");
   pdf.setFontSize(18);
-  pdf.text("FACTURE",150,50);
+  pdf.text("FACTURE",150,52);
 
+  pdf.setFont("helvetica","normal");
   pdf.setFontSize(10);
-  pdf.text("N° : "+invoiceNumber,150,58);
-  pdf.text("Date : "+today,150,64);
+  pdf.text("N° : "+invoiceNumber,150,60);
+  pdf.text("Date : "+today,150,66);
 
   /* ================= CLIENT BLOCK ================= */
   pdf.setFillColor(240,240,240);
-  pdf.rect(20,45,100,35,"F");
+  pdf.setDrawColor(230);
+  pdf.rect(20,45,105,36,"FD");
 
-  pdf.setFontSize(10);
-  pdf.setTextColor(120);
-  pdf.text("FACTURÉ À",25,55);
+  pdf.setFontSize(9);
+  pdf.setTextColor(110);
+  pdf.setFont("helvetica","bold");
+  pdf.text("FACTURÉ À",25,56);
 
   pdf.setTextColor(0);
+  pdf.setFont("helvetica","normal");
   pdf.setFontSize(11);
-  pdf.text(clientName,25,63);
-  pdf.text(clientPhone,25,69);
+  pdf.text(clientName,25,65);
+
+  pdf.setFontSize(10);
+  pdf.setTextColor(30);
+  pdf.text(clientPhone,25,72);
 
   /* ================= ROUTE ================= */
+  pdf.setDrawColor(230);
+  pdf.line(20,90,190,90);
+
+  pdf.setFont("helvetica","bold");
   pdf.setFontSize(10);
   pdf.setTextColor(0);
-  pdf.text("Départ : "+(d.fromProvince||"-"),20,95);
-  pdf.text("Destination : "+(d.toProvince||"-"),20,102);
+  pdf.text("Départ :",20,100);
+  pdf.setFont("helvetica","normal");
+  pdf.text(fromLabel,40,100);
+
+  pdf.setFont("helvetica","bold");
+  pdf.text("Destination :",20,107);
+  pdf.setFont("helvetica","normal");
+  pdf.text(toLabel,50,107);
 
   /* ================= TABLE HEADER ================= */
-  pdf.setDrawColor(200);
-  pdf.line(20,110,190,110);
+  pdf.setDrawColor(210);
+  pdf.line(20,118,190,118);
 
+  pdf.setFont("helvetica","bold");
   pdf.setFontSize(11);
-  pdf.text("Description",20,120);
-  pdf.text("Montant (BIF)",150,120);
+  pdf.text("Description",20,128);
+  pdf.text("Montant (BIF)",150,128);
 
-  pdf.line(20,125,190,125);
+  pdf.setDrawColor(230);
+  pdf.line(20,133,190,133);
 
   /* ================= TABLE CONTENT ================= */
+  pdf.setFont("helvetica","normal");
   pdf.setFontSize(10);
-  pdf.text("Livraison nationale - "+tracking,20,135);
-  pdf.text(amount+" BIF",150,135);
+  pdf.setTextColor(0);
+  pdf.text("Livraison nationale - "+tracking,20,145);
 
-  pdf.line(20,142,190,142);
+  // Aligner montant à droite, propre (évite “barres”/chevauchements)
+  pdf.setFont("helvetica","bold");
+  pdf.text(amount+" BIF",190,145,{align:"right"});
 
-  /* ================= TOTAL BLOCK ================= */
+  pdf.setDrawColor(235);
+  pdf.line(20,152,190,152);
+
+  /* ================= TOTAL BLOCK (premium) ================= */
   pdf.setFillColor(212,175,55);
-  pdf.rect(120,155,70,18,"F");
+  pdf.rect(118,162,72,18,"F");
 
   pdf.setFontSize(12);
   pdf.setTextColor(0);
-  pdf.text("TOTAL : "+amount+" BIF",125,167);
+  pdf.setFont("helvetica","bold");
+  pdf.text("TOTAL : "+amount+" BIF",154,174,{align:"center"});
 
-  /* ================= QR ================= */
-  const qrData = "https://cizaimmo.github.io/ciza-logistics/tracking.html?code="+tracking;
-  const qrApi  = "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data="+encodeURIComponent(qrData);
+  /* ================= QR (Suivi uniquement / Timeline) ================= */
+  const qrData =
+    "https://cizaimmo.github.io/ciza-logistics/tracking.html?code=" +
+    encodeURIComponent(tracking);
+
+  pdf.setFont("helvetica","normal");
+  pdf.setFontSize(9);
+  pdf.setTextColor(60);
+  pdf.text("Scan pour le suivi de ton colis (timeline uniquement)",150,184);
+
+  // QR via service image (simple), avec crossOrigin
+  const qrApi =
+    "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" +
+    encodeURIComponent(qrData);
 
   const img = new Image();
   img.crossOrigin = "anonymous";
@@ -735,30 +781,46 @@ window.generateInvoice = async (id, tracking, price) => {
   await new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
 
   try{
-    pdf.addImage(img,"PNG",150,175,40,40);
-    pdf.setFontSize(8);
-    pdf.setTextColor(120);
-    pdf.text("Vérification digitale",150,170);
+    pdf.addImage(img,"PNG",150,188,40,40);
   }catch(e){}
 
   /* ================= FOOTER ================= */
-  pdf.setFillColor(240,240,240);
+  pdf.setFillColor(245,245,245);
   pdf.rect(0,235,210,62,"F");
 
+  pdf.setFont("helvetica","normal");
   pdf.setFontSize(8);
-  pdf.setTextColor(80);
+  pdf.setTextColor(90);
 
-  pdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,245);
-  pdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,251);
-  pdf.text("Email : infos@cizagroup.com",20,257);
-  pdf.text("Burundi : +25779945007 | International : +15145011431",20,263);
+  pdf.text("Ciza Logistics - Couverture Nationale (Ouest, Centre, Est & Sud)",20,246);
+  pdf.text("Siège social : 3765 Rue la Vérendrye, Boisbriand, Quebec J7H 1R8, Canada",20,252);
+  pdf.text("Email : infos@cizagroup.com",20,258);
+  pdf.text("Burundi : +25779945007 | International : +15145011431",20,264);
 
   pdf.setFontSize(7);
-  pdf.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et protégé.",20,272);
-  pdf.text("Toute reproduction ou diffusion non autorisée est interdite.",20,278);
+  pdf.setTextColor(110);
+  pdf.text("CONFIDENTIALITÉ : Ce document est strictement confidentiel et protégé.",20,273);
+  pdf.text("Toute reproduction ou diffusion non autorisée est interdite.",20,279);
 
-  /* ================= DOWNLOAD DIRECT ================= */
-  pdf.save("Facture_"+tracking+".pdf");
+  /* ================= DOWNLOAD DIRECT (mobile + PC) ================= */
+  const filename = "Facture_" + tracking + ".pdf";
+
+  try{
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }catch(e){
+    // fallback
+    pdf.save(filename);
+  }
 };
 </script>
 </body>
