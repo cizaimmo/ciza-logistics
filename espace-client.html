@@ -245,6 +245,7 @@ animation:pulse 1.2s infinite ease-in-out;
 <span></span><span></span><span></span>
 </div>
 <button class="logout" id="logoutBtn">Déconnexion</button>
+<button class="outline-btn" id="toggleArchive">📂 Archivés</button>
 </div>
 </div>
 
@@ -318,8 +319,13 @@ overlay.classList.remove("show");
 /* ================= LOGOUT ================= */
 document.getElementById("logoutBtn").onclick=async()=>{await signOut(auth);location.href="login.html";}
 document.getElementById("mobileLogout").onclick=async()=>{await signOut(auth);location.href="login.html";}
-
+document.getElementById("toggleArchive").onclick=()=>{
+  SHOW_ARCHIVED = !SHOW_ARCHIVED;
+  location.reload();
+};
+  
 /* ================= MAPS STATE ================= */
+let SHOW_ARCHIVED = false;
 const MAPS = {};        // MAPS[shipmentId] = leafletMap
 const DRIVER = {};      // DRIVER[shipmentId] = marker
 const DEST = {};        // DEST[shipmentId] = marker
@@ -583,7 +589,8 @@ for (const d of rows){
   if(d.status==="delivered") delivered++;
 
   // 🔵 Ne pas afficher si archivé
-  if(d.archived === true) continue;
+if(!SHOW_ARCHIVED && d.archived === true) continue;
+if(SHOW_ARCHIVED && d.archived !== true) continue;
 
   total += Number(d.finalPrice||0);
 
@@ -619,7 +626,15 @@ window.rate=async(id,stars)=>{
 await updateDoc(doc(db,"shipments",id),{clientRating:stars});
 alert("Merci pour votre note !");
 };
+  
 
+window.archiveManually = async(id)=>{
+  await updateDoc(doc(db,"shipments",id),{
+    archived:true,
+    archivedAt:new Date()
+  });
+};
+  
 window.generateInvoice=(id,tracking,price)=>{
 const { jsPDF } = window.jspdf;
 const doc=new jsPDF();
