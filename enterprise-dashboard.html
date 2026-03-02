@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#000000">
-<title>Ciza Freight | Portail Entreprise</title>
+<title>Portail Entreprise | Ciza Freight</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
@@ -13,236 +12,375 @@
   --gold:#D4AF37;
   --black:#0b0b0c;
   --soft:#121214;
-  --card:#141418;
   --border:rgba(212,175,55,0.25);
   --muted:#9a9aa3;
-  --ok:#2e7d32;
-  --bad:#c62828;
-  --warn:#b26a00;
+  --good:#1f9d55;
+  --bad:#d64545;
+  --card:#0f0f11;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:var(--black);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  color:#fff;
-}
+body{background:var(--black);font-family:Inter;color:#fff}
+a{color:inherit}
 
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:16px 18px;
-  border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:1000;
-  background:#000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:#000;z-index:1000;
 }
-
-.brand{display:flex;flex-direction:column;gap:4px;}
-.brand h1{color:var(--gold);font-size:16px;letter-spacing:0.2px;}
-.brand .sub{color:#b9b9bf;font-size:12px;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.logo-title{display:flex;flex-direction:column;}
+.logo-title h1{color:var(--gold);font-size:18px;}
+.sub{font-size:12px;color:#aaa;margin-top:4px;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.actions{display:flex;gap:10px;align-items:center;}
 .btn{
-  border:none;cursor:pointer;font-weight:900;
-  border-radius:12px;padding:9px 12px;
+  border:none;border-radius:12px;padding:10px 12px;
+  font-weight:900;cursor:pointer;
 }
+.btn.gold{background:var(--gold);color:#000;}
 .btn.outline{
   background:transparent;color:var(--gold);
   border:1px solid var(--border);
 }
-.btn.gold{background:var(--gold);color:#000;}
 .btn.dark{
-  background:#0f0f12;color:#fff;border:1px solid rgba(255,255,255,0.08);
+  background:#0a0a0b;color:#fff;
+  border:1px solid rgba(255,255,255,0.08);
 }
-.btn.ok{background:var(--ok);color:#fff;}
-.btn.bad{background:var(--bad);color:#fff;}
-.btn.warn{background:var(--warn);color:#000;}
-.btn:disabled{opacity:0.6;cursor:not-allowed}
-
-.clock{
-  text-align:center;
-  padding:8px 12px;
-  font-size:12px;
-  color:#aaa;
-  border-bottom:1px solid var(--border);
-}
-
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:12px;
-  padding:16px;
-}
-.kpi{
-  background:var(--soft);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-}
-.kpi b{display:block;font-size:20px;color:var(--gold);margin-bottom:6px;}
-.kpi span{font-size:12px;color:#cfcfd6;}
-
-.container{width:95%;max-width:1200px;margin:10px auto 40px;}
-
-.topbar{
-  display:flex;gap:10px;flex-wrap:wrap;
-  align-items:center;justify-content:space-between;
-  margin:14px 0 10px;
-}
-.tabs{display:flex;gap:10px;flex-wrap:wrap;}
-.tab{
-  padding:9px 12px;border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.03);
-  color:#fff;font-weight:900;font-size:12px;
-  cursor:pointer;
-}
-.tab.active{
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;padding:0 6px;
+  border-radius:999px;
   background:rgba(212,175,55,0.18);
   border:1px solid rgba(212,175,55,0.55);
   color:var(--gold);
-  box-shadow:0 0 14px rgba(212,175,55,0.25);
+  font-weight:900;font-size:12px;
+  margin-left:6px;
 }
-
-.search{
-  display:flex;gap:8px;align-items:center;
-  flex:1;max-width:360px;
+.clock{
+  text-align:center;padding:8px;font-size:13px;color:#aaa;
+  border-bottom:1px solid var(--border);
 }
-.search input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:#0f0f12;
-  color:#fff;
-  outline:none;
-}
-.search input::placeholder{color:#777}
-
+.container{width:95%;max-width:1180px;margin:16px auto 44px;}
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:12px;
+  grid-template-columns:1.1fr 0.9fr;
+  gap:14px;
 }
-
+@media(max-width:980px){
+  .grid{grid-template-columns:1fr;}
+}
 .card{
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.08);
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:18px;
+}
+.card h2{
+  font-size:14px;
+  letter-spacing:.2px;
+  color:#fff;
+  margin-bottom:12px;
+}
+.card h2 span{color:var(--gold);font-weight:900;}
+.muted{color:var(--muted);font-size:12px;line-height:1.55;}
+.hr{height:1px;background:rgba(255,255,255,0.08);margin:14px 0;}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:12px;
+}
+.kpi{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  padding:12px;text-align:center;
+}
+.kpi b{display:block;color:var(--gold);font-size:18px;margin-bottom:4px;}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media(max-width:680px){
+  .form-grid{grid-template-columns:1fr;}
+}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+label{font-size:12px;color:#cfcfcf;font-weight:700;}
+input,select,textarea{
+  background:#0c0c0e;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  padding:12px 12px;
+  color:#fff;
+  outline:none;
+  font-family:Inter;
+}
+textarea{min-height:92px;resize:vertical;}
+.hint{font-size:11px;color:#a9a9b2;line-height:1.4;}
+.steps{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;
+}
+.step{
+  padding:6px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  font-size:12px;white-space:nowrap;
+  opacity:.35;
+}
+.step.active{
+  opacity:1;
+  background:var(--gold);
+  color:#000;
+  font-weight:900;
+  box-shadow:0 0 10px rgba(212,175,55,0.35);
+}
+.row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.small{font-size:12px;color:#bbb;line-height:1.55;}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+.item{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
   border-radius:18px;
   padding:14px;
 }
-.card-head{
+.item-top{
   display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
 }
-.code{font-weight:900;color:#fff;font-size:14px;}
-.meta{color:#bdbdc6;font-size:12px;margin-top:6px;line-height:1.55;}
-.route{margin-top:8px;color:#d9d9df;font-size:12px;}
-.route b{color:#fff}
-.row{
-  display:flex;justify-content:space-between;gap:10px;align-items:center;
-  margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.08);
-}
-.chip{
+.item b{color:var(--gold)}
+.pill{
   display:inline-flex;align-items:center;gap:6px;
   font-size:11px;font-weight:900;
   padding:6px 10px;border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.04);
-  color:#fff;
+  background:rgba(0,0,0,0.25);
 }
-.chip.gold{border-color:rgba(212,175,55,0.55);background:rgba(212,175,55,0.12);color:var(--gold);}
-.chip.ok{border-color:rgba(46,125,50,0.55);background:rgba(46,125,50,0.14);color:#b7ffbf;}
-.chip.bad{border-color:rgba(198,40,40,0.55);background:rgba(198,40,40,0.14);color:#ffb6b6;}
-.chip.warn{border-color:rgba(178,106,0,0.55);background:rgba(178,106,0,0.16);color:#ffd59a;}
-
-.card-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.small{color:#aaa;font-size:12px;line-height:1.6;padding:10px 0;}
-.empty{
-  background:var(--soft);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:18px;
-  color:#cfcfd6;
-  line-height:1.65;
+.pill.good{border-color:rgba(31,157,85,0.45);color:#baf2c9;background:rgba(31,157,85,0.10);}
+.pill.bad{border-color:rgba(214,69,69,0.45);color:#ffc0c0;background:rgba(214,69,69,0.10);}
+.pill.gold{border-color:rgba(212,175,55,0.45);color:#ffe7a3;background:rgba(212,175,55,0.10);}
+.pill.gray{color:#ddd;}
+.footer-note{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  background:rgba(255,255,255,0.02);
+  font-size:12px;color:#cfcfcf;line-height:1.55;
 }
-.note{
-  margin-top:10px;
-  font-size:12px;
-  color:#a9a9b2;
-  border-top:1px solid rgba(255,255,255,0.06);
-  padding-top:10px;
+.toast{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  background:#0a0a0b;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:12px 14px;
+  width:min(92vw,520px);
+  display:none;
+  z-index:3000;
 }
+.toast.show{display:block;}
+.toast b{color:var(--gold)}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-  <div class="brand">
-    <h1>Portail Entreprise — Ciza Freight</h1>
+  <div class="logo-title">
+    <h1>Portail Entreprise <span style="color:#fff;font-weight:800;">|</span> <span style="color:var(--gold);font-weight:900;">Ciza Freight</span></h1>
     <div class="sub" id="enterpriseInfo">Chargement...</div>
   </div>
   <div class="actions">
-    <button class="btn outline" id="toggleArchive">📂 Archivés</button>
-    <button class="btn outline" id="logoutBtn">Déconnexion</button>
+    <button class="btn outline" id="btnMessages">💬 Messages <span class="badge" id="msgBadge">0</span></button>
+    <button class="btn dark" id="logoutBtn">Déconnexion</button>
   </div>
 </div>
 
 <div class="clock">🕒 <span id="liveClock"></span></div>
 
-<div class="kpis">
-  <div class="kpi"><b id="kpiActive">0</b><span>Actifs</span></div>
-  <div class="kpi"><b id="kpiQuotes">0</b><span>Devis à valider</span></div>
-  <div class="kpi"><b id="kpiPay">0</b><span>Paiement requis</span></div>
-  <div class="kpi"><b id="kpiTotal">0</b><span>Total (BIF)</span></div>
-</div>
-
 <div class="container">
 
-  <div class="topbar">
-    <div class="tabs">
-      <div class="tab active" data-tab="all">Tous</div>
-      <div class="tab" data-tab="quote_sent">Devis</div>
-      <div class="tab" data-tab="payment_requested">Paiement</div>
-      <div class="tab" data-tab="in_progress">En cours</div>
-      <div class="tab" data-tab="delivered">Livrés</div>
-    </div>
-
-    <div class="search">
-      <input id="searchInput" placeholder="Rechercher (tracking, ville, statut...)">
-    </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kpiOpen">0</b>Demandes</div>
+    <div class="kpi"><b id="kpiTransit">0</b>En cours</div>
+    <div class="kpi"><b id="kpiDelivered">0</b>Livrés</div>
   </div>
 
-  <div id="list" class="grid"></div>
+  <div class="grid">
 
-  <div class="note">
-    📌 Logique identique à Parcel : l’entreprise lit ses dossiers via <b>companyId == uid</b>.
-    Admin et chauffeur restent synchronisés sur le même document <b>shipments/{id}</b>.
+    <!-- LEFT: FORM -->
+    <div class="card">
+      <h2><span>Nouvelle demande Freight</span> (B2B)</h2>
+      <div class="muted">
+        Transport inter-provincial pour entreprises, commerces & chaînes d’approvisionnement.
+        <b style="color:var(--gold)">Aucune livraison sans OTP + signature</b> (géré côté driver).
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="steps">
+        <div class="step active" id="s1">1) Besoin</div>
+        <div class="step" id="s2">2) Ramassage</div>
+        <div class="step" id="s3">3) Confirmation</div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div id="step1">
+        <div class="form-grid">
+          <div class="field">
+            <label>Type de marchandise</label>
+            <select id="cargoType">
+              <option value="general">Général (cartons, colis, divers)</option>
+              <option value="food">Alimentaire / Produits sensibles</option>
+              <option value="electronics">Électronique / Valeur</option>
+              <option value="construction">Matériaux / Construction</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Volume estimé</label>
+            <select id="cargoVolume">
+              <option value="small">Petit (≤ 200 kg)</option>
+              <option value="medium">Moyen (200–800 kg)</option>
+              <option value="large">Grand (≥ 800 kg)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Ville / Province de départ</label>
+            <input id="fromCity" placeholder="Ex: Bujumbura / Ngozi / Gitega">
+          </div>
+          <div class="field">
+            <label>Ville / Province de destination</label>
+            <input id="toCity" placeholder="Ex: Muyinga / Rumonge / Kayanza">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Contact sur place (départ)</label>
+            <input id="fromContact" placeholder="Nom + téléphone">
+          </div>
+          <div class="field">
+            <label>Contact sur place (destination)</label>
+            <input id="toContact" placeholder="Nom + téléphone">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Détails / instructions</label>
+          <textarea id="instructions" placeholder="Ex: fragile, horaires d’accès, numéro bon de commande, etc."></textarea>
+          <div class="hint">Conseil Afrique: mettre une consigne claire + contact joignable réduit les retards.</div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn outline" id="btnSaveDraft1">💾 Sauvegarder (draft)</button>
+          <button class="btn gold" id="btnNext1">Continuer</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step2" style="display:none;">
+        <div class="muted">
+          Option de <b style="color:var(--gold)">ramassage</b> pour entreprises (ponctuel ou récurrent).
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="field">
+          <label>Ramassage</label>
+          <select id="pickupMode">
+            <option value="none">Non (je dépose moi-même)</option>
+            <option value="one_time">Oui (ponctuel)</option>
+            <option value="weekly">Oui (1 fois par semaine)</option>
+            <option value="biweekly">Oui (2 fois par semaine)</option>
+          </select>
+          <div class="hint">Recommandation Afrique: fréquence “weekly” est la plus réaliste pour commencer (pilotage simple).</div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Adresse de ramassage (si applicable)</label>
+            <input id="pickupAddress" placeholder="Quartier / Avenue / repère (sans GPS obligatoire)">
+          </div>
+          <div class="field">
+            <label>Jour/Heure préférés</label>
+            <input id="pickupWindow" placeholder="Ex: Mardi 09:00–12:00">
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn outline" id="btnBack2">Retour</button>
+          <button class="btn outline" id="btnSaveDraft2">💾 Sauvegarder (draft)</button>
+          <button class="btn gold" id="btnNext2">Continuer</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step3" style="display:none;">
+        <div class="footer-note" id="reviewBox">
+          Chargement résumé...
+        </div>
+
+        <div class="row-actions">
+          <button class="btn outline" id="btnBack3">Retour</button>
+          <button class="btn outline" id="btnSaveDraft3">💾 Sauvegarder (draft)</button>
+          <button class="btn gold" id="btnSubmit">✅ Soumettre la demande</button>
+        </div>
+
+        <div class="footer-note" style="margin-top:12px;">
+          Après soumission, l’Admin Ciza Logistics reçoit la demande et peut:
+          deviser, assigner, et gérer le flow avec le driver (OTP + signature requis).
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: LIST + MESSAGES -->
+    <div class="card">
+      <h2><span>Mes demandes Freight</span></h2>
+      <div class="muted">Suivi entreprise (côté owner). Les détails sensibles restent côté plateforme.</div>
+
+      <div class="list" id="freightList">
+        <div class="small">Chargement...</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2><span>Messagerie interne</span> <span class="badge" id="msgBadge2">0</span></h2>
+      <div class="muted">
+        Placeholder (comme demandé). Badge visuel seulement. Les fonctions arrivent après.
+      </div>
+
+      <div class="footer-note" style="margin-top:10px;">
+        💬 Vous recevrez ici les messages admin (devis, confirmations, instructions).
+        <br><span class="hint">Conservation recommandée: effacement automatique après 6 mois (à faire côté admin/cron).</span>
+      </div>
+
+    </div>
+
   </div>
-
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
-  getFirestore, collection, query, where, onSnapshot,
-  doc, getDoc, updateDoc
+  getFirestore, collection, query, where, onSnapshot, doc, getDoc, setDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
   authDomain:"ciza-logistics.firebaseapp.com",
   projectId:"ciza-logistics"
 };
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* =============== CLOCK =============== */
+/* ============ CLOCK ============ */
 function updateClock(){
   const now=new Date();
   document.getElementById("liveClock").innerText=
@@ -250,303 +388,309 @@ function updateClock(){
 }
 setInterval(updateClock,1000);updateClock();
 
-/* =============== ARCHIVE TOGGLE (PERSIST) =============== */
-let SHOW_ARCHIVED = (localStorage.getItem("ciza_enterprise_archived")==="1");
-const toggleBtn = document.getElementById("toggleArchive");
-function refreshToggleLabel(){
-  toggleBtn.textContent = SHOW_ARCHIVED ? "📂 Archivés : ON" : "📂 Archivés";
+/* ============ TOAST ============ */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerHTML=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2400);
 }
-refreshToggleLabel();
 
-toggleBtn.onclick=()=>{
-  SHOW_ARCHIVED = !SHOW_ARCHIVED;
-  localStorage.setItem("ciza_enterprise_archived", SHOW_ARCHIVED ? "1" : "0");
-  refreshToggleLabel();
-  if(typeof window.__renderNow === "function") window.__renderNow();
-};
+/* ============ LOGOUT ============ */
+document.getElementById("logoutBtn").onclick=async()=>{ await signOut(auth); location.href="login.html"; };
 
-/* =============== LOGOUT =============== */
-document.getElementById("logoutBtn").onclick=async()=>{
-  await signOut(auth);
-  location.href="login.html";
-};
+/* ============ STEP UI ============ */
+let STEP=1;
+function setStep(n){
+  STEP=n;
+  document.getElementById("step1").style.display = (n===1) ? "block" : "none";
+  document.getElementById("step2").style.display = (n===2) ? "block" : "none";
+  document.getElementById("step3").style.display = (n===3) ? "block" : "none";
 
-/* =============== UI STATE =============== */
-let ACTIVE_TAB = "all";
-let SEARCH = "";
-let ROWS = [];
-let PROFILE_COMPANY_NAME = "";
+  document.getElementById("s1").classList.toggle("active", n===1);
+  document.getElementById("s2").classList.toggle("active", n===2);
+  document.getElementById("s3").classList.toggle("active", n===3);
 
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    ACTIVE_TAB = t.getAttribute("data-tab") || "all";
-    if(typeof window.__renderNow === "function") window.__renderNow();
+  if(n===3) renderReview();
+}
+document.getElementById("btnNext1").onclick=()=>setStep(2);
+document.getElementById("btnBack2").onclick=()=>setStep(1);
+document.getElementById("btnNext2").onclick=()=>setStep(3);
+document.getElementById("btnBack3").onclick=()=>setStep(2);
+
+/* ============ DATA ============ */
+let currentUser=null;
+let enterpriseProfile=null; // users/{uid} if exists
+let draftId=null;
+
+function getFormData(){
+  return {
+    shipmentType:"freight",
+
+    cargoType:document.getElementById("cargoType").value,
+    cargoVolume:document.getElementById("cargoVolume").value,
+    fromCity:document.getElementById("fromCity").value.trim(),
+    toCity:document.getElementById("toCity").value.trim(),
+    fromContact:document.getElementById("fromContact").value.trim(),
+    toContact:document.getElementById("toContact").value.trim(),
+    instructions:document.getElementById("instructions").value.trim(),
+
+    pickupMode:document.getElementById("pickupMode").value,
+    pickupAddress:document.getElementById("pickupAddress").value.trim(),
+    pickupWindow:document.getElementById("pickupWindow").value.trim(),
   };
-});
-
-document.getElementById("searchInput").addEventListener("input",(e)=>{
-  SEARCH = (e.target.value||"").toLowerCase().trim();
-  if(typeof window.__renderNow === "function") window.__renderNow();
-});
-
-function formatMoney(v){
-  const n = Number(v||0);
-  return n.toLocaleString("fr-FR");
 }
 
-function statusChip(s){
-  const st = String(s||"").toLowerCase();
-  if(st==="quote_sent") return `<span class="chip warn">📑 Devis envoyé</span>`;
-  if(st==="quote_accepted") return `<span class="chip ok">✅ Devis accepté</span>`;
-  if(st==="quote_rejected") return `<span class="chip bad">⛔ Devis refusé</span>`;
-  if(st==="payment_requested") return `<span class="chip gold">💳 Paiement requis</span>`;
-  if(st==="assigned" || st==="picked_up") return `<span class="chip warn">🚚 Assigné</span>`;
-  if(st==="in_transit") return `<span class="chip gold">🚛 En transit</span>`;
-  if(st==="delivered") return `<span class="chip ok">✅ Livré</span>`;
-  return `<span class="chip">ℹ️ ${st || "—"}</span>`;
+function basicValidate(d){
+  if(!d.fromCity || !d.toCity) return "Départ et destination sont requis.";
+  if(!d.fromContact || !d.toContact) return "Contacts départ/destination requis.";
+  return null;
 }
 
-function matchesTab(d){
-  const st = String(d.status||"").toLowerCase();
-  if(ACTIVE_TAB==="all") return true;
-  if(ACTIVE_TAB==="in_progress"){
-    return (st==="assigned" || st==="picked_up" || st==="in_transit" || st==="quote_accepted");
-  }
-  return st === ACTIVE_TAB;
+function trackingCode(){
+  const rnd = Math.random().toString(36).slice(2,6).toUpperCase();
+  return "CF-" + Date.now().toString().slice(-6) + "-" + rnd;
 }
 
-function matchesSearch(d){
-  if(!SEARCH) return true;
-  const blob = [
-    d.trackingCode, d.fromCity, d.toCity, d.status, d.companyName, d.companyId
-  ].map(x=>String(x||"").toLowerCase()).join(" ");
-  return blob.includes(SEARCH);
+async function saveDraft(){
+  if(!currentUser) return;
+  const d=getFormData();
+
+  const err = basicValidate(d);
+  if(err){
+    toast("⚠️ <b>Info</b> : "+err+" (Tu peux sauver draft quand même.)");
+  }
+
+  if(!draftId){
+    draftId = "draft_"+currentUser.uid;
+  }
+
+  const payload = {
+    ...d,
+    status:"draft",
+    ownerUid:currentUser.uid,
+    ownerEmail:currentUser.email||"",
+    companyName:(enterpriseProfile?.companyName || enterpriseProfile?.name || currentUser.displayName || "Entreprise"),
+    ownerName:(enterpriseProfile?.fullName || enterpriseProfile?.name || currentUser.displayName || "Entreprise"),
+    ownerPhone:(enterpriseProfile?.phone || "-"),
+    updatedAt:serverTimestamp(),
+    createdAt:serverTimestamp(),
+    isEnterprise:true
+  };
+
+  await setDoc(doc(db,"shipments",draftId), payload, { merge:true });
+  toast("✅ Draft sauvegardé");
 }
 
-function createCard(d){
-  const tracking = d.trackingCode || d.id;
-  const from = d.fromCity || d.fromProvince || "-";
-  const to = d.toCity || d.toProvince || "-";
+/* Save draft buttons */
+document.getElementById("btnSaveDraft1").onclick=saveDraft;
+document.getElementById("btnSaveDraft2").onclick=saveDraft;
+document.getElementById("btnSaveDraft3").onclick=saveDraft;
 
-  const quote = d.quoteAmount ? `${formatMoney(d.quoteAmount)} BIF` : "";
-  const final = d.finalPrice ? `${formatMoney(d.finalPrice)} BIF` : "";
+/* Review */
+function renderReview(){
+  const d=getFormData();
+  const box=document.getElementById("reviewBox");
 
-  const archived = (d.archivedByCompany===true || d.autoArchived===true);
-
-  const actions = [];
-
-  if(String(d.status||"").toLowerCase()==="quote_sent"){
-    actions.push(`<button class="btn ok" onclick="acceptQuote('${d.id}')">Accepter</button>`);
-    actions.push(`<button class="btn bad" onclick="rejectQuote('${d.id}')">Refuser</button>`);
-  }
-
-  if(String(d.status||"").toLowerCase()==="payment_requested"){
-    actions.push(`<button class="btn gold" onclick="payNow('${d.id}')">Procéder au paiement</button>`);
-  }
-
-  if(!archived){
-    actions.push(`<button class="btn outline" onclick="archiveCompany('${d.id}')">Archiver</button>`);
-  }else{
-    actions.push(`<button class="btn outline" onclick="restoreCompany('${d.id}')">Restaurer</button>`);
-  }
-
-  return `
-  <div class="card">
-    <div class="card-head">
-      <div>
-        <div class="code">${tracking}</div>
-        <div class="meta">
-          ${statusChip(d.status)}
-          ${d.updatedAt?.toDate ? ` • MAJ : ${d.updatedAt.toDate().toLocaleString("fr-FR",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}` : ""}
-        </div>
-        <div class="route">📍 <b>${from}</b> → <b>${to}</b></div>
-        ${quote ? `<div class="meta">Devis : <b style="color:#fff">${quote}</b></div>` : ""}
-        ${final ? `<div class="meta">Montant : <b style="color:#fff">${final}</b></div>` : ""}
-      </div>
-      <div class="card-actions">${actions.join("")}</div>
+  box.innerHTML = `
+    <b style="color:var(--gold);font-size:13px;">Résumé de la demande</b><br><br>
+    <div class="small">
+      <b>Marchandise :</b> ${d.cargoType} • ${d.cargoVolume}<br>
+      <b>Trajet :</b> ${d.fromCity || "-"} → ${d.toCity || "-"}<br>
+      <b>Contacts :</b> Départ (${d.fromContact || "-"}) • Destination (${d.toContact || "-"})<br>
+      <b>Ramassage :</b> ${d.pickupMode}<br>
+      ${d.pickupMode!=="none" ? `<b>Adresse :</b> ${d.pickupAddress||"-"} • <b>Créneau :</b> ${d.pickupWindow||"-"}<br>` : ``}
+      <b>Notes :</b> ${d.instructions ? d.instructions : "-"}
     </div>
-
-    <div class="row">
-      <div class="meta" style="color:#a9a9b2;">
-        Type : <b style="color:#fff;">Freight</b>
-        ${d.loadType ? ` • Marchandise : <b style="color:#fff">${d.loadType}</b>` : ""}
-      </div>
-      <div class="meta" style="text-align:right;">
-        ${d.assignedDriverId ? `Chauffeur assigné ✅` : `En attente chauffeur ⏳`}
-      </div>
-    </div>
-  </div>
   `;
 }
 
-/* =============== ACTIONS METIER =============== */
-window.acceptQuote = async(id)=>{
-  await updateDoc(doc(db,"shipments",id),{
-    status:"quote_accepted",
-    quoteDecisionAt: new Date(),
-    quoteDecision:"accepted"
-  });
-  alert("Devis accepté ✅");
-};
+/* Submit */
+document.getElementById("btnSubmit").onclick=async()=>{
+  if(!currentUser) return;
 
-window.rejectQuote = async(id)=>{
-  await updateDoc(doc(db,"shipments",id),{
-    status:"quote_rejected",
-    quoteDecisionAt: new Date(),
-    quoteDecision:"rejected"
-  });
-  alert("Devis refusé ⛔");
-};
-
-window.payNow = async(id)=>{
-  alert("Paiement : on branche le module wallet après (étape suivante).");
-};
-
-window.archiveCompany = async(id)=>{
-  await updateDoc(doc(db,"shipments",id),{
-    archivedByCompany:true,
-    archivedByCompanyAt:new Date()
-  });
-};
-
-window.restoreCompany = async(id)=>{
-  await updateDoc(doc(db,"shipments",id),{
-    archivedByCompany:false
-  });
-};
-
-/* =============== LISTENER (SAME PRINCIPLE AS PARCEL) =============== */
-let unsub1=null, unsub2=null;
-
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){ location.href="login.html"; return; }
-
-  // Profile enterprise
-  try{
-    const us = await getDoc(doc(db,"users",user.uid));
-    if(us.exists()){
-      const u = us.data()||{};
-      PROFILE_COMPANY_NAME = String(u.companyName||u.fullName||u.name||user.displayName||"").trim();
-      document.getElementById("enterpriseInfo").innerText =
-        (PROFILE_COMPANY_NAME || user.email || "Entreprise") + " • " + (u.phone||"");
-    }else{
-      PROFILE_COMPANY_NAME = String(user.displayName||"").trim();
-      document.getElementById("enterpriseInfo").innerText = (user.email||"Entreprise");
-    }
-  }catch(e){
-    PROFILE_COMPANY_NAME = String(user.displayName||"").trim();
-    document.getElementById("enterpriseInfo").innerText = (user.email||"Entreprise");
-  }
-
-  // Primary query (recommended): companyId == uid
-  const q1 = query(
-    collection(db,"shipments"),
-    where("shipmentType","==","freight"),
-    where("companyId","==",user.uid)
-  );
-
-  // Fallback query (legacy): companyName == profile name (avoid empty pages)
-  // (Only used if companyName exists; we merge results)
-  let q2 = null;
-  if(PROFILE_COMPANY_NAME){
-    q2 = query(
-      collection(db,"shipments"),
-      where("shipmentType","==","freight"),
-      where("companyName","==",PROFILE_COMPANY_NAME)
-    );
-  }
-
-  const mergeAndRender = (arr1, arr2)=>{
-    const map = new Map();
-    (arr1||[]).forEach(d=>map.set(d.id,d));
-    (arr2||[]).forEach(d=>map.set(d.id,d));
-    ROWS = Array.from(map.values());
-
-    // Sort: recent first if createdAt exists
-    ROWS.sort((a,b)=>{
-      try{
-        const ta = a.createdAt?.seconds ? a.createdAt.seconds : 0;
-        const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
-        return tb-ta;
-      }catch(e){ return 0; }
-    });
-
-    if(typeof window.__renderNow === "function") window.__renderNow();
-  };
-
-  let rows1=[], rows2=[];
-  if(unsub1) try{unsub1();}catch(e){}
-  if(unsub2) try{unsub2();}catch(e){}
-
-  unsub1 = onSnapshot(q1,(snap)=>{
-    rows1 = snap.docs.map(ds=>({id:ds.id,...(ds.data()||{})}));
-    mergeAndRender(rows1, rows2);
-  },(err)=>{
-    console.error("enterprise q1 error", err);
-  });
-
-  if(q2){
-    unsub2 = onSnapshot(q2,(snap)=>{
-      rows2 = snap.docs.map(ds=>({id:ds.id,...(ds.data()||{})}));
-      mergeAndRender(rows1, rows2);
-    },(err)=>{
-      console.error("enterprise q2 error", err);
-    });
-  }
-
-});
-
-/* =============== RENDER =============== */
-window.__renderNow = function(){
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
-  let kActive=0, kQuotes=0, kPay=0, total=0;
-
-  const filtered = ROWS.filter(d=>{
-    const archived = (d.archivedByCompany===true || d.autoArchived===true);
-    if(!SHOW_ARCHIVED && archived) return false;
-    if(SHOW_ARCHIVED && !archived) return false;
-    if(!matchesTab(d)) return false;
-    if(!matchesSearch(d)) return false;
-    return true;
-  });
-
-  // KPI on non-archived rows (enterprise view)
-  ROWS.forEach(d=>{
-    const archived = (d.archivedByCompany===true || d.autoArchived===true);
-    if(archived) return;
-
-    const st = String(d.status||"").toLowerCase();
-    if(st!=="delivered") kActive++;
-    if(st==="quote_sent") kQuotes++;
-    if(st==="payment_requested") kPay++;
-    total += Number(d.finalPrice||d.quoteAmount||0);
-  });
-
-  document.getElementById("kpiActive").innerText = kActive;
-  document.getElementById("kpiQuotes").innerText = kQuotes;
-  document.getElementById("kpiPay").innerText = kPay;
-  document.getElementById("kpiTotal").innerText = total.toLocaleString("fr-FR");
-
-  if(!filtered.length){
-    list.innerHTML = `
-      <div class="empty" style="grid-column:1/-1;">
-        <b style="color:var(--gold);">Aucun dossier Freight.</b><br><br>
-        • Vérifie que tes documents Freight ont bien <b>shipmentType="freight"</b><br>
-        • Recommandé : stocker <b>companyId = uid</b> (même logique que Parcel / ownerUid)<br>
-        • Mode compatibilité actif : on tente aussi <b>companyName</b> si présent.<br>
-        <div class="small" style="margin-top:10px;">
-          Si tu veux, on valide ensemble 1 document Firestore Freight et on aligne les champs.
-        </div>
-      </div>
-    `;
+  const data=getFormData();
+  const err=basicValidate(data);
+  if(err){
+    toast("❌ <b>Erreur</b> : "+err);
     return;
   }
 
-  list.innerHTML = filtered.map(createCard).join("");
+  // Create official shipment doc (freight request)
+  const id = doc(collection(db,"shipments")).id;
+  const code = trackingCode();
+
+  const payload = {
+    ...data,
+    trackingCode:code,
+    status:"created",
+    createdAt:serverTimestamp(),
+    updatedAt:serverTimestamp(),
+
+    // Owner logic like client
+    ownerUid:currentUser.uid,
+    ownerEmail:currentUser.email||"",
+    ownerName:(enterpriseProfile?.fullName || enterpriseProfile?.name || currentUser.displayName || "Entreprise"),
+    ownerPhone:(enterpriseProfile?.phone || "-"),
+    companyName:(enterpriseProfile?.companyName || enterpriseProfile?.name || currentUser.displayName || "Entreprise"),
+    isEnterprise:true,
+
+    // Platform/admin flags
+    adminNotified:false,
+    needsQuote:true,
+
+    // Archive fields (future)
+    archived:false
+  };
+
+  await setDoc(doc(db,"shipments",id), payload);
+
+  // Mark admin notified flag (simple)
+  await updateDoc(doc(db,"shipments",id),{
+    adminNotified:true,
+    updatedAt:serverTimestamp()
+  });
+
+  // Clear draft (optional)
+  try{
+    if(draftId){
+      await updateDoc(doc(db,"shipments",draftId),{ status:"draft_submitted", updatedAt:serverTimestamp() });
+    }
+  }catch(e){}
+
+  toast("✅ <b>Demande envoyée</b> • Tracking: "+code);
+  setStep(1);
+
+  // Reset minimal fields
+  document.getElementById("instructions").value="";
+  document.getElementById("pickupAddress").value="";
+  document.getElementById("pickupWindow").value="";
+};
+
+/* Messages placeholder */
+document.getElementById("btnMessages").onclick=()=>{
+  toast("💬 <b>Messagerie</b> : placeholder (badge uniquement).");
+};
+
+/* ============ AUTH + LISTENERS ============ */
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){ location.href="login.html"; return; }
+  currentUser=user;
+
+  // Load enterprise profile (same pattern as client)
+  const us = await getDoc(doc(db,"users",user.uid));
+  if(us.exists()) enterpriseProfile = us.data()||{};
+
+  const displayName =
+    enterpriseProfile?.companyName ||
+    enterpriseProfile?.fullName ||
+    enterpriseProfile?.name ||
+    user.displayName ||
+    user.email ||
+    "Entreprise";
+
+  const phone =
+    enterpriseProfile?.phone ? (" • "+enterpriseProfile.phone) : "";
+
+  document.getElementById("enterpriseInfo").innerText = displayName + phone;
+
+  // List all freight shipments for this owner
+  const q = query(
+    collection(db,"shipments"),
+    where("shipmentType","==","freight"),
+    where("ownerUid","==",user.uid)
+  );
+
+  onSnapshot(q,(snap)=>{
+    const rows=[];
+    snap.forEach(ds=>{
+      const d=ds.data()||{};
+      rows.push({ id:ds.id, ...d });
+    });
+
+    // Sort by createdAt desc if exists
+    rows.sort((a,b)=>{
+      try{
+        const ta = a.createdAt?.seconds ? a.createdAt.seconds : 0;
+        const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
+        return tb - ta;
+      }catch(e){ return 0; }
+    });
+
+    let open=0, transit=0, delivered=0;
+    let html="";
+
+    for(const d of rows){
+      // Count KPIs
+      if(d.status==="delivered") delivered++;
+      else if(d.status==="in_transit" || d.status==="assigned" || d.status==="picked_up") transit++;
+      else if(d.status && d.status!=="draft" && d.status!=="draft_submitted") open++;
+
+      // Skip drafts from main list (but keep simple)
+      if(d.status==="draft" || d.status==="draft_submitted") continue;
+
+      const code = d.trackingCode || d.id;
+      const route = (d.fromCity||"-")+" → "+(d.toCity||"-");
+      const st = (d.status||"").toString();
+
+      let pillClass="gray";
+      if(st==="created") pillClass="gold";
+      if(st==="quote_sent" || st==="payment_requested") pillClass="gold";
+      if(st==="in_transit" || st==="assigned" || st==="picked_up") pillClass="good";
+      if(st==="delivered") pillClass="good";
+      if(st==="quote_rejected" || st==="cancelled") pillClass="bad";
+
+      html += `
+        <div class="item">
+          <div class="item-top">
+            <div>
+              <b>${code}</b><br>
+              <span class="small">${route}</span><br>
+              <span class="small">Ramassage: <b style="color:#fff">${d.pickupMode || "none"}</b></span>
+            </div>
+            <span class="pill ${pillClass}">${st || "—"}</span>
+          </div>
+
+          ${d.quoteAmount ? `<div class="small" style="margin-top:8px;">Devis: <b style="color:var(--gold)">${Number(d.quoteAmount||0).toLocaleString("fr-FR")} BIF</b></div>` : ``}
+
+          <div class="row-actions" style="margin-top:10px;">
+            <button class="btn outline" onclick="location.href='tracking.html?code=${encodeURIComponent(code)}'">📍 Suivi</button>
+            <button class="btn dark" onclick="copyCode('${String(code).replace(/'/g,"") }')">📋 Copier</button>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById("kpiOpen").innerText = open;
+    document.getElementById("kpiTransit").innerText = transit;
+    document.getElementById("kpiDelivered").innerText = delivered;
+
+    document.getElementById("freightList").innerHTML = html || "<div class='small'>Aucune demande Freight pour l’instant.</div>";
+
+    // Badge messages (placeholder): use count of shipments with "adminMessageUnread" if exists, else 0
+    let unread=0;
+    for(const d of rows){
+      if(d.adminMessageUnread===true) unread++;
+    }
+    document.getElementById("msgBadge").innerText = unread;
+    document.getElementById("msgBadge2").innerText = unread;
+
+  },(err)=>{
+    console.error(err);
+    document.getElementById("freightList").innerHTML =
+      "<div class='item'><b style='color:#ff6b6b'>Erreur lecture</b><div class='small' style='margin-top:8px;'>Rules/Index manquants ou accès refusé.</div></div>";
+  });
+
+});
+
+/* Utils */
+window.copyCode = (txt)=>{
+  try{
+    navigator.clipboard.writeText(txt);
+    toast("✅ Tracking copié");
+  }catch(e){
+    toast("⚠️ Copie impossible");
+  }
 };
 </script>
 
