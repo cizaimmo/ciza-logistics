@@ -576,47 +576,29 @@ return tb-ta;
 }catch(e){return 0;}
 });
 
-rows.forEach(d=>{
-if(d.status!=="delivered")active++;
-if(d.status==="in_transit")transit++;
-if(d.status==="delivered")delivered++;
+for (const d of rows){
 
- // 🔵 ARCHIVAGE AUTOMATIQUE 7 JOURS
-if(d.status==="delivered" && !d.archived){
-  const deliveredAt = d.deliveredAt?.toDate?.();
-  if(deliveredAt){
-    const sevenDays = 7 * 24 * 60 * 60 * 1000;
-    if(Date.now() - deliveredAt.getTime() > sevenDays){
-      await updateDoc(docRef(db,"shipments",d.id),{
-        archived:true,
-        archivedAt:serverTimestamp()
-      });
-      return;
-    }
+  if(d.status!=="delivered") active++;
+  if(d.status==="in_transit") transit++;
+  if(d.status==="delivered") delivered++;
+
+  // 🔵 Ne pas afficher si archivé
+  if(d.archived === true) continue;
+
+  total += Number(d.finalPrice||0);
+
+  list.insertAdjacentHTML("beforeend", createCardHTML(d));
+
+  const dl = num(d.lastDriverLocation?.lat);
+  const dln = num(d.lastDriverLocation?.lng);
+  const el = num(d.toLat);
+  const eln = num(d.toLng);
+
+  if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
+    ensureMap(d.id, dl, dln, el, eln);
+    updateEta(d.id, dl, dln, el, eln);
   }
 }
-
-// 🔵 Ne pas afficher si archivé
-if(d.archived === true) return;
-
-total+=Number(d.finalPrice||0);
-
-list.insertAdjacentHTML("beforeend",
-  createCardHTML(d)); 
-total+=Number(d.finalPrice||0);
-
-list.insertAdjacentHTML("beforeend", createCardHTML(d));
-
-/* Map + ETA (uniquement si coords présents) */
-const dl = num(d.lastDriverLocation?.lat);
-const dln = num(d.lastDriverLocation?.lng);
-const el = num(d.toLat);
-const eln = num(d.toLng);
-if(d.status==="in_transit" && dl!=null && dln!=null && el!=null && eln!=null){
-ensureMap(d.id, dl, dln, el, eln);
-updateEta(d.id, dl, dln, el, eln);
-}
-});
 
 document.getElementById("kpiActive").innerText=active;
 document.getElementById("kpiTransit").innerText=transit;
