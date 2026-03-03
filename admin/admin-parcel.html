@@ -811,12 +811,18 @@ button, input, select, textarea{font-family:inherit}
 
       <div class="hr"></div>
 
-      <div class="note" id="enterpriseHint">
-        Gestion sécurisée des paramètres. Certains champs peuvent être en lecture seule selon ton rôle.
+<div class="note" id="enterpriseHint">
+  Gestion sécurisée des paramètres. Certains champs peuvent être en lecture seule selon ton rôle.
+</div>
 
-        <div class="hr"></div>
+<div class="hr"></div>
+
+<h3 style="margin-top:20px;">Transport Entreprise (Freight)</h3>
+
+<div id="freightKPI" style="margin-bottom:20px;"></div>
 
 <div class="grid-cards" id="freightList"></div>
+      
         
       </div>
     </div>
@@ -1346,6 +1352,59 @@ function startRealtime(){
   });
 }
 
+
+// ================= FREIGHT MODULE =================
+
+function renderFreightList() {
+  const container = document.getElementById("freightList");
+  if (!container) return;
+
+  const freights = shipments.filter(s => s.shipmentType === "freight");
+
+  if (!freights.length) {
+    container.innerHTML = "<div class='card'>Aucun transport entreprise.</div>";
+    return;
+  }
+
+  container.innerHTML = freights.map(f => `
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="tracking">${f.id}</div>
+          <div class="route">${f.pickupAddress || "-"} → ${f.deliveryAddress || "-"}</div>
+        </div>
+        <span class="badge">${f.status}</span>
+      </div>
+
+      <div class="hr"></div>
+
+      <div><b>Entreprise :</b> ${f.companyName || "-"}</div>
+      <div><b>Véhicule :</b> ${f.vehicleCategory || "-"}</div>
+    </div>
+  `).join("");
+}
+
+function renderFreightKPI() {
+  const container = document.getElementById("freightKPI");
+  if (!container) return;
+
+  const freights = shipments.filter(s => s.shipmentType === "freight");
+
+  const total = freights.length;
+  const requested = freights.filter(f => f.status === "requested").length;
+  const transit = freights.filter(f => f.status === "in_transit").length;
+  const delivered = freights.filter(f => f.status === "delivered").length;
+
+  container.innerHTML = `
+    <div class="grid-cards">
+      <div class="card"><b>Total</b><br>${total}</div>
+      <div class="card"><b>Demandes</b><br>${requested}</div>
+      <div class="card"><b>En transit</b><br>${transit}</div>
+      <div class="card"><b>Livrés</b><br>${delivered}</div>
+    </div>
+  `;
+}
+  
 /* ================= SHIPMENTS UI ================= */
 function matchesSearch(s, q){
   if(!q) return true;
