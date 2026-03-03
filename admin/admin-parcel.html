@@ -813,6 +813,11 @@ button, input, select, textarea{font-family:inherit}
 
       <div class="note" id="enterpriseHint">
         Gestion sécurisée des paramètres. Certains champs peuvent être en lecture seule selon ton rôle.
+
+        <div class="hr"></div>
+
+<div class="grid-cards" id="freightList"></div>
+        
       </div>
     </div>
   </section>
@@ -1533,30 +1538,6 @@ function renderShipments(){
   }
 }
 
-    // fill driver select
-    if(s.status==="ready_for_pickup"){
-      const sel = card.querySelector(`select[data-driver-select="${CSS.escape(s.id)}"]`);
-      if(sel){
-        const filtered = filterDriversForShipment(s);
-        const pool = filtered.length ? filtered : allDrivers;
-        pool.forEach(dr=>{
-          const nm = dr.fullName || dr.name || dr.email || dr.id;
-          const opt = document.createElement("option");
-          opt.value = dr.id;
-          opt.textContent = nm + (dr.province ? " • " + dr.province : "");
-          sel.appendChild(opt);
-        });
-      }
-    }
-  });
-
-  kpiPayment.textContent = payment;
-  kpiReady.textContent = ready;
-  kpiAssigned.textContent = assigned;
-  kpiTransit.textContent = transit;
-  kpiDelivered.textContent = delivered;
-  kpiRevenue.textContent = money(revenue);
-}
 
 /* ================= DRIVER FILTER (DESTINATION) ================= */
 function driverMatchesShipment(driver, shipment){
