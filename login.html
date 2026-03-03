@@ -2,7 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<link rel="manifest" href="manifest.json">
+
 <title>CizaLogistics | Espace Sécurisé</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -120,6 +128,9 @@ Burundi / Rwanda:
 
 </div>
 
+<!-- =========================
+     FIREBASE SCRIPT INTACT
+========================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -139,24 +150,35 @@ let lockUntil=null;
 function showMessage(text,type="error"){
   const box=document.getElementById("loginMessage");
   box.style.display="block";
-  if(type==="error"){
-    box.style.background="rgba(220,38,38,0.15)";
-    box.style.border="1px solid rgba(220,38,38,0.4)";
-  }else{
-    box.style.background="rgba(22,163,74,0.15)";
-    box.style.border="1px solid rgba(22,163,74,0.4)";
-  }
+  box.style.background = type==="error"
+    ? "rgba(220,38,38,0.15)"
+    : "rgba(22,163,74,0.15)";
+  box.style.border = type==="error"
+    ? "1px solid rgba(220,38,38,0.4)"
+    : "1px solid rgba(22,163,74,0.4)";
   box.innerHTML=text;
 }
 
 function redirectByRole(role){
-  if(role==="client") location.href="espace-client.html";
-  else if(role==="driver") location.href="driver-tool.html";
-  else if(role==="admin") location.href="admin/admin-parcel.html";
-  else if(role==="super_admin") location.href="super-admin.html";
-  else location.href="espace-client.html";
-  else if(role==="admin-entreprise") location.href="enterprise-freight.html";
 
+  if(role==="client"){
+    location.href="espace-client.html";
+  }
+  else if(role==="driver"){
+    location.href="driver-tool.html";
+  }
+  else if(role==="enterprise"){
+    location.href="enterprise-freight.html";
+  }
+  else if(role==="admin"){
+    location.href="admin/admin-parcel.html";
+  }
+  else if(role==="super_admin"){
+    location.href="super-admin.html";
+  }
+  else{
+    location.href="espace-client.html";
+  }
 }
 
 document.getElementById("loginBtn").onclick=async()=>{
@@ -175,7 +197,7 @@ document.getElementById("loginBtn").onclick=async()=>{
 
     const snap=await getDoc(doc(db,"users",cred.user.uid));
     if(!snap.exists()){
-      showMessage("Compte introuvable (Firestore users).","error");
+      showMessage("Compte introuvable.","error");
       await signOut(auth);
       return;
     }
@@ -183,40 +205,23 @@ document.getElementById("loginBtn").onclick=async()=>{
     const data=snap.data()||{};
     const role=(data.role||"").toString();
 
-    /* ADMIN / SUPER_ADMIN : connexion directe (pas de vérif email) */
     if(role==="admin" || role==="super_admin"){
       redirectByRole(role);
       return;
     }
 
-    /* CLIENT / DRIVER : email doit être vérifié */
     if(!cred.user.emailVerified){
       showMessage("Email non vérifié. Vérifiez votre boîte mail.","error");
       document.getElementById("resendBtn").style.display="block";
       return;
     }
 
-    /* DRIVER : doit être approved */
-    if(role==="driver" && data.accountStatus!=="approved"){
-      showMessage("Compte chauffeur en attente d'approbation.","error");
+    if((role==="driver" || role==="enterprise") && data.accountStatus!=="approved"){
+      showMessage("Compte en attente d'approbation.","error");
       return;
     }
 
-    /* CLIENT : (tu veux approved direct côté signup, ok) */
-    if(role==="client"){
-      redirectByRole("client");
-      return;
-    }
-
-    /* DRIVER (approved) */
-    if(role==="driver"){
-      redirectByRole("driver");
-      return;
-    }
-
-    /* Autre rôle : bloquer */
-    showMessage("Rôle non reconnu. Contactez l'administration.","error");
-    await signOut(auth);
+    redirectByRole(role);
 
   }catch(e){
     failedAttempts++;
@@ -230,7 +235,6 @@ document.getElementById("loginBtn").onclick=async()=>{
   }
 };
 
-/* RENVOI EMAIL */
 document.getElementById("resendBtn").onclick=async()=>{
   try{
     if(!auth.currentUser){
@@ -243,6 +247,17 @@ document.getElementById("resendBtn").onclick=async()=>{
     showMessage("Erreur lors du renvoi.","error");
   }
 };
+</script>
+
+<!-- =========================
+     PWA SERVICE WORKER
+========================= -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js")
+  .then(()=>console.log("PWA active"))
+  .catch(err=>console.log("SW error",err));
+}
 </script>
 
 </body>
