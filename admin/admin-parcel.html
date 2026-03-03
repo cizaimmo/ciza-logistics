@@ -1188,7 +1188,7 @@ const VIEW_META = {
   messagerie:{t:"Messagerie", s:"Boîte de réception + Envoyés"},
   planning:{t:"Planning", s:"Rendez-vous internes"},
   bureau:{t:"Bureau", s:"Suivi appels • Notes"},
-  entreprise:{t:"Entreprise", s:"Paramètres"}
+ entreprise:{t:"Freight Entreprise", s:"Gestion Cargo • LCL • FCL • Volume"}
 };
 
 /* ================= NAVIGATION ================= */
@@ -1382,12 +1382,20 @@ function renderShipments(){
 
   let payment=0, ready=0, assigned=0, transit=0, delivered=0, revenue=0;
 
-  const items = allShipments
-    .filter(s=>{
-      const okSearch = matchesSearch(s,q);
-      const okStatus = st ? (s.status===st) : true;
-      return okSearch && okStatus;
-    })
+  const activeView = document.querySelector(".view.active")?.id;
+
+const items = allShipments
+  .filter(s=>{
+
+    // 🔥 Séparation Parcel / Freight
+    if(activeView==="view-colis" && s.shipmentType!=="parcel") return false;
+    if(activeView==="view-entreprise" && s.shipmentType!=="freight") return false;
+
+    const okSearch = matchesSearch(s,q);
+    const okStatus = st ? (s.status===st) : true;
+
+    return okSearch && okStatus;
+  })
     .sort((a,b)=>{
       const aa = a.createdAt?.seconds || 0;
       const bb = b.createdAt?.seconds || 0;
