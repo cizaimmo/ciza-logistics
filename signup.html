@@ -33,12 +33,11 @@ button{width:100%;padding:15px;margin-top:20px;border-radius:16px;border:none;fo
   <input type="tel" id="phone" placeholder="Numéro de téléphone (+257XXXXXXXX)">
   <input type="password" id="password" placeholder="Mot de passe">
 
-  <select id="role">
-    <option value="client">Client</option>
-    <option value="driver">Chauffeur</option>
-  </select>
-   <option value="freight">enterprise</option>
-  </select>
+<select id="role">
+  <option value="client">Client</option>
+  <option value="driver">Chauffeur</option>
+  <option value="enterprise">Entreprise</option>
+</select>
 
   <button id="signupBtn">Créer le compte</button>
 
@@ -88,6 +87,11 @@ window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
   size: 'invisible'
 });
 
+
+// ================================
+// SIGNUP PRINCIPAL
+// ================================
+
 document.getElementById("signupBtn").onclick = async () => {
 
   const fullName = document.getElementById("fullName").value.trim();
@@ -101,24 +105,38 @@ document.getElementById("signupBtn").onclick = async () => {
     return;
   }
 
-  // 🚚 Chauffeur : téléphone obligatoire + format
-  if(role === "driver"){
+  // ================================
+  // 🚚 DRIVER & 🏢 ENTERPRISE (OTP obligatoire)
+  // ================================
+
+  if(role === "driver" || role === "enterprise"){
+
     if(!phone){
-      alert("Numéro obligatoire pour chauffeur.");
+      alert("Numéro obligatoire.");
       return;
     }
+
     if(!isValidPhone(phone)){
       alert("Format invalide. Utilisez le format international : +XXXXXXXXXXX");
       return;
     }
 
     try{
-      // Envoyer SMS OTP
       const cleanedPhone = phone.replace(/\s|-/g,"");
-confirmationResult = await signInWithPhoneNumber(auth, cleanedPhone, window.recaptchaVerifier);
+
+      confirmationResult = await signInWithPhoneNumber(
+        auth,
+        cleanedPhone,
+        window.recaptchaVerifier
+      );
+
+      // Sauvegarde temporaire
       tempData = { fullName, email, password, phone, role };
+
       document.getElementById("otpSection").classList.remove("hidden");
+
       alert("Code SMS envoyé.");
+
     }catch(e){
       alert("Erreur SMS: " + e.message);
     }
@@ -126,8 +144,12 @@ confirmationResult = await signInWithPhoneNumber(auth, cleanedPhone, window.reca
     return;
   }
 
-  // 👤 CLIENT (simple)
+  // ================================
+  // 👤 CLIENT (sans OTP)
+  // ================================
+
   try{
+
     const cred = await createUserWithEmailAndPassword(auth,email,password);
     await sendEmailVerification(cred.user);
 
@@ -135,7 +157,7 @@ confirmationResult = await signInWithPhoneNumber(auth, cleanedPhone, window.reca
       fullName,
       email,
       phone: phone || null,
-      role,
+      role: "client",
       accountStatus:"approved",
       createdAt:serverTimestamp()
     });
@@ -148,33 +170,57 @@ confirmationResult = await signInWithPhoneNumber(auth, cleanedPhone, window.reca
   }
 };
 
-// 🔐 Vérification OTP chauffeur
+
+// ================================
+// 🔐 VERIFICATION OTP
+// ================================
+
 document.getElementById("verifyOtpBtn").onclick = async () => {
+
   const code = document.getElementById("otpCode").value.trim();
 
-  try{
-    const result = await confirmationResult.confirm(code);
+  if(!code){
+    alert("Entrer le code reçu par SMS.");
+    return;
+  }
 
-    // Créer email/password après vérif téléphone
-    const cred = await createUserWithEmailAndPassword(auth,tempData.email,tempData.password);
+  try{
+
+    // Vérifie OTP téléphone
+    await confirmationResult.confirm(code);
+
+    // Crée compte email/password
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      tempData.email,
+      tempData.password
+    );
+
     await sendEmailVerification(cred.user);
 
+    // Enregistre Firestore
     await setDoc(doc(db,"users",cred.user.uid),{
       fullName: tempData.fullName,
       email: tempData.email,
       phone: tempData.phone,
-      role: "driver",
-      accountStatus:"pending",
+      role: tempData.role,
+      accountStatus:"pending",   // IMPORTANT
       createdAt:serverTimestamp()
     });
 
-    alert("Compte chauffeur créé. En attente de validation.");
+    alert(
+      tempData.role === "driver"
+      ? "Compte chauffeur créé. En attente de validation."
+      : "Compte entreprise créé. En attente de validation."
+    );
+
     location.href="login.html";
 
   }catch(e){
-    alert("Code incorrect.");
+    alert("Code incorrect ou expiré.");
   }
 };
+  
 </script>
 
 </body>
