@@ -1462,8 +1462,9 @@ function renderShipments(){
     .filter(s=>{
 
       // 🔥 Séparation intelligente
-      if(activeView==="view-colis" && (s.shipmentType && s.shipmentType!=="parcel")) return false;
-    if(activeView==="view-entreprise" && s.shipmentType==="parcel") return false;
+      if(activeView==="view-colis" && s.shipmentType==="freight") return false;
+
+if(activeView==="view-entreprise" && s.shipmentType!=="freight") return false;
 
       const okSearch = matchesSearch(s,q);
       const okStatus = st ? (s.status===st) : true;
