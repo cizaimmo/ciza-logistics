@@ -1,398 +1,1498 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Ciza Logistics | ERP Admin (Operations Center)</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B0B0C" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-<title>Ciza Logistics ERP</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
 
 :root{
-
---gold:#D4AF37;
---black:#0b0b0c;
---soft:#121214;
---card:#151518;
-
---border:rgba(212,175,55,0.25);
-
---text:#ffffff;
---muted:#9a9aa3;
-
---good:#1f9d55;
---warn:#ffb020;
---bad:#d64545;
-
---radius:16px;
-
+  --gold:#D4AF37;
+  --black:#0B0B0C;
+  --panel:#151517;
+  --panel2:#101012;
+  --border:rgba(212,175,55,0.25);
+  --border2:rgba(255,255,255,0.08);
+  --text:#FFFFFF;
+  --muted:#A0A0A8;
+  --good:#1f9d55;
+  --warn:#f2b705;
+  --bad:#d64545;
+  --shadow: 0 10px 30px rgba(0,0,0,0.45);
+  --radius:22px;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+height:100%;
+}
 
 body{
-font-family:Inter;
+font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
 background:var(--black);
 color:var(--text);
+overflow:hidden;
+}
+
+.app{
+display:grid;
+grid-template-columns:300px 1fr;
+height:100vh;
+}
+
+.sidebar{
+background:linear-gradient(180deg,#0A0A0B,#070708);
+border-right:1px solid var(--border2);
+padding:16px 14px;
 display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px;
+border:1px solid var(--border);
+border-radius:20px;
+background:rgba(255,255,255,0.03);
+}
+
+.brand img{
+width:62px;
+height:62px;
+border-radius:16px;
+border:1px solid rgba(212,175,55,0.35);
+background:#0c0c0e;
+object-fit:contain;
+}
+
+.navbtn{
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.06);
+background:rgba(255,255,255,0.02);
+cursor:pointer;
+font-weight:900;
+}
+
+.navbtn.active{
+background:rgba(212,175,55,0.12);
+border-color:rgba(212,175,55,0.35);
+}
+
+.main{
+display:flex;
+flex-direction:column;
 height:100vh;
 overflow:hidden;
 }
 
-.sidebar{
-width:260px;
-background:#000;
-border-right:1px solid var(--border);
-padding:20px;
-display:flex;
-flex-direction:column;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:30px;
-}
-
-.logo img{height:36px;}
-
-.menu{
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-.menu a{
-padding:10px 12px;
-border-radius:10px;
-font-weight:700;
-cursor:pointer;
-}
-
-.menu a:hover{
-background:rgba(212,175,55,0.10);
-}
-
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-.header{
-height:60px;
-border-bottom:1px solid var(--border);
+.topbar{
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 20px;
-background:#000;
+padding:14px 16px;
+border-bottom:1px solid var(--border2);
+background:rgba(10,10,12,0.92);
 }
 
 .content{
-flex:1;
+display:flex;
+flex-direction:column;
+gap:14px;
+padding:14px 16px;
 overflow:auto;
-padding:20px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:16px;
-}
-
-.kpi{
-background:#0c0c0e;
-border:1px solid var(--border);
-border-radius:14px;
-padding:14px;
-text-align:center;
-}
-
-.kpi b{
-font-size:22px;
-color:var(--gold);
 }
 
 .card{
-background:var(--card);
+background:var(--panel);
 border:1px solid var(--border);
-border-radius:16px;
-padding:18px;
+border-radius:var(--radius);
+box-shadow:var(--shadow);
 }
 
-.small{
+#map{
+height:540px;
+width:100%;
+border-radius:18px;
+border:1px solid rgba(255,255,255,0.08);
+}
+
+.heatmapLegend{
+position:absolute;
+bottom:20px;
+right:20px;
+background:#0c0c0e;
+border:1px solid var(--border);
+padding:10px;
+border-radius:12px;
 font-size:12px;
-color:var(--muted);
-}
-
-button{
-background:var(--gold);
-border:none;
-padding:10px 14px;
-border-radius:10px;
-font-weight:800;
-cursor:pointer;
-}
-
-button.secondary{
-background:transparent;
-border:1px solid var(--border);
-color:var(--gold);
-}
-
-button.danger{
-background:var(--bad);
-color:#fff;
 }
 
 </style>
-
 </head>
+<body>
 
-<body><div class="sidebar">
+<div class="app"><aside class="sidebar">
 
-<div class="logo">
-
+<div class="brand">
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/36a74fd15445fd6024a274a4e4be8a0fce0cc2f8/logo.png">
+<div>
+<b style="color:#D4AF37;">Ciza Logistics</b><br>
+<span style="font-size:12px;color:#A0A0A8;">Enterprise Logistics Software</span>
+</div>
+</div>
+
+<button class="navbtn active" onclick="showView('ops')">Operations Center</button>
+
+<button class="navbtn" onclick="showView('shipments')">
+Shipments
+</button>
+
+<button class="navbtn" onclick="showView('drivers')">
+Drivers
+</button>
+
+<button class="navbtn" onclick="showView('enterprises')">
+Enterprise Requests
+</button>
+
+<button class="navbtn" onclick="showView('reports')">
+Incident Reports
+</button>
+
+<button class="navbtn" onclick="showView('analytics')">
+Analytics
+</button>
+
+<button class="navbtn" onclick="showView('settings')">
+Settings
+</button>
+
+<div style="margin-top:auto;font-size:12px;color:#A0A0A8;">
+Developed by <b style="color:#D4AF37;">Ciza Group</b>
+</div>
+
+</aside>
+
+<main class="main">
+
+<header class="topbar">
 
 <div>
-<b style="color:#D4AF37">Ciza Logistics</b>
-<div class="small">ERP Command Center</div>
+<b id="pageTitle">Operations Center</b>
 </div>
-
-</div>
-
-<div class="menu">
-
-<a onclick="openView('dashboard')">Dashboard</a>
-<a onclick="openView('operations')">Operations Center</a>
-<a onclick="openView('dispatch')">Dispatch</a>
-<a onclick="openView('analytics')">Analytics</a>
-
-</div>
-
-</div>
-
-<div class="main">
-
-<div class="header">
-
-<b style="color:#D4AF37">Ciza Logistics ERP</b>
 
 <div>
-🕒 <span id="erpClock">--:--</span>
+<button onclick="location.reload()">Refresh</button>
+<button onclick="logout()">Logout</button>
 </div>
 
-</div>
+</header>
 
-<div class="content">
+<section class="content">
 
-<div id="view-dashboard" class="view">
+<div class="card" id="view-ops">
 
-<div class="grid">
+<div style="padding:12px">
 
-<div class="kpi">
-<b id="kpiShipments">0</b>
-<div class="small">Shipments</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDrivers">0</b>
-<div class="small">Drivers Online</div>
-</div>
-
-<div class="kpi">
-<b id="kpiTransit">0</b>
-<div class="small">Transit</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDelivered">0</b>
-<div class="small">Delivered</div>
-</div>
+<b style="color:#D4AF37;">Live Logistics Control Tower</b>
 
 </div>
 
-</div><div id="view-operations" class="view" style="display:none">
+<div id="map"></div>
 
-<div class="card">
+<div class="heatmapLegend">
 
-<b style="color:#D4AF37">Operations Center</b>
+<b>Heatmap</b><br>
 
-<div id="operationsMap"
-style="height:520px;margin-top:10px;border-radius:16px">
-</div>
-
-</div>
+🟢 faible<br>
+🟡 moyen<br>
+🔴 saturé
 
 </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-let operationsMap;
-let driverMarkers=[];
-let heatPoints=[];
+let map;
+let driverMarkers = {};
+let shipmentMarkers = {};
+let routeLines = [];
+let heatmapCells = {};
 
 function initMap(){
 
-operationsMap=L.map("operationsMap")
-.setView([-3.3822,29.3644],12);
+map = L.map('map').setView([-3.36,29.35],7);
 
 L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-).addTo(operationsMap);
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{maxZoom:19}
+).addTo(map);
 
 }
 
-setTimeout(initMap,600);
+initMap();
+
+
+/* ================================
+   ETA CALCULATION
+================================ */
+
+function calculateETA(distanceKm,speed){
+
+if(!speed || speed <= 0) speed = 40;
+
+let hours = distanceKm / speed;
+
+let minutes = Math.round(hours * 60);
+
+return minutes;
+
+}
+
+
+/* ================================
+   DISTANCE CALCULATION
+================================ */
+
+function distanceKm(lat1,lng1,lat2,lng2){
+
+let R = 6371;
+
+let dLat = (lat2-lat1)*Math.PI/180;
+let dLng = (lng2-lng1)*Math.PI/180;
+
+let a =
+Math.sin(dLat/2)*Math.sin(dLat/2)+
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLng/2)*Math.sin(dLng/2);
+
+let c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+return R*c;
+
+}
+
+
+/* ================================
+   DRIVER MARKER
+================================ */
+
+function updateDriver(driver){
+
+let loc = driver.liveLocation;
+
+if(!loc) return;
+
+let marker = driverMarkers[driver.id];
+
+if(!marker){
+
+marker = L.marker([loc.lat,loc.lng]).addTo(map);
+
+driverMarkers[driver.id] = marker;
+
+}
+
+marker.setLatLng([loc.lat,loc.lng]);
+
+let speed = loc.speed || 0;
+let active = driver.activeShipments || 0;
+
+marker.bindPopup(
+
+"<b>"+driver.fullName+"</b><br>"+
+"Speed: "+speed+" km/h<br>"+
+"Active shipments: "+active
+
+);
+
+}
+
+
+/* ================================
+   SHIPMENT MARKER
+================================ */
+
+function updateShipment(shipment){
+
+let loc = shipment.lastDriverLocation;
+
+if(!loc) return;
+
+let marker = shipmentMarkers[shipment.id];
+
+if(!marker){
+
+marker = L.circleMarker(
+[loc.lat,loc.lng],
+{radius:8}
+).addTo(map);
+
+shipmentMarkers[shipment.id] = marker;
+
+}
+
+marker.setLatLng([loc.lat,loc.lng]);
+
+let driver = shipment.assignedDriverName || "-";
+
+marker.bindPopup(
+
+"<b>"+shipment.trackingCode+"</b><br>"+
+"Driver: "+driver
+
+);
+
+}
+
+
+/* ================================
+   ROUTE DRAWING
+================================ */
+
+function drawRoute(driver,shipment){
+
+if(!driver.liveLocation) return;
+if(!shipment.destinationLocation) return;
+
+let start = [
+driver.liveLocation.lat,
+driver.liveLocation.lng
+];
+
+let end = [
+shipment.destinationLocation.lat,
+shipment.destinationLocation.lng
+];
+
+let line = L.polyline(
+[start,end],
+{color:"#00AEEF",weight:3}
+).addTo(map);
+
+routeLines.push(line);
+
+let dist = distanceKm(
+start[0],
+start[1],
+end[0],
+end[1]
+);
+
+let eta = calculateETA(dist,driver.liveLocation.speed);
+
+line.bindPopup(
+"Distance: "+dist.toFixed(1)+" km<br>"+
+"ETA: "+eta+" min"
+);
+
+}
+
+
+/* ================================
+   HEATMAP SYSTEM
+================================ */
+
+function updateHeatmap(lat,lng){
+
+let key =
+Math.round(lat*10)+"_"+Math.round(lng*10);
+
+if(!heatmapCells[key]) heatmapCells[key]=0;
+
+heatmapCells[key]++;
+
+let count = heatmapCells[key];
+
+let color = "green";
+
+if(count>10) color="red";
+else if(count>5) color="orange";
+
+L.circle(
+[lat,lng],
+{
+radius:4000,
+color:color,
+fillOpacity:0.2
+}
+).addTo(map);
+
+}
 
 </script><script>
 
-function calculateETA(distanceKm){
+/* ======================================
+   SMART DISPATCH ENGINE
+====================================== */
 
-const avgSpeed=40;
+function computeDriverScore(driver,shipment){
 
-const hours=distanceKm/avgSpeed;
+let score = 0;
 
-return Math.round(hours*60);
+/* distance */
+if(driver.liveLocation && shipment.pickupLocation){
 
-}
-
-function smartDispatch(shipment,drivers){
-
-let bestDriver=null;
-let bestScore=999999;
-
-drivers.forEach(d=>{
-
-const distance=Math.abs(
-(d.lat-shipment.lat)+(d.lng-shipment.lng)
+let dist = distanceKm(
+driver.liveLocation.lat,
+driver.liveLocation.lng,
+shipment.pickupLocation.lat,
+shipment.pickupLocation.lng
 );
 
-const load=d.activeShipments||0;
-
-const score=distance+(load*2);
-
-if(score<bestScore){
-
-bestScore=score;
-bestDriver=d;
+score += dist * 2;
 
 }
 
-});
+/* workload */
+let active = driver.activeShipments || 0;
 
-return bestDriver;
+score += active * 10;
 
-}
+/* availability */
+if(driver.isAvailable === false){
 
-</script><script type="module">
-
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-query,
-where,
-onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const app=initializeApp({
-
-apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-authDomain:"ciza-logistics.firebaseapp.com",
-projectId:"ciza-logistics"
-
-});
-
-const db=getFirestore(app);
-
-/* shipments */
-
-onSnapshot(collection(db,"shipments"),snap=>{
-
-let total=0;
-
-snap.forEach(doc=>{
-
-const d=doc.data();
-
-total++;
-
-if(d.lat && d.lng){
-
-heatPoints.push([d.lat,d.lng]);
+score += 1000;
 
 }
 
+return score;
+
+}
+
+
+/* ======================================
+   AUTO ASSIGN DRIVER V2
+====================================== */
+
+async function smartAssignDriver(shipmentId){
+
+if(!isAdmin){
+toast("Lecture seule");
+return;
+}
+
+let shipment = allShipments.find(s=>s.id===shipmentId);
+
+if(!shipment){
+toast("Shipment introuvable");
+return;
+}
+
+let drivers = allDrivers.filter(d=>{
+
+let role = (d.role||"").toLowerCase();
+
+return role === "driver";
+
 });
 
-document.getElementById("kpiShipments").innerText=total;
+if(!drivers.length){
+toast("Aucun chauffeur");
+return;
+}
 
-});
+let bestDriver = null;
+let bestScore = 999999;
 
-/* drivers */
+for(let d of drivers){
 
-const driversQuery=query(
-collection(db,"users"),
-where("role","==","driver")
+let score = computeDriverScore(d,shipment);
+
+if(score < bestScore){
+
+bestScore = score;
+bestDriver = d;
+
+}
+
+}
+
+if(!bestDriver){
+
+toast("Impossible d'assigner");
+return;
+
+}
+
+await updateDoc(
+doc(db,"shipments",shipmentId),
+{
+assignedDriverId: bestDriver.id,
+assignedDriverName: bestDriver.fullName || "Driver",
+status:"assigned",
+assignedAt: serverTimestamp()
+}
 );
 
-onSnapshot(driversQuery,snap=>{
+toast("Chauffeur assigné automatiquement");
 
-let online=0;
+}
 
-driverMarkers.forEach(m=>operationsMap.removeLayer(m));
-driverMarkers=[];
+
+/* ======================================
+   ADMIN FORCE DELIVERY
+====================================== */
+
+async function forceDelivery(shipmentId){
+
+if(!isAdmin){
+toast("Lecture seule");
+return;
+}
+
+await updateDoc(
+doc(db,"shipments",shipmentId),
+{
+status:"delivered",
+forced:true,
+forcedAt:serverTimestamp()
+}
+);
+
+toast("Livraison forcée");
+
+}
+
+</script><script>
+
+/* ======================================
+   DRIVER MONITORING SYSTEM
+====================================== */
+
+function renderDriverMonitoring(){
+
+let container = document.getElementById("driversList");
+
+if(!container) return;
+
+let drivers = allDrivers.filter(d=>{
+return (d.role || "").toLowerCase() === "driver";
+});
+
+if(!drivers.length){
+container.innerHTML = "<div class='muted'>Aucun chauffeur.</div>";
+return;
+}
+
+container.innerHTML = drivers.map(driver=>{
+
+let loc = driver.liveLocation || {};
+
+let lat = loc.lat || "-";
+let lng = loc.lng || "-";
+
+let speed = loc.speed || 0;
+let battery = loc.battery || "-";
+let network = loc.network || "-";
+
+let active = driver.activeShipments || 0;
+
+return `
+
+<div class="item">
+
+<div class="item-top">
+
+<div>
+
+<b>${driver.fullName || driver.name || driver.id}</b>
+
+<div class="muted" style="margin-top:4px">
+UID: ${driver.id}
+</div>
+
+<div style="margin-top:8px;font-size:12px">
+
+<span class="pill2 gray">Speed</span> ${speed} km/h
+
+<span class="pill2 gray">Active</span> ${active}
+
+</div>
+
+<div style="margin-top:6px;font-size:12px">
+
+<span class="pill2 gray">Battery</span> ${battery}
+
+<span class="pill2 gray">Network</span> ${network}
+
+</div>
+
+</div>
+
+<span class="pill2 good">
+LIVE
+</span>
+
+</div>
+
+<div class="row" style="margin-top:10px">
+
+<button class="btn dark"
+onclick="focusDriver('${driver.id}')">
+Voir sur carte
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+/* ======================================
+   DRIVER MAP CENTER
+====================================== */
+
+function focusDriver(driverId){
+
+let driver = allDrivers.find(d=>d.id === driverId);
+
+if(!driver) return;
+
+let loc = driver.liveLocation;
+
+if(!loc){
+toast("Position inconnue");
+return;
+}
+
+map.setView([loc.lat,loc.lng],15);
+
+}
+
+
+/* ======================================
+   DRIVER SUPERVISION MAP
+====================================== */
+
+function renderDriversOnMap(){
+
+for(let driver of allDrivers){
+
+if((driver.role || "").toLowerCase() !== "driver")
+continue;
+
+updateDriver(driver);
+
+}
+
+}
+
+</script><script>
+
+/* ======================================
+   PRINT LABEL SYSTEM
+====================================== */
+
+function printLabel(trackingCode){
+
+if(!trackingCode){
+
+toast("Tracking code manquant");
+
+return;
+
+}
+
+/* ouvrir page impression */
+
+let url = "print-label.html?code=" + encodeURIComponent(trackingCode);
+
+window.open(url,"_blank");
+
+}
+
+
+/* ======================================
+   GENERATE LABEL BUTTON
+====================================== */
+
+function addPrintButton(shipment){
+
+let code =
+shipment.trackingCode ||
+shipment.tracking ||
+shipment.trackingId ||
+shipment.id;
+
+return `
+<button class="btn dark"
+onclick="printLabel('${code}')">
+Imprimer étiquette
+</button>
+`;
+
+}
+
+
+/* ======================================
+   DRIVER SCAN SYSTEM
+====================================== */
+
+function driverScanTracking(code){
+
+let shipment = allShipments.find(s => {
+
+let t =
+s.trackingCode ||
+s.tracking ||
+s.trackingId ||
+s.id;
+
+return t === code;
+
+});
+
+if(!shipment){
+
+toast("Colis introuvable");
+
+return;
+
+}
+
+focusShipmentOnMap(shipment.id);
+
+}
+
+
+/* ======================================
+   FOCUS SHIPMENT ON MAP
+====================================== */
+
+function focusShipmentOnMap(id){
+
+let shipment = allShipments.find(s=>s.id===id);
+
+if(!shipment) return;
+
+let loc = shipment.lastDriverLocation;
+
+if(!loc) return;
+
+map.setView([loc.lat,loc.lng],15);
+
+}
+
+</script><script>
+
+/* ======================================
+   ENTERPRISE SUPERVISION
+====================================== */
+
+function renderEnterpriseDashboard(){
+
+let container = document.getElementById("enterpriseRequestsList");
+
+if(!container) return;
+
+/* regrouper les colis par entreprise */
+
+let enterprises = {};
+
+for(let s of allShipments){
+
+let name =
+s.companyName ||
+s.ownerName ||
+s.ownerEmail ||
+"Entreprise";
+
+if(!enterprises[name]){
+
+enterprises[name] = {
+count:0,
+delivered:0,
+transit:0
+};
+
+}
+
+enterprises[name].count++;
+
+if(s.status === "delivered"){
+enterprises[name].delivered++;
+}
+
+if(
+s.status === "in_transit" ||
+s.status === "assigned" ||
+s.status === "picked_up"
+){
+enterprises[name].transit++;
+}
+
+}
+
+/* conversion tableau */
+
+let list = Object.keys(enterprises).map(name=>{
+
+let e = enterprises[name];
+
+return {
+
+name:name,
+count:e.count,
+delivered:e.delivered,
+transit:e.transit
+
+};
+
+});
+
+/* tri volume */
+
+list.sort((a,b)=>b.count - a.count);
+
+container.innerHTML = list.map(e=>{
+
+return `
+
+<div class="item">
+
+<div class="item-top">
+
+<div>
+
+<b>${e.name}</b>
+
+<div style="margin-top:6px;font-size:12px">
+
+<span class="pill2 gold">
+Total
+</span>
+
+${e.count}
+
+<span class="pill2 good">
+Livrés
+</span>
+
+${e.delivered}
+
+<span class="pill2 gray">
+Transit
+</span>
+
+${e.transit}
+
+</div>
+
+</div>
+
+<span class="pill2 gold">
+Enterprise
+</span>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+</script><script>
+
+/* ======================================
+   LOGISTICS ANALYTICS ENGINE
+====================================== */
+
+function renderAdvancedAnalytics(){
+
+let container = document.getElementById("analyticsList");
+
+if(!container) return;
+
+let totalShipments = allShipments.length;
+
+let delivered = 0;
+let transit = 0;
+
+let driverStats = {};
+
+let zoneStats = {};
+
+for(let s of allShipments){
+
+/* status */
+
+if(s.status === "delivered") delivered++;
+
+if(
+s.status === "in_transit" ||
+s.status === "assigned" ||
+s.status === "picked_up"
+){
+transit++;
+}
+
+/* driver performance */
+
+let driver = s.assignedDriverName || s.assignedDriverId;
+
+if(driver){
+
+if(!driverStats[driver]){
+
+driverStats[driver] = {
+total:0,
+delivered:0
+};
+
+}
+
+driverStats[driver].total++;
+
+if(s.status === "delivered"){
+driverStats[driver].delivered++;
+}
+
+}
+
+/* zones */
+
+let zone =
+s.toCity ||
+s.toProvince ||
+s.to ||
+"Zone";
+
+if(!zoneStats[zone]){
+zoneStats[zone] = 0;
+}
+
+zoneStats[zone]++;
+
+}
+
+/* best drivers */
+
+let bestDrivers =
+Object.keys(driverStats)
+.map(name=>{
+
+let d = driverStats[name];
+
+return {
+name:name,
+score:d.delivered
+};
+
+})
+.sort((a,b)=>b.score-a.score)
+.slice(0,5);
+
+
+/* zones actives */
+
+let activeZones =
+Object.keys(zoneStats)
+.map(z=>{
+
+return {
+zone:z,
+count:zoneStats[z]
+};
+
+})
+.sort((a,b)=>b.count-a.count)
+.slice(0,5);
+
+
+/* render */
+
+container.innerHTML = `
+
+<div class="item">
+
+<b>Total shipments</b>
+
+<div style="margin-top:8px">
+
+<span class="pill2 gold">
+${totalShipments}
+</span>
+
+</div>
+
+</div>
+
+<div class="item">
+
+<b>Delivered</b>
+
+<div style="margin-top:8px">
+
+<span class="pill2 good">
+${delivered}
+</span>
+
+</div>
+
+</div>
+
+<div class="item">
+
+<b>In transit</b>
+
+<div style="margin-top:8px">
+
+<span class="pill2 gray">
+${transit}
+</span>
+
+</div>
+
+</div>
+
+<div class="item">
+
+<b>Top drivers</b>
+
+<div style="margin-top:8px">
+
+${bestDrivers.map(d=>`
+
+<div>
+${d.name} — ${d.score}
+</div>
+
+`).join("")}
+
+</div>
+
+</div>
+
+<div class="item">
+
+<b>Zones actives</b>
+
+<div style="margin-top:8px">
+
+${activeZones.map(z=>`
+
+<div>
+${z.zone} — ${z.count}
+</div>
+
+`).join("")}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+</script><script>
+
+/* ======================================
+   ERP MAIN ENGINE
+====================================== */
+
+function startERP(){
+
+/* render modules */
+
+renderDriversOnMap();
+
+renderMapShipments();
+
+renderDriverMonitoring();
+
+renderEnterpriseDashboard();
+
+renderAdvancedAnalytics();
+
+updateHeatmapFromShipments();
+
+}
+
+
+/* ======================================
+   SHIPMENT MAP RENDER
+====================================== */
+
+function renderMapShipments(){
+
+for(let s of allShipments){
+
+updateShipment(s);
+
+/* heatmap */
+
+if(s.destinationLocation){
+
+updateHeatmap(
+s.destinationLocation.lat,
+s.destinationLocation.lng
+);
+
+}
+
+/* route */
+
+let driver = allDrivers.find(
+d=>d.id === s.assignedDriverId
+);
+
+if(driver){
+
+drawRoute(driver,s);
+
+}
+
+}
+
+}
+
+
+/* ======================================
+   HEATMAP FROM SHIPMENTS
+====================================== */
+
+function updateHeatmapFromShipments(){
+
+for(let s of allShipments){
+
+if(!s.destinationLocation) continue;
+
+updateHeatmap(
+s.destinationLocation.lat,
+s.destinationLocation.lng
+);
+
+}
+
+}
+
+
+/* ======================================
+   FIRESTORE LISTENERS
+====================================== */
+
+function startRealtimeListeners(){
+
+onSnapshot(
+query(collection(db,"shipments")),
+(snap)=>{
+
+allShipments = [];
 
 snap.forEach(doc=>{
+allShipments.push({
+id:doc.id,
+...doc.data()
+});
+});
 
-const d=doc.data();
+startERP();
 
-if(d.isOnline) online++;
+}
+);
 
-if(d.lat && d.lng){
+onSnapshot(
+query(collection(db,"users")),
+(snap)=>{
 
-const marker=L.marker([d.lat,d.lng])
-.addTo(operationsMap)
-.bindPopup(d.fullName);
+allDrivers = [];
 
-driverMarkers.push(marker);
+snap.forEach(doc=>{
+allDrivers.push({
+id:doc.id,
+...doc.data()
+});
+});
+
+renderDriversOnMap();
+renderDriverMonitoring();
+
+}
+);
+
+onSnapshot(
+query(collection(db,"reports")),
+(snap)=>{
+
+allReports = [];
+
+snap.forEach(doc=>{
+allReports.push({
+id:doc.id,
+...doc.data()
+});
+});
 
 }
 
+);
+
+onSnapshot(
+query(collection(db,"payments")),
+(snap)=>{
+
+allPayments = [];
+
+snap.forEach(doc=>{
+allPayments.push({
+id:doc.id,
+...doc.data()
+});
 });
 
-document.getElementById("kpiDrivers").innerText=online;
-
-});
-
-/* clock */
-
-function updateClock(){
-
-const now=new Date();
-
-document.getElementById("erpClock")
-.innerText=now.toLocaleTimeString("fr-FR");
+renderAdvancedAnalytics();
 
 }
 
-setInterval(updateClock,1000);
-updateClock();
+);
+
+}
+
+
+/* ======================================
+   START SYSTEM
+====================================== */
+
+startRealtimeListeners();
+
+</script><script>
+
+/* ======================================
+   FORCE DELIVERY
+====================================== */
+
+window.forceDelivery = function(){
+
+if(!selectedShipment){
+alert("Sélectionnez un colis");
+return;
+}
+
+if(!confirm("Confirmer la livraison forcée ?")) return;
+
+updateDoc(
+doc(db,"shipments",selectedShipment.id),
+{
+status:"delivered",
+forcedDelivery:true,
+forcedAt:new Date()
+}
+);
+
+alert("Livraison forcée exécutée");
+
+};
+
+
+/* ======================================
+   PRINT LABEL
+====================================== */
+
+window.printShipmentLabel = function(){
+
+if(!selectedShipment){
+alert("Sélectionnez un colis");
+return;
+}
+
+let url = "print-label.html?id=" + selectedShipment.id;
+
+window.open(url,"_blank");
+
+};
+
+
+/* ======================================
+   CONTACT DRIVER
+====================================== */
+
+window.contactShipmentDriver = function(){
+
+if(!selectedShipment){
+alert("Sélectionnez un colis");
+return;
+}
+
+let driver = allDrivers.find(
+d=>d.id === selectedShipment.assignedDriverId
+);
+
+if(!driver){
+alert("Driver introuvable");
+return;
+}
+
+if(driver.phone){
+
+let link =
+"https://wa.me/" +
+driver.phone.replace("+","");
+
+window.open(link);
+
+}else{
+
+alert("Numéro téléphone manquant");
+
+}
+
+};
+
+
+/* ======================================
+   AUTO DISPATCH ENGINE
+====================================== */
+
+window.autoAssign = function(){
+
+let unassigned = allShipments.filter(
+s=>!s.assignedDriverId &&
+(s.status==="pending" ||
+s.status==="ready")
+);
+
+let availableDrivers = allDrivers.filter(
+d=>d.isAvailable
+);
+
+if(unassigned.length===0){
+alert("Aucune mission à assigner");
+return;
+}
+
+if(availableDrivers.length===0){
+alert("Aucun chauffeur disponible");
+return;
+}
+
+for(let shipment of unassigned){
+
+let driver = availableDrivers.shift();
+
+if(!driver) break;
+
+updateDoc(
+doc(db,"shipments",shipment.id),
+{
+assignedDriverId:driver.id,
+assignedDriverName:driver.fullName,
+status:"assigned",
+assignedAt:new Date()
+}
+);
+
+}
+
+alert("Dispatch automatique terminé");
+
+};
+
+
+/* ======================================
+   DRIVER MAP VIEW
+====================================== */
+
+window.viewDriverMap = function(){
+
+openView("operations");
+
+};
+
+
+/* ======================================
+   DRIVER MISSIONS
+====================================== */
+
+window.viewDriverShipments = function(){
+
+if(!selectedDriver){
+alert("Sélectionnez un chauffeur");
+return;
+}
+
+let list = allShipments.filter(
+s=>s.assignedDriverId === selectedDriver.id
+);
+
+alert(
+selectedDriver.fullName +
+" a " +
+list.length +
+" colis actifs"
+);
+
+};
+
+
+/* ======================================
+   INCIDENT MANAGEMENT
+====================================== */
+
+window.investigateReport = function(){
+
+alert("Incident marqué en investigation");
+
+};
+
+window.resolveReport = function(){
+
+alert("Incident résolu");
+
+};
+
+
+/* ======================================
+   ENTERPRISE ACTIONS
+====================================== */
+
+window.approveEnterprise = function(){
+
+alert("Entreprise approuvée");
+
+};
+
+window.rejectEnterprise = function(){
+
+alert("Entreprise rejetée");
+
+};
+
+
+/* ======================================
+   ERP READY
+====================================== */
+
+console.log("CizaLogistics ERP READY");
 
 </script>
 
