@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Ciza Logistics | ERP Admin (Operations Center)</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+/* =========================================================
+   CIZA LOGISTICS ERP — DARK OPS THEME
+   ========================================================= */
+:root{
+  --gold:#D4AF37;
+  --black:#0B0B0C;
+  --panel:#151517;
+  --panel2:#101012;
+  --border:rgba(212,175,55,0.25);
+  --border2:rgba(255,255,255,0.08);
+  --text:#FFFFFF;
+  --muted:#A0A0A8;
+  --good:#1f9d55;
+  --warn:#f2b705;
+  --bad:#d64545;
+  --shadow: 0 10px 30px rgba(0,0,0,0.45);
+  --radius:22px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:var(--black);
+  color:var(--text);
+}
+
+/* =========================================================
+   LAYOUT (Sidebar + Topbar + Main)
+   ========================================================= */
+.app{
+  display:grid;
+  grid-template-columns: 290px 1fr;
+  height:100vh;
+}
+
+.sidebar{
+  background:linear-gradient(180deg,#0A0A0B,#070708);
+  border-right:1px solid var(--border2);
+  padding:16px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:rgba(255,255,255,0.03);
+}
+.brand img{
+  width:54px;height:54px;border-radius:14px;
+  border:1px solid rgba(212,175,55,0.35);
+  background:#0c0c0e;
+  object-fit:contain;
+}
+.brand .title{
+  display:flex;flex-direction:column;gap:4px;
+}
+.brand .title b{font-size:14px;color:var(--gold)}
+.brand .title span{font-size:12px;color:var(--muted);max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.menu{
+  display:flex;flex-direction:column;gap:8px;
+  margin-top:4px;
+}
+.navbtn{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:800;
+  transition:.18s transform, .18s background, .18s border;
+}
+.navbtn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.04);border-color:rgba(212,175,55,0.25)}
+.navbtn.active{
+  background:rgba(212,175,55,0.12);
+  border-color:rgba(212,175,55,0.35);
+  box-shadow:0 0 0 1px rgba(212,175,55,0.08) inset;
+}
+.navbtn .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  border:1px solid rgba(255,255,255,0.18);
+}
+.navbtn.active .dot{background:rgba(212,175,55,0.95);border-color:rgba(212,175,55,0.45)}
+.navbtn small{
+  margin-left:auto;
+  padding:4px 8px;border-radius:999px;
+  font-size:11px;
+  color:var(--gold);
+  background:rgba(212,175,55,0.12);
+  border:1px solid rgba(212,175,55,0.25);
+}
+
+.sidecard{
+  margin-top:auto;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+}
+.sidecard .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sidecard .muted{color:var(--muted);font-size:12px;line-height:1.45}
+.sidecard .pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:999px;
+  font-size:12px;font-weight:900;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(0,0,0,0.35);
+}
+.pill.good{border-color:rgba(31,157,85,0.35);color:#baf2c9;background:rgba(31,157,85,0.10);}
+.pill.bad{border-color:rgba(214,69,69,0.35);color:#ffc0c0;background:rgba(214,69,69,0.10);}
+.pill.gold{border-color:rgba(212,175,55,0.35);color:#ffe7a3;background:rgba(212,175,55,0.10);}
+
+.main{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border2);
+  background:rgba(10,10,12,0.92);
+  position:sticky;top:0;z-index:1000;
+  backdrop-filter: blur(10px);
+}
+.topbar .left{
+  display:flex;flex-direction:column;gap:3px;
+}
+.topbar h1{
+  font-size:16px;
+  letter-spacing:.2px;
+}
+.topbar h1 b{color:var(--gold)}
+.topbar .sub{
+  font-size:12px;color:var(--muted);
+}
+.topbar .right{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.btn{
+  border:none;
+  border-radius:14px;
+  padding:10px 12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.btn.gold{background:var(--gold);color:#000;}
+.btn.dark{background:#0b0b0c;color:#fff;border:1px solid rgba(255,255,255,0.10);}
+.btn.outline{background:transparent;color:var(--gold);border:1px solid var(--border);}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+
+.content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:14px 16px 22px;
+  overflow:auto;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap:14px;
+}
+@media(max-width:1050px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .grid2{grid-template-columns:1fr}
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card .head{
+  padding:14px 14px 10px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.card .head h2{
+  font-size:13px;
+  letter-spacing:.2px;
+}
+.card .head h2 span{color:var(--gold);font-weight:900}
+.card .body{padding:14px;}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+}
+@media(max-width:1200px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr));} }
+@media(max-width:620px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));} }
+.kpi{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:18px;
+  padding:12px;
+}
+.kpi b{display:block;color:var(--gold);font-size:18px;margin-bottom:4px}
+.kpi small{color:var(--muted);font-size:12px}
+
+.row{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.input, .select{
+  background:#0c0c0e;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  padding:10px 12px;
+  color:#fff;
+  outline:none;
+  font-family:Inter;
+  font-weight:700;
+}
+.select{cursor:pointer}
+.muted{color:var(--muted);font-size:12px;line-height:1.55}
+
+.list{
+  display:flex;flex-direction:column;gap:10px;
+}
+.item{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:18px;
+  padding:12px;
+}
+.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.item b{color:var(--gold)}
+.pill2{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:900;
+  padding:6px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(0,0,0,0.28);
+  color:#ddd;
+}
+.pill2.good{border-color:rgba(31,157,85,0.45);color:#baf2c9;background:rgba(31,157,85,0.10);}
+.pill2.bad{border-color:rgba(214,69,69,0.45);color:#ffc0c0;background:rgba(214,69,69,0.10);}
+.pill2.gold{border-color:rgba(212,175,55,0.45);color:#ffe7a3;background:rgba(212,175,55,0.10);}
+.pill2.gray{border-color:rgba(255,255,255,0.14);color:#ddd;background:rgba(255,255,255,0.06);}
+
+.hr{height:1px;background:rgba(255,255,255,0.08);margin:12px 0;}
+
+#map{
+  height:520px;
+  width:100%;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.08);
+  overflow:hidden;
+}
+@media(max-width:1050px){ #map{height:440px} }
+
+.toast{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  background:#0a0a0b;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:12px 14px;
+  width:min(92vw,560px);
+  display:none;
+  z-index:3000;
+}
+.toast.show{display:block;}
+.toast b{color:var(--gold)}
+
+.banner{
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.02);
+}
+.banner strong{color:var(--gold)}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- =========================================================
+       BLOCK: SIDEBAR (sidebar)
+       ========================================================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img alt="Ciza Group" src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/36a74fd15445fd6024a274a4e4be8a0fce0cc2f8/logo.png">
+      <div class="title">
+        <b>Ciza Logistics</b>
+        <span id="brandSub">ERP • Operations Center</span>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <button class="navbtn active" data-view="view-ops"><span class="dot"></span> Operations Center <small id="navCountOps">—</small></button>
+      <button class="navbtn" data-view="view-shipments"><span class="dot"></span> Shipments <small id="navCountShip">—</small></button>
+      <button class="navbtn" data-view="view-drivers"><span class="dot"></span> Drivers <small id="navCountDrv">—</small></button>
+      <button class="navbtn" data-view="view-enterprises"><span class="dot"></span> Enterprises <small id="navCountEnt">—</small></button>
+      <button class="navbtn" data-view="view-reports"><span class="dot"></span> Reports <small id="navCountRep">—</small></button>
+      <button class="navbtn" data-view="view-archive"><span class="dot"></span> Archive <small id="navCountArc">—</small></button>
+      <button class="navbtn" data-view="view-settings"><span class="dot"></span> Settings</button>
+    </nav>
+
+    <div class="sidecard">
+      <div class="row">
+        <div>
+          <div style="font-weight:900;">Plateforme</div>
+          <div class="muted" id="sysTime">—</div>
+        </div>
+        <span class="pill gold" id="sysStatus">● Online</span>
+      </div>
+      <div class="hr"></div>
+      <div class="muted" id="authMini">Connexion…</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- =========================================================
+         BLOCK: TOPBAR (topbar)
+         ========================================================= -->
+    <header class="topbar">
+      <div class="left">
+        <h1><b>Operations Center</b> | Ciza Logistics ERP</h1>
+        <div class="sub" id="topSub">Chargement…</div>
+      </div>
+      <div class="right">
+        <span class="pill gold" id="pillRole">Role: —</span>
+        <button class="btn outline" id="btnRefresh">Rafraîchir</button>
+        <button class="btn dark" id="btnLogout">Déconnexion</button>
+      </div>
+    </header>
+
+    <section class="content">
+
+      <!-- =========================================================
+           BLOCK: KPI GRID (kpi-grid)
+           ========================================================= -->
+      <div class="card">
+        <div class="head">
+          <h2><span>KPI</span> (temps réel)</h2>
+          <div class="muted">Parcel + Freight • Flow jusqu’à livraison • Live drivers</div>
+        </div>
+        <div class="body">
+          <div class="kpis">
+            <div class="kpi"><b id="kpiTotal">0</b><small>Total Shipments</small></div>
+            <div class="kpi"><b id="kpiParcel">0</b><small>Parcel</small></div>
+            <div class="kpi"><b id="kpiFreight">0</b><small>Freight</small></div>
+            <div class="kpi"><b id="kpiTransit">0</b><small>En transit</small></div>
+            <div class="kpi"><b id="kpiDelivered">0</b><small>Livrés</small></div>
+            <div class="kpi"><b id="kpiDriversLive">0</b><small>Chauffeurs en route</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2">
+
+        <!-- =========================================================
+             BLOCK: MAP LIVE (operations-map)
+             ========================================================= -->
+        <div class="card" id="view-ops">
+          <div class="head">
+            <h2><span>Carte live</span> • Chauffeurs + Shipments</h2>
+            <div class="row">
+              <select class="select" id="mapMode">
+                <option value="drivers">Drivers</option>
+                <option value="shipments">Shipments (lastDriverLocation)</option>
+                <option value="both" selected>Both</option>
+              </select>
+              <button class="btn gold" id="btnFit">Ajuster</button>
+            </div>
+          </div>
+          <div class="body">
+            <div class="banner">
+              <strong>Centre d’opérations</strong> : suivi en direct des chauffeurs en route 🛣️ + visibilité totale des dossiers.
+              <div class="muted">Source: Firestore `users.liveLocation` + `shipments.lastDriverLocation` (fallback automatique).</div>
+            </div>
+            <div class="hr"></div>
+            <div id="map"></div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             BLOCK: RIGHT PANEL (quick panels)
+             ========================================================= -->
+        <div class="card">
+          <div class="head">
+            <h2><span>Actions</span> rapides</h2>
+            <div class="muted">Admin workflow</div>
+          </div>
+          <div class="body">
+
+            <div class="banner" id="permissionBanner">
+              <strong>Statut</strong> : Connexion requise.
+              <div class="muted">Le mode “lecture seule” s’active si ton rôle n’est pas admin.</div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="row">
+              <input class="input" id="searchGlobal" placeholder="Rechercher: tracking, ville, driver, entreprise…">
+              <select class="select" id="filterType">
+                <option value="all">Tous</option>
+                <option value="parcel">Parcel</option>
+                <option value="freight">Freight</option>
+              </select>
+              <select class="select" id="filterStatus">
+                <option value="all">Tous statuts</option>
+                <option value="created">created</option>
+                <option value="quote_sent">quote_sent</option>
+                <option value="quote_accepted">quote_accepted</option>
+                <option value="assigned">assigned</option>
+                <option value="picked_up">picked_up</option>
+                <option value="in_transit">in_transit</option>
+                <option value="delivered">delivered</option>
+                <option value="cancelled">cancelled</option>
+              </select>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="muted" style="margin-bottom:8px;">
+              <b style="color:var(--gold)">Important</b> : Parcel n’a parfois pas `shipmentType`. Fallback automatique = <b>parcel</b>.
+              Tracking = `trackingCode` (fallback `trackingCode`/`tracking`/`trackingId`/docId).
+            </div>
+
+            <div class="list" id="quickList">
+              <div class="muted">Chargement…</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =========================================================
+           BLOCK: SHIPMENTS MODULE (shipment-list)
+           ========================================================= -->
+      <div class="card" id="view-shipments" style="display:none;">
+        <div class="head">
+          <h2><span>Shipments</span> • Parcel + Freight</h2>
+          <div class="row">
+            <button class="btn outline" id="btnExport">Exporter JSON</button>
+            <button class="btn gold" id="btnNewTab">Ouvrir tracking</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="muted">Actions : devis (freight), assignation (freight), transit, livré, archivage, suivi.</div>
+          <div class="hr"></div>
+          <div class="list" id="shipmentsList"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           BLOCK: DRIVERS MODULE (drivers-live)
+           ========================================================= -->
+      <div class="card" id="view-drivers" style="display:none;">
+        <div class="head">
+          <h2><span>Drivers</span> • Live tracking</h2>
+          <div class="muted">Source: users(role=driver) + liveLocation</div>
+        </div>
+        <div class="body">
+          <div class="list" id="driversList"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           BLOCK: ENTERPRISE REQUESTS MODULE (enterprise-requests)
+           ========================================================= -->
+      <div class="card" id="view-enterprises" style="display:none;">
+        <div class="head">
+          <h2><span>Demandes Entreprise</span> • Création de compte</h2>
+          <div class="muted">Source: enterpriseRequests</div>
+        </div>
+        <div class="body">
+          <div class="muted">
+            Ici : validation/rejet. À l’approbation, on met à jour `users/{uid}` (role enterprise + approved) si `uid` est présent dans la demande.
+          </div>
+          <div class="hr"></div>
+          <div class="list" id="enterpriseRequestsList"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           BLOCK: REPORTS MODULE (reports-panel)
+           ========================================================= -->
+      <div class="card" id="view-reports" style="display:none;">
+        <div class="head">
+          <h2><span>Signalements</span> • Incidents terrain</h2>
+          <div class="muted">Source: reports</div>
+        </div>
+        <div class="body">
+          <div class="list" id="reportsList"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           BLOCK: ARCHIVE MODULE (archive-panel)
+           ========================================================= -->
+      <div class="card" id="view-archive" style="display:none;">
+        <div class="head">
+          <h2><span>Archive</span> • Dossiers livrés</h2>
+          <div class="muted">Archivage = champ Firestore (pas Cloud Storage ici)</div>
+        </div>
+        <div class="body">
+          <div class="muted">
+            Archive simple: `archived: true` + `archivedAt`. (Storage possible plus tard quand tu réactiveras les règles Storage.)
+          </div>
+          <div class="hr"></div>
+          <div class="list" id="archiveList"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           BLOCK: SETTINGS MODULE (settings)
+           ========================================================= -->
+      <div class="card" id="view-settings" style="display:none;">
+        <div class="head">
+          <h2><span>Paramètres</span></h2>
+          <div class="muted">Placeholders pro (ERP)</div>
+        </div>
+        <div class="body">
+          <div class="banner">
+            <strong>Mode</strong> : <span id="modeLabel">—</span><br>
+            <span class="muted">Version cache, scope, lecture seule = indicateurs ERP (placeholder). On ne bloque pas le système.</span>
+          </div>
+          <div class="hr"></div>
+          <div class="row">
+            <input class="input" id="cacheVersion" value="ciza-logistics-v1" />
+            <input class="input" id="scopeValue" value="https://cizaimmo.github.io/ciza-logistics" />
+            <button class="btn outline" id="btnReadOnly">Lecture seule</button>
+            <button class="btn gold" id="btnApplySettings">Appliquer</button>
+          </div>
+          <div class="hr"></div>
+          <div class="muted" id="settingsInfo">Gestion sécurisée des paramètres. Certains champs peuvent être en lecture seule selon ton rôle.</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script type="module">
+/* =========================================================
+   FIREBASE INIT
+   ========================================================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, query, where, orderBy, limit, onSnapshot,
+  doc, getDoc, setDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+  authDomain:"ciza-logistics.firebaseapp.com",
+  projectId:"ciza-logistics"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+/* =========================================================
+   BLOCK: TOAST
+   ========================================================= */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerHTML=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+/* =========================================================
+   BLOCK: CLOCK
+   ========================================================= */
+function tick(){
+  const now=new Date();
+  const s = now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById("sysTime").innerText=s;
+  document.getElementById("topSub").innerText = "Online • " + s;
+}
+setInterval(tick,1000);tick();
+
+/* =========================================================
+   BLOCK: NAVIGATION (views)
+   ========================================================= */
+const navButtons=[...document.querySelectorAll(".navbtn")];
+function showView(id){
+  const views=["view-ops","view-shipments","view-drivers","view-enterprises","view-reports","view-archive","view-settings"];
+  for(const v of views){
+    const el=document.getElementById(v);
+    if(el) el.style.display = (v===id) ? "block" : "none";
+  }
+  for(const b of navButtons){
+    b.classList.toggle("active", b.dataset.view===id);
+  }
+}
+navButtons.forEach(b=> b.onclick=()=>showView(b.dataset.view));
+
+document.getElementById("btnRefresh").onclick=()=>location.reload();
+document.getElementById("btnLogout").onclick=async()=>{ await signOut(auth); location.href="login.html"; };
+
+/* =========================================================
+   BLOCK: AUTH + ROLE GATING (read-only if not admin)
+   ========================================================= */
+let currentUser=null;
+let currentUserDoc=null;
+let isAdmin=false;
+
+function setModeBanner(){
+  const banner=document.getElementById("permissionBanner");
+  const pill=document.getElementById("pillRole");
+  const modeLabel=document.getElementById("modeLabel");
+
+  if(!currentUser){
+    banner.innerHTML = "<strong>Statut</strong> : Connexion requise.<div class='muted'>Connecte-toi pour charger l’ERP.</div>";
+    pill.innerText="Role: —";
+    modeLabel.innerText="—";
+    return;
+  }
+
+  const role = (currentUserDoc?.role || (currentUserDoc?.isAdmin ? "admin" : "unknown") || "unknown");
+  isAdmin = role==="admin" || currentUserDoc?.isAdmin===true;
+
+  pill.innerText="Role: " + role;
+
+  if(isAdmin){
+    banner.innerHTML = "<strong>Mode</strong> : Admin (plein accès)<div class='muted'>Tu vois Parcel + Freight + Drivers live + Enterprise requests + Reports + Archive.</div>";
+    modeLabel.innerText="Admin (plein accès)";
+    document.getElementById("authMini").innerText = "Connecté: " + (currentUser.email||currentUser.uid);
+    return;
+  }
+
+  banner.innerHTML = "<strong>Mode</strong> : Lecture seule (droits insuffisants).<div class='muted'>Tu peux voir, mais pas modifier. (Change role dans users/{uid})</div>";
+  modeLabel.innerText="Lecture seule";
+  document.getElementById("authMini").innerText = "Connecté: " + (currentUser.email||currentUser.uid) + " • Lecture seule";
+}
+
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){
+    currentUser=null;
+    currentUserDoc=null;
+    setModeBanner();
+    toast("⚠️ <b>Connexion</b> requise");
+    return;
+  }
+  currentUser=user;
+
+  // users/{uid} (role-based)
+  try{
+    const us = await getDoc(doc(db,"users",user.uid));
+    currentUserDoc = us.exists() ? (us.data()||{}) : {};
+  }catch(e){
+    currentUserDoc = {};
+  }
+
+  setModeBanner();
+  bootListeners();
+});
+
+/* =========================================================
+   BLOCK: NORMALIZERS (fallbacks)
+   ========================================================= */
+// Parcel parfois n’a pas shipmentType => fallback parcel
+function normalizeShipmentType(s){
+  const t = (s.shipmentType || s.type || "").toString().toLowerCase().trim();
+  if(t==="freight") return "freight";
+  if(t==="parcel") return "parcel";
+  // fallback heuristics: si doc a cargoType / pickupMode / needsQuote => freight probable
+  if(s.cargoType || s.pickupMode || s.needsQuote || s.isEnterprise) return "freight";
+  return "parcel";
+}
+// trackingCode : support trackingCode / tracking / trackingId / doc id
+function normalizeTracking(s, docId){
+  return (s.trackingCode || s.trackingCode?.code || s.tracking || s.trackingId || s.trackingID || docId || "—").toString();
+}
+function normalizeStatus(s){
+  return (s.status || "—").toString();
+}
+function normalizeRoute(s){
+  const from = (s.fromCity || s.fromProvince || s.fromQuartier || s.from || "—").toString();
+  const to = (s.toCity || s.toProvince || s.toQuartier || s.to || "—").toString();
+  return from + " → " + to;
+}
+function pillClassForStatus(st){
+  st=(st||"").toLowerCase();
+  if(st==="delivered") return "good";
+  if(st==="in_transit" || st==="assigned" || st==="picked_up") return "good";
+  if(st==="created" || st==="quote_sent" || st==="quote_accepted" || st==="payment_requested") return "gold";
+  if(st==="cancelled" || st==="quote_rejected") return "bad";
+  return "gray";
+}
+function safeText(x){
+  return String(x ?? "").replace(/[<>&]/g, s=>({ "<":"&lt;", ">":"&gt;", "&":"&amp;" }[s]));
+}
+
+/* =========================================================
+   BLOCK: LEAFLET MAP (live map)
+   ========================================================= */
+let map=null;
+let layerDrivers=null;
+let layerShipments=null;
+
+const driverMarkers=new Map();    // uid -> marker
+const shipmentMarkers=new Map();  // shipmentId -> marker
+
+function initMap(){
+  if(map) return;
+
+  map = L.map('map',{ zoomControl:true }).setView([-3.36, 29.35], 7);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap'
+  }).addTo(map);
+
+  layerDrivers = L.layerGroup().addTo(map);
+  layerShipments = L.layerGroup().addTo(map);
+}
+initMap();
+
+function upsertDriverMarker(uid, d){
+  const loc = d.liveLocation || d.location || null;
+  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
+    // remove if exists
+    const mk=driverMarkers.get(uid);
+    if(mk){ layerDrivers.removeLayer(mk); driverMarkers.delete(uid); }
+    return;
+  }
+  const name = d.fullName || d.driverName || d.name || "Driver";
+  const plate = d.driverPlate || d.plate || "-";
+  const speed = (loc.speed ?? d.speed ?? 0);
+  const active = (d.activeShipments ?? 0);
+
+  let mk=driverMarkers.get(uid);
+  const popup = `
+    <div style="font-family:Inter;min-width:220px">
+      <b style="color:#D4AF37">${safeText(name)}</b><br>
+      <div style="font-size:12px;color:#555">UID: ${safeText(uid)}</div>
+      <div style="margin-top:8px;font-size:12px">
+        <b>Plaque</b>: ${safeText(plate)}<br>
+        <b>Speed</b>: ${safeText(speed)}<br>
+        <b>Actifs</b>: ${safeText(active)}<br>
+        <b>Updated</b>: ${safeText(d.updatedAt?.toDate ? d.updatedAt.toDate().toLocaleString("fr-FR") : "-")}
+      </div>
+    </div>
+  `;
+
+  if(!mk){
+    mk = L.marker([loc.lat, loc.lng]);
+    mk.bindPopup(popup);
+    mk.addTo(layerDrivers);
+    driverMarkers.set(uid, mk);
+  }else{
+    mk.setLatLng([loc.lat, loc.lng]);
+    mk.setPopupContent(popup);
+  }
+}
+
+function upsertShipmentMarker(id, s){
+  const loc = s.lastDriverLocation || s.driverLocation || s.location || null;
+  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
+    const mk=shipmentMarkers.get(id);
+    if(mk){ layerShipments.removeLayer(mk); shipmentMarkers.delete(id); }
+    return;
+  }
+  const t = normalizeShipmentType(s);
+  const st = normalizeStatus(s);
+  const code = normalizeTracking(s, id);
+  const route = normalizeRoute(s);
+  const driver = s.assignedDriverName || s.driverName || s.assignedDriverId || "-";
+
+  let mk=shipmentMarkers.get(id);
+  const popup = `
+    <div style="font-family:Inter;min-width:240px">
+      <b style="color:#D4AF37">${safeText(code)}</b>
+      <div style="font-size:12px;color:#555">${safeText(t.toUpperCase())} • ${safeText(st)}</div>
+      <div style="margin-top:8px;font-size:12px">
+        <b>Route</b>: ${safeText(route)}<br>
+        <b>Driver</b>: ${safeText(driver)}<br>
+        <b>Updated</b>: ${safeText(s.updatedAt?.toDate ? s.updatedAt.toDate().toLocaleString("fr-FR") : "-")}
+      </div>
+    </div>
+  `;
+
+  if(!mk){
+    mk = L.circleMarker([loc.lat, loc.lng], { radius:9 });
+    mk.bindPopup(popup);
+    mk.addTo(layerShipments);
+    shipmentMarkers.set(id, mk);
+  }else{
+    mk.setLatLng([loc.lat, loc.lng]);
+    mk.setPopupContent(popup);
+  }
+}
+
+function applyMapMode(){
+  const mode=document.getElementById("mapMode").value;
+  layerDrivers.getContainer?.();
+  const showDrivers = (mode==="drivers" || mode==="both");
+  const showShipments = (mode==="shipments" || mode==="both");
+
+  // Leaflet layerGroup doesn't have display toggles; we can add/remove
+  if(showDrivers && !map.hasLayer(layerDrivers)) layerDrivers.addTo(map);
+  if(!showDrivers && map.hasLayer(layerDrivers)) map.removeLayer(layerDrivers);
+
+  if(showShipments && !map.hasLayer(layerShipments)) layerShipments.addTo(map);
+  if(!showShipments && map.hasLayer(layerShipments)) map.removeLayer(layerShipments);
+}
+document.getElementById("mapMode").onchange=applyMapMode;
+applyMapMode();
+
+document.getElementById("btnFit").onclick=()=>{
+  const bounds=[];
+  driverMarkers.forEach(m=>bounds.push(m.getLatLng()));
+  shipmentMarkers.forEach(m=>bounds.push(m.getLatLng()));
+  if(bounds.length===0){ toast
