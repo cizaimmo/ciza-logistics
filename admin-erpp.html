@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 
 <meta charset="UTF-8">
@@ -33,264 +34,137 @@
 
 }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-
 font-family:Inter;
 background:var(--black);
 color:var(--text);
-
 display:flex;
 height:100vh;
 overflow:hidden;
-
 }
-
-a{
-text-decoration:none;
-color:inherit;
-}
-
-button{
-
-border:none;
-background:var(--gold);
-color:#000;
-
-font-weight:800;
-
-padding:10px 14px;
-border-radius:10px;
-
-cursor:pointer;
-
-}
-
-button.secondary{
-
-background:transparent;
-border:1px solid var(--border);
-color:var(--gold);
-
-}
-
-button.danger{
-
-background:var(--bad);
-color:#fff;
-
-}
-
-input,select{
-
-background:#0c0c0e;
-border:1px solid rgba(255,255,255,0.10);
-border-radius:10px;
-
-padding:10px;
-color:#fff;
-
-font-family:Inter;
-
-}
-
-.card{
-
-background:var(--card);
-border:1px solid var(--border);
-border-radius:var(--radius);
-
-padding:18px;
-
-}
-
-.kpi{
-
-background:#0c0c0e;
-border:1px solid var(--border);
-border-radius:14px;
-
-padding:14px;
-text-align:center;
-
-}
-
-.kpi b{
-
-font-size:22px;
-color:var(--gold);
-
-}
-
-.small{
-
-font-size:12px;
-color:var(--muted);
-
-}
-
-.badge{
-
-background:rgba(212,175,55,0.20);
-color:var(--gold);
-
-padding:4px 8px;
-border-radius:20px;
-
-font-size:11px;
-font-weight:900;
-
-}
-
-.hr{
-
-height:1px;
-background:rgba(255,255,255,0.06);
-
-margin:14px 0;
-
-}
-
-/* ERP layout */
 
 .sidebar{
-
 width:260px;
 background:#000;
 border-right:1px solid var(--border);
-
 padding:20px;
-
 display:flex;
 flex-direction:column;
-
 }
 
 .logo{
-
 display:flex;
 align-items:center;
 gap:10px;
-
 margin-bottom:30px;
-
 }
 
-.logo img{
-
-height:36px;
-
-}
-
-.logo b{
-
-color:var(--gold);
-
-}
+.logo img{height:36px;}
 
 .menu{
-
 display:flex;
 flex-direction:column;
 gap:8px;
-
 }
 
 .menu a{
-
 padding:10px 12px;
 border-radius:10px;
-
 font-weight:700;
-
+cursor:pointer;
 }
 
 .menu a:hover{
-
 background:rgba(212,175,55,0.10);
-
 }
 
 .main{
-
 flex:1;
 display:flex;
 flex-direction:column;
-
-overflow:hidden;
-
 }
 
 .header{
-
 height:60px;
-
 border-bottom:1px solid var(--border);
-
 display:flex;
 align-items:center;
 justify-content:space-between;
-
 padding:0 20px;
-
 background:#000;
-
 }
 
 .content{
-
 flex:1;
 overflow:auto;
-
 padding:20px;
-
 }
 
 .grid{
-
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:16px;
-
 }
 
-@media(max-width:900px){
-
-.grid{
-
-grid-template-columns:1fr;
-
+.kpi{
+background:#0c0c0e;
+border:1px solid var(--border);
+border-radius:14px;
+padding:14px;
+text-align:center;
 }
 
-.sidebar{
-
-display:none;
-
+.kpi b{
+font-size:22px;
+color:var(--gold);
 }
 
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:16px;
+padding:18px;
+}
+
+.small{
+font-size:12px;
+color:var(--muted);
+}
+
+button{
+background:var(--gold);
+border:none;
+padding:10px 14px;
+border-radius:10px;
+font-weight:800;
+cursor:pointer;
+}
+
+button.secondary{
+background:transparent;
+border:1px solid var(--border);
+color:var(--gold);
+}
+
+button.danger{
+background:var(--bad);
+color:#fff;
 }
 
 </style>
 
 </head>
 
-<body><!-- =========================
-SIDEBAR ERP
-========================= -->
-
-<div class="sidebar">
+<body><div class="sidebar">
 
 <div class="logo">
 
 <img src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/36a74fd15445fd6024a274a4e4be8a0fce0cc2f8/logo.png">
 
 <div>
-<b>Ciza Logistics</b>
+<b style="color:#D4AF37">Ciza Logistics</b>
 <div class="small">ERP Command Center</div>
 </div>
 
@@ -298,79 +172,28 @@ SIDEBAR ERP
 
 <div class="menu">
 
-<a onclick="openView('dashboard')">📊 Dashboard</a>
-
-<a onclick="openView('operations')">🗺 Operations Center</a>
-
-<a onclick="openView('dispatch')">🚚 Dispatch Center</a>
-
-<a onclick="openView('drivers')">👨‍✈️ Drivers</a>
-
-<a onclick="openView('shipments')">📦 Shipments</a>
-
-<a onclick="openView('freight')">🏢 Freight</a>
-
-<a onclick="openView('parcel')">📦 Parcel</a>
-
-<a onclick="openView('enterprise')">🏢 Enterprise Requests</a>
-
-<a onclick="openView('reports')">⚠ Signalements</a>
-
-<a onclick="openView('analytics')">📊 Analytics</a>
-
-<a onclick="openView('archive')">🗂 Archive</a>
-
-<a onclick="openView('settings')">⚙ Settings</a>
+<a onclick="openView('dashboard')">Dashboard</a>
+<a onclick="openView('operations')">Operations Center</a>
+<a onclick="openView('dispatch')">Dispatch</a>
+<a onclick="openView('analytics')">Analytics</a>
 
 </div>
 
 </div>
 
-<!-- =========================
-MAIN AREA
-========================= -->
-
-<div class="main"><!-- =========================
-HEADER ERP
-========================= -->
+<div class="main">
 
 <div class="header">
 
-<div style="display:flex;align-items:center;gap:14px;">
+<b style="color:#D4AF37">Ciza Logistics ERP</b>
 
-<b style="color:var(--gold)">CizaLogistics Command Center</b>
-
-<div class="badge">LIVE</div>
-
-</div>
-
-<div style="display:flex;align-items:center;gap:18px;">
-
-<div class="small">
+<div>
 🕒 <span id="erpClock">--:--</span>
 </div>
 
-<div class="badge" id="alertBadge">
-0 alertes
 </div>
-
-<div class="small">
-Admin
-</div>
-
-</div>
-
-</div>
-
-<!-- =========================
-CONTENT AREA
-========================= -->
 
 <div class="content">
-
-<!-- =========================
-DASHBOARD VIEW
-========================= -->
 
 <div id="view-dashboard" class="view">
 
@@ -378,1115 +201,198 @@ DASHBOARD VIEW
 
 <div class="kpi">
 <b id="kpiShipments">0</b>
-<div class="small">Shipments actifs</div>
+<div class="small">Shipments</div>
 </div>
 
 <div class="kpi">
 <b id="kpiDrivers">0</b>
-<div class="small">Drivers en ligne</div>
+<div class="small">Drivers Online</div>
 </div>
 
 <div class="kpi">
 <b id="kpiTransit">0</b>
-<div class="small">En transit</div>
+<div class="small">Transit</div>
 </div>
 
 <div class="kpi">
 <b id="kpiDelivered">0</b>
-<div class="small">Livrés aujourd’hui</div>
+<div class="small">Delivered</div>
 </div>
 
 </div>
 
-<div class="hr"></div>
-
-<div class="card">
-
-<b style="color:var(--gold)">Activité Logistique</b>
-
-<div class="small">
-Vue rapide des opérations Ciza Logistics.
-Le centre de dispatch supervise ici les missions, chauffeurs et livraisons.
-</div>
-
-</div>
-
-</div><!-- =========================
-OPERATIONS CENTER
-========================= -->
-
-<div id="view-operations" class="view" style="display:none;">
+</div><div id="view-operations" class="view" style="display:none">
 
 <div class="card">
 
-<b style="color:var(--gold)">Operations Center</b>
+<b style="color:#D4AF37">Operations Center</b>
 
-<div class="small">
-Centre de contrôle logistique. Visualisation des chauffeurs, missions et livraisons en temps réel.
+<div id="operationsMap"
+style="height:520px;margin-top:10px;border-radius:16px">
 </div>
 
-<div class="hr"></div>
-
-<div id="operationsMap" style="
-height:520px;
-border-radius:16px;
-border:1px solid var(--border);
-"></div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="card">
-
-<b>Drivers actifs</b>
-
-<div class="small">
-Liste des chauffeurs actuellement en route.
-</div>
-
-<div id="driverLiveList" class="small" style="margin-top:10px;">
-Chargement...
-</div>
-
-</div>
-
-<div class="card">
-
-<b>Alertes système</b>
-
-<div class="small">
-Retards, incidents ou signalements en cours.
-</div>
-
-<div id="alertList" class="small" style="margin-top:10px;">
-Aucune alerte.
-</div>
-
-</div>
-
-</div>
-
-</div><!-- =========================
-DISPATCH CENTER
-========================= -->
-
-<div id="view-dispatch" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Dispatch Center</b>
-
-<div class="small">
-Centre d’assignation des missions. L’ERP peut assigner automatiquement ou permettre un contrôle manuel.
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiUnassigned">0</b>
-<div class="small">Missions non assignées</div>
-</div>
-
-<div class="kpi">
-<b id="kpiAssigned">0</b>
-<div class="small">Missions assignées</div>
-</div>
-
-<div class="kpi">
-<b id="kpiPickup">0</b>
-<div class="small">En ramassage</div>
-</div>
-
-<div class="kpi">
-<b id="kpiTransitDispatch">0</b>
-<div class="small">En transit</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Missions en attente d’assignation</b>
-
-<div class="small">
-Demandes Freight et Parcel prêtes pour dispatch.
-</div>
-
-<div id="dispatchList" style="margin-top:14px;">
-Chargement...
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Actions Dispatch</b>
-
-<div class="small">
-Contrôle manuel des missions.
-</div>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button onclick="autoAssign()">AUTO ASSIGN</button>
-
-<button class="secondary" onclick="manualAssign()">MANUAL ASSIGN</button>
-
-<button class="secondary" onclick="takeControl()">TAKE CONTROL</button>
-
-<button class="danger" onclick="forceDelivery()">FORCE DELIVERY</button>
-
-</div>
-
-</div>
-
-</div><!-- =========================
-DRIVERS MODULE
-========================= -->
-
-<div id="view-drivers" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Drivers Control</b>
-
-<div class="small">
-Gestion des chauffeurs Ciza Logistics. Visualisation en temps réel des chauffeurs disponibles et actifs.
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiDriversOnline">0</b>
-<div class="small">Drivers en ligne</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDriversBusy">0</b>
-<div class="small">Drivers en mission</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDriversAvailable">0</b>
-<div class="small">Drivers disponibles</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDriversOffline">0</b>
-<div class="small">Drivers hors ligne</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Liste des chauffeurs</b>
-
-<div class="small">
-Informations sur les chauffeurs actifs dans le système.
-</div>
-
-<div id="driversList" style="margin-top:16px;">
-Chargement...
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Contrôle chauffeur</b>
-
-<div class="small">
-Actions rapides pour supervision logistique.
-</div>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button class="secondary" onclick="viewDriverMap()">VOIR POSITION</button>
-
-<button class="secondary" onclick="viewDriverShipments()">MISSIONS</button>
-
-<button class="secondary" onclick="contactDriver()">CONTACT</button>
-
-</div>
-
-</div>
-
-</div><!-- =========================
-SHIPMENTS MANAGER
-========================= -->
-
-<div id="view-shipments" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Shipments Manager</b>
-
-<div class="small">
-Gestion globale des expéditions Parcel et Freight.
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiTotalShipments">0</b>
-<div class="small">Total Shipments</div>
-</div>
-
-<div class="kpi">
-<b id="kpiParcel">0</b>
-<div class="small">Parcel</div>
-</div>
-
-<div class="kpi">
-<b id="kpiFreight">0</b>
-<div class="small">Freight</div>
-</div>
-
-<div class="kpi">
-<b id="kpiPendingVerification">0</b>
-<div class="small">Pending Verification</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Liste des expéditions</b>
-
-<div class="small">
-Toutes les missions logistiques en cours dans le système.
-</div>
-
-<div id="shipmentsList" style="margin-top:16px;">
-Chargement...
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Actions Shipment</b>
-
-<div class="small">
-Actions rapides sur une expédition.
-</div>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button class="secondary" onclick="viewShipmentMap()">VIEW MAP</button>
-
-<button class="secondary" onclick="contactShipmentDriver()">CONTACT DRIVER</button>
-
-<button class="secondary" onclick="printShipmentLabel()">PRINT LABEL</button>
-
-<button class="secondary" onclick="replayMission()">MISSION REPLAY</button>
-
-<button class="danger" onclick="archiveShipment()">ARCHIVE</button>
-
-</div>
-
-</div>
-
-</div><!-- =========================
-FREIGHT MODULE
-========================= -->
-
-<div id="view-freight" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Freight Management</b>
-
-<div class="small">
-Gestion des transports entreprises (B2B).
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiFreightRequests">0</b>
-<div class="small">Demandes Freight</div>
-</div>
-
-<div class="kpi">
-<b id="kpiFreightQuotes">0</b>
-<div class="small">Devis envoyés</div>
-</div>
-
-<div class="kpi">
-<b id="kpiFreightTransit">0</b>
-<div class="small">En transit</div>
-</div>
-
-<div class="kpi">
-<b id="kpiFreightDelivered">0</b>
-<div class="small">Livrés</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Demandes Freight</b>
-
-<div class="small">
-Demandes envoyées par les entreprises.
-</div>
-
-<div id="freightRequestsList" style="margin-top:16px;">
-Chargement...
-</div>
-
 </div>
 
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Actions Freight</b>
-
-<div class="small">
-Gestion des demandes entreprises.
-</div>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button onclick="sendFreightQuote()">ENVOYER DEVIS</button>
-
-<button class="secondary" onclick="approveFreightQuote()">ACCEPTER DEVIS</button>
-
-<button class="secondary" onclick="assignFreightDriver()">ASSIGNER CHAUFFEUR</button>
-
-</div>
-
-</div>
-
-</div><!-- =========================
-PARCEL MODULE
-========================= -->
-
-<div id="view-parcel" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Parcel Management</b>
-
-<div class="small">
-Gestion des livraisons colis classiques.
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiParcelPending">0</b>
-<div class="small">Pending Verification</div>
-</div>
-
-<div class="kpi">
-<b id="kpiParcelAssigned">0</b>
-<div class="small">Assignés</div>
-</div>
-
-<div class="kpi">
-<b id="kpiParcelTransit">0</b>
-<div class="small">En transit</div>
-</div>
-
-<div class="kpi">
-<b id="kpiParcelDelivered">0</b>
-<div class="small">Livrés</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Liste Parcel</b>
-
-<div class="small">
-Colis enregistrés dans le système.
-</div>
-
-<div id="parcelList" style="margin-top:14px;">
-Chargement...
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================
-ENTERPRISE REQUESTS
-========================= -->
-
-<div id="view-enterprise" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Enterprise Requests</b>
-
-<div class="small">
-Demandes de création de comptes entreprises.
-</div>
-
-<div class="hr"></div>
-
-<div id="enterpriseRequestsList">
-
-Chargement...
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Actions</b>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button onclick="approveEnterprise()">APPROVE</button>
-
-<button class="danger" onclick="rejectEnterprise()">REJECT</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================
-REPORTS / INCIDENTS
-========================= -->
-
-<div id="view-reports" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Signalements Chauffeurs</b>
-
-<div class="small">
-Incidents ou problèmes signalés par les chauffeurs.
-</div>
-
-<div class="hr"></div>
-
-<div id="reportsList">
-
-Aucun signalement.
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Gestion incident</b>
-
-<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-
-<button onclick="investigateReport()">INVESTIGUER</button>
-
-<button onclick="resolveReport()">RÉSOLU</button>
-
 </div>
-
-</div>
-
-</div><!-- =========================
-ANALYTICS MODULE
-========================= -->
-
-<div id="view-analytics" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Logistics Analytics</b>
-
-<div class="small">
-Analyse des performances du réseau Ciza Logistics.
-</div>
-
-<div class="hr"></div>
-
-<div class="grid">
-
-<div class="kpi">
-<b id="kpiRevenue">0</b>
-<div class="small">Revenus estimés</div>
-</div>
-
-<div class="kpi">
-<b id="kpiAvgDelivery">0</b>
-<div class="small">Temps moyen livraison</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDriverPerf">0</b>
-<div class="small">Performance chauffeurs</div>
-</div>
-
-<div class="kpi">
-<b id="kpiDelayRisk">0</b>
-<div class="small">Risques retard</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>Dynamic Pricing Engine</b>
-
-<div class="small">
-Suggestion automatique de prix selon distance, volume et demande.
-</div>
-
-<div id="pricingSuggestions" style="margin-top:12px;">
-
-Aucune suggestion.
-
-</div>
-
-</div>
-
-<div class="hr"></div>
-
-<div class="card">
-
-<b>ETA Predictor</b>
-
-<div class="small">
-Estimation automatique du temps de livraison.
-</div>
-
-<div id="etaPredictions" style="margin-top:12px;">
-
-Calcul ETA en attente...
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================
-ARCHIVE MODULE
-========================= -->
-
-<div id="view-archive" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Archive Logistique</b>
-
-<div class="small">
-Dossiers archivés du système.
-</div>
-
-<div class="hr"></div>
-
-<div id="archiveList">
-
-Aucune archive.
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================
-SETTINGS MODULE
-========================= -->
-
-<div id="view-settings" class="view" style="display:none;">
-
-<div class="card">
-
-<b style="color:var(--gold)">Paramètres ERP</b>
-
-<div class="small">
-Configuration du système logistique.
-</div>
-
-<div class="hr"></div>
-
-<div class="small">
-Version ERP : 1.0  
-Mode : Production  
-Plateforme : Ciza Logistics
-</div>
-
-</div>
-
-</div><script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script type="module">
-
-/* =========================
-NAVIGATION ERP
-========================= */
-
-const views = document.querySelectorAll(".view");
-
-window.openView = function(name){
-
-views.forEach(v=>{
-v.style.display="none";
-});
-
-const target = document.getElementById("view-"+name);
-
-if(target){
-target.style.display="block";
-}
-
-}
-
-/* =========================
-HORLOGE ERP
-========================= */
-
-function updateClock(){
-
-const now = new Date();
-
-const text = now.toLocaleString("fr-FR",{
-hour:"2-digit",
-minute:"2-digit",
-second:"2-digit"
-});
-
-document.getElementById("erpClock").innerText = text;
-
-}
-
-setInterval(updateClock,1000);
-updateClock();
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-/* =========================
-INITIALISATION CARTE
-========================= */
+<script>
 
 let operationsMap;
+let driverMarkers=[];
+let heatPoints=[];
 
-function initOperationsMap(){
+function initMap(){
 
-if(!document.getElementById("operationsMap")) return;
-
-operationsMap = L.map("operationsMap").setView([-3.3822,29.3644],12);
+operationsMap=L.map("operationsMap")
+.setView([-3.3822,29.3644],12);
 
 L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-{
-maxZoom:19
-}
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 ).addTo(operationsMap);
 
 }
 
-setTimeout(initOperationsMap,500);
+setTimeout(initMap,600);
 
+</script><script>
 
-/* =========================
-DISPATCH ACTIONS
-========================= */
+function calculateETA(distanceKm){
 
-window.autoAssign = function(){
+const avgSpeed=40;
 
-alert("Auto assign driver en cours");
+const hours=distanceKm/avgSpeed;
 
-}
-
-window.manualAssign = function(){
-
-alert("Assignation manuelle");
+return Math.round(hours*60);
 
 }
 
-window.takeControl = function(){
+function smartDispatch(shipment,drivers){
 
-alert("Admin prend le contrôle de la mission");
+let bestDriver=null;
+let bestScore=999999;
 
-}
+drivers.forEach(d=>{
 
-window.forceDelivery = function(){
+const distance=Math.abs(
+(d.lat-shipment.lat)+(d.lng-shipment.lng)
+);
 
-alert("Livraison forcée");
+const load=d.activeShipments||0;
 
-}
+const score=distance+(load*2);
 
+if(score<bestScore){
 
-/* =========================
-SHIPMENT ACTIONS
-========================= */
-
-window.viewShipmentMap = function(){
-
-alert("Ouverture carte shipment");
-
-}
-
-window.contactShipmentDriver = function(){
-
-alert("Contact chauffeur");
+bestScore=score;
+bestDriver=d;
 
 }
 
-window.printShipmentLabel = function(){
+});
 
-alert("Impression étiquette");
-
-}
-
-window.replayMission = function(){
-
-alert("Mission replay");
+return bestDriver;
 
 }
 
-window.archiveShipment = function(){
+</script><script type="module">
 
-alert("Shipment archivé");
-
-}
-
-
-/* =========================
-FREIGHT ACTIONS
-========================= */
-
-window.sendFreightQuote = function(){
-
-alert("Devis envoyé");
-
-}
-
-window.approveFreightQuote = function(){
-
-alert("Devis accepté");
-
-}
-
-window.assignFreightDriver = function(){
-
-alert("Assignation chauffeur freight");
-
-}
-
-
-/* =========================
-ENTERPRISE ACTIONS
-========================= */
-
-window.approveEnterprise = function(){
-
-alert("Entreprise approuvée");
-
-}
-
-window.rejectEnterprise = function(){
-
-alert("Entreprise rejetée");
-
-}
-
-
-/* =========================
-REPORT ACTIONS
-========================= */
-
-window.investigateReport = function(){
-
-alert("Incident en investigation");
-
-}
-
-window.resolveReport = function(){
-
-alert("Incident résolu");
-
-}
-
-<script type="module">
-
-/* =========================
-FIREBASE
-========================= */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
 getFirestore,
 collection,
 query,
 where,
-onSnapshot,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
+const app=initializeApp({
 
 apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
 authDomain:"ciza-logistics.firebaseapp.com",
 projectId:"ciza-logistics"
 
-};
+});
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db=getFirestore(app);
 
+/* shipments */
 
-/* =========================
-SHIPMENTS LISTENER
-========================= */
-
-const shipmentsRef = collection(db,"shipments");
-
-onSnapshot(shipmentsRef,(snap)=>{
+onSnapshot(collection(db,"shipments"),snap=>{
 
 let total=0;
-let parcel=0;
-let freight=0;
-let transit=0;
-let delivered=0;
-let pendingVerification=0;
 
 snap.forEach(doc=>{
 
-const d = doc.data();
+const d=doc.data();
 
 total++;
 
-const type = d.shipmentType || "parcel";
+if(d.lat && d.lng){
 
-if(type==="parcel") parcel++;
-if(type==="freight") freight++;
+heatPoints.push([d.lat,d.lng]);
 
-if(d.status==="in_transit") transit++;
-if(d.status==="delivered") delivered++;
-
-if(d.status==="pending_verification") pendingVerification++;
+}
 
 });
 
-const el1=document.getElementById("kpiShipments");
-if(el1) el1.innerText=total;
-
-const el2=document.getElementById("kpiParcel");
-if(el2) el2.innerText=parcel;
-
-const el3=document.getElementById("kpiFreight");
-if(el3) el3.innerText=freight;
-
-const el4=document.getElementById("kpiTransit");
-if(el4) el4.innerText=transit;
-
-const el5=document.getElementById("kpiDelivered");
-if(el5) el5.innerText=delivered;
-
-const el6=document.getElementById("kpiPendingVerification");
-if(el6) el6.innerText=pendingVerification;
+document.getElementById("kpiShipments").innerText=total;
 
 });
 
+/* drivers */
 
-/* =========================
-DRIVERS LISTENER
-========================= */
-
-const driversQuery = query(
+const driversQuery=query(
 collection(db,"users"),
 where("role","==","driver")
 );
 
-onSnapshot(driversQuery,(snap)=>{
+onSnapshot(driversQuery,snap=>{
 
 let online=0;
-let busy=0;
-let available=0;
 
-let html="";
+driverMarkers.forEach(m=>operationsMap.removeLayer(m));
+driverMarkers=[];
 
 snap.forEach(doc=>{
 
 const d=doc.data();
 
 if(d.isOnline) online++;
-if(d.isAvailable) available++;
-if(!d.isAvailable) busy++;
 
-html+=`
-<div class="card" style="margin-bottom:10px;">
+if(d.lat && d.lng){
 
-<b>${d.fullName || "Driver"}</b><br>
-
-<span class="small">
-Ville : ${d.currentCity || "-"}
-</span><br>
-
-<span class="small">
-Colis actifs : ${d.activeShipments || 0}
-</span>
-
-</div>
-`;
-
-if(operationsMap && d.lat && d.lng){
-
-L.marker([d.lat,d.lng])
+const marker=L.marker([d.lat,d.lng])
 .addTo(operationsMap)
-.bindPopup(d.fullName || "Driver");
+.bindPopup(d.fullName);
+
+driverMarkers.push(marker);
 
 }
 
 });
 
-const l1=document.getElementById("driversList");
-if(l1) l1.innerHTML=html;
-
-const l2=document.getElementById("kpiDriversOnline");
-if(l2) l2.innerText=online;
-
-const l3=document.getElementById("kpiDriversBusy");
-if(l3) l3.innerText=busy;
-
-const l4=document.getElementById("kpiDriversAvailable");
-if(l4) l4.innerText=available;
+document.getElementById("kpiDrivers").innerText=online;
 
 });
 
+/* clock */
 
-/* =========================
-ENTERPRISE REQUESTS
-========================= */
+function updateClock(){
 
-const enterpriseRef = collection(db,"enterpriseRequests");
+const now=new Date();
 
-onSnapshot(enterpriseRef,(snap)=>{
+document.getElementById("erpClock")
+.innerText=now.toLocaleTimeString("fr-FR");
 
-let html="";
+}
 
-snap.forEach(doc=>{
-
-const d=doc.data();
-
-html+=`
-
-<div class="card" style="margin-bottom:10px;">
-
-<b>${d.companyName || "Entreprise"}</b><br>
-
-<span class="small">
-${d.email || "-"}
-</span><br>
-
-<span class="small">
-${d.phone || "-"}
-</span>
-
-</div>
-
-`;
-
-});
-
-const el=document.getElementById("enterpriseRequestsList");
-
-if(el) el.innerHTML=html;
-
-});
-
-
-/* =========================
-REPORTS LISTENER
-========================= */
-
-const reportsRef = collection(db,"reports");
-
-onSnapshot(reportsRef,(snap)=>{
-
-let html="";
-
-snap.forEach(doc=>{
-
-const d=doc.data();
-
-html+=`
-
-<div class="card" style="margin-bottom:10px;">
-
-<b>${d.title || "Signalement"}</b><br>
-
-<span class="small">
-${d.message || ""}
-</span>
-
-</div>
-
-`;
-
-});
-
-const el=document.getElementById("reportsList");
-
-if(el) el.innerHTML=html || "Aucun signalement";
-
-});
-
+setInterval(updateClock,1000);
+updateClock();
 
 </script>
 
