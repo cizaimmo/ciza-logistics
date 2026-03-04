@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Ciza Logistics | ERP Admin (Operations Center)</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B0B0C" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
 /* =========================================================
-   CIZA LOGISTICS ERP — DARK OPS THEME
+   CIZA LOGISTICS ERP — DARK OPS THEME (VALIDÉ)
    ========================================================= */
 :root{
   --gold:#D4AF37;
@@ -26,6 +32,7 @@
   --bad:#d64545;
   --shadow: 0 10px 30px rgba(0,0,0,0.45);
   --radius:22px;
+  --radius2:18px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -34,14 +41,19 @@ body{
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
   background:var(--black);
   color:var(--text);
+  overflow:hidden;
 }
 
+a{color:inherit;text-decoration:none}
+button, input, select, textarea{font-family:Inter}
+
 /* =========================================================
-   LAYOUT (Sidebar + Topbar + Main)
+   LAYOUT ERP (VALIDÉ)
+   Sidebar + Topbar + Views
    ========================================================= */
 .app{
   display:grid;
-  grid-template-columns: 290px 1fr;
+  grid-template-columns: 300px 1fr;
   height:100vh;
 }
 
@@ -64,21 +76,16 @@ body{
   background:rgba(255,255,255,0.03);
 }
 .brand img{
-  width:54px;height:54px;border-radius:14px;
+  width:62px;height:62px;border-radius:16px;
   border:1px solid rgba(212,175,55,0.35);
   background:#0c0c0e;
   object-fit:contain;
 }
-.brand .title{
-  display:flex;flex-direction:column;gap:4px;
-}
-.brand .title b{font-size:14px;color:var(--gold)}
-.brand .title span{font-size:12px;color:var(--muted);max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand .title{display:flex;flex-direction:column;gap:4px}
+.brand .title b{font-size:14px;color:var(--gold);letter-spacing:.2px}
+.brand .title span{font-size:12px;color:var(--muted);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.menu{
-  display:flex;flex-direction:column;gap:8px;
-  margin-top:4px;
-}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .navbtn{
   display:flex;align-items:center;gap:10px;
   padding:12px 12px;
@@ -87,7 +94,7 @@ body{
   background:rgba(255,255,255,0.02);
   color:var(--text);
   cursor:pointer;
-  font-weight:800;
+  font-weight:900;
   transition:.18s transform, .18s background, .18s border;
 }
 .navbtn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.04);border-color:rgba(212,175,55,0.25)}
@@ -120,7 +127,8 @@ body{
 }
 .sidecard .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .sidecard .muted{color:var(--muted);font-size:12px;line-height:1.45}
-.sidecard .pill{
+
+.pill{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 10px;border-radius:999px;
   font-size:12px;font-weight:900;
@@ -131,12 +139,7 @@ body{
 .pill.bad{border-color:rgba(214,69,69,0.35);color:#ffc0c0;background:rgba(214,69,69,0.10);}
 .pill.gold{border-color:rgba(212,175,55,0.35);color:#ffe7a3;background:rgba(212,175,55,0.10);}
 
-.main{
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  overflow:hidden;
-}
+.main{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
@@ -146,26 +149,15 @@ body{
   position:sticky;top:0;z-index:1000;
   backdrop-filter: blur(10px);
 }
-.topbar .left{
-  display:flex;flex-direction:column;gap:3px;
-}
-.topbar h1{
-  font-size:16px;
-  letter-spacing:.2px;
-}
+.topbar .left{display:flex;flex-direction:column;gap:3px}
+.topbar h1{font-size:16px;letter-spacing:.2px}
 .topbar h1 b{color:var(--gold)}
-.topbar .sub{
-  font-size:12px;color:var(--muted);
-}
-.topbar .right{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-}
+.topbar .sub{font-size:12px;color:var(--muted)}
+.topbar .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
 .btn{
-  border:none;
-  border-radius:14px;
-  padding:10px 12px;
-  font-weight:900;
-  cursor:pointer;
+  border:none;border-radius:14px;padding:10px 12px;
+  font-weight:900;cursor:pointer;
 }
 .btn.gold{background:var(--gold);color:#000;}
 .btn.dark{background:#0b0b0c;color:#fff;border:1px solid rgba(255,255,255,0.10);}
@@ -173,22 +165,9 @@ body{
 .btn:disabled{opacity:.55;cursor:not-allowed}
 
 .content{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+  display:flex;flex-direction:column;gap:14px;
   padding:14px 16px 22px;
   overflow:auto;
-}
-
-.grid2{
-  display:grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap:14px;
-}
-@media(max-width:1050px){
-  .app{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .grid2{grid-template-columns:1fr}
 }
 
 .card{
@@ -203,12 +182,12 @@ body{
   border-bottom:1px solid rgba(255,255,255,0.06);
   display:flex;align-items:center;justify-content:space-between;gap:10px;
 }
-.card .head h2{
-  font-size:13px;
-  letter-spacing:.2px;
-}
+.card .head h2{font-size:13px;letter-spacing:.2px}
 .card .head h2 span{color:var(--gold);font-weight:900}
-.card .body{padding:14px;}
+.card .body{padding:14px}
+
+.hr{height:1px;background:rgba(255,255,255,0.08);margin:12px 0}
+.muted{color:var(--muted);font-size:12px;line-height:1.55}
 
 .kpis{
   display:grid;
@@ -226,9 +205,18 @@ body{
 .kpi b{display:block;color:var(--gold);font-size:18px;margin-bottom:4px}
 .kpi small{color:var(--muted);font-size:12px}
 
-.row{
-  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+.grid2{
+  display:grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap:14px;
 }
+@media(max-width:1050px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .grid2{grid-template-columns:1fr}
+  body{overflow:auto}
+}
+
 .input, .select{
   background:#0c0c0e;
   border:1px solid rgba(255,255,255,0.10);
@@ -236,15 +224,11 @@ body{
   padding:10px 12px;
   color:#fff;
   outline:none;
-  font-family:Inter;
   font-weight:700;
 }
 .select{cursor:pointer}
-.muted{color:var(--muted);font-size:12px;line-height:1.55}
 
-.list{
-  display:flex;flex-direction:column;gap:10px;
-}
+.list{display:flex;flex-direction:column;gap:10px}
 .item{
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.06);
@@ -266,16 +250,44 @@ body{
 .pill2.gold{border-color:rgba(212,175,55,0.45);color:#ffe7a3;background:rgba(212,175,55,0.10);}
 .pill2.gray{border-color:rgba(255,255,255,0.14);color:#ddd;background:rgba(255,255,255,0.06);}
 
-.hr{height:1px;background:rgba(255,255,255,0.08);margin:12px 0;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.banner{
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.02);
+}
+.banner strong{color:var(--gold)}
 
 #map{
-  height:520px;
-  width:100%;
+  height:540px;width:100%;
   border-radius:18px;
   border:1px solid rgba(255,255,255,0.08);
   overflow:hidden;
 }
 @media(max-width:1050px){ #map{height:440px} }
+
+.timeline{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:10px;
+}
+.tstep{
+  padding:6px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(0,0,0,0.25);
+  font-size:11px;font-weight:900;color:#ddd;
+}
+.tstep.done{
+  background:rgba(212,175,55,0.14);
+  border-color:rgba(212,175,55,0.30);
+  color:#ffe7a3;
+}
+.tstep.active{
+  background:var(--gold);
+  border-color:rgba(212,175,55,0.55);
+  color:#000;
+}
 
 .toast{
   position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
@@ -289,29 +301,19 @@ body{
 }
 .toast.show{display:block;}
 .toast b{color:var(--gold)}
-
-.banner{
-  padding:10px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.02);
-}
-.banner strong{color:var(--gold)}
 </style>
-</head>
-
-<body>
+</head><body>
 <div class="app">
 
-  <!-- =========================================================
-       BLOCK: SIDEBAR (sidebar)
-       ========================================================= -->
+  <!-- =========================
+       SIDEBAR (VALIDÉ)
+       ========================= -->
   <aside class="sidebar">
     <div class="brand">
-      <img alt="Ciza Group" src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/36a74fd15445fd6024a274a4e4be8a0fce0cc2f8/logo.png">
+      <img alt="Ciza Logistics" src="https://raw.githubusercontent.com/cizaimmo/ciza-logistics/36a74fd15445fd6024a274a4e4be8a0fce0cc2f8/logo.png">
       <div class="title">
         <b>Ciza Logistics</b>
-        <span id="brandSub">ERP • Operations Center</span>
+        <span id="brandSub">Enterprise Logistics Software</span>
       </div>
     </div>
 
@@ -319,9 +321,10 @@ body{
       <button class="navbtn active" data-view="view-ops"><span class="dot"></span> Operations Center <small id="navCountOps">—</small></button>
       <button class="navbtn" data-view="view-shipments"><span class="dot"></span> Shipments <small id="navCountShip">—</small></button>
       <button class="navbtn" data-view="view-drivers"><span class="dot"></span> Drivers <small id="navCountDrv">—</small></button>
-      <button class="navbtn" data-view="view-enterprises"><span class="dot"></span> Enterprises <small id="navCountEnt">—</small></button>
-      <button class="navbtn" data-view="view-reports"><span class="dot"></span> Reports <small id="navCountRep">—</small></button>
+      <button class="navbtn" data-view="view-enterprises"><span class="dot"></span> Enterprise Requests <small id="navCountEnt">—</small></button>
+      <button class="navbtn" data-view="view-reports"><span class="dot"></span> Incident Reports <small id="navCountRep">—</small></button>
       <button class="navbtn" data-view="view-archive"><span class="dot"></span> Archive <small id="navCountArc">—</small></button>
+      <button class="navbtn" data-view="view-analytics"><span class="dot"></span> Analytics</button>
       <button class="navbtn" data-view="view-settings"><span class="dot"></span> Settings</button>
     </nav>
 
@@ -335,17 +338,20 @@ body{
       </div>
       <div class="hr"></div>
       <div class="muted" id="authMini">Connexion…</div>
+      <div class="hr"></div>
+      <div class="muted">Developed by <b style="color:var(--gold)">Ciza Group</b></div>
     </div>
   </aside>
 
+  <!-- =========================
+       MAIN
+       ========================= -->
   <main class="main">
 
-    <!-- =========================================================
-         BLOCK: TOPBAR (topbar)
-         ========================================================= -->
+    <!-- TOPBAR (VALIDÉ) -->
     <header class="topbar">
       <div class="left">
-        <h1><b>Operations Center</b> | Ciza Logistics ERP</h1>
+        <h1><b id="pageTitle">Operations Center</b> | Ciza Logistics ERP</h1>
         <div class="sub" id="topSub">Chargement…</div>
       </div>
       <div class="right">
@@ -357,38 +363,32 @@ body{
 
     <section class="content">
 
-      <!-- =========================================================
-           BLOCK: KPI GRID (kpi-grid)
-           ========================================================= -->
+      <!-- KPI GRID (VALIDÉ) -->
       <div class="card">
         <div class="head">
           <h2><span>KPI</span> (temps réel)</h2>
-          <div class="muted">Parcel + Freight • Flow jusqu’à livraison • Live drivers</div>
+          <div class="muted">Parcel + Freight • Drivers live • Incidents • Archive</div>
         </div>
         <div class="body">
           <div class="kpis">
             <div class="kpi"><b id="kpiTotal">0</b><small>Total Shipments</small></div>
-            <div class="kpi"><b id="kpiParcel">0</b><small>Parcel</small></div>
+            <div class="kpi"><b id="kpiParcel">0</b><small>Parcel (fallback)</small></div>
             <div class="kpi"><b id="kpiFreight">0</b><small>Freight</small></div>
             <div class="kpi"><b id="kpiTransit">0</b><small>En transit</small></div>
             <div class="kpi"><b id="kpiDelivered">0</b><small>Livrés</small></div>
-            <div class="kpi"><b id="kpiDriversLive">0</b><small>Chauffeurs en route</small></div>
+            <div class="kpi"><b id="kpiDriversLive">0</b><small>Drivers live</small></div>
           </div>
         </div>
-      </div>
+      </div>      <div class="grid2">
 
-      <div class="grid2">
-
-        <!-- =========================================================
-             BLOCK: MAP LIVE (operations-map)
-             ========================================================= -->
+        <!-- OPERATIONS CENTER (VALIDÉ) -->
         <div class="card" id="view-ops">
           <div class="head">
-            <h2><span>Carte live</span> • Chauffeurs + Shipments</h2>
+            <h2><span>Carte live</span> • Chauffeurs + Livraisons</h2>
             <div class="row">
               <select class="select" id="mapMode">
-                <option value="drivers">Drivers</option>
-                <option value="shipments">Shipments (lastDriverLocation)</option>
+                <option value="drivers">Drivers (users.liveLocation)</option>
+                <option value="shipments">Shipments (shipments.lastDriverLocation)</option>
                 <option value="both" selected>Both</option>
               </select>
               <button class="btn gold" id="btnFit">Ajuster</button>
@@ -396,33 +396,33 @@ body{
           </div>
           <div class="body">
             <div class="banner">
-              <strong>Centre d’opérations</strong> : suivi en direct des chauffeurs en route 🛣️ + visibilité totale des dossiers.
-              <div class="muted">Source: Firestore `users.liveLocation` + `shipments.lastDriverLocation` (fallback automatique).</div>
+              <strong>Operations Center</strong> : visibilité totale (comme un logiciel logistique international).
+              <div class="muted">
+                Source GPS: <b>users.liveLocation</b> (live) + <b>shipments.lastDriverLocation</b> (lié au dossier).
+              </div>
             </div>
             <div class="hr"></div>
             <div id="map"></div>
           </div>
         </div>
 
-        <!-- =========================================================
-             BLOCK: RIGHT PANEL (quick panels)
-             ========================================================= -->
+        <!-- PANNEAU ACTIONS (VALIDÉ) -->
         <div class="card">
           <div class="head">
-            <h2><span>Actions</span> rapides</h2>
-            <div class="muted">Admin workflow</div>
+            <h2><span>Centre</span> d’actions</h2>
+            <div class="muted">Filtre + actions admin</div>
           </div>
           <div class="body">
 
             <div class="banner" id="permissionBanner">
               <strong>Statut</strong> : Connexion requise.
-              <div class="muted">Le mode “lecture seule” s’active si ton rôle n’est pas admin.</div>
+              <div class="muted">Mode “lecture seule” si ton rôle n’est pas admin.</div>
             </div>
 
             <div class="hr"></div>
 
             <div class="row">
-              <input class="input" id="searchGlobal" placeholder="Rechercher: tracking, ville, driver, entreprise…">
+              <input class="input" id="searchGlobal" placeholder="Rechercher: tracking, ville, driver, entreprise…" style="flex:1;min-width:200px">
               <select class="select" id="filterType">
                 <option value="all">Tous</option>
                 <option value="parcel">Parcel</option>
@@ -433,6 +433,7 @@ body{
                 <option value="created">created</option>
                 <option value="quote_sent">quote_sent</option>
                 <option value="quote_accepted">quote_accepted</option>
+                <option value="ready_for_assignment">ready_for_assignment</option>
                 <option value="assigned">assigned</option>
                 <option value="picked_up">picked_up</option>
                 <option value="in_transit">in_transit</option>
@@ -443,40 +444,37 @@ body{
 
             <div class="hr"></div>
 
-            <div class="muted" style="margin-bottom:8px;">
-              <b style="color:var(--gold)">Important</b> : Parcel n’a parfois pas `shipmentType`. Fallback automatique = <b>parcel</b>.
-              Tracking = `trackingCode` (fallback `trackingCode`/`tracking`/`trackingId`/docId).
+            <div class="muted">
+              <b style="color:var(--gold)">Fallback validé</b> :
+              Parcel peut ne pas avoir <b>shipmentType</b> → on considère <b>parcel</b>.
+              Tracking = <b>trackingCode</b>.
             </div>
+
+            <div class="hr"></div>
 
             <div class="list" id="quickList">
               <div class="muted">Chargement…</div>
             </div>
+
           </div>
         </div>
-
-      </div>
-
-      <!-- =========================================================
-           BLOCK: SHIPMENTS MODULE (shipment-list)
-           ========================================================= -->
+      </div>      <!-- SHIPMENTS (Parcel + Freight, workflow validé) -->
       <div class="card" id="view-shipments" style="display:none;">
         <div class="head">
           <h2><span>Shipments</span> • Parcel + Freight</h2>
           <div class="row">
             <button class="btn outline" id="btnExport">Exporter JSON</button>
-            <button class="btn gold" id="btnNewTab">Ouvrir tracking</button>
+            <button class="btn gold" id="btnOpenTracking">Ouvrir tracking</button>
           </div>
         </div>
         <div class="body">
-          <div class="muted">Actions : devis (freight), assignation (freight), transit, livré, archivage, suivi.</div>
+          <div class="muted">Freight: devis → accept → assign → pickup → transit → delivered • Parcel: protocole identique sans casser l’existant.</div>
           <div class="hr"></div>
           <div class="list" id="shipmentsList"></div>
         </div>
       </div>
 
-      <!-- =========================================================
-           BLOCK: DRIVERS MODULE (drivers-live)
-           ========================================================= -->
+      <!-- DRIVERS (live map validé) -->
       <div class="card" id="view-drivers" style="display:none;">
         <div class="head">
           <h2><span>Drivers</span> • Live tracking</h2>
@@ -487,29 +485,25 @@ body{
         </div>
       </div>
 
-      <!-- =========================================================
-           BLOCK: ENTERPRISE REQUESTS MODULE (enterprise-requests)
-           ========================================================= -->
+      <!-- ENTERPRISE REQUESTS (demande création compte validée) -->
       <div class="card" id="view-enterprises" style="display:none;">
         <div class="head">
-          <h2><span>Demandes Entreprise</span> • Création de compte</h2>
+          <h2><span>Enterprise Requests</span> • Création de compte</h2>
           <div class="muted">Source: enterpriseRequests</div>
         </div>
         <div class="body">
           <div class="muted">
-            Ici : validation/rejet. À l’approbation, on met à jour `users/{uid}` (role enterprise + approved) si `uid` est présent dans la demande.
+            Approve/Reject. À l’approbation, patch <b>users/{uid}</b> si uid présent (role enterprise + accountStatus approved).
           </div>
           <div class="hr"></div>
           <div class="list" id="enterpriseRequestsList"></div>
         </div>
       </div>
 
-      <!-- =========================================================
-           BLOCK: REPORTS MODULE (reports-panel)
-           ========================================================= -->
+      <!-- REPORTS / INCIDENTS (signalement driver validé) -->
       <div class="card" id="view-reports" style="display:none;">
         <div class="head">
-          <h2><span>Signalements</span> • Incidents terrain</h2>
+          <h2><span>Incident Reports</span> • Signalements terrain</h2>
           <div class="muted">Source: reports</div>
         </div>
         <div class="body">
@@ -517,45 +511,60 @@ body{
         </div>
       </div>
 
-      <!-- =========================================================
-           BLOCK: ARCHIVE MODULE (archive-panel)
-           ========================================================= -->
+      <!-- ARCHIVE (archivage dossier validé) -->
       <div class="card" id="view-archive" style="display:none;">
         <div class="head">
           <h2><span>Archive</span> • Dossiers livrés</h2>
-          <div class="muted">Archivage = champ Firestore (pas Cloud Storage ici)</div>
+          <div class="muted">Archivage Firestore (Storage ensuite)</div>
         </div>
         <div class="body">
           <div class="muted">
-            Archive simple: `archived: true` + `archivedAt`. (Storage possible plus tard quand tu réactiveras les règles Storage.)
+            Quand status = delivered → admin peut archiver (archived:true + archivedAt).  
+            Cloud Storage: prévu plus tard (preuves, signature, photo).
           </div>
           <div class="hr"></div>
           <div class="list" id="archiveList"></div>
         </div>
       </div>
 
-      <!-- =========================================================
-           BLOCK: SETTINGS MODULE (settings)
-           ========================================================= -->
+      <!-- ANALYTICS (simple mais pro) -->
+      <div class="card" id="view-analytics" style="display:none;">
+        <div class="head">
+          <h2><span>Analytics</span> • Performance</h2>
+          <div class="muted">Vue globale (sans casser modules existants)</div>
+        </div>
+        <div class="body">
+          <div class="banner">
+            <strong>KPIs analytiques</strong>
+            <div class="muted">Ce module calcule à partir des mêmes données (shipments/users/reports/payments).</div>
+          </div>
+          <div class="hr"></div>
+          <div class="list" id="analyticsList">
+            <div class="muted">Chargement…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS (placeholders validés) -->
       <div class="card" id="view-settings" style="display:none;">
         <div class="head">
-          <h2><span>Paramètres</span></h2>
-          <div class="muted">Placeholders pro (ERP)</div>
+          <h2><span>Settings</span></h2>
+          <div class="muted">Indicateurs ERP</div>
         </div>
         <div class="body">
           <div class="banner">
             <strong>Mode</strong> : <span id="modeLabel">—</span><br>
-            <span class="muted">Version cache, scope, lecture seule = indicateurs ERP (placeholder). On ne bloque pas le système.</span>
+            <span class="muted">Version cache, scope, lecture seule = indicateurs UI (placeholder).</span>
           </div>
           <div class="hr"></div>
           <div class="row">
-            <input class="input" id="cacheVersion" value="ciza-logistics-v1" />
-            <input class="input" id="scopeValue" value="https://cizaimmo.github.io/ciza-logistics" />
+            <input class="input" id="cacheVersion" value="ciza-logistics-erp-v1" />
+            <input class="input" id="scopeValue" value="Ciza Logistics ERP" />
             <button class="btn outline" id="btnReadOnly">Lecture seule</button>
             <button class="btn gold" id="btnApplySettings">Appliquer</button>
           </div>
           <div class="hr"></div>
-          <div class="muted" id="settingsInfo">Gestion sécurisée des paramètres. Certains champs peuvent être en lecture seule selon ton rôle.</div>
+          <div class="muted" id="settingsInfo">Gestion sécurisée des paramètres.</div>
         </div>
       </div>
 
@@ -565,20 +574,15 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script type="module">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script type="module">
 /* =========================================================
-   FIREBASE INIT
+   FIREBASE INIT (VALIDÉ)
    ========================================================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, collection, query, where, orderBy, limit, onSnapshot,
-  doc, getDoc, setDoc, updateDoc, serverTimestamp
+  getFirestore, collection, query, onSnapshot, doc, getDoc, setDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
@@ -590,7 +594,7 @@ const db=getFirestore(app);
 const auth=getAuth(app);
 
 /* =========================================================
-   BLOCK: TOAST
+   TOAST
    ========================================================= */
 function toast(msg){
   const t=document.getElementById("toast");
@@ -598,31 +602,47 @@ function toast(msg){
   t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),2600);
 }
+function safeText(x){ return String(x ?? "").replace(/[<>&]/g, s=>({ "<":"&lt;", ">":"&gt;", "&":"&amp;" }[s])); }
 
 /* =========================================================
-   BLOCK: CLOCK
+   CLOCK
    ========================================================= */
 function tick(){
   const now=new Date();
-  const s = now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const s=now.toLocaleString("fr-FR",{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById("sysTime").innerText=s;
-  document.getElementById("topSub").innerText = "Online • " + s;
+  document.getElementById("topSub").innerText="Online • "+s;
 }
 setInterval(tick,1000);tick();
 
 /* =========================================================
-   BLOCK: NAVIGATION (views)
+   NAVIGATION
    ========================================================= */
 const navButtons=[...document.querySelectorAll(".navbtn")];
+const views=["view-ops","view-shipments","view-drivers","view-enterprises","view-reports","view-archive","view-analytics","view-settings"];
+
+function setTitleForView(id){
+  const titleMap={
+    "view-ops":"Operations Center",
+    "view-shipments":"Shipments",
+    "view-drivers":"Drivers",
+    "view-enterprises":"Enterprise Requests",
+    "view-reports":"Incident Reports",
+    "view-archive":"Archive",
+    "view-analytics":"Analytics",
+    "view-settings":"Settings"
+  };
+  document.getElementById("pageTitle").innerText=titleMap[id]||"Ciza Logistics";
+}
 function showView(id){
-  const views=["view-ops","view-shipments","view-drivers","view-enterprises","view-reports","view-archive","view-settings"];
   for(const v of views){
     const el=document.getElementById(v);
-    if(el) el.style.display = (v===id) ? "block" : "none";
+    if(el) el.style.display=(v===id)?"block":"none";
   }
   for(const b of navButtons){
     b.classList.toggle("active", b.dataset.view===id);
   }
+  setTitleForView(id);
 }
 navButtons.forEach(b=> b.onclick=()=>showView(b.dataset.view));
 
@@ -630,10 +650,10 @@ document.getElementById("btnRefresh").onclick=()=>location.reload();
 document.getElementById("btnLogout").onclick=async()=>{ await signOut(auth); location.href="login.html"; };
 
 /* =========================================================
-   BLOCK: AUTH + ROLE GATING (read-only if not admin)
+   AUTH + ROLE (lecture seule si non admin)
    ========================================================= */
 let currentUser=null;
-let currentUserDoc=null;
+let currentUserDoc={};
 let isAdmin=false;
 
 function setModeBanner(){
@@ -642,205 +662,758 @@ function setModeBanner(){
   const modeLabel=document.getElementById("modeLabel");
 
   if(!currentUser){
-    banner.innerHTML = "<strong>Statut</strong> : Connexion requise.<div class='muted'>Connecte-toi pour charger l’ERP.</div>";
+    banner.innerHTML="<strong>Statut</strong> : Connexion requise.<div class='muted'>Connecte-toi pour charger l’ERP.</div>";
     pill.innerText="Role: —";
     modeLabel.innerText="—";
+    document.getElementById("authMini").innerText="Connexion…";
     return;
   }
 
-  const role = (currentUserDoc?.role || (currentUserDoc?.isAdmin ? "admin" : "unknown") || "unknown");
+  const role=(currentUserDoc?.role || (currentUserDoc?.isAdmin ? "admin" : "unknown") || "unknown");
   isAdmin = role==="admin" || currentUserDoc?.isAdmin===true;
 
-  pill.innerText="Role: " + role;
+  pill.innerText="Role: "+role;
 
   if(isAdmin){
-    banner.innerHTML = "<strong>Mode</strong> : Admin (plein accès)<div class='muted'>Tu vois Parcel + Freight + Drivers live + Enterprise requests + Reports + Archive.</div>";
-    modeLabel.innerText="Admin (plein accès)";
-    document.getElementById("authMini").innerText = "Connecté: " + (currentUser.email||currentUser.uid);
+    banner.innerHTML="<strong>Mode</strong> : Admin (plein accès)<div class='muted'>Tu vois tout: shipments, drivers live, enterprises, reports, archive.</div>";
+    modeLabel.innerText="Admin";
+    document.getElementById("authMini").innerText="Connecté: "+(currentUser.email||currentUser.uid);
     return;
   }
 
-  banner.innerHTML = "<strong>Mode</strong> : Lecture seule (droits insuffisants).<div class='muted'>Tu peux voir, mais pas modifier. (Change role dans users/{uid})</div>";
+  banner.innerHTML="<strong>Mode</strong> : Lecture seule<div class='muted'>Tu peux voir, mais pas modifier.</div>";
   modeLabel.innerText="Lecture seule";
-  document.getElementById("authMini").innerText = "Connecté: " + (currentUser.email||currentUser.uid) + " • Lecture seule";
+  document.getElementById("authMini").innerText="Connecté: "+(currentUser.email||currentUser.uid)+" • Lecture seule";
 }
 
 onAuthStateChanged(auth, async(user)=>{
   if(!user){
-    currentUser=null;
-    currentUserDoc=null;
-    setModeBanner();
+    currentUser=null; currentUserDoc={}; setModeBanner();
     toast("⚠️ <b>Connexion</b> requise");
     return;
   }
   currentUser=user;
-
-  // users/{uid} (role-based)
   try{
-    const us = await getDoc(doc(db,"users",user.uid));
+    const us=await getDoc(doc(db,"users",user.uid));
     currentUserDoc = us.exists() ? (us.data()||{}) : {};
-  }catch(e){
-    currentUserDoc = {};
-  }
-
+  }catch(e){ currentUserDoc={}; }
   setModeBanner();
   bootListeners();
 });
 
 /* =========================================================
-   BLOCK: NORMALIZERS (fallbacks)
+   FALLBACKS VALIDÉS
+   - Parcel peut ne pas avoir shipmentType => fallback parcel
+   - trackingCode est la référence unique
    ========================================================= */
-// Parcel parfois n’a pas shipmentType => fallback parcel
 function normalizeShipmentType(s){
-  const t = (s.shipmentType || s.type || "").toString().toLowerCase().trim();
+  const t=(s.shipmentType || s.type || "").toString().toLowerCase().trim();
   if(t==="freight") return "freight";
   if(t==="parcel") return "parcel";
-  // fallback heuristics: si doc a cargoType / pickupMode / needsQuote => freight probable
   if(s.cargoType || s.pickupMode || s.needsQuote || s.isEnterprise) return "freight";
+  // fallback tracking prefix (si tu as CF/CL)
+  if((s.trackingCode||"").startsWith("CF-")) return "freight";
   return "parcel";
 }
-// trackingCode : support trackingCode / tracking / trackingId / doc id
 function normalizeTracking(s, docId){
-  return (s.trackingCode || s.trackingCode?.code || s.tracking || s.trackingId || s.trackingID || docId || "—").toString();
+  return (s.trackingCode || s.tracking || s.trackingId || docId || "—").toString();
 }
-function normalizeStatus(s){
-  return (s.status || "—").toString();
-}
+function normalizeStatus(s){ return (s.status || "—").toString(); }
 function normalizeRoute(s){
-  const from = (s.fromCity || s.fromProvince || s.fromQuartier || s.from || "—").toString();
-  const to = (s.toCity || s.toProvince || s.toQuartier || s.to || "—").toString();
-  return from + " → " + to;
+  const from=(s.fromCity || s.fromProvince || s.fromQuartier || s.from || "—").toString();
+  const to=(s.toCity || s.toProvince || s.toQuartier || s.to || "—").toString();
+  return from+" → "+to;
 }
 function pillClassForStatus(st){
   st=(st||"").toLowerCase();
   if(st==="delivered") return "good";
   if(st==="in_transit" || st==="assigned" || st==="picked_up") return "good";
-  if(st==="created" || st==="quote_sent" || st==="quote_accepted" || st==="payment_requested") return "gold";
+  if(st==="created" || st==="quote_sent" || st==="quote_accepted" || st==="ready_for_assignment" || st==="payment_requested") return "gold";
   if(st==="cancelled" || st==="quote_rejected") return "bad";
   return "gray";
 }
-function safeText(x){
-  return String(x ?? "").replace(/[<>&]/g, s=>({ "<":"&lt;", ">":"&gt;", "&":"&amp;" }[s]));
-}
 
 /* =========================================================
-   BLOCK: LEAFLET MAP (live map)
+   TIMELINE TRACKING (VALIDÉ)
    ========================================================= */
-let map=null;
-let layerDrivers=null;
-let layerShipments=null;
-
-const driverMarkers=new Map();    // uid -> marker
-const shipmentMarkers=new Map();  // shipmentId -> marker
+function renderTimeline(status){
+  const steps=["created","quote_sent","quote_accepted","ready_for_assignment","assigned","picked_up","in_transit","delivered"];
+  const st=(status||"").toLowerCase();
+  const idx=steps.indexOf(st);
+  let html="<div class='timeline'>";
+  for(let i=0;i<steps.length;i++){
+    const step=steps[i];
+    let cls="";
+    if(i<idx) cls="done";
+    if(i===idx) cls="active";
+    html += `<div class="tstep ${cls}">${safeText(step)}</div>`;
+  }
+  html+="</div>";
+  return html;
+}/* =========================================================
+   MAP LIVE (VALIDÉ)
+   - Drivers: users.liveLocation
+   - Shipments: shipments.lastDriverLocation
+   ========================================================= */
+let map=null, layerDrivers=null, layerShipments=null;
+const driverMarkers=new Map();
+const shipmentMarkers=new Map();
 
 function initMap(){
   if(map) return;
-
-  map = L.map('map',{ zoomControl:true }).setView([-3.36, 29.35], 7);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom:19,
-    attribution:'&copy; OpenStreetMap'
-  }).addTo(map);
-
-  layerDrivers = L.layerGroup().addTo(map);
-  layerShipments = L.layerGroup().addTo(map);
+  map = L.map("map",{zoomControl:true}).setView([-3.36,29.35],7);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(map);
+  layerDrivers=L.layerGroup().addTo(map);
+  layerShipments=L.layerGroup().addTo(map);
 }
 initMap();
 
-function upsertDriverMarker(uid, d){
-  const loc = d.liveLocation || d.location || null;
-  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
-    // remove if exists
-    const mk=driverMarkers.get(uid);
-    if(mk){ layerDrivers.removeLayer(mk); driverMarkers.delete(uid); }
-    return;
-  }
-  const name = d.fullName || d.driverName || d.name || "Driver";
-  const plate = d.driverPlate || d.plate || "-";
-  const speed = (loc.speed ?? d.speed ?? 0);
-  const active = (d.activeShipments ?? 0);
-
-  let mk=driverMarkers.get(uid);
-  const popup = `
-    <div style="font-family:Inter;min-width:220px">
-      <b style="color:#D4AF37">${safeText(name)}</b><br>
-      <div style="font-size:12px;color:#555">UID: ${safeText(uid)}</div>
-      <div style="margin-top:8px;font-size:12px">
-        <b>Plaque</b>: ${safeText(plate)}<br>
-        <b>Speed</b>: ${safeText(speed)}<br>
-        <b>Actifs</b>: ${safeText(active)}<br>
-        <b>Updated</b>: ${safeText(d.updatedAt?.toDate ? d.updatedAt.toDate().toLocaleString("fr-FR") : "-")}
-      </div>
-    </div>
-  `;
-
-  if(!mk){
-    mk = L.marker([loc.lat, loc.lng]);
-    mk.bindPopup(popup);
-    mk.addTo(layerDrivers);
-    driverMarkers.set(uid, mk);
-  }else{
-    mk.setLatLng([loc.lat, loc.lng]);
-    mk.setPopupContent(popup);
-  }
-}
-
-function upsertShipmentMarker(id, s){
-  const loc = s.lastDriverLocation || s.driverLocation || s.location || null;
-  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
-    const mk=shipmentMarkers.get(id);
-    if(mk){ layerShipments.removeLayer(mk); shipmentMarkers.delete(id); }
-    return;
-  }
-  const t = normalizeShipmentType(s);
-  const st = normalizeStatus(s);
-  const code = normalizeTracking(s, id);
-  const route = normalizeRoute(s);
-  const driver = s.assignedDriverName || s.driverName || s.assignedDriverId || "-";
-
-  let mk=shipmentMarkers.get(id);
-  const popup = `
-    <div style="font-family:Inter;min-width:240px">
-      <b style="color:#D4AF37">${safeText(code)}</b>
-      <div style="font-size:12px;color:#555">${safeText(t.toUpperCase())} • ${safeText(st)}</div>
-      <div style="margin-top:8px;font-size:12px">
-        <b>Route</b>: ${safeText(route)}<br>
-        <b>Driver</b>: ${safeText(driver)}<br>
-        <b>Updated</b>: ${safeText(s.updatedAt?.toDate ? s.updatedAt.toDate().toLocaleString("fr-FR") : "-")}
-      </div>
-    </div>
-  `;
-
-  if(!mk){
-    mk = L.circleMarker([loc.lat, loc.lng], { radius:9 });
-    mk.bindPopup(popup);
-    mk.addTo(layerShipments);
-    shipmentMarkers.set(id, mk);
-  }else{
-    mk.setLatLng([loc.lat, loc.lng]);
-    mk.setPopupContent(popup);
-  }
-}
-
 function applyMapMode(){
   const mode=document.getElementById("mapMode").value;
-  layerDrivers.getContainer?.();
-  const showDrivers = (mode==="drivers" || mode==="both");
-  const showShipments = (mode==="shipments" || mode==="both");
+  const showDrivers=(mode==="drivers"||mode==="both");
+  const showShipments=(mode==="shipments"||mode==="both");
 
-  // Leaflet layerGroup doesn't have display toggles; we can add/remove
   if(showDrivers && !map.hasLayer(layerDrivers)) layerDrivers.addTo(map);
   if(!showDrivers && map.hasLayer(layerDrivers)) map.removeLayer(layerDrivers);
 
   if(showShipments && !map.hasLayer(layerShipments)) layerShipments.addTo(map);
   if(!showShipments && map.hasLayer(layerShipments)) map.removeLayer(layerShipments);
 }
-document.getElementById("mapMode").onchange=applyMapMode;
+document.getElementById("mapMode").onchange=()=>{ applyMapMode(); renderMapAll(); };
 applyMapMode();
 
+function upsertDriverMarker(uid, d){
+  const loc=d.liveLocation || null;
+  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
+    const mk=driverMarkers.get(uid);
+    if(mk){ layerDrivers.removeLayer(mk); driverMarkers.delete(uid); }
+    return;
+  }
+  const name=d.fullName || d.name || "Driver";
+  const speed=(loc.speed ?? 0);
+  const active=(d.activeShipments ?? 0);
+  const popup=`
+    <div style="font-family:Inter;min-width:220px">
+      <b style="color:#D4AF37">${safeText(name)}</b><br>
+      <div style="font-size:12px;color:#555">UID: ${safeText(uid)}</div>
+      <div style="margin-top:8px;font-size:12px">
+        <b>Speed</b>: ${safeText(speed)}<br>
+        <b>Actifs</b>: ${safeText(active)}<br>
+        <b>Updated</b>: ${safeText(d.liveLocation?.updatedAt?.toDate ? d.liveLocation.updatedAt.toDate().toLocaleString("fr-FR") : "-")}
+      </div>
+    </div>`;
+  let mk=driverMarkers.get(uid);
+  if(!mk){
+    mk=L.marker([loc.lat,loc.lng]).addTo(layerDrivers).bindPopup(popup);
+    driverMarkers.set(uid,mk);
+  }else{
+    mk.setLatLng([loc.lat,loc.lng]);
+    mk.setPopupContent(popup);
+  }
+}
+
+function upsertShipmentMarker(id, s){
+  const loc=s.lastDriverLocation || null;
+  if(!loc || typeof loc.lat!=="number" || typeof loc.lng!=="number"){
+    const mk=shipmentMarkers.get(id);
+    if(mk){ layerShipments.removeLayer(mk); shipmentMarkers.delete(id); }
+    return;
+  }
+  if(s.archived===true) return;
+
+  const type=normalizeShipmentType(s);
+  const st=normalizeStatus(s);
+  const code=normalizeTracking(s,id);
+  const route=normalizeRoute(s);
+  const driver=s.assignedDriverName || s.assignedDriverId || "-";
+
+  const popup=`
+    <div style="font-family:Inter;min-width:240px">
+      <b style="color:#D4AF37">${safeText(code)}</b>
+      <div style="font-size:12px;color:#555">${safeText(type.toUpperCase())} • ${safeText(st)}</div>
+      <div style="margin-top:8px;font-size:12px">
+        <b>Route</b>: ${safeText(route)}<br>
+        <b>Driver</b>: ${safeText(driver)}<br>
+      </div>
+    </div>`;
+  let mk=shipmentMarkers.get(id);
+  if(!mk){
+    mk=L.circleMarker([loc.lat,loc.lng],{radius:8}).addTo(layerShipments).bindPopup(popup);
+    shipmentMarkers.set(id,mk);
+  }else{
+    mk.setLatLng([loc.lat,loc.lng]);
+    mk.setPopupContent(popup);
+  }
+}
+
 document.getElementById("btnFit").onclick=()=>{
-  const bounds=[];
-  driverMarkers.forEach(m=>bounds.push(m.getLatLng()));
-  shipmentMarkers.forEach(m=>bounds.push(m.getLatLng()));
-  if(bounds.length===0){ toast
+  const pts=[];
+  driverMarkers.forEach(m=>pts.push(m.getLatLng()));
+  shipmentMarkers.forEach(m=>pts.push(m.getLatLng()));
+  if(!pts.length){ toast("ℹ️ <b>Carte</b>: aucun point"); return; }
+  map.fitBounds(L.latLngBounds(pts).pad(0.22));
+};
+
+/* =========================================================
+   DATA STORES
+   ========================================================= */
+let allShipments=[];
+let allDrivers=[];
+let allEnterpriseRequests=[];
+let allReports=[];
+let allPayments=[];
+
+let listenersBooted=false;
+function bootListeners(){
+  if(listenersBooted) return;
+  listenersBooted=true;
+
+  onSnapshot(query(collection(db,"shipments")),(snap)=>{
+    allShipments=[];
+    snap.forEach(ds=>allShipments.push({id:ds.id, ...ds.data()}));
+    renderAll();
+  },(err)=>{ console.error(err); toast("❌ <b>Erreur</b> lecture shipments"); });
+
+  onSnapshot(query(collection(db,"users")),(snap)=>{
+    allDrivers=[];
+    snap.forEach(ds=>allDrivers.push({id:ds.id, ...ds.data()}));
+    renderDriversOnly();
+    renderMapDrivers();
+    renderKPIs();
+  });
+
+  onSnapshot(query(collection(db,"enterpriseRequests")),(snap)=>{
+    allEnterpriseRequests=[];
+    snap.forEach(ds=>allEnterpriseRequests.push({id:ds.id, ...ds.data()}));
+    renderEnterpriseRequests();
+    renderKPIs();
+  });
+
+  onSnapshot(query(collection(db,"reports")),(snap)=>{
+    allReports=[];
+    snap.forEach(ds=>allReports.push({id:ds.id, ...ds.data()}));
+    renderReports();
+    renderKPIs();
+  });
+
+  onSnapshot(query(collection(db,"payments")),(snap)=>{
+    allPayments=[];
+    snap.forEach(ds=>allPayments.push({id:ds.id, ...ds.data()}));
+    renderAnalytics();
+  });
+}
+
+/* =========================================================
+   RENDER KPI (VALIDÉ)
+   ========================================================= */
+function renderKPIs(){
+  let total=0, parcel=0, freight=0, transit=0, delivered=0;
+
+  for(const s of allShipments){
+    total++;
+    const t=normalizeShipmentType(s);
+    if(t==="parcel") parcel++;
+    if(t==="freight") freight++;
+
+    const st=(s.status||"").toString();
+    if(st==="delivered") delivered++;
+    else if(st==="in_transit" || st==="assigned" || st==="picked_up") transit++;
+  }
+
+  const liveDrivers = allDrivers.filter(d=>{
+    const role=(d.role||"").toString().toLowerCase();
+    const loc=d.liveLocation;
+    return role==="driver" && loc && typeof loc.lat==="number" && typeof loc.lng==="number";
+  }).length;
+
+  document.getElementById("kpiTotal").innerText=total;
+  document.getElementById("kpiParcel").innerText=parcel;
+  document.getElementById("kpiFreight").innerText=freight;
+  document.getElementById("kpiTransit").innerText=transit;
+  document.getElementById("kpiDelivered").innerText=delivered;
+  document.getElementById("kpiDriversLive").innerText=liveDrivers;
+
+  document.getElementById("navCountOps").innerText=total;
+  document.getElementById("navCountShip").innerText=total;
+  document.getElementById("navCountDrv").innerText=liveDrivers;
+  document.getElementById("navCountEnt").innerText=allEnterpriseRequests.length;
+  document.getElementById("navCountRep").innerText=allReports.length;
+  document.getElementById("navCountArc").innerText=allShipments.filter(s=>s.archived===true).length;
+}
+
+/* =========================================================
+   SEARCH / FILTER
+   ========================================================= */
+function matchesGlobal(s,q){
+  if(!q) return true;
+  q=q.toLowerCase().trim();
+  const id=s.id||"";
+  const code=normalizeTracking(s,s.id);
+  const route=normalizeRoute(s);
+  const company=(s.companyName || s.ownerName || s.ownerEmail || "").toString();
+  const driver=(s.assignedDriverName || s.assignedDriverId || "").toString();
+  const st=normalizeStatus(s);
+  return [id,code,route,company,driver,st].join(" ").toLowerCase().includes(q);
+}
+function sortByCreatedDesc(a,b){
+  const ta=a.createdAt?.seconds ? a.createdAt.seconds : 0;
+  const tb=b.createdAt?.seconds ? b.createdAt.seconds : 0;
+  return tb-ta;
+}
+
+/* =========================================================
+   SHIPMENT CARD + ACTIONS (workflow validé)
+   - Freight: devis + auto-assign
+   - Status ops: transit, delivered
+   - Archive: archived true
+   - Timeline included
+   ========================================================= */
+function shipmentCardHTML(s){
+  const type=normalizeShipmentType(s);
+  const st=normalizeStatus(s);
+  const pill=pillClassForStatus(st);
+  const code=normalizeTracking(s,s.id);
+  const route=normalizeRoute(s);
+  const company=(s.companyName || s.ownerName || s.ownerEmail || "—").toString();
+  const quote = (s.quoteAmount!=null) ? Number(s.quoteAmount||0).toLocaleString("fr-FR")+" BIF" : null;
+  const canWrite=isAdmin;
+
+  const showQuoteBox = (type==="freight" && st==="created");
+  const showAssignBtn = (type==="freight" && (st==="ready_for_assignment" || st==="quote_accepted"));
+
+  const btnTransit = (st==="assigned" || st==="picked_up") ? `<button class="btn outline" ${canWrite?"":"disabled"} onclick="markStatus('${s.id}','in_transit')">Marquer transit</button>` : "";
+  const btnDelivered = (st==="in_transit") ? `<button class="btn outline" ${canWrite?"":"disabled"} onclick="markStatus('${s.id}','delivered')">Marquer livré</button>` : "";
+  const btnArchive = (st==="delivered" && s.archived!==true) ? `<button class="btn outline" ${canWrite?"":"disabled"} onclick="archiveShipment('${s.id}')">Archiver</button>` : "";
+
+  return `
+  <div class="item">
+    <div class="item-top">
+      <div>
+        <b>${safeText(code)}</b>
+        <div class="muted" style="margin-top:4px">${safeText(type.toUpperCase())} • ${safeText(company)}</div>
+        <div style="margin-top:6px;font-size:12px;color:#ddd">${safeText(route)}</div>
+
+        ${quote ? `<div style="margin-top:6px;font-size:12px"><span class="pill2 gold">Devis</span> <b style="color:var(--gold)">${safeText(quote)}</b></div>` : ``}
+        ${(s.assignedDriverName||s.assignedDriverId) ? `<div style="margin-top:6px;font-size:12px"><span class="pill2 gray">Driver</span> ${safeText(s.assignedDriverName || s.assignedDriverId)}</div>` : ``}
+
+        ${renderTimeline(st)}
+      </div>
+      <span class="pill2 ${pill}">${safeText(st)}</span>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn dark" onclick="openTracking('${encodeURIComponent(code)}')">Suivi</button>
+      ${btnTransit}
+      ${btnDelivered}
+      ${btnArchive}
+    </div>
+
+    ${showQuoteBox ? `
+      <div class="row" style="margin-top:10px">
+        <input class="input" style="width:180px" type="number" id="q_${s.id}" placeholder="Montant devis">
+        <button class="btn gold" ${canWrite?"":"disabled"} onclick="sendQuote('${s.id}')">Envoyer devis</button>
+      </div>
+    ` : ""}
+
+    ${showAssignBtn ? `
+      <div class="row" style="margin-top:10px">
+        <button class="btn gold" ${canWrite?"":"disabled"} onclick="autoAssignDriver('${s.id}')">Auto-assigner chauffeur</button>
+      </div>
+    ` : ""}
+  </div>`;
+}
+
+/* RENDER MAIN LISTS */
+function renderQuick(){
+  const q=document.getElementById("searchGlobal").value;
+  const ft=document.getElementById("filterType").value;
+  const fs=document.getElementById("filterStatus").value;
+
+  const items=allShipments
+    .filter(s=>{
+      const t=normalizeShipmentType(s);
+      if(ft!=="all" && t!==ft) return false;
+      if(fs!=="all" && (s.status||"")!==fs) return false;
+      return matchesGlobal(s,q);
+    })
+    .sort(sortByCreatedDesc)
+    .slice(0,8);
+
+  document.getElementById("quickList").innerHTML = items.length ? items.map(shipmentCardHTML).join("") : "<div class='muted'>Aucun résultat.</div>";
+}
+function renderShipments(){
+  const q=document.getElementById("searchGlobal").value;
+  const ft=document.getElementById("filterType").value;
+  const fs=document.getElementById("filterStatus").value;
+
+  const items=allShipments
+    .filter(s=>{
+      const t=normalizeShipmentType(s);
+      if(ft!=="all" && t!==ft) return false;
+      if(fs!=="all" && (s.status||"")!==fs) return false;
+      return matchesGlobal(s,q);
+    })
+    .sort(sortByCreatedDesc);
+
+  document.getElementById("shipmentsList").innerHTML = items.length ? items.map(shipmentCardHTML).join("") : "<div class='muted'>Aucune donnée.</div>";
+}
+function renderDriversOnly(){
+  const drivers=allDrivers
+    .filter(d=>(d.role||"").toString().toLowerCase()==="driver")
+    .slice(0,150);
+
+  document.getElementById("driversList").innerHTML = drivers.length ? drivers.map(d=>{
+    const loc=d.liveLocation;
+    const live = (loc && typeof loc.lat==="number" && typeof loc.lng==="number");
+    const pill = live ? "good":"gray";
+    const name=d.fullName || d.name || d.email || d.id;
+    const active=d.activeShipments ?? 0;
+    const speed= live ? (loc.speed ?? 0) : "-";
+    return `
+      <div class="item">
+        <div class="item-top">
+          <div>
+            <b>${safeText(name)}</b>
+            <div class="muted" style="margin-top:4px">UID: ${safeText(d.id)}</div>
+            <div style="margin-top:8px;font-size:12px;color:#ddd">
+              <span class="pill2 gray">Actifs</span> ${safeText(active)} &nbsp;
+              <span class="pill2 gray">Speed</span> ${safeText(speed)}
+            </div>
+          </div>
+          <span class="pill2 ${pill}">${live?"LIVE":"offline"}</span>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn dark" onclick="focusDriver('${d.id}')">Voir sur carte</button>
+        </div>
+      </div>`;
+  }).join("") : "<div class='muted'>Aucun chauffeur.</div>";
+}
+
+function renderEnterpriseRequests(){
+  const canWrite=isAdmin;
+  const items=[...allEnterpriseRequests].sort((a,b)=>{
+    const ta=a.createdAt?.seconds||0, tb=b.createdAt?.seconds||0;
+    return tb-ta;
+  }).slice(0,150);
+
+  document.getElementById("enterpriseRequestsList").innerHTML = items.length ? items.map(r=>{
+    const st=(r.status||"pending").toString();
+    const pill = st==="approved" ? "good" : (st==="rejected" ? "bad" : "gold");
+    const name=r.companyName || r.name || r.fullName || "Entreprise";
+    const email=r.email || r.ownerEmail || "-";
+    const phone=r.phone || r.ownerPhone || "-";
+    const uid=r.uid || r.userUid || r.ownerUid || "";
+    return `
+      <div class="item">
+        <div class="item-top">
+          <div>
+            <b>${safeText(name)}</b>
+            <div class="muted" style="margin-top:4px">${safeText(email)} • ${safeText(phone)}</div>
+            <div style="margin-top:8px;font-size:12px;color:#ddd">
+              <span class="pill2 gray">RequestId</span> ${safeText(r.id)}<br>
+              <span class="pill2 gray">UID</span> ${safeText(uid||"—")}
+            </div>
+          </div>
+          <span class="pill2 ${pill}">${safeText(st)}</span>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" ${canWrite?"":"disabled"} onclick="approveEnterprise('${r.id}')">Approve</button>
+          <button class="btn outline" ${canWrite?"":"disabled"} onclick="rejectEnterprise('${r.id}')">Reject</button>
+        </div>
+      </div>`;
+  }).join("") : "<div class='muted'>Aucune demande.</div>";
+}
+
+function renderReports(){
+  const items=[...allReports].sort((a,b)=>{
+    const ta=a.createdAt?.seconds||0, tb=b.createdAt?.seconds||0;
+    return tb-ta;
+  }).slice(0,200);
+
+  document.getElementById("reportsList").innerHTML = items.length ? items.map(r=>{
+    const type=r.type || r.category || "report";
+    const st=r.status || "open";
+    const pill=(st==="resolved")?"good":(st==="closed"?"gray":"gold");
+    const title=r.title || r.reason || "Signalement";
+    const details=r.details || r.note || r.message || "";
+    const tracking=r.trackingCode || r.tracking || r.shipmentId || "—";
+    const driver=r.driverName || r.driverId || r.driverUid || "—";
+    return `
+      <div class="item">
+        <div class="item-top">
+          <div>
+            <b>${safeText(title)}</b>
+            <div class="muted" style="margin-top:4px">${safeText(type)} • Tracking: ${safeText(tracking)} • Driver: ${safeText(driver)}</div>
+            ${details ? `<div style="margin-top:8px;font-size:12px;color:#ddd">${safeText(details)}</div>` : ``}
+          </div>
+          <span class="pill2 ${pill}">${safeText(st)}</span>
+        </div>
+      </div>`;
+  }).join("") : "<div class='muted'>Aucun signalement.</div>";
+}
+
+function renderArchive(){
+  const items=allShipments
+    .filter(s=> s.archived===true)
+    .sort(sortByCreatedDesc)
+    .slice(0,300);
+
+  document.getElementById("archiveList").innerHTML = items.length ? items.map(s=>{
+    const code=normalizeTracking(s,s.id);
+    const route=normalizeRoute(s);
+    const type=normalizeShipmentType(s);
+    return `
+      <div class="item">
+        <div class="item-top">
+          <div>
+            <b>${safeText(code)}</b>
+            <div class="muted" style="margin-top:4px">${safeText(type.toUpperCase())} • ${safeText(route)}</div>
+          </div>
+          <span class="pill2 gray">archived</span>
+        </div>
+      </div>`;
+  }).join("") : "<div class='muted'>Aucune archive.</div>";
+}
+
+function renderAnalytics(){
+  // Simple analytics validé (sans casser autre code)
+  // - total payments
+  // - incidents open
+  // - avg delivery time (if timestamps exist)
+  const openInc = allReports.filter(r=>(r.status||"open")!=="resolved").length;
+
+  let sumPay=0;
+  for(const p of allPayments){
+    const amt = Number(p.amount || p.total || 0);
+    if(!Number.isNaN(amt)) sumPay += amt;
+  }
+
+  let deliveredCount=0;
+  let totalMinutes=0;
+
+  for(const s of allShipments){
+    if((s.status||"")!=="delivered") continue;
+    const c = s.createdAt?.toDate ? s.createdAt.toDate() : null;
+    const d = s.deliveredAt?.toDate ? s.deliveredAt.toDate() : null;
+    if(c && d){
+      const mins = Math.max(0, Math.round((d.getTime()-c.getTime())/60000));
+      totalMinutes += mins;
+      deliveredCount++;
+    }
+  }
+
+  const avg = deliveredCount ? Math.round(totalMinutes/deliveredCount) : 0;
+
+  document.getElementById("analyticsList").innerHTML = `
+    <div class="item">
+      <div class="item-top">
+        <div>
+          <b>Global</b>
+          <div class="muted" style="margin-top:4px">Vue synthèse (ERP)</div>
+          <div style="margin-top:8px;font-size:12px;color:#ddd">
+            <span class="pill2 gold">Incidents ouverts</span> ${safeText(openInc)}<br>
+            <span class="pill2 gold">Total paiements</span> ${safeText(sumPay.toLocaleString("fr-FR"))}<br>
+            <span class="pill2 gold">Temps moyen (livraison)</span> ${safeText(avg)} min
+          </div>
+        </div>
+        <span class="pill2 gray">analytics</span>
+      </div>
+    </div>
+  `;
+}
+
+/* Map render wrappers */
+function renderMapDrivers(){
+  const mode=document.getElementById("mapMode").value;
+  if(mode==="shipments") return;
+  for(const d of allDrivers){
+    if((d.role||"").toString().toLowerCase()!=="driver") continue;
+    upsertDriverMarker(d.id,d);
+  }
+}
+function renderMapShipments(){
+  const mode=document.getElementById("mapMode").value;
+  if(mode==="drivers") return;
+  for(const s of allShipments){
+    upsertShipmentMarker(s.id,s);
+  }
+}
+function renderMapAll(){ renderMapDrivers(); renderMapShipments(); }
+
+function renderAll(){
+  renderKPIs();
+  renderQuick();
+  renderShipments();
+  renderReports();
+  renderEnterpriseRequests();
+  renderArchive();
+  renderAnalytics();
+  renderMapAll();
+}
+
+/* inputs */
+document.getElementById("searchGlobal").addEventListener("input", ()=>{ renderQuick(); renderShipments(); });
+document.getElementById("filterType").addEventListener("change", ()=>{ renderQuick(); renderShipments(); });
+document.getElementById("filterStatus").addEventListener("change", ()=>{ renderQuick(); renderShipments(); });
+
+/* =========================================================
+   ACTIONS ADMIN (VALIDÉ)
+   ========================================================= */
+window.openTracking = (code)=>{
+  window.open("tracking.html?code="+code,"_blank");
+};
+document.getElementById("btnOpenTracking").onclick=()=>{
+  const v=document.getElementById("searchGlobal").value.trim();
+  if(!v){ toast("ℹ️ Mets un tracking code dans la recherche, puis clique."); return; }
+  openTracking(encodeURIComponent(v));
+};
+
+window.markStatus = async (shipmentId,status)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+  await updateDoc(doc(db,"shipments",shipmentId),{ status, updatedAt:serverTimestamp() });
+  toast("✅ Statut: <b>"+safeText(status)+"</b>");
+};
+
+window.archiveShipment = async (shipmentId)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+  await updateDoc(doc(db,"shipments",shipmentId),{ archived:true, archivedAt:serverTimestamp(), updatedAt:serverTimestamp() });
+  toast("✅ Dossier archivé");
+};
+
+window.sendQuote = async (shipmentId)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+  const el=document.getElementById("q_"+shipmentId);
+  const amount=el ? Number(el.value||0) : 0;
+  if(!amount){ toast("❌ Montant requis"); return; }
+  await updateDoc(doc(db,"shipments",shipmentId),{
+    quoteAmount: amount,
+    status:"quote_sent",
+    quoteSentAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  toast("✅ <b>Devis envoyé</b> • "+amount.toLocaleString("fr-FR")+" BIF");
+};
+
+window.autoAssignDriver = async (shipmentId)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+
+  const ref=doc(db,"shipments",shipmentId);
+  const snap=await getDoc(ref);
+  if(!snap.exists()){ toast("❌ Shipment introuvable"); return; }
+  const s=snap.data()||{};
+  const st=(s.status||"").toString();
+  if(!(st==="ready_for_assignment" || st==="quote_accepted")){
+    toast("⚠️ Statut invalide pour assignation");
+    return;
+  }
+
+  const drivers=allDrivers.filter(d=>{
+    const role=(d.role||"").toString().toLowerCase();
+    const approved=((d.accountStatus||"").toString().toLowerCase()==="approved") || d.accountStatus===true;
+    const available=(d.isAvailable===true || d.available===true);
+    return role==="driver" && approved && available;
+  });
+
+  if(!drivers.length){ toast("⚠️ Aucun chauffeur disponible"); return; }
+
+  const truckType=s.truckType || "";
+  const fromCity=s.fromCity || s.fromProvince || "";
+
+  let level1=drivers.filter(d=>(d.truckType||"")===truckType && (d.currentCity||"")===fromCity);
+  let level2=drivers.filter(d=>(d.truckType||"")===truckType);
+  let pool=level1.length?level1:(level2.length?level2:drivers);
+
+  pool.sort((a,b)=>(a.activeShipments||0)-(b.activeShipments||0));
+  const best=pool[0];
+  if(!best){ toast("❌ Impossible d’assigner"); return; }
+
+  await updateDoc(ref,{
+    assignedDriverId: best.id,
+    assignedDriverName: best.fullName || best.name || "Driver",
+    assignedAt: serverTimestamp(),
+    status:"assigned",
+    updatedAt: serverTimestamp()
+  });
+
+  try{
+    await updateDoc(doc(db,"users",best.id),{
+      isAvailable:false,
+      activeShipments:(best.activeShipments||0)+1,
+      updatedAt: serverTimestamp()
+    });
+  }catch(e){}
+
+  toast("✅ Chauffeur assigné: <b>"+safeText(best.fullName||best.id)+"</b>");
+};
+
+window.focusDriver = (uid)=>{
+  const mk=driverMarkers.get(uid);
+  if(!mk){ toast("ℹ️ Pas de position live pour ce driver."); return; }
+  showView("view-ops");
+  map.setView(mk.getLatLng(), 15);
+  mk.openPopup();
+};
+
+window.approveEnterprise = async (requestId)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+  const req=allEnterpriseRequests.find(x=>x.id===requestId) || {};
+  const uid=req.uid || req.userUid || req.ownerUid;
+
+  await updateDoc(doc(db,"enterpriseRequests",requestId),{
+    status:"approved",
+    approvedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+
+  if(uid){
+    await setDoc(doc(db,"users",uid),{
+      role:"enterprise",
+      accountStatus:"approved",
+      companyName: req.companyName || req.name || "Entreprise",
+      phone: req.phone || req.ownerPhone || "-",
+      updatedAt: serverTimestamp()
+    },{merge:true});
+  }
+
+  toast("✅ Demande approuvée");
+};
+
+window.rejectEnterprise = async (requestId)=>{
+  if(!isAdmin){ toast("⚠️ <b>Lecture seule</b>"); return; }
+  await updateDoc(doc(db,"enterpriseRequests",requestId),{
+    status:"rejected",
+    rejectedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  toast("✅ Demande rejetée");
+};
+
+/* Export */
+document.getElementById("btnExport").onclick=()=>{
+  const payload={
+    exportedAt:new Date().toISOString(),
+    shipments:allShipments,
+    drivers:allDrivers.filter(d=>(d.role||"").toString().toLowerCase()==="driver"),
+    enterpriseRequests:allEnterpriseRequests,
+    reports:allReports,
+    payments:allPayments
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="ciza-logistics-erp-export.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast("✅ Export généré");
+};
+
+/* settings */
+document.getElementById("btnReadOnly").onclick=()=>toast("ℹ️ Lecture seule = contrôle via rôle/rules.");
+document.getElementById("btnApplySettings").onclick=()=>toast("✅ Paramètres appliqués (placeholder).");</script>
+
+</body>
+</html>
