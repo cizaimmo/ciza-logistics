@@ -1,291 +1,206 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>CizaLogistics Mission Control</title>
+<title>CizaLogistics ERP</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
 <style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial}
+body{background:#0B0B0C;color:white;height:100vh;display:flex}
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter;
-}
-
-body{
-background:#0B0B0C;
-color:white;
-overflow:hidden;
-}
-
-/* HEADER */
-
-header{
-height:70px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 30px;
-background:#151517;
-border-bottom:1px solid #202022;
+.sidebar{
+width:230px;background:#151517;border-right:1px solid #222;padding-top:10px
 }
 
 .logo{
-font-size:20px;
-font-weight:900;
-color:#D4AF37;
+padding:15px;font-weight:bold;color:#D4AF37;font-size:18px
 }
 
-.kpi-container{
-display:flex;
-gap:18px;
+.nav button{
+width:100%;padding:14px;border:none;background:#151517;color:white;
+text-align:left;cursor:pointer;border-bottom:1px solid #222
 }
 
-.kpi{
-background:#1b1b1e;
-padding:10px 18px;
-border-radius:10px;
-text-align:center;
-font-size:12px;
-min-width:90px;
+.nav button:hover{background:#1f1f23}
+
+.main{flex:1;display:flex;flex-direction:column}
+
+.header{
+height:70px;background:#151517;border-bottom:1px solid #222;
+display:flex;align-items:center;padding:0 20px
 }
 
-.kpi span{
-display:block;
-font-size:22px;
-font-weight:800;
-margin-top:4px;
-}
+.kpis{display:flex;gap:20px}
 
-/* LAYOUT */
+.kpi{background:#1c1c20;padding:10px 18px;border-radius:10px;text-align:center}
 
-.container{
-display:flex;
-height:calc(100vh - 70px);
-width:100%;
-}
+.view{display:none;height:calc(100vh - 70px);overflow:auto;padding:20px}
 
-/* SIDEBAR */
+.active{display:block}
 
-.sidebar{
-width:240px;
-background:#151517;
-padding:20px;
-border-right:1px solid #222;
-}
+table{width:100%;border-collapse:collapse;margin-top:20px}
 
-.sidebar button{
-width:100%;
-margin-bottom:12px;
-padding:14px;
-background:#1e1e22;
-border:none;
-border-radius:10px;
-color:white;
-cursor:pointer;
-font-size:14px;
-}
+th,td{padding:10px;border-bottom:1px solid #222;text-align:left}
 
-.sidebar button:hover{
-background:#2a2a30;
-}
+.status{padding:4px 10px;border-radius:20px;font-size:11px}
 
-/* MAIN */
-
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-/* TOP */
-
-.top{
-display:flex;
-height:55%;
-min-height:420px;
-}
-
-/* MAP */
-
-.map{
-flex:2;
-position:relative;
-}
-
-#map{
-height:100%;
-width:100%;
-border-right:1px solid #222;
-}
-
-/* ACTIVITY */
-
-.activity{
-flex:1;
-background:#151517;
-overflow:auto;
-}
-
-.activity h3{
-padding:16px;
-border-bottom:1px solid #222;
-font-size:18px;
-}
-
-.activity-item{
-padding:14px;
-border-bottom:1px solid #222;
-font-size:13px;
-}
-
-/* TABLE */
-
-.bottom{
-height:45%;
-overflow:auto;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th{
-background:#151517;
-padding:14px;
-text-align:left;
-font-size:12px;
-}
-
-td{
-padding:14px;
-border-bottom:1px solid #222;
-font-size:13px;
-}
-
-/* STATUS COLORS */
-
-.status{
-padding:4px 10px;
-border-radius:20px;
-font-size:11px;
-font-weight:700;
-}
-
-.request{background:#444}
-.quote_sent{background:#7a5200}
-.quote_accepted{background:#2954ff}
 .assigned{background:#2954ff}
-.picked_up{background:#c9a100}
 .in_transit{background:#8a00b2}
 .delivered{background:#009944}
+
+#map{height:400px;margin-top:20px}
+
+.chat-container{display:flex;height:400px;border:1px solid #222}
+
+.chat-list{width:200px;border-right:1px solid #222}
+
+.chat-messages{flex:1;display:flex;flex-direction:column}
+
+.messages{flex:1;overflow:auto;padding:10px}
+
+.input{display:flex;border-top:1px solid #222}
+
+.input input{flex:1;padding:10px;background:#0B0B0C;color:white;border:none}
+
+.input button{padding:10px;background:#2954ff;border:none;color:white}
+
+.label{
+border:1px dashed #000;background:white;color:black;width:300px;padding:10px
+}
 
 </style>
 </head>
 
 <body>
 
-<header>
-
-<div class="logo">
-CIZA LOGISTICS — MISSION CONTROL
-</div>
-
-<div class="kpi-container">
-
-<div class="kpi">
-Shipments
-<span id="kpiTotal">0</span>
-</div>
-
-<div class="kpi">
-Assigned
-<span id="kpiAssigned">0</span>
-</div>
-
-<div class="kpi">
-Transit
-<span id="kpiTransit">0</span>
-</div>
-
-<div class="kpi">
-Delivered
-<span id="kpiDelivered">0</span>
-</div>
-
-</div>
-
-</header>
-
-<div class="container">
-
 <div class="sidebar">
+<div class="logo">CIZA LOGISTICS</div>
 
-<button onclick="filterType('all')">
-Tous
-</button>
-
-<button onclick="filterType('parcel')">
-Colis
-</button>
-
-<button onclick="filterType('freight')">
-Freight entreprise
-</button>
-
+<div class="nav">
+<button onclick="showView('dashboard')">Dashboard</button>
+<button onclick="showView('dispatch')">Dispatch</button>
+<button onclick="showView('shipments')">Shipments</button>
+<button onclick="showView('fleet')">Fleet</button>
+<button onclick="showView('freight')">Freight</button>
+<button onclick="showView('companies')">Entreprises</button>
+<button onclick="showView('chat')">Live Chat</button>
+<button onclick="showView('reports')">Reports</button>
+<button onclick="showView('archives')">Archives</button>
+<button onclick="showView('labels')">Label Print</button>
+</div>
 </div>
 
 <div class="main">
 
-<div class="top">
+<div class="header">
+<div class="kpis">
+<div class="kpi">Shipments <div id="kTotal">0</div></div>
+<div class="kpi">Transit <div id="kTransit">0</div></div>
+<div class="kpi">Delivered <div id="kDelivered">0</div></div>
+</div>
+</div>
 
-<div class="map">
+<!-- DASHBOARD -->
+<div id="dashboard" class="view active">
+<h2>Mission Control</h2>
 <div id="map"></div>
-</div>
-
-<div class="activity">
-
-<h3>Activité Live</h3>
-
-<div id="activityFeed"></div>
-
-</div>
-
-</div>
-
-<div class="bottom">
 
 <table>
-
 <thead>
-
 <tr>
 <th>ID</th>
-<th>Type</th>
 <th>Client</th>
 <th>Pickup</th>
 <th>Destination</th>
 <th>Driver</th>
 <th>Status</th>
 </tr>
-
 </thead>
-
 <tbody id="shipmentsTable"></tbody>
-
 </table>
-
 </div>
 
+<!-- DISPATCH -->
+<div id="dispatch" class="view">
+<h2>Dispatch Center</h2>
+<p>Assignation chauffeur depuis les shipments.</p>
+</div>
+
+<!-- SHIPMENTS -->
+<div id="shipments" class="view">
+<h2>Gestion Shipments</h2>
+<div id="shipmentsList"></div>
+</div>
+
+<!-- FLEET -->
+<div id="fleet" class="view">
+<h2>Fleet Tracking</h2>
+<div id="fleetMap"></div>
+</div>
+
+<!-- FREIGHT -->
+<div id="freight" class="view">
+<h2>Freight Requests</h2>
+<div id="freightList"></div>
+</div>
+
+<!-- COMPANIES -->
+<div id="companies" class="view">
+<h2>Entreprises</h2>
+<table>
+<thead>
+<tr><th>Name</th><th>Email</th><th>Status</th></tr>
+</thead>
+<tbody id="companiesTable"></tbody>
+</table>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="view">
+<h2>Live Chat</h2>
+
+<div class="chat-container">
+<div class="chat-list" id="chatList"></div>
+
+<div class="chat-messages">
+<div class="messages" id="messages"></div>
+
+<div class="input">
+<input id="msgInput" placeholder="Message">
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- REPORTS -->
+<div id="reports" class="view">
+<h2>Reports</h2>
+<p>Statistiques logistiques.</p>
+</div>
+
+<!-- ARCHIVES -->
+<div id="archives" class="view">
+<h2>Archives</h2>
+<div id="archiveList"></div>
+</div>
+
+<!-- LABEL PRINT -->
+<div id="labels" class="view">
+<h2>Print Label</h2>
+
+<div class="label" id="label">
+<b>CIZA LOGISTICS</b><br>
+Shipment ID : <span id="labelId"></span><br>
+Client : <span id="labelClient"></span><br>
+Pickup : <span id="labelPickup"></span><br>
+Destination : <span id="labelDest"></span>
+</div>
+
+<button onclick="window.print()">Print</button>
 </div>
 
 </div>
@@ -295,106 +210,114 @@ Freight entreprise
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
+import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
-import {
-getFirestore,
-collection,
-onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-
-/* FIREBASE CONFIG */
-
-const firebaseConfig = {
-
+const firebaseConfig={
 apiKey:"YOUR_KEY",
 authDomain:"YOUR_DOMAIN",
 projectId:"YOUR_PROJECT"
-
 }
 
 const app=initializeApp(firebaseConfig)
-
 const db=getFirestore(app)
+
+/* NAVIGATION */
+
+window.showView=function(id){
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'))
+document.getElementById(id).classList.add('active')
+}
 
 /* MAP */
 
-const map=L.map("map").setView([-3.38,29.36],12)
+const map=L.map('map').setView([-3.38,29.36],12)
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
-const driverIcon=L.icon({
-iconUrl:"https://cdn-icons-png.flaticon.com/512/854/854894.png",
-iconSize:[32,32]
-})
-
-/* FIRESTORE */
+/* SHIPMENTS */
 
 const shipmentsRef=collection(db,"shipments")
 
-onSnapshot(shipmentsRef,(snapshot)=>{
+onSnapshot(shipmentsRef,(snap)=>{
 
 let total=0
-let assigned=0
 let transit=0
 let delivered=0
 
 const table=document.getElementById("shipmentsTable")
-const activity=document.getElementById("activityFeed")
-
 table.innerHTML=""
 
-snapshot.forEach(doc=>{
+snap.forEach(doc=>{
 
 const s=doc.data()
-
 total++
 
-if(s.status==="assigned")assigned++
 if(s.status==="in_transit")transit++
 if(s.status==="delivered")delivered++
 
 table.innerHTML+=`
-
-<tr>
-
+<tr onclick="printLabel('${doc.id}','${s.clientName}','${s.pickupAddress}','${s.deliveryAddress}')">
 <td>${doc.id}</td>
-<td>${s.shipmentType||"-"}</td>
-<td>${s.clientName||"-"}</td>
-<td>${s.pickupAddress||"-"}</td>
-<td>${s.deliveryAddress||"-"}</td>
-<td>${s.assignedDriverName||"-"}</td>
-
-<td>
-
-<span class="status ${s.status}">
-${s.status}
-</span>
-
-</td>
-
+<td>${s.clientName||""}</td>
+<td>${s.pickupAddress||""}</td>
+<td>${s.deliveryAddress||""}</td>
+<td>${s.assignedDriverName||""}</td>
+<td><span class="status ${s.status}">${s.status}</span></td>
 </tr>
 `
 
-activity.innerHTML=`
-
-<div class="activity-item">
-Shipment ${doc.id} : ${s.status}
-</div>
-
-`+activity.innerHTML
-
 if(s.location){
-
-L.marker([s.location.lat,s.location.lng],{icon:driverIcon}).addTo(map)
-
+L.marker([s.location.lat,s.location.lng]).addTo(map)
 }
 
 })
 
-document.getElementById("kpiTotal").innerText=total
-document.getElementById("kpiAssigned").innerText=assigned
-document.getElementById("kpiTransit").innerText=transit
-document.getElementById("kpiDelivered").innerText=delivered
+document.getElementById("kTotal").innerText=total
+document.getElementById("kTransit").innerText=transit
+document.getElementById("kDelivered").innerText=delivered
+
+})
+
+/* LABEL PRINT */
+
+window.printLabel=function(id,client,pickup,dest){
+
+showView("labels")
+
+document.getElementById("labelId").innerText=id
+document.getElementById("labelClient").innerText=client
+document.getElementById("labelPickup").innerText=pickup
+document.getElementById("labelDest").innerText=dest
+
+}
+
+/* CHAT */
+
+const chatsRef=collection(db,"chats")
+
+window.sendMessage=async function(){
+
+const txt=document.getElementById("msgInput").value
+
+if(!txt)return
+
+await addDoc(chatsRef,{
+text:txt,
+timestamp:Date.now()
+})
+
+document.getElementById("msgInput").value=""
+
+}
+
+onSnapshot(chatsRef,(snap)=>{
+
+const box=document.getElementById("messages")
+box.innerHTML=""
+
+snap.forEach(doc=>{
+box.innerHTML+=`<div>${doc.data().text}</div>`
+})
 
 })
 
