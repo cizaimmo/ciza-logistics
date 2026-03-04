@@ -23,7 +23,10 @@ font-family:Inter;
 body{
 background:#0B0B0C;
 color:white;
+overflow:hidden;
 }
+
+/* HEADER */
 
 header{
 height:70px;
@@ -48,26 +51,32 @@ gap:18px;
 
 .kpi{
 background:#1b1b1e;
-padding:10px 16px;
-border-radius:8px;
+padding:10px 18px;
+border-radius:10px;
 text-align:center;
 font-size:12px;
+min-width:90px;
 }
 
 .kpi span{
 display:block;
-font-size:20px;
+font-size:22px;
 font-weight:800;
 margin-top:4px;
 }
 
+/* LAYOUT */
+
 .container{
 display:flex;
 height:calc(100vh - 70px);
+width:100%;
 }
 
+/* SIDEBAR */
+
 .sidebar{
-width:230px;
+width:240px;
 background:#151517;
 padding:20px;
 border-right:1px solid #222;
@@ -75,18 +84,21 @@ border-right:1px solid #222;
 
 .sidebar button{
 width:100%;
-margin-bottom:10px;
-padding:12px;
+margin-bottom:12px;
+padding:14px;
 background:#1e1e22;
 border:none;
-border-radius:8px;
+border-radius:10px;
 color:white;
 cursor:pointer;
+font-size:14px;
 }
 
 .sidebar button:hover{
 background:#2a2a30;
 }
+
+/* MAIN */
 
 .main{
 flex:1;
@@ -94,39 +106,51 @@ display:flex;
 flex-direction:column;
 }
 
+/* TOP */
+
 .top{
 display:flex;
-height:50%;
+height:55%;
+min-height:420px;
 }
 
+/* MAP */
+
 .map{
-flex:1;
+flex:2;
+position:relative;
 }
 
 #map{
 height:100%;
+width:100%;
+border-right:1px solid #222;
 }
 
+/* ACTIVITY */
+
 .activity{
-width:350px;
+flex:1;
 background:#151517;
 overflow:auto;
-border-left:1px solid #222;
 }
 
 .activity h3{
-padding:14px;
+padding:16px;
 border-bottom:1px solid #222;
+font-size:18px;
 }
 
 .activity-item{
-padding:12px;
+padding:14px;
 border-bottom:1px solid #222;
 font-size:13px;
 }
 
+/* TABLE */
+
 .bottom{
-flex:1;
+height:45%;
 overflow:auto;
 }
 
@@ -137,16 +161,18 @@ border-collapse:collapse;
 
 th{
 background:#151517;
-padding:12px;
+padding:14px;
 text-align:left;
 font-size:12px;
 }
 
 td{
-padding:12px;
+padding:14px;
 border-bottom:1px solid #222;
 font-size:13px;
 }
+
+/* STATUS COLORS */
 
 .status{
 padding:4px 10px;
@@ -243,7 +269,6 @@ Freight entreprise
 <thead>
 
 <tr>
-
 <th>ID</th>
 <th>Type</th>
 <th>Client</th>
@@ -251,7 +276,6 @@ Freight entreprise
 <th>Destination</th>
 <th>Driver</th>
 <th>Status</th>
-
 </tr>
 
 </thead>
@@ -278,6 +302,8 @@ collection,
 onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
+/* FIREBASE CONFIG */
+
 const firebaseConfig = {
 
 apiKey:"YOUR_KEY",
@@ -290,9 +316,18 @@ const app=initializeApp(firebaseConfig)
 
 const db=getFirestore(app)
 
+/* MAP */
+
 const map=L.map("map").setView([-3.38,29.36],12)
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
+
+const driverIcon=L.icon({
+iconUrl:"https://cdn-icons-png.flaticon.com/512/854/854894.png",
+iconSize:[32,32]
+})
+
+/* FIRESTORE */
 
 const shipmentsRef=collection(db,"shipments")
 
@@ -323,7 +358,7 @@ table.innerHTML+=`
 <tr>
 
 <td>${doc.id}</td>
-<td>${s.shipmentType}</td>
+<td>${s.shipmentType||"-"}</td>
 <td>${s.clientName||"-"}</td>
 <td>${s.pickupAddress||"-"}</td>
 <td>${s.deliveryAddress||"-"}</td>
@@ -338,22 +373,19 @@ ${s.status}
 </td>
 
 </tr>
-
 `
 
 activity.innerHTML=`
 
 <div class="activity-item">
-
 Shipment ${doc.id} : ${s.status}
-
 </div>
 
 `+activity.innerHTML
 
 if(s.location){
 
-L.marker([s.location.lat,s.location.lng]).addTo(map)
+L.marker([s.location.lat,s.location.lng],{icon:driverIcon}).addTo(map)
 
 }
 
