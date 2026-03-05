@@ -1,841 +1,480 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Ciza Driver Tool</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script src="https://unpkg.com/@zxing/library@0.20.0"></script>
 
 <style>
-:root{
-  --bg:#0B0B0C; --panel:#151517; --card:#1a1d24; --muted:#9ca3af;
-  --ok:#22c55e; --bad:#ef4444; --blue:#3b82f6; --gold:#D4AF37;
-  --line:rgba(255,255,255,0.08);
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:#eaeaea}
-.header{
-  position:sticky;top:0;z-index:20;
-  background:linear-gradient(90deg,#000,#111 60%,#000);
-  border-bottom:1px solid rgba(212,175,55,0.22);
-  box-shadow:0 6px 20px rgba(0,0,0,0.6);
-  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;
-}
-.brand{color:var(--gold);font-weight:900;font-size:15px;letter-spacing:.2px}
-.driverName{font-size:12px;color:#e5e7eb;margin-top:4px;opacity:.95}
-.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.badge{padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;background:var(--ok);color:#fff}
-.badge.bad{background:var(--bad)}
-.badge.gold{background:var(--gold);color:#000}
-.menuBtn{background:var(--gold);border:none;padding:7px 12px;border-radius:12px;font-weight:900;cursor:pointer}
 
-.container{width:95%;max-width:1100px;margin:14px auto 90px auto}
+body{
+margin:0;
+background:#0B0B0C;
+font-family:Inter,Arial;
+color:white;
+display:none;
+}
+
+header{
+background:#000;
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #1e1e1e;
+}
+
+.logo{
+font-weight:900;
+color:#D4AF37;
+}
+
+.menu button{
+margin-left:8px;
+background:#151517;
+border:none;
+padding:8px 12px;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.container{
+width:92%;
+margin:auto;
+margin-top:20px;
+}
+
 .card{
-  background:linear-gradient(145deg,#171a22,#1f2430);
-  border-radius:22px;padding:20px;margin-bottom:16px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.06);
+background:#151517;
+padding:16px;
+border-radius:14px;
+margin-bottom:16px;
 }
-.section-title{font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.small{font-size:12px;color:var(--muted);line-height:1.35}
-.actionsRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn{border:none;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer}
-.btn.full{width:100%}
-.btn.dark{background:linear-gradient(135deg,#000,#1a1a1a);color:#fff;border:1px solid rgba(212,175,55,0.22)}
-.btn.gold{background:var(--gold);color:#000}
-.btn.red{background:var(--bad);color:#fff}
-.btn.blue{background:#2563eb;color:#fff}
-.btn.nav-ready{background:var(--gold);color:#000;animation:pulse 1.6s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,175,55,.7)}70%{box-shadow:0 0 0 12px rgba(212,175,55,0)}100%{box-shadow:0 0 0 0 rgba(212,175,55,0)}}
 
-.videoWrap{border-radius:16px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,0.06)}
-video{width:100%;display:block}
-input,select,textarea{
-  width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,0.08);
-  margin-top:10px;background:#0f1115;color:#eaeaea
+.shipment{
+padding:12px;
+border:1px solid rgba(212,175,55,.2);
+border-radius:10px;
+margin-top:10px;
+cursor:pointer;
 }
-textarea{min-height:92px;resize:vertical}
-#map{height:280px;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,0.06)}
-canvas{border:1px solid rgba(0,0,0,0.15);border-radius:14px;width:100%;height:160px;margin-top:10px;touch-action:none;background:#fff}
 
-.shipment-card{
-  padding:16px;border-radius:18px;background:rgba(0,0,0,0.35);
-  border:1px solid rgba(212,175,55,0.16);margin-top:12px
+.shipment:hover{
+background:#1c1c1f;
 }
-.shipment-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.shipment-code{font-size:16px;font-weight:900;color:#fff}
-.badgeStatus{font-size:11px;font-weight:900;border-radius:999px;padding:6px 10px;border:1px solid rgba(255,255,255,0.12)}
-.bs-assigned{background:rgba(212,175,55,0.14);border-color:rgba(212,175,55,0.25);color:var(--gold)}
-.bs-picked{background:rgba(250,204,21,0.12);border-color:rgba(250,204,21,0.2);color:#fde047}
-.bs-transit{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.2);color:#93c5fd}
-.bs-delivered{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.2);color:#86efac}
-.bs-problem{background:rgba(239,68,68,0.14);border-color:rgba(239,68,68,0.25);color:#fecaca}
-.shipment-meta{margin-top:8px;font-size:13px;color:#e5e7eb;opacity:.92;line-height:1.35}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.pill{font-size:12px;font-weight:800;color:#e5e7eb;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:999px}
-.pill strong{color:#fff}
-.pill.gold{border-color:rgba(212,175,55,0.22);background:rgba(212,175,55,0.10)}
-.pill.red{border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.10)}
 
-#problemPanel{display:none;margin-top:12px;padding:16px;border-radius:16px;background:#16181d;border:1px solid rgba(212,175,55,0.25)}
-/* Menu */
-#menuOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);display:none;z-index:9998}
-#menuOverlay.show{display:block}
-#sideMenu{
-  position:fixed;top:0;right:-320px;width:320px;height:100%;
-  background:linear-gradient(180deg,#0f0f10,#121214);
-  box-shadow:-10px 0 30px rgba(0,0,0,0.7);
-  transition:0.28s ease;z-index:9999;padding:18px;
-  border-left:1px solid rgba(212,175,55,0.18);
+.btn{
+background:#D4AF37;
+border:none;
+padding:10px 14px;
+border-radius:8px;
+font-weight:800;
+margin-top:8px;
+cursor:pointer;
 }
-#sideMenu.open{right:0}
-.menuHeader{padding:12px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.16)}
-.menuTitle{font-weight:900;color:var(--gold);font-size:18px}
-.menuSub{font-size:12px;color:#cbd5e1;margin-top:6px;opacity:.9;line-height:1.35}
-.menuChipRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.chip{background:rgba(212,175,55,0.14);border:1px solid rgba(212,175,55,0.22);color:#f8fafc;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900}
-.divider{height:1px;background:var(--line);margin:10px 0}
-#legalPanel{display:none;margin-top:12px;padding:14px;border-radius:16px;background:#0f1115;border:1px solid rgba(212,175,55,0.25)}
-#legalTitle{font-weight:900;color:var(--gold);margin-bottom:8px}
-#legalText{font-size:13px;color:#e5e7eb;opacity:.92;white-space:pre-wrap;line-height:1.45}
-/* Modal */
-#cizaModal{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9997;align-items:center;justify-content:center;display:none}
-#cizaModalCard{background:linear-gradient(145deg,#111,#1b1b1b);padding:26px;border-radius:20px;width:85%;max-width:420px;text-align:center;border:1px solid rgba(212,175,55,0.3);box-shadow:0 20px 40px rgba(0,0,0,0.6)}
-#cizaModalTitle{font-weight:900;font-size:18px;margin-bottom:12px;color:#D4AF37}
-#cizaModalMessage{margin-bottom:22px;font-size:15px;line-height:1.5;color:#e5e7eb}
+
+#map{
+height:260px;
+border-radius:12px;
+margin-top:10px;
+}
+
+video{
+width:100%;
+border-radius:10px;
+}
+
+canvas{
+background:white;
+border-radius:8px;
+}
+
+input{
+padding:8px;
+width:100%;
+margin-top:6px;
+border-radius:6px;
+border:none;
+}
+
 </style>
 </head>
+
 <body>
 
-<div id="menuOverlay"></div>
-<div id="sideMenu">
-  <div class="menuHeader">
-    <div class="menuTitle">🚚 Ciza Driver Tool</div>
-    <div class="menuSub" id="menuDriverLine">Chargement...</div>
-    <div class="menuChipRow">
-      <span class="chip" id="menuChipStatus">En ligne</span>
-      <span class="chip" id="menuChipDelivered">Livrés: 0</span>
-    </div>
-  </div>
+<header>
 
-  <div class="divider"></div>
+<div class="logo">Ciza Driver</div>
 
-  <button class="btn dark full" onclick="openArchived()">📦 Archivés</button>
-  <button class="btn dark full" style="margin-top:10px" onclick="showLegal('privacy')">🔒 Confidentialité</button>
-  <button class="btn dark full" style="margin-top:10px" onclick="showLegal('about')">ℹ️ À propos</button>
-  <button class="btn red full" style="margin-top:10px" id="deleteAccountBtn">🗑 Supprimer mon compte</button>
-  <button class="btn dark full" style="margin-top:10px" id="logoutMenuBtn">🚪 Déconnexion</button>
+<div class="menu">
 
-  <div class="divider"></div>
+<button onclick="view('dashboard')">Dashboard</button>
+<button onclick="view('scanner')">Scanner</button>
+<button onclick="view('history')">Historique</button>
 
-  <div id="legalPanel">
-    <div id="legalTitle"></div>
-    <div id="legalText"></div>
-    <div class="actionsRow">
-      <button class="btn gold full" onclick="hideLegal()">Fermer</button>
-    </div>
-  </div>
 </div>
 
-<div class="header">
-  <div>
-    <div class="brand">🚚 Ciza Driver Tool</div>
-    <div class="driverName" id="driverName">Chargement...</div>
-  </div>
-  <div class="header-right">
-    <span class="badge" id="connectionStatus">En ligne</span>
-    <span class="badge gold" id="deliveryCounter">0</span>
-    <button class="menuBtn" id="menuBtn">☰</button>
-  </div>
-</div>
+</header>
 
 <div class="container">
 
-  <div class="card">
-    <div class="section-title">📷 Scanner colis <span class="small" id="scanHint"></span></div>
-    <div class="videoWrap"><video id="scanVideo" playsinline></video></div>
-    <div class="actionsRow">
-      <button class="btn dark" id="startScanBtn">Scanner</button>
-      <button class="btn gold" id="stopScanBtn">Stop</button>
-    </div>
-    <div class="small" style="margin-top:10px;opacity:.9">Scan → sélection automatique du colis → ouverture des détails.</div>
-  </div>
+<div id="dashboard">
 
-  <div class="card">
-    <div class="section-title">🟡 À traiter <span class="small">Assigned / Picked up</span></div>
-    <div id="assignedList"></div>
-  </div>
+<div class="card">
 
-  <div class="card">
-    <div class="section-title">🔵 En transit <span class="small">In transit</span></div>
-    <div id="transitList"></div>
-  </div>
+<h3>Colis assignés</h3>
 
-  <div class="card">
-    <div class="section-title">🟢 Livrés aujourd’hui <span class="small">Delivered</span></div>
-    <div id="deliveredList"></div>
-  </div>
-
-  <div class="card" id="archiveSection" style="display:none;">
-    <div class="section-title">📦 Archives <span class="small">Restaurables</span></div>
-    <div id="archivedList"></div>
-  </div>
-
-  <div class="card" id="detailsCard">
-    <div class="section-title">📦 Détails & Navigation <span id="selectedHint" class="small">Sélectionne un colis</span></div>
-    <div id="shipmentDetails" class="small">Aucun colis sélectionné</div>
-
-    <div class="pills" id="quickActionsRow" style="display:none;">
-      <a class="pill gold" id="callBtn" href="#" style="text-decoration:none;">📞 Appeler</a>
-      <a class="pill gold" id="waBtn" href="#" target="_blank" style="text-decoration:none;">💬 WhatsApp</a>
-      <span class="pill" id="distPill" style="display:none;">📏 <strong>—</strong></span>
-      <span class="pill" id="etaPill" style="display:none;">⏱ <strong>—</strong></span>
-      <button class="pill gold" id="requestAssignBtn" style="display:none;border:none;cursor:pointer;">📥 Demander assignation</button>
-    </div>
-
-    <div id="map"></div>
-
-    <div class="actionsRow">
-      <button class="btn gold full" id="mainActionBtn" style="display:none;">🚀 Action principale</button>
-      <button class="btn dark full" id="navBtn" style="display:none;">🧭 Navigation</button>
-      <button class="btn red full" id="archiveBtn" style="display:none;">📦 Archiver</button>
-      <button class="btn red full" id="issueBtn" style="display:none;">⚠️ Signaler un problème</button>
-    </div>
-
-    <div id="problemPanel">
-      <div style="font-weight:900;color:var(--gold);margin-bottom:10px;">⚠️ Signaler un problème</div>
-      <select id="problemType">
-        <option value="">-- Sélectionner un motif --</option>
-        <option value="client_absent">Client absent</option>
-        <option value="phone_unreachable">Téléphone injoignable</option>
-        <option value="wrong_address">Adresse incorrecte</option>
-        <option value="refused">Refus de réception</option>
-        <option value="damaged">Colis endommagé</option>
-        <option value="other">Autre</option>
-      </select>
-      <textarea id="problemNote" placeholder="Commentaire (optionnel)"></textarea>
-      <button class="btn gold full" id="submitProblemBtn">Envoyer le signalement</button>
-    </div>
-  </div>
-
-  <div class="card" id="deliverySecurity" style="display:none;">
-    <div class="section-title">🔐 Finalisation livraison <span class="small">OTP + Photo + Signature</span></div>
-    <input type="text" id="otpInput" placeholder="Entrer OTP client (4 chiffres)">
-    <input type="file" accept="image/*" capture="environment" id="photoInput">
-    <canvas id="signatureCanvas"></canvas>
-    <div class="actionsRow"><button class="btn gold" id="clearSignature">Effacer signature</button></div>
-  </div>
+<div id="shipmentsList"></div>
 
 </div>
 
-<div id="cizaModal">
-  <div id="cizaModalCard">
-    <div id="cizaModalTitle">🚚 Ciza Logistics</div>
-    <div id="cizaModalMessage"></div>
-    <button class="btn gold full" onclick="closeCizaModal()">OK</button>
-  </div>
+<div class="card">
+
+<h3>Détails colis</h3>
+
+<div id="details">Aucun colis sélectionné</div>
+
+<button id="pickupBtn" class="btn">Pickup</button>
+<button id="transitBtn" class="btn">Transit</button>
+<button id="deliverBtn" class="btn">Livrer</button>
+
+<div id="map"></div>
+
+</div>
+
+</div>
+
+<div id="scanner" style="display:none">
+
+<div class="card">
+
+<h3>Scanner QR</h3>
+
+<video id="scanVideo" playsinline></video>
+
+<button class="btn" id="scanStart">Scanner</button>
+
+</div>
+
+</div>
+
+<div id="delivery" style="display:none">
+
+<div class="card">
+
+<h3>OTP</h3>
+
+<input id="otpInput">
+
+</div>
+
+<div class="card">
+
+<h3>Signature</h3>
+
+<canvas id="signature" width="300" height="150"></canvas>
+
+</div>
+
+<div class="card">
+
+<h3>Photo preuve</h3>
+
+<input type="file" id="photo" accept="image/*" capture="environment">
+
+<button id="confirmDelivery" class="btn">Confirmer</button>
+
+</div>
+
+</div>
+
+<div id="history" style="display:none">
+
+<div class="card">
+
+<h3>Historique</h3>
+
+<div id="historyList"></div>
+
+</div>
+
+</div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
+
+import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+
 import {
-  getFirestore, collection, query, where, onSnapshot,
-  doc, getDoc, getDocs, updateDoc, serverTimestamp, deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+getFirestore,
+collection,
+query,
+where,
+onSnapshot,
+doc,
+getDoc,
+updateDoc,
+getDocs,
+addDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
-/* Firebase config (your real project already here) */
-const app = initializeApp({
-  apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
-  authDomain:"ciza-logistics.firebaseapp.com",
-  projectId:"ciza-logistics",
-  storageBucket:"ciza-logistics.appspot.com"
-});
-const db = getFirestore(app);
-const auth = getAuth(app);
+const firebaseConfig={
 
-/* UI helpers */
-function showCizaModal(message){
-  document.getElementById("cizaModalMessage").innerText = message;
-  document.getElementById("cizaModal").style.display = "flex";
-}
-window.closeCizaModal = function(){ document.getElementById("cizaModal").style.display = "none"; };
-window.alert = function(m){ showCizaModal(m); };
-function toast(m){ showCizaModal(m); }
+apiKey:"AIzaSyCIUVom1diEV4ESa3QEcICOZRv0TNSydx8",
+authDomain:"ciza-logistics.firebaseapp.com",
+projectId:"ciza-logistics"
 
-function esc(s){
-  return (s ?? "").toString()
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#39;");
 }
 
-/* Menu */
-const sideMenu = document.getElementById("sideMenu");
-const menuBtn = document.getElementById("menuBtn");
-const overlay = document.getElementById("menuOverlay");
-menuBtn.onclick = ()=>{ sideMenu.classList.toggle("open"); overlay.classList.toggle("show"); };
-overlay.onclick = ()=>{ sideMenu.classList.remove("open"); overlay.classList.remove("show"); };
-function closeMenu(){ sideMenu.classList.remove("open"); overlay.classList.remove("show"); }
-window.showLegal = function(kind){
-  const panel = document.getElementById("legalPanel");
-  const title = document.getElementById("legalTitle");
-  const text = document.getElementById("legalText");
-  if(kind==="privacy"){
-    title.textContent="🔒 Confidentialité";
-    text.textContent =
-`Ciza Logistics — Driver Tool
+const app=initializeApp(firebaseConfig)
+const db=getFirestore(app)
+const auth=getAuth(app)
 
-Données utilisées uniquement pour le service :
-• GPS pendant une mission
-• Informations colis (tracking, adresses)
-• Preuve de livraison (photo + signature)
-• OTP client pour validation
+let currentUser=null
+let currentShipment=null
 
-Aucune donnée n'est vendue.
-© Ciza Group — Burundi`;
-  }else{
-    title.textContent="ℹ️ À propos";
-    text.textContent =
-`Ciza Logistics — Driver Tool
-Version : 1.1
+onAuthStateChanged(auth,async(user)=>{
 
-Fonctions :
-• Scan colis (QR/Barcode)
-• Navigation intégrée (carte + route)
-• OTP + Photo + Signature
-• Signalement problème
-• Archivage / restauration
+if(!user){
 
-© Ciza Group`;
-  }
-  panel.style.display="block";
-};
-window.hideLegal = function(){ document.getElementById("legalPanel").style.display="none"; };
+location.href="login.html"
+return
 
-/* State */
-let currentUser = null;
-let selectedShipmentId = null;
-let selectedShipment = null;
-
-let lastLat=null,lastLng=null;
-let driverMarker=null,pickupMarker=null,destMarker=null,routeLayer=null;
-let lastRouteAt=0;
-
-let scanActive=false;
-let codeReader=null;
-
-/* Map */
-const map = L.map('map').setView([-3.3731,29.9189],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-
-function statusLabel(st){
-  if(st==="assigned") return "Assigné";
-  if(st==="picked_up") return "Récupéré";
-  if(st==="in_transit") return "En transit";
-  if(st==="delivered") return "Livré";
-  return st || "—";
-}
-function statusClass(st, prob){
-  if(prob) return "bs-problem";
-  if(st==="assigned") return "bs-assigned";
-  if(st==="picked_up") return "bs-picked";
-  if(st==="in_transit") return "bs-transit";
-  if(st==="delivered") return "bs-delivered";
-  return "";
-}
-function routeLine(d){
-  const from = d.fromCity || d.fromCommune || d.fromProvince || "";
-  const to = d.toCity || d.toCommune || d.toProvince || "";
-  if(from || to) return `📍 ${from} → ${to}`;
-  return `📍 Livraison → ${(d.receiverName||"")}`;
-}
-function renderCard(d){
-  const st=(d.status||"").toString();
-  const prob = (d.problemReported===true && (d.problemStatus||"")==="pending") || (d.problemReport?.status==="open");
-  const price = (d.finalPrice!=null) ? `${d.finalPrice} BIF` : ((d.declaredValue!=null) ? `${d.declaredValue} BIF` : null);
-  const phone = (d.receiverPhone||d.senderPhone||"").toString().replace(/\s+/g,"");
-  return `
-  <div class="shipment-card" style="${prob ? 'border-color:rgba(239,68,68,0.28)' : ''}">
-    <div class="shipment-top">
-      <div>
-        <div class="shipment-code">📦 ${esc(d.trackingCode||d.id)}</div>
-        <div class="shipment-meta">${esc(routeLine(d))}</div>
-      </div>
-      <div class="badgeStatus ${statusClass(st,prob)}">${esc(statusLabel(st))}</div>
-    </div>
-    <div class="pills">
-      ${price ? `<span class="pill gold">💰 <strong>${esc(price)}</strong></span>` : ``}
-      ${phone ? `<span class="pill">📞 <strong>${esc(phone)}</strong></span>` : ``}
-      ${prob ? `<span class="pill red">⚠️ <strong>Signalé</strong></span>` : ``}
-    </div>
-    <div class="actionsRow">
-      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir détails</button>
-    </div>
-  </div>`;
-}
-function renderList(elId, list){
-  const el=document.getElementById(elId);
-  if(!list.length){ el.innerHTML="<div class='small'>Aucun colis.</div>"; return; }
-  el.innerHTML=list.map(renderCard).join("");
-}
-function renderArchived(list){
-  const el=document.getElementById("archivedList");
-  if(!list.length){ el.innerHTML="<div class='small'>Aucun colis archivé.</div>"; return; }
-  el.innerHTML=list.map(d=>`
-    <div class="shipment-card">
-      <div class="shipment-top">
-        <div>
-          <div class="shipment-code">📦 ${esc(d.trackingCode||d.id)}</div>
-          <div class="shipment-meta">${esc(routeLine(d))}</div>
-        </div>
-        <div class="badgeStatus bs-delivered">Archivé</div>
-      </div>
-      <div class="actionsRow">
-        <button class="btn blue" onclick="restoreShipment('${d.id}')">Restaurer</button>
-      </div>
-    </div>
-  `).join("");
 }
 
-/* Auth */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){ location.href="login.html"; return; }
-  const uSnap=await getDoc(doc(db,"users",user.uid));
-  if(!uSnap.exists()){ await signOut(auth); location.href="login.html"; return; }
-  const u=uSnap.data()||{};
-  if(u.role!=="driver" || u.accountStatus!=="approved"){ alert("Accès refusé."); await signOut(auth); location.href="login.html"; return; }
-  currentUser=user;
+currentUser=user
 
-  document.getElementById("driverName").textContent = u.fullName || "Driver";
-  document.getElementById("menuDriverLine").textContent = (u.fullName||"Driver")+" • "+(user.email||"");
-  listenShipments();
-});
-function refreshOnline(){
-  const online=navigator.onLine;
-  const badge=document.getElementById("connectionStatus");
-  badge.textContent=online?"En ligne":"Hors ligne";
-  badge.className="badge"+(online?"":" bad");
-  document.getElementById("menuChipStatus").textContent=online?"En ligne":"Hors ligne";
+document.body.style.display="block"
+
+listenShipments()
+
+})
+
+function view(v){
+
+["dashboard","scanner","history","delivery"].forEach(id=>{
+
+document.getElementById(id).style.display="none"
+
+})
+
+document.getElementById(v).style.display="block"
+
 }
-window.addEventListener("online",refreshOnline);
-window.addEventListener("offline",refreshOnline);
-refreshOnline();
 
-/* GPS */
-navigator.geolocation.watchPosition((pos)=>{
-  lastLat=pos.coords.latitude; lastLng=pos.coords.longitude;
-  if(driverMarker) driverMarker.setLatLng([lastLat,lastLng]);
-  else { driverMarker=L.marker([lastLat,lastLng]).addTo(map); map.setView([lastLat,lastLng],13); }
-  updateDistanceUI();
-},{enableHighAccuracy:true});
-
-/* Firestore listen */
 function listenShipments(){
-  const qShip=query(collection(db,"shipments"), where("assignedDriverId","==",currentUser.uid));
-  onSnapshot(qShip,(snap)=>{
-    const assigned=[], transit=[], delivered=[], archived=[];
-    snap.forEach(ds=>{
-      const d=ds.data()||{}; d.id=ds.id;
-      if(d.archivedByDriver || d.autoArchived){ archived.push(d); return; }
-      const st=(d.status||"").toString();
-      if(st==="assigned"||st==="picked_up") assigned.push(d);
-      else if(st==="in_transit") transit.push(d);
-      else if(st==="delivered") delivered.push(d);
-    });
-    renderList("assignedList",assigned);
-    renderList("transitList",transit);
-    renderList("deliveredList",delivered);
-    renderArchived(archived);
-    document.getElementById("deliveryCounter").textContent = delivered.length;
-    document.getElementById("menuChipDelivered").textContent = "Livrés: "+delivered.length;
-  });
+
+const q=query(
+collection(db,"shipments"),
+where("assignedDriverId","==",currentUser.uid)
+)
+
+onSnapshot(q,(snap)=>{
+
+let html=""
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data()
+
+html+=`
+<div class="shipment" onclick="selectShipment('${docSnap.id}')">
+📦 ${d.trackingCode || docSnap.id}
+<br>
+📍 ${d.deliveryAddress || ""}
+</div>
+`
+
+})
+
+document.getElementById("shipmentsList").innerHTML=html
+
+})
+
 }
 
-/* Archives */
-window.openArchived=function(){
-  closeMenu();
-  const sec=document.getElementById("archiveSection");
-  sec.style.display = (sec.style.display==="none") ? "block" : "none";
-  if(sec.style.display==="block") sec.scrollIntoView({behavior:"smooth"});
-};
-window.restoreShipment=async function(id){
-  await updateDoc(doc(db,"shipments",id),{archivedByDriver:false});
-  toast("Colis restauré ✅");
-};
+window.selectShipment=async function(id){
 
-/* Select shipment */
-window.selectShipment = async function(id){
-  const sSnap=await getDoc(doc(db,"shipments",id));
-  if(!sSnap.exists()){ toast("Colis introuvable."); return; }
-  const d=sSnap.data()||{};
-  if(d.assignedDriverId && d.assignedDriverId!==currentUser.uid){ toast("Ce colis est assigné à un autre chauffeur."); return; }
+const snap=await getDoc(doc(db,"shipments",id))
 
-  selectedShipmentId=id; selectedShipment=d;
+if(!snap.exists()) return
 
-  const st=(d.status||"").toString();
-  const prob = (d.problemReported===true && (d.problemStatus||"")==="pending") || (d.problemReport?.status==="open");
+currentShipment={id:id,...snap.data()}
 
-  // reset UI
-  document.getElementById("problemPanel").style.display="none";
-  document.getElementById("deliverySecurity").style.display="none";
-  document.getElementById("mainActionBtn").style.display="none";
-  document.getElementById("navBtn").style.display="none";
-  document.getElementById("archiveBtn").style.display="none";
-  document.getElementById("issueBtn").style.display="none";
-  document.getElementById("navBtn").classList.remove("nav-ready");
+document.getElementById("details").innerHTML=
+"<b>"+(currentShipment.trackingCode||id)+"</b>"
 
-  document.getElementById("selectedHint").textContent="Sélectionné : "+(d.trackingCode||id);
+if(currentShipment.deliveryLat){
 
-  // quick actions
-  const phone=(d.receiverPhone||d.senderPhone||"").toString().replace(/\s+/g,"");
-  if(phone){
-    document.getElementById("callBtn").href="tel:"+phone;
-    document.getElementById("waBtn").href="https://wa.me/"+phone.replace(/^\+/,"");
-    document.getElementById("quickActionsRow").style.display="flex";
-  }else{
-    document.getElementById("quickActionsRow").style.display="none";
-  }
+map.setView([currentShipment.deliveryLat,currentShipment.deliveryLng],13)
 
-  const fromTxt = d.fromAddress || d.pickupAddress || ((d.fromProvince||"")+(d.fromCommune?(" / "+d.fromCommune):"")+(d.fromQuartier?(" / "+d.fromQuartier):"")) || "—";
-  const toTxt = d.destinationAddress || d.toAddress || ((d.toProvince||"")+(d.toCommune?(" / "+d.toCommune):"")+(d.toQuartier?(" / "+d.toQuartier):"")) || (d.receiverName?("Livraison : "+d.receiverName):"—");
-  const price = (d.finalPrice!=null) ? `${d.finalPrice} BIF` : ((d.declaredValue!=null) ? `${d.declaredValue} BIF` : "—");
+L.marker([currentShipment.deliveryLat,currentShipment.deliveryLng]).addTo(map)
 
-  document.getElementById("shipmentDetails").innerHTML = `
-    <div style="background:#16181d;border-radius:22px;padding:18px;border:1px solid rgba(212,175,55,0.28);">
-      <div style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:12px;">📦 ${esc(d.trackingCode||id)}</div>
-      <div class="pills" style="margin-top:0;margin-bottom:12px">
-        <span class="pill gold">💰 <strong>${esc(price)}</strong></span>
-        <span class="pill">🚚 <strong>${esc(statusLabel(st))}</strong></span>
-        ${prob?`<span class="pill red">⚠️ <strong>Signalé</strong></span>`:""}
-      </div>
-
-      <div style="background:#1e222b;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);margin-bottom:12px;">
-        <div style="font-weight:900;color:var(--gold);margin-bottom:8px;">🏠 Départ</div>
-        <div>${esc(fromTxt)}</div>
-        <div style="opacity:.75;margin-top:6px;">📍 ${esc(d.fromLandmark||d.repereDepart||"—")}</div>
-      </div>
-
-      <div style="background:#1e222b;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);margin-bottom:12px;">
-        <div style="font-weight:900;color:var(--gold);margin-bottom:8px;">🎯 Destination</div>
-        <div>${esc(toTxt)}</div>
-        <div style="opacity:.75;margin-top:6px;">📍 ${esc(d.toLandmark||d.repereDestination||"—")}</div>
-      </div>
-
-      <div style="background:#1e222b;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);">
-        <div style="font-weight:900;color:var(--gold);margin-bottom:8px;">👤 Contact</div>
-        <div>👤 <b>Nom :</b> ${esc(d.receiverName||d.senderName||"—")}</div>
-        <div>📞 <b>Téléphone :</b> ${esc(d.receiverPhone||d.senderPhone||"—")}</div>
-        <div style="margin-top:8px;opacity:.65;">📝 <b>Note :</b> ${esc(d.adminNote||"—")}</div>
-      </div>
-    </div>`;
-
-  resetMap();
-  if(lastLat!=null&&lastLng!=null&&!driverMarker){ driverMarker=L.marker([lastLat,lastLng]).addTo(map); }
-  if(d.fromLat!=null&&d.fromLng!=null) pickupMarker=L.marker([d.fromLat,d.fromLng]).addTo(map);
-  if(d.toLat!=null&&d.toLng!=null) destMarker=L.marker([d.toLat,d.toLng]).addTo(map);
-  fitAll();
-
-  // buttons
-  const mainBtn=document.getElementById("mainActionBtn");
-  const navBtn=document.getElementById("navBtn");
-  const archBtn=document.getElementById("archiveBtn");
-  const issueBtn=document.getElementById("issueBtn");
-
-  if(st==="assigned"){ mainBtn.style.display="block"; mainBtn.textContent="📦 Marquer comme récupéré"; }
-  if(st==="picked_up"){ mainBtn.style.display="block"; mainBtn.textContent="🚚 Démarrer le transit"; }
-
-  if(st==="in_transit"){
-    navBtn.style.display="block"; navBtn.classList.add("nav-ready");
-    issueBtn.style.display="block";
-    if(!prob){
-      mainBtn.style.display="block"; mainBtn.textContent="✅ Finaliser livraison";
-      document.getElementById("deliverySecurity").style.display="block";
-    }else{
-      toast("⚠️ Livraison bloquée : colis signalé.");
-    }
-    await routeOSRM(true);
-    updateDistanceUI();
-  }
-
-  if(st==="delivered"){ archBtn.style.display="block"; }
-
-  document.getElementById("detailsCard").scrollIntoView({behavior:"smooth"});
-};
-
-function resetMap(){
-  if(routeLayer){ try{map.removeLayer(routeLayer)}catch(e){} routeLayer=null; }
-  if(pickupMarker){ try{map.removeLayer(pickupMarker)}catch(e){} pickupMarker=null; }
-  if(destMarker){ try{map.removeLayer(destMarker)}catch(e){} destMarker=null; }
-}
-function fitAll(){
-  const pts=[];
-  if(lastLat!=null&&lastLng!=null) pts.push([lastLat,lastLng]);
-  if(pickupMarker) pts.push(pickupMarker.getLatLng());
-  if(destMarker) pts.push(destMarker.getLatLng());
-  if(pts.length>=1){
-    try{ map.fitBounds(L.latLngBounds(pts),{padding:[24,24]}); }catch(e){}
-  }
-}
-function distKm(lat1,lon1,lat2,lon2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-function updateDistanceUI(){
-  if(!selectedShipment || lastLat==null || lastLng==null) return;
-  const d=selectedShipment;
-  if(d.toLat==null || d.toLng==null) return;
-  const km=distKm(lastLat,lastLng,d.toLat,d.toLng);
-  document.getElementById("distPill").style.display="inline-block";
-  document.getElementById("distPill").innerHTML = `📏 <strong>${km.toFixed(km<10?2:1)} km</strong>`;
-  const mins=Math.max(1,Math.round((km/25)*60));
-  document.getElementById("etaPill").style.display="inline-block";
-  document.getElementById("etaPill").innerHTML = `⏱ <strong>${mins} min</strong>`;
 }
 
-/* Navigation */
-document.getElementById("navBtn").onclick = async ()=>{
-  if(!selectedShipment) return;
-  await routeOSRM(true);
-  toast("Navigation mise à jour ✅");
-};
-
-async function routeOSRM(force){
-  if(!selectedShipment || lastLat==null || lastLng==null) return;
-  if(selectedShipment.toLat==null || selectedShipment.toLng==null) return;
-  const now=Date.now();
-  if(!force && (now-lastRouteAt)<12000) return;
-  lastRouteAt=now;
-
-  try{
-    const url=`https://router.project-osrm.org/route/v1/driving/${lastLng},${lastLat};${selectedShipment.toLng},${selectedShipment.toLat}?overview=full&geometries=geojson`;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(!data.routes||!data.routes.length) return;
-    const coords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
-    if(routeLayer) map.removeLayer(routeLayer);
-    routeLayer=L.polyline(coords,{color:"#D4AF37",weight:5,opacity:0.95}).addTo(map);
-    map.fitBounds(routeLayer.getBounds(),{padding:[28,28]});
-  }catch(e){}
 }
 
-/* Archive selected */
-document.getElementById("archiveBtn").onclick = async ()=>{
-  if(!selectedShipmentId) return;
-  await updateDoc(doc(db,"shipments",selectedShipmentId),{archivedByDriver:true,archivedAt:serverTimestamp()});
-  toast("Colis archivé ✅");
-};
+document.getElementById("pickupBtn").onclick=async()=>{
 
-/* Problem */
-document.getElementById("issueBtn").onclick=()=>{
-  const p=document.getElementById("problemPanel");
-  p.style.display = (p.style.display==="block") ? "none" : "block";
-};
-document.getElementById("submitProblemBtn").onclick=async ()=>{
-  if(!selectedShipmentId){ toast("Aucun colis sélectionné."); return; }
-  const type=document.getElementById("problemType").value;
-  const note=(document.getElementById("problemNote").value||"").trim();
-  if(!type){ toast("Veuillez sélectionner un motif."); return; }
-  await updateDoc(doc(db,"shipments",selectedShipmentId),{
-    problemReported:true, problemStatus:"pending",
-    problemType:type, problemNote:note,
-    problemReportedAt:serverTimestamp(),
-    problemReportedBy:currentUser.uid,
-    problemReport:{type, note, createdAt:serverTimestamp(), driverId:currentUser.uid, status:"open"}
-  });
-  document.getElementById("problemType").value="";
-  document.getElementById("problemNote").value="";
-  document.getElementById("problemPanel").style.display="none";
-  toast("Problème signalé ✅");
-};
+if(!currentShipment) return
 
-/* Main action (statuses) */
-document.getElementById("mainActionBtn").onclick=async ()=>{
-  if(!selectedShipmentId) return;
-  const ref=doc(db,"shipments",selectedShipmentId);
-  const snap=await getDoc(ref);
-  if(!snap.exists()) return;
-  const data=snap.data()||{};
-  const st=(data.status||"").toString();
+await updateDoc(doc(db,"shipments",currentShipment.id),{
 
-  if(st==="assigned"){
-    await updateDoc(ref,{status:"picked_up",pickedUpAt:serverTimestamp()});
-    toast("Récupéré ✅");
-    return;
-  }
-  if(st==="picked_up"){
-    const patch={status:"in_transit",transitAt:serverTimestamp()};
-    if(!data.otpCode){
-      patch.otpCode = Math.floor(1000+Math.random()*9000).toString();
-      patch.otpGeneratedAt = serverTimestamp();
-    }
-    await updateDoc(ref,patch);
-    toast("Transit démarré ✅");
-    return;
-  }
-  if(st==="in_transit"){
-    if((data.problemReported===true && data.problemStatus==="pending") || (data.problemReport?.status==="open")){
-      toast("Livraison bloquée : colis signalé.");
-      return;
-    }
-    if(!navigator.onLine){ toast("Connexion requise."); return; }
-    if(lastLat==null||lastLng==null){ toast("GPS indisponible."); return; }
-    if(data.toLat==null||data.toLng==null){ toast("Destination GPS manquante."); return; }
-    const m=distKm(lastLat,lastLng,data.toLat,data.toLng)*1000;
-    if(m>120){ toast("Vous êtes à "+Math.round(m)+"m. Rapprochez-vous."); return; }
+status:"picked_up",
+pickedUpAt:serverTimestamp()
 
-    const otp=(document.getElementById("otpInput").value||"").trim();
-    if(otp !== (data.otpCode||"")){ toast("OTP incorrect."); return; }
-    const photo=document.getElementById("photoInput").files[0];
-    if(!photo){ toast("Photo obligatoire."); return; }
-    if(signatureIsEmpty()){ toast("Signature obligatoire."); return; }
+})
 
-    await updateDoc(ref,{status:"delivered",deliveredAt:serverTimestamp(),deliveryLocation:{lat:lastLat,lng:lastLng}});
-    document.getElementById("otpInput").value="";
-    document.getElementById("photoInput").value="";
-    clearSignature();
-    toast("Livraison confirmée ✅");
-  }
-};
-
-/* Signature */
-const signatureCanvas=document.getElementById("signatureCanvas");
-const sigCtx=signatureCanvas.getContext("2d");
-let drawing=false,lastPos=null,hasInk=false;
-
-function resizeSig(){
-  const rect=signatureCanvas.getBoundingClientRect();
-  const ratio=Math.max(window.devicePixelRatio||1,1);
-  signatureCanvas.width=Math.floor(rect.width*ratio);
-  signatureCanvas.height=Math.floor(rect.height*ratio);
-  sigCtx.setTransform(ratio,0,0,ratio,0,0);
-  sigCtx.lineWidth=2; sigCtx.lineCap="round";
 }
-resizeSig(); window.addEventListener("resize",resizeSig);
 
-function pos(e){
-  const r=signatureCanvas.getBoundingClientRect();
-  if(e.touches && e.touches[0]) return {x:e.touches[0].clientX-r.left,y:e.touches[0].clientY-r.top};
-  return {x:e.clientX-r.left,y:e.clientY-r.top};
+document.getElementById("transitBtn").onclick=async()=>{
+
+if(!currentShipment) return
+
+await updateDoc(doc(db,"shipments",currentShipment.id),{
+
+status:"in_transit",
+transitAt:serverTimestamp()
+
+})
+
 }
-function draw(p){
-  if(!lastPos){ lastPos=p; return; }
-  sigCtx.beginPath(); sigCtx.moveTo(lastPos.x,lastPos.y); sigCtx.lineTo(p.x,p.y); sigCtx.stroke();
-  lastPos=p; hasInk=true;
+
+document.getElementById("deliverBtn").onclick=()=>{
+
+if(!currentShipment) return
+
+view("delivery")
+
 }
-signatureCanvas.addEventListener("mousedown",(e)=>{drawing=true;lastPos=pos(e);});
-signatureCanvas.addEventListener("mousemove",(e)=>{if(!drawing)return;draw(pos(e));});
-signatureCanvas.addEventListener("mouseup",()=>{drawing=false;lastPos=null;});
-signatureCanvas.addEventListener("mouseleave",()=>{drawing=false;lastPos=null;});
-signatureCanvas.addEventListener("touchstart",(e)=>{drawing=true;lastPos=pos(e);e.preventDefault();},{passive:false});
-signatureCanvas.addEventListener("touchmove",(e)=>{if(!drawing)return;draw(pos(e));e.preventDefault();},{passive:false});
-signatureCanvas.addEventListener("touchend",()=>{drawing=false;lastPos=null;},{passive:true});
 
-function clearSignature(){ sigCtx.clearRect(0,0,signatureCanvas.width,signatureCanvas.height); hasInk=false; }
-function signatureIsEmpty(){ return !hasInk; }
-document.getElementById("clearSignature").onclick=clearSignature;
+document.getElementById("confirmDelivery").onclick=async()=>{
 
-/* Scanner (docId + trackingCode fallback) */
-function stopScanner(){
-  try{ if(codeReader) codeReader.reset(); }catch(e){}
-  scanActive=false;
-  document.getElementById("scanHint").textContent="";
+if(!currentShipment) return
+
+await updateDoc(doc(db,"shipments",currentShipment.id),{
+
+status:"delivered",
+deliveredAt:serverTimestamp()
+
+})
+
+alert("Livré")
+
+view("dashboard")
+
 }
-document.getElementById("startScanBtn").onclick=async ()=>{
-  if(scanActive) return;
-  try{ await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}}); }
-  catch(e){ toast("Permission caméra refusée."); return; }
 
-  scanActive=true;
-  document.getElementById("scanHint").textContent="Scan en cours…";
-  codeReader=new ZXing.BrowserMultiFormatReader();
+const map=L.map('map').setView([-3.37,29.91],12)
 
-  await codeReader.decodeFromVideoDevice(null, document.getElementById("scanVideo"), async (result,err)=>{
-    if(!result) return;
-    const raw=(result.getText()||"").trim();
-    if(!raw) return;
-    stopScanner();
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map)
 
-    const code=raw.replace(/^CIZA\|/i,"").replace(/^CIZA-/i,"").trim();
-    let foundId=null;
+let reader=null
 
-    const d1=await getDoc(doc(db,"shipments",code));
-    if(d1.exists()) foundId=code;
-    else{
-      const q2=query(collection(db,"shipments"), where("trackingCode","==",code));
-      const s2=await getDocs(q2);
-      if(!s2.empty) foundId=s2.docs[0].id;
-    }
+document.getElementById("scanStart").onclick=async()=>{
 
-    if(!foundId){ toast("Colis introuvable."); return; }
+reader=new ZXing.BrowserMultiFormatReader()
 
-    const ship=await getDoc(doc(db,"shipments",foundId));
-    if(!ship.exists()){ toast("Colis introuvable."); return; }
-    const sd=ship.data()||{};
-    if(sd.assignedDriverId && sd.assignedDriverId!==currentUser.uid){ toast("Ce colis n'est pas assigné à vous."); return; }
+reader.decodeFromVideoDevice(null,document.getElementById("scanVideo"),async(result)=>{
 
-    await window.selectShipment(foundId);
-  });
-};
-document.getElementById("stopScanBtn").onclick=stopScanner;
+if(!result) return
 
-/* Logout + delete */
-document.getElementById("logoutMenuBtn").onclick=async ()=>{
-  await signOut(auth);
-  location.href="login.html";
-};
-document.getElementById("deleteAccountBtn").onclick=async ()=>{
-  closeMenu();
-  const ok=confirm("Supprimer votre compte définitivement ? Cette action est permanente.");
-  if(!ok) return;
-  try{
-    await deleteDoc(doc(db,"users",auth.currentUser.uid)).catch(()=>{});
-    await deleteUser(auth.currentUser);
-    alert("Compte supprimé.");
-    location.href="login.html";
-  }catch(e){
-    alert("Reconnectez-vous pour supprimer le compte.");
-  }
-};
+const code=result.getText()
 
-/* Tracking to Firestore (only when picked_up / in_transit) */
-let lastPushAt=0,lastPushLat=null,lastPushLng=null;
-function maybePush(){
-  if(!selectedShipmentId || !selectedShipment) return;
-  const st=(selectedShipment.status||"").toString();
-  if(!(st==="picked_up"||st==="in_transit")) return;
-  if(!navigator.onLine) return;
-  if(lastLat==null||lastLng==null) return;
+let found=null
 
-  const now=Date.now();
-  const minMs=12000, minMoveM=20;
+const docSnap=await getDoc(doc(db,"shipments",code))
 
-  let moved=999999;
-  if(lastPushLat!=null && lastPushLng!=null) moved=distKm(lastPushLat,lastPushLng,lastLat,lastLng)*1000;
-  if((now-lastPushAt)<minMs && moved<minMoveM) return;
+if(docSnap.exists()){
 
-  updateDoc(doc(db,"shipments",selectedShipmentId),{
-    lastDriverLocation:{lat:lastLat,lng:lastLng,timestamp:serverTimestamp()}
-  }).catch(()=>{});
+found=code
 
-  lastPushAt=now; lastPushLat=lastLat; lastPushLng=lastLng;
+}else{
+
+const q=query(collection(db,"shipments"),where("trackingCode","==",code))
+
+const s=await getDocs(q)
+
+if(!s.empty) found=s.docs[0].id
+
 }
-setInterval(maybePush,12000);
 
-/* SW */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("./sw.js").catch(()=>{});
+if(found){
+
+selectShipment(found)
+view("dashboard")
+
+}else{
+
+await addDoc(collection(db,"assignmentRequests"),{
+
+trackingCode:code,
+driverId:currentUser.uid,
+status:"pending",
+createdAt:serverTimestamp()
+
+})
+
+alert("Demande assignation envoyée")
+
 }
+
+})
+
+}
+
+navigator.geolocation.watchPosition((pos)=>{
+
+if(!currentShipment) return
+
+updateDoc(doc(db,"shipments",currentShipment.id),{
+
+lastDriverLocation:{
+lat:pos.coords.latitude,
+lng:pos.coords.longitude,
+timestamp:serverTimestamp()
+}
+
+})
+
+})
+
+const canvas=document.getElementById("signature")
+const ctx=canvas.getContext("2d")
+
+let drawing=false
+
+canvas.onmousedown=()=>drawing=true
+canvas.onmouseup=()=>drawing=false
+canvas.onmousemove=(e)=>{
+
+if(!drawing) return
+
+ctx.lineWidth=2
+ctx.lineCap="round"
+ctx.strokeStyle="black"
+
+ctx.lineTo(e.offsetX,e.offsetY)
+ctx.stroke()
+
+ctx.beginPath()
+ctx.moveTo(e.offsetX,e.offsetY)
+
+}
+
 </script>
+
 </body>
 </html>
