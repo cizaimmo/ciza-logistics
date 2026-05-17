@@ -294,6 +294,13 @@ canvas{
   <div id="deliveredList"></div>
 </div>
 
+
+<!-- AJOUTER ICI -->
+<div class="card" id="archiveSection" style="display:none;">
+  <div class="section-title">📦 Archives</div>
+  <div id="archivedList"></div>
+</div>
+   
 <!-- DETAILS -->
 <div class="card">
   <div class="section-title">
@@ -304,11 +311,62 @@ canvas{
   <div id="shipmentDetails">Aucun colis sélectionné</div>
   <div id="map"></div>
 
-  <div class="actionsRow">
-    <button class="btn gold full" id="mainActionBtn" style="display:none;">Action</button>
-    <button class="btn dark full" id="navBtn" style="display:none;">🧭 Navigation</button>
-    <button class="btn red full" id="archiveBtn" style="display:none;">📦 Archiver</button>
+<div class="actionsRow">
+
+  <button class="btn gold full"
+  id="mainActionBtn"
+  style="display:none;">
+  🚀 Action principale
+  </button>
+
+  <button class="btn dark full"
+  id="navBtn"
+  style="display:none;">
+  🧭 Navigation
+  </button>
+
+  <button class="btn red full"
+  id="archiveBtn"
+  style="display:none;">
+  📦 Archiver
+  </button>
+
+  <button class="btn red full"
+  id="issueBtn"
+  style="display:none;">
+  ⚠️ Signaler un problème
+  </button>
+
+</div>
+
+<!-- PROBLEM REPORT -->
+<div id="problemPanel" style="display:none;margin-top:12px;padding:16px;border-radius:16px;background:#16181d;border:1px solid rgba(212,175,55,0.25);">
+
+  <div style="font-weight:800;color:#D4AF37;margin-bottom:10px;">
+    ⚠️ Signaler un problème
   </div>
+
+  <select id="problemType" style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px;">
+    <option value="">-- Sélectionner un motif --</option>
+    <option value="client_absent">Client absent</option>
+    <option value="phone_unreachable">Téléphone injoignable</option>
+    <option value="wrong_address">Adresse incorrecte</option>
+    <option value="refused">Refus de réception</option>
+    <option value="damaged">Colis endommagé</option>
+    <option value="other">Autre</option>
+  </select>
+
+  <textarea id="problemNote"
+    placeholder="Commentaire (optionnel)"
+    style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px;"></textarea>
+
+  <button class="btn gold full" id="submitProblemBtn">
+    Envoyer le signalement
+  </button>
+
+</div>
+   
+</div>
 </div>
 
 <!-- FINALISATION -->
@@ -420,29 +478,44 @@ function listenShipmentsMulti(){
     where("assignedDriverId","==",currentUser.uid)
   );
 
-  onSnapshot(q,(snap)=>{
+  onSnapshot(q, async (snap)=>{
 
     const assigned = [];
     const transit = [];
     const deliveredToday = [];
     const archived = [];
 
-    snap.forEach(docSnap=>{
+for(const docSnap of snap.docs){
 
-      const d = docSnap.data() || {};
-      d.id = docSnap.id;
+  const d = docSnap.data() || {};
+  d.id = docSnap.id;
 
-      if(d.archivedByDriver){
-        archived.push(d);
-        return;
-      }
+  if(d.archivedByDriver || d.autoArchived){
+    archived.push(d);
+    continue;
+  }
 
-      const st = (d.status||"").toString();
+  const st = (d.status||"").toString();
 
-      if(st==="assigned" || st==="picked_up") assigned.push(d);
-      else if(st==="in_transit") transit.push(d);
-      else if(st==="delivered") deliveredToday.push(d);
-    });
+  if(st === "delivered" && d.deliveredAt && d.deliveredAt.toDate){
+    const deliveredDate = d.deliveredAt.toDate();
+    const now = new Date();
+    const diffDays = (now - deliveredDate) / (1000*60*60*24);
+
+    if(diffDays > 7 && !d.autoArchived){
+      await updateDoc(doc(db,"shipments",d.id),{
+        autoArchived:true,
+        autoArchivedAt:serverTimestamp(),
+        archiveReason:"auto_expired"
+      });
+      continue;
+    }
+  }
+
+  if(st==="assigned" || st==="picked_up") assigned.push(d);
+  else if(st==="in_transit") transit.push(d);
+  else if(st==="delivered") deliveredToday.push(d);
+}
 
     render("assignedList",assigned);
     render("transitList",transit);
@@ -450,7 +523,7 @@ function listenShipmentsMulti(){
     renderArchived(archived);
 
     document.getElementById("deliveryCounter").textContent = deliveredToday.length;
-    document.getElementById("countArchived").textContent = archived.length;
+    
   });
 }
 
@@ -488,14 +561,33 @@ function renderArchived(list){
 
 function renderShipmentCard(d){
 
+  const isProblem =
+    d.problemReported === true &&
+    (d.problemStatus || "") === "pending";
+
   return `
-  <div class="shipment-card">
-    <b>${d.trackingCode||d.id}</b><br>
-    📍 ${d.fromCity||""} → ${d.toCity||""}
-    <div class="actionsRow">
-      <button class="btn dark" onclick="selectShipment('${d.id}')">Voir détails</button>
+    <div class="shipment-card"
+         style="${isProblem 
+           ? 'background:#2a1414;border:2px solid #ff4d4d;' 
+           : ''}">
+      
+      <b>${d.trackingCode || d.id}</b><br>
+      📍 ${d.fromCity || ""} → ${d.toCity || ""}
+
+      ${isProblem ? `
+        <div style="color:#ff4d4d;font-weight:700;margin-top:6px;">
+          ⚠ Colis signalé
+        </div>
+      ` : ""}
+
+      <div class="actionsRow">
+        <button class="btn dark"
+          onclick="selectShipment('${d.id}')">
+          Voir détails
+        </button>
+      </div>
+
     </div>
-  </div>
   `;
 }
 /* =========================
@@ -516,7 +608,9 @@ async function selectShipmentInternal(id){
 
   const d = selectedShipment;
   const st = (d.status||"").toString();
-
+const isProblem =
+  d.problemReported === true &&
+  (d.problemStatus||"") === "pending";
   const navBtn = document.getElementById("navBtn");
   const archiveBtn = document.getElementById("archiveBtn");
   const securityPanel = document.getElementById("deliverySecurity");
@@ -531,7 +625,7 @@ async function selectShipmentInternal(id){
   archiveBtn.style.display = "none";
   securityPanel.style.display = "none";
   mainBtn.style.display = "none";
-
+document.getElementById("issueBtn").style.display = "none";
   /* =========================
      HEADER
   ========================= */
@@ -635,19 +729,39 @@ document.getElementById("shipmentDetails").innerHTML = `
     mainBtn.textContent = "🚚 Démarrer le transit";
   }
 
-  if(st==="in_transit"){
-    mainBtn.style.display = "block";
-    mainBtn.textContent = "✅ Finaliser livraison";
+if(st==="in_transit"){
+if(isProblem){
+  alert("⚠️ Livraison bloquée : colis signalé.");
+  mainBtn.style.display = "none";
+  return;
+}
+  // ✅ Bouton principal
+  mainBtn.style.display = "block";
+  mainBtn.textContent = "✅ Finaliser livraison";
 
-    navBtn.style.display = "block";
-    navBtn.classList.add("nav-ready");
+  // 🧭 Navigation
+  navBtn.style.display = "block";
+  navBtn.classList.add("nav-ready");
 
-    securityPanel.style.display = "block";
+  // 🔐 Sécurité (OTP + signature)
+  securityPanel.style.display = "block";
 
-    // 🔥 Calcul route automatique
-    calculateRoute_OSRM();
+  // 🔴 Bouton signaler problème
+  const issueBtn = document.getElementById("issueBtn");
+  if(issueBtn){
+    issueBtn.style.display = "block";
   }
 
+  // 🟡 Badge premium
+  const badge = document.getElementById("statusBadge");
+  if(badge){
+    badge.textContent = "🟡 En transit";
+    badge.style.display = "inline-block";
+  }
+
+  calculateRoute_OSRM();
+}
+   
   if(st==="delivered"){
     archiveBtn.style.display = "block";
   }
@@ -824,7 +938,14 @@ document.getElementById("mainActionBtn").onclick = async function(){
 
   /* in_transit → delivered */
   if(st==="in_transit"){
-
+  // 🚨 BLOQUER SI COLIS SIGNALÉ
+if(
+  data.problemReported === true &&
+  data.problemStatus === "pending"
+){
+  alert("Ce colis a été signalé. Livraison bloquée.");
+  return;
+}
     if(!navigator.onLine){
       alert("Connexion requise.");
       return;
@@ -1027,6 +1148,51 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("./sw.js").catch(()=>{});
 }
 
+
+/* =========================
+   PROBLEM BUTTON
+========================= */
+
+const issueBtn = document.getElementById("issueBtn");
+const problemPanel = document.getElementById("problemPanel");
+
+issueBtn.onclick = function(){
+  problemPanel.style.display =
+    problemPanel.style.display === "block" ? "none" : "block";
+};   
+
+document.getElementById("submitProblemBtn").onclick = async function(){
+
+  if(!selectedShipmentId){
+    alert("Aucun colis sélectionné.");
+    return;
+  }
+
+  const type = document.getElementById("problemType").value;
+  const note = document.getElementById("problemNote").value.trim();
+
+  if(!type){
+    alert("Veuillez sélectionner un motif.");
+    return;
+  }
+
+  await updateDoc(doc(db,"shipments",selectedShipmentId),{
+    problemReport:{
+      type:type,
+      note:note,
+      createdAt:serverTimestamp(),
+      driverId:currentUser.uid,
+      status:"open"
+    }
+  });
+
+  alert("Problème signalé ✅");
+
+  document.getElementById("problemType").value="";
+  document.getElementById("problemNote").value="";
+  problemPanel.style.display="none";
+};
+   
 /* =========================
    SIDE MENU
 ========================= */
@@ -1051,8 +1217,20 @@ function closeMenu(){
 }
 
 window.openArchived = function(){
+
   closeMenu();
-  alert("Affichage des colis archivés à implémenter.");
+
+  const section = document.getElementById("archiveSection");
+
+  if(section.style.display === "none"){
+    section.style.display = "block";
+    window.scrollTo({
+      top:document.body.scrollHeight,
+      behavior:"smooth"
+    });
+  }else{
+    section.style.display = "none";
+  }
 };
 
 window.openPrivacy = function(){
@@ -1079,7 +1257,133 @@ document.getElementById("deleteAccountBtn").onclick = async()=>{
     alert("Reconnectez-vous pour supprimer le compte.");
   }
 };
-  
+
+/* =========================
+   CIZA MODAL FUNCTIONS
+========================= */
+
+window.showCizaModal = function(message){
+  const modal = document.getElementById("cizaModal");
+  const msg = document.getElementById("cizaModalMessage");
+
+  if(!modal || !msg) return;
+
+  msg.innerText = message;
+
+  // Afficher + rendre cliquable
+  modal.style.display = "flex";
+  modal.style.pointerEvents = "auto";
+
+  // IMPORTANT: sinon overlay invisible bloque tout
+  modal.style.opacity = "1";
+};
+
+window.closeCizaModal = function(){
+  const modal = document.getElementById("cizaModal");
+  if(!modal) return;
+
+  // Cacher + rendre non cliquable
+  modal.style.opacity = "0";
+  modal.style.pointerEvents = "none";
+  modal.style.display = "none";
+};
+
+/* =========================
+   GLOBAL ALERT OVERRIDE
+========================= */
+
+window.alert = function(message){
+  window.showCizaModal(message);
+};
+
+/* =========================
+   PROBLEM REPORT SUBMIT
+========================= */
+
+window.submitProblemReport = async function(){
+
+  if(!selectedShipmentId){
+    alert("Aucun colis sélectionné.");
+    return;
+  }
+
+  const type = document.getElementById("problemType").value;
+  const note = document.getElementById("problemNote").value.trim();
+
+  if(!type){
+    alert("Veuillez sélectionner un motif.");
+    return;
+  }
+
+  await updateDoc(doc(db,"shipments",selectedShipmentId),{
+    problemReported:true,
+    problemStatus:"pending",
+    problemType:type,
+    problemNote:note,
+    problemReportedAt:serverTimestamp(),
+    problemReportedBy:currentUser.uid
+  });
+
+  alert("Colis signalé avec succès ✅");
+};
+   
+document.getElementById("submitProblemBtn")
+.addEventListener("click", submitProblemReport);   
+
 </script>
+
+<!-- =========================
+     CIZA GLOBAL ALERT MODAL
+========================= -->
+<div id="cizaModal" style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+z-index:9999;
+align-items:center;
+justify-content:center;
+display:none;
+pointer-events:none;
+opacity:0;
+">
+
+  <div style="
+  background:linear-gradient(145deg,#111,#1b1b1b);
+  padding:28px;
+  border-radius:20px;
+  width:85%;
+  max-width:400px;
+  text-align:center;
+  border:1px solid rgba(212,175,55,0.3);
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+  ">
+
+    <div style="
+    font-weight:800;
+    font-size:18px;
+    margin-bottom:12px;
+    color:#D4AF37;">
+      🚚 Ciza Logistics
+    </div>
+
+    <div id="cizaModalMessage"
+    style="margin-bottom:22px;font-size:15px;line-height:1.5;">
+    </div>
+
+    <button type="button" onclick="closeCizaModal()"
+    style="
+    background:#D4AF37;
+    color:#000;
+    font-weight:700;
+    padding:10px 20px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;">
+      OK
+    </button>
+
+  </div>
+</div>
+
 </body>
 </html>
