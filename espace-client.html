@@ -575,7 +575,12 @@ document.getElementById("clientInfo").innerText = (user.email||"Client");
 }
 
 const q=query(collection(db,"shipments"),where("ownerUid","==",user.uid));
+ const urlParams = new URLSearchParams(window.location.search);
 
+const requestedTracking = String(
+  urlParams.get("tracking") || ""
+).trim();
+  
 onSnapshot(q,(snap)=>{
 let active=0,transit=0,delivered=0,total=0;
 
@@ -595,6 +600,28 @@ const tb = b.createdAt?.seconds ? b.createdAt.seconds : 0;
 return tb-ta;
 }catch(e){return 0;}
 });
+
+
+if(requestedTracking){
+  const normalizedTracking = requestedTracking.toLowerCase();
+
+  rows.sort((a,b)=>{
+    const aTracking = String(
+      a.trackingCode || a.id || ""
+    ).toLowerCase();
+
+    const bTracking = String(
+      b.trackingCode || b.id || ""
+    ).toLowerCase();
+
+    const aMatch = aTracking === normalizedTracking ? 1 : 0;
+    const bMatch = bTracking === normalizedTracking ? 1 : 0;
+
+    return bMatch - aMatch;
+  });
+}
+
+  
 
 window.__lastRowsRender = function(){
   let active=0,transit=0,delivered=0,total=0;
@@ -632,6 +659,44 @@ window.__lastRowsRender = function(){
 };
 
 window.__lastRowsRender();
+
+
+if(requestedTracking){
+  setTimeout(()=>{
+    const normalizedTracking = requestedTracking.toLowerCase();
+
+    const target = rows.find((row)=>{
+      const tracking = String(
+        row.trackingCode || row.id || ""
+      ).toLowerCase();
+
+      return tracking === normalizedTracking;
+    });
+
+    if(target){
+      const card = document.querySelector(
+        `.card[data-id="${target.id}"]`
+      );
+
+      if(card){
+        card.scrollIntoView({
+          behavior:"smooth",
+          block:"center"
+        });
+
+        card.style.boxShadow =
+          "0 0 0 2px rgba(212,175,55,0.75), 0 20px 70px rgba(212,175,55,0.25)";
+      }
+    }
+  },300);
+}
+
+
+
+
+
+
+  
 
 },(err)=>{
 console.error(err);
